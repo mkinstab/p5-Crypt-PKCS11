@@ -7,6 +7,9 @@ ppport.h
 lib/Crypt/PKCS11.pm
 lib/Crypt/PKCS11.pod
 MANIFEST
+COPYING
+LICENSE
+README
 README.md
 pkcs11.xs
 crypt_pkcs11.c
