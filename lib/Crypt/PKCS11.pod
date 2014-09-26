@@ -1,0 +1,175 @@
+=head1 NAME
+
+=head1 SYNPOSIS
+
+=head1 DESCRIPTION
+
+=head1 METHODS
+
+=over 4
+
+=item $pkcs11 = Crypt::PKCS11::new
+
+=item $str = Crypt::PKCS11::rv2str ($rv)
+
+=item $rv = Crypt::PKCS11::setCreateMutex ($pCreateMutex)
+
+=item Crypt::PKCS11::clearCreateMutex
+
+=item $rv = Crypt::PKCS11::setDestroyMutex ($pDestroyMutex)
+
+=item Crypt::PKCS11::clearDestroyMutex
+
+=item $rv = Crypt::PKCS11::setLockMutex ($pLockMutex)
+
+=item Crypt::PKCS11::clearLockMutex
+
+=item $rv = Crypt::PKCS11::setUnlockMutex ($pUnlockMutex)
+
+=item Crypt::PKCS11::clearUnlockMutex
+
+=item $rv = $pkcs11->load ($path)
+
+=item $rv = $pkcs11->unload
+
+=back
+
+=head1 PKCS#11 API
+
+=over 4
+
+=item $rv = $pkcs11->C_Initialize ($pInitArgs)
+
+=item $rv = $pkcs11->C_Finalize
+
+=item $rv = $pkcs11->C_GetInfo ($pInfo)
+
+=item $rv = $pkcs11->C_GetSlotList ($tokenPresent, $pSlotList)
+
+=item $rv = $pkcs11->C_GetSlotInfo ($slotID, $pInfo)
+
+=item $rv = $pkcs11->C_GetTokenInfo ($slotID, $pInfo)
+
+=item $rv = $pkcs11->C_GetMechanismList ($slotID, $pMechanismList)
+
+=item $rv = $pkcs11->C_GetMechanismInfo ($slotID, $type, $pInfo)
+
+=item $rv = $pkcs11->C_InitToken ($slotID, $pPin, $pLabel)
+
+=item $rv = $pkcs11->C_InitPIN ($hSession, $pPin)
+
+=item $rv = $pkcs11->C_SetPIN ($hSession, $pOldPin, $pNewPin)
+
+=item $rv = $pkcs11->C_OpenSession ($slotID, $flags, $phSession)
+
+=item $rv = $pkcs11->C_CloseSession ($hSession)
+
+=item $rv = $pkcs11->C_CloseAllSessions ($slotID)
+
+=item $rv = $pkcs11->C_GetSessionInfo ($hSession, $pInfo)
+
+=item $rv = $pkcs11->C_GetOperationState ($hSession, $pOperationState)
+
+=item $rv = $pkcs11->C_SetOperationState ($hSession, $pOperationState, $hEncryptionKey, $hAuthenticationKey)
+
+=item $rv = $pkcs11->C_Login ($hSession, $userType, $pPin)
+
+=item $rv = $pkcs11->C_Logout ($hSession)
+
+=item $rv = $pkcs11->C_CreateObject ($hSession, $pTemplate, $phObject)
+
+=item $rv = $pkcs11->C_CopyObject ($hSession, $hObject, $pTemplate, $phNewObject)
+
+=item $rv = $pkcs11->C_DestroyObject ($hSession, $hObject)
+
+=item $rv = $pkcs11->C_GetObjectSize ($hSession, $hObject, $pulSize)
+
+=item $rv = $pkcs11->C_GetAttributeValue ($hSession, $hObject, $pTemplate)
+
+=item $rv = $pkcs11->C_SetAttributeValue ($hSession, $hObject, $pTemplate)
+
+=item $rv = $pkcs11->C_FindObjectsInit ($hSession, $pTemplate)
+
+=item $rv = $pkcs11->C_FindObjects ($hSession, $phObject, $ulMaxObjectCount, $pulObjectCount)
+
+=item $rv = $pkcs11->C_FindObjectsFinal ($hSession)
+
+=item $rv = $pkcs11->C_EncryptInit ($hSession, $pMechanism, $hKey)
+
+=item $rv = $pkcs11->C_Encrypt ($hSession, $pData, $pEncryptedData)
+
+=item $rv = $pkcs11->C_EncryptUpdate ($hSession, $pPart, $pEncryptedPart)
+
+=item $rv = $pkcs11->C_EncryptFinal ($hSession, $pLastEncryptedPart)
+
+=item $rv = $pkcs11->C_DecryptInit ($hSession, $pMechanism, $hKey)
+
+=item $rv = $pkcs11->C_Decrypt ($hSession, $pEncryptedData, $pData)
+
+=item $rv = $pkcs11->C_DecryptUpdate ($hSession, $pEncryptedPart, $pPart)
+
+=item $rv = $pkcs11->C_DecryptFinal ($hSession, $pLastPart)
+
+=item $rv = $pkcs11->C_DigestInit ($hSession, $pMechanism)
+
+=item $rv = $pkcs11->C_Digest ($hSession, $pData, $pDigest)
+
+=item $rv = $pkcs11->C_DigestUpdate ($hSession, $pPart)
+
+=item $rv = $pkcs11->C_DigestKey ($hSession, $hKey)
+
+=item $rv = $pkcs11->C_DigestFinal ($hSession, $pDigest)
+
+=item $rv = $pkcs11->C_SignInit ($hSession, $pMechanism, $hKey)
+
+=item $rv = $pkcs11->C_Sign ($hSession, $pData, $pSignature)
+
+=item $rv = $pkcs11->C_SignUpdate ($hSession, $pPart)
+
+=item $rv = $pkcs11->C_SignFinal ($hSession, $pSignature)
+
+=item $rv = $pkcs11->C_SignRecoverInit ($hSession, $pMechanism, $hKey)
+
+=item $rv = $pkcs11->C_SignRecover ($hSession, $pData, $pSignature)
+
+=item $rv = $pkcs11->C_VerifyInit ($hSession, $pMechanism, $hKey)
+
+=item $rv = $pkcs11->C_Verify ($hSession, $pData, $pSignature)
+
+=item $rv = $pkcs11->C_VerifyUpdate ($hSession, $pPart)
+
+=item $rv = $pkcs11->C_VerifyFinal ($hSession, $pSignature)
+
+=item $rv = $pkcs11->C_VerifyRecoverInit ($hSession, $pMechanism, $hKey)
+
+=item $rv = $pkcs11->C_VerifyRecover ($hSession, $pData, $pSignature)
+
+=item $rv = $pkcs11->C_DigestEncryptUpdate ($hSession, $pPart, $pEncryptedPart)
+
+=item $rv = $pkcs11->C_DecryptDigestUpdate ($hSession, $pEncryptedPart, $pPart)
+
+=item $rv = $pkcs11->C_SignEncryptUpdate ($hSession, $pPart, $pEncryptedPart)
+
+=item $rv = $pkcs11->C_DecryptVerifyUpdate ($hSession, $pEncryptedPart, $pPart)
+
+=item $rv = $pkcs11->C_GenerateKey ($hSession, $pMechanism, $pTemplate, $phKey)
+
+=item $rv = $pkcs11->C_GenerateKeyPair ($hSession, $pMechanism, $pPublicKeyTemplate, $pPrivateKeyTemplate, $phPublicKey, $phPrivateKey)
+
+=item $rv = $pkcs11->C_WrapKey ($hSession, $pMechanism, $hWrappingKey, $hKey, $pWrappedKey)
+
+=item $rv = $pkcs11->C_UnwrapKey ($hSession, $pMechanism, $hUnwrappingKey, $pWrappedKey, $pTemplate, $phKey)
+
+=item $rv = $pkcs11->C_DeriveKey ($hSession, $pMechanism, $hBaseKey, $pTemplate, $phKey)
+
+=item $rv = $pkcs11->C_SeedRandom ($hSession, $pSeed)
+
+=item $rv = $pkcs11->C_GenerateRandom ($hSession, $RandomData, $ulRandomLen)
+
+=item $rv = $pkcs11->C_GetFunctionStatus ($hSession)
+
+=item $rv = $pkcs11->C_CancelFunction ($hSession)
+
+=item $rv = $pkcs11->C_WaitForSlotEvent ($flags, $pSlot)
+
+=back

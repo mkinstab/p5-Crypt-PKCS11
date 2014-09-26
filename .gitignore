@@ -1,0 +1,11 @@
+*~
+*.old
+.project
+.includepath
+*.o
+blib
+Cryptoki.bs
+MYMETA.yml
+Makefile
+cryptoki.c
+pm_to_blib
