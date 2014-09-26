@@ -4,8 +4,8 @@
 .includepath
 *.o
 blib
-Cryptoki.bs
+PKCS11.bs
 MYMETA.yml
 Makefile
-cryptoki.c
+pkcs11.c
 pm_to_blib

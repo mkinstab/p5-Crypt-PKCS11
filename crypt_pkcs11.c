@@ -2903,23 +2903,137 @@ CK_RV crypt_pkcs11_xs_C_DecryptVerifyUpdate(Crypt__PKCS11__XS* module, CK_SESSIO
 }
 
 CK_RV crypt_pkcs11_xs_C_GenerateKey(Crypt__PKCS11__XS* module, CK_SESSION_HANDLE hSession, HV* pMechanism, AV* pTemplate, SV* phKey) {
+    CK_MECHANISM _pMechanism = { 0, NULL_PTR, 0 };
+    CK_ATTRIBUTE_PTR _pTemplate = NULL_PTR;
+    CK_ULONG ulCount = 0;
+    CK_OBJECT_HANDLE hKey = CK_INVALID_HANDLE;
+    CK_RV rv;
+
     if (!module) {
         return CKR_ARGUMENTS_BAD;
     }
     if (!module->function_list) {
         return CKR_GENERAL_ERROR;
     }
+    if (!module->function_list->C_GenerateKey) {
+        return CKR_GENERAL_ERROR;
+    }
+    if (hSession == CK_INVALID_HANDLE) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!pMechanism) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!pTemplate) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!phKey) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    if ((rv = __action_init(pMechanism, &_pMechanism)) != CKR_OK) {
+        return rv;
+    }
+
+    if ((rv = __check_pTemplate(pTemplate, &ulCount, 0)) != CKR_OK) {
+        return rv;
+    }
+
+    if (ulCount) {
+        if ((rv = __create_CK_ATTRIBUTE(&_pTemplate, pTemplate, ulCount, 0)) != CKR_OK) {
+            return rv;
+        }
+    }
+
+    if ((rv = module->function_list->C_GenerateKey(hSession, &_pMechanism, _pTemplate, ulCount, &hKey)) != CKR_OK) {
+        free(_pTemplate);
+        return rv;
+    }
+    free(_pTemplate);
+
+    SvGETMAGIC(phKey);
+    sv_setuv(phKey, hKey);
+    SvSETMAGIC(phKey);
 
     return CKR_OK;
 }
 
 CK_RV crypt_pkcs11_xs_C_GenerateKeyPair(Crypt__PKCS11__XS* module, CK_SESSION_HANDLE hSession, HV* pMechanism, AV* pPublicKeyTemplate, AV* pPrivateKeyTemplate, SV* phPublicKey, SV* phPrivateKey) {
+    CK_MECHANISM _pMechanism = { 0, NULL_PTR, 0 };
+    CK_ATTRIBUTE_PTR _pPublicKeyTemplate = NULL_PTR;
+    CK_ULONG ulPublicKeyCount = 0;
+    CK_ATTRIBUTE_PTR _pPrivateKeyTemplate = NULL_PTR;
+    CK_ULONG ulPrivateKeyCount = 0;
+    CK_OBJECT_HANDLE hPublicKey = CK_INVALID_HANDLE;
+    CK_OBJECT_HANDLE hPrivateKey = CK_INVALID_HANDLE;
+    CK_RV rv;
+
     if (!module) {
         return CKR_ARGUMENTS_BAD;
     }
     if (!module->function_list) {
         return CKR_GENERAL_ERROR;
     }
+    if (!module->function_list->C_GenerateKeyPair) {
+        return CKR_GENERAL_ERROR;
+    }
+    if (hSession == CK_INVALID_HANDLE) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!pMechanism) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!pPublicKeyTemplate) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!pPrivateKeyTemplate) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!phPublicKey) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!phPrivateKey) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    if ((rv = __action_init(pMechanism, &_pMechanism)) != CKR_OK) {
+        return rv;
+    }
+
+    if ((rv = __check_pTemplate(pPublicKeyTemplate, &ulPublicKeyCount, 0)) != CKR_OK) {
+        return rv;
+    }
+    if (ulPublicKeyCount) {
+        if ((rv = __create_CK_ATTRIBUTE(&_pPublicKeyTemplate, pPublicKeyTemplate, ulPublicKeyCount, 0)) != CKR_OK) {
+            return rv;
+        }
+    }
+
+    if ((rv = __check_pTemplate(pPrivateKeyTemplate, &ulPrivateKeyCount, 0)) != CKR_OK) {
+        free(_pPublicKeyTemplate);
+        return rv;
+    }
+    if (ulPrivateKeyCount) {
+        if ((rv = __create_CK_ATTRIBUTE(&_pPrivateKeyTemplate, pPrivateKeyTemplate, ulPrivateKeyCount, 0)) != CKR_OK) {
+            free(_pPublicKeyTemplate);
+            return rv;
+        }
+    }
+
+    if ((rv = module->function_list->C_GenerateKeyPair(hSession, &_pMechanism, _pPublicKeyTemplate, ulPublicKeyCount, _pPrivateKeyTemplate, ulPrivateKeyCount, &hPublicKey, &hPrivateKey)) != CKR_OK) {
+        free(_pPublicKeyTemplate);
+        free(_pPrivateKeyTemplate);
+        return rv;
+    }
+    free(_pPublicKeyTemplate);
+    free(_pPrivateKeyTemplate);
+
+    SvGETMAGIC(phPublicKey);
+    SvGETMAGIC(phPrivateKey);
+    sv_setuv(phPublicKey, hPublicKey);
+    sv_setuv(phPrivateKey, hPrivateKey);
+    SvSETMAGIC(phPublicKey);
+    SvSETMAGIC(phPrivateKey);
 
     return CKR_OK;
 }
@@ -2986,8 +3100,14 @@ CK_RV crypt_pkcs11_xs_C_GetFunctionStatus(Crypt__PKCS11__XS* module, CK_SESSION_
     if (!module->function_list) {
         return CKR_GENERAL_ERROR;
     }
+    if (!module->function_list->C_GetFunctionStatus) {
+        return CKR_GENERAL_ERROR;
+    }
+    if (hSession == CK_INVALID_HANDLE) {
+        return CKR_ARGUMENTS_BAD;
+    }
 
-    return CKR_OK;
+    return module->function_list->C_GetFunctionStatus(hSession);
 }
 
 CK_RV crypt_pkcs11_xs_C_CancelFunction(Crypt__PKCS11__XS* module, CK_SESSION_HANDLE hSession) {
@@ -2997,8 +3117,14 @@ CK_RV crypt_pkcs11_xs_C_CancelFunction(Crypt__PKCS11__XS* module, CK_SESSION_HAN
     if (!module->function_list) {
         return CKR_GENERAL_ERROR;
     }
+    if (!module->function_list->C_CancelFunction) {
+        return CKR_GENERAL_ERROR;
+    }
+    if (hSession == CK_INVALID_HANDLE) {
+        return CKR_ARGUMENTS_BAD;
+    }
 
-    return CKR_OK;
+    return module->function_list->C_CancelFunction(hSession);
 }
 
 CK_RV crypt_pkcs11_xs_C_WaitForSlotEvent(Crypt__PKCS11__XS* module, CK_FLAGS flags, SV* pSlot) {
