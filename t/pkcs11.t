@@ -129,8 +129,11 @@ sub mytests {
             # TODO: C_DecryptVerifyUpdate
             # TODO: C_GenerateKey
             # TODO: C_GenerateKeyPair
+            # TODO: C_SeedRandom
+            # TODO: C_GenerateRandom
             # TODO: C_GetFunctionStatus
             # TODO: C_CancelFunction
+            # TODO: C_WaitForSlotEvent
         }
         myis( $obj->C_Finalize, Crypt::PKCS11::CKR_OK );
         myis( $obj->unload, Crypt::PKCS11::CKR_OK );

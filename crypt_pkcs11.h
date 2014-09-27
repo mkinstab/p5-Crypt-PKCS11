@@ -39,6 +39,7 @@ typedef struct crypt_pkcs11_xs_object Crypt__PKCS11__XS;
 struct crypt_pkcs11_xs_object {
     void* handle;
     CK_FUNCTION_LIST_PTR function_list;
+    CK_INFO info;
 };
 
 Crypt__PKCS11__XS* crypt_pkcs11_xs_new(void);

@@ -548,6 +548,7 @@ void crypt_pkcs11_xs_clearUnlockMutex(void) {
 
 CK_RV crypt_pkcs11_xs_load(Crypt__PKCS11__XS* module, const char* path) {
     CK_C_GetFunctionList pGetFunctionList = NULL_PTR;
+    CK_RV rv;
 
     if (!module) {
         return CKR_ARGUMENTS_BAD;
@@ -568,7 +569,11 @@ CK_RV crypt_pkcs11_xs_load(Crypt__PKCS11__XS* module, const char* path) {
 #endif
 
     if (pGetFunctionList) {
-        return pGetFunctionList(&(module->function_list));
+        if ((rv = pGetFunctionList(&(module->function_list))) == CKR_OK) {
+            return CKR_OK;
+        }
+        module->function_list = NULL_PTR;
+        return rv;
     }
 
     return CKR_FUNCTION_FAILED;
@@ -594,6 +599,7 @@ CK_RV crypt_pkcs11_xs_unload(Crypt__PKCS11__XS* module) {
 
     module->handle = NULL_PTR;
     module->function_list = NULL_PTR;
+    memset(&(module->info), 0, sizeof(CK_INFO));
 
     return CKR_OK;
 }
@@ -722,6 +728,8 @@ CK_RV crypt_pkcs11_xs_C_GetInfo(Crypt__PKCS11__XS* module, HV* pInfo) {
         HV* libraryVersion = newHV();
         SV* manufacturerID;
         SV* libraryDescription;
+
+        memcpy(&(module->info), &_pInfo, sizeof(CK_INFO));
 
         hv_store(cryptokiVersion, __major_str, sizeof(__major_str)-1, newSVuv(_pInfo.cryptokiVersion.major), 0);
         hv_store(cryptokiVersion, __minor_str, sizeof(__minor_str)-1, newSVuv(_pInfo.cryptokiVersion.minor), 0);
@@ -3072,23 +3080,75 @@ CK_RV crypt_pkcs11_xs_C_DeriveKey(Crypt__PKCS11__XS* module, CK_SESSION_HANDLE h
 }
 
 CK_RV crypt_pkcs11_xs_C_SeedRandom(Crypt__PKCS11__XS* module, CK_SESSION_HANDLE hSession, SV* pSeed) {
+    char* _pSeed;
+    STRLEN ulSeedLen;
+
     if (!module) {
         return CKR_ARGUMENTS_BAD;
     }
     if (!module->function_list) {
         return CKR_GENERAL_ERROR;
     }
+    if (!module->function_list->C_SeedRandom) {
+        return CKR_GENERAL_ERROR;
+    }
+    if (hSession == CK_INVALID_HANDLE) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!pSeed) {
+        return CKR_ARGUMENTS_BAD;
+    }
 
-    return CKR_OK;
+    SvGETMAGIC(pSeed);
+    if (!(_pSeed = (CK_BYTE_PTR)SvPVbyte(pSeed, ulSeedLen))) {
+        return CKR_GENERAL_ERROR;
+    }
+    if (ulSeedLen < 0) {
+        return CKR_GENERAL_ERROR;
+    }
+
+    return module->function_list->C_SeedRandom(hSession, _pSeed, (CK_ULONG)ulSeedLen);
 }
 
 CK_RV crypt_pkcs11_xs_C_GenerateRandom(Crypt__PKCS11__XS* module, CK_SESSION_HANDLE hSession, SV* RandomData, CK_ULONG ulRandomLen) {
+    CK_BYTE_PTR _RandomData;
+    CK_RV rv;
+
     if (!module) {
         return CKR_ARGUMENTS_BAD;
     }
     if (!module->function_list) {
         return CKR_GENERAL_ERROR;
     }
+    if (!module->function_list->C_GenerateRandom) {
+        return CKR_GENERAL_ERROR;
+    }
+    if (hSession == CK_INVALID_HANDLE) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!RandomData) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!ulRandomLen) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    if (!(_RandomData = calloc(ulRandomLen, sizeof(CK_BYTE)))) {
+        return CKR_HOST_MEMORY;
+    }
+
+    if ((rv = module->function_list->C_GenerateRandom(hSession, _RandomData, ulRandomLen))) {
+        free(_RandomData);
+        return rv;
+    }
+
+    /*
+     * TODO: Do we need to turn of utf8?
+     */
+
+    SvGETMAGIC(RandomData);
+    sv_setpvn(RandomData, _RandomData, ulRandomLen*sizeof(CK_BYTE));
+    SvSETMAGIC(RandomData);
 
     return CKR_OK;
 }
@@ -3128,12 +3188,35 @@ CK_RV crypt_pkcs11_xs_C_CancelFunction(Crypt__PKCS11__XS* module, CK_SESSION_HAN
 }
 
 CK_RV crypt_pkcs11_xs_C_WaitForSlotEvent(Crypt__PKCS11__XS* module, CK_FLAGS flags, SV* pSlot) {
+    CK_SLOT_ID _pSlot;
+    CK_RV rv;
+
     if (!module) {
         return CKR_ARGUMENTS_BAD;
     }
     if (!module->function_list) {
         return CKR_GENERAL_ERROR;
     }
+    if (module->info.cryptokiVersion.major < 2) {
+        return CKR_FUNCTION_NOT_SUPPORTED;
+    }
+    if (module->info.cryptokiVersion.minor < 1) {
+        return CKR_FUNCTION_NOT_SUPPORTED;
+    }
+    if (!module->function_list->C_WaitForSlotEvent) {
+        return CKR_GENERAL_ERROR;
+    }
+    if (!pSlot) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    if ((rv = module->function_list->C_WaitForSlotEvent(flags, &_pSlot, NULL_PTR)) != CKR_OK) {
+        return rv;
+    }
+
+    SvGETMAGIC(pSlot);
+    sv_setuv(pSlot, _pSlot);
+    SvSETMAGIC(pSlot);
 
     return CKR_OK;
 }
