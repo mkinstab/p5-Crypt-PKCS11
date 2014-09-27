@@ -2031,7 +2031,7 @@ static CK_RV __action(__action_call_t call, CK_SESSION_HANDLE hSession, SV* pFro
     STRLEN ulFromLen;
     char* _pTo;
     STRLEN ulToLen;
-    CK_ULONG pulToLen;
+    CK_ULONG pulToLen = 0;
     CK_RV rv;
 
     if (!call) {
@@ -2138,7 +2138,7 @@ typedef CK_RV (*__action_final_call_t)(CK_SESSION_HANDLE, CK_BYTE_PTR, CK_ULONG_
 static CK_RV __action_final(__action_final_call_t call, CK_SESSION_HANDLE hSession, SV* pLastPart) {
     char* _pLastPart;
     STRLEN ulLastPartLen;
-    CK_ULONG pulLastPartLen;
+    CK_ULONG pulLastPartLen = 0;
     CK_RV rv;
 
     if (!call) {
@@ -3047,34 +3047,218 @@ CK_RV crypt_pkcs11_xs_C_GenerateKeyPair(Crypt__PKCS11__XS* module, CK_SESSION_HA
 }
 
 CK_RV crypt_pkcs11_xs_C_WrapKey(Crypt__PKCS11__XS* module, CK_SESSION_HANDLE hSession, HV* pMechanism, CK_OBJECT_HANDLE hWrappingKey, CK_OBJECT_HANDLE hKey, SV* pWrappedKey) {
+    CK_MECHANISM _pMechanism = { 0, NULL_PTR, 0 };
+    char* _pWrappedKey;
+    STRLEN ulWrappedKey;
+    CK_ULONG pulWrappedKey = 0;
+    CK_RV rv;
+
     if (!module) {
         return CKR_ARGUMENTS_BAD;
     }
     if (!module->function_list) {
         return CKR_GENERAL_ERROR;
     }
+    if (!module->function_list->C_WrapKey) {
+        return CKR_GENERAL_ERROR;
+    }
+    if (hSession == CK_INVALID_HANDLE) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!pMechanism) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (hWrappingKey == CK_INVALID_HANDLE) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (hKey == CK_INVALID_HANDLE) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!pWrappedKey) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    if ((rv = __action_init(pMechanism, &_pMechanism)) != CKR_OK) {
+        return rv;
+    }
+
+    SvGETMAGIC(pWrappedKey);
+    if (!(_pWrappedKey = (CK_BYTE_PTR)SvPVbyte(pWrappedKey, ulWrappedKey))) {
+        return CKR_GENERAL_ERROR;
+    }
+    if (ulWrappedKey < 0) {
+        return CKR_GENERAL_ERROR;
+    }
+
+    if (!ulWrappedKey) {
+        if ((rv = module->function_list->C_WrapKey(hSession, &_pMechanism, hWrappingKey, hKey, NULL_PTR, &pulWrappedKey)) != CKR_OK) {
+            return rv;
+        }
+
+        if (!pulWrappedKey) {
+            return CKR_GENERAL_ERROR;
+        }
+        if (!(_pWrappedKey = calloc(pulWrappedKey, sizeof(CK_BYTE)))) {
+            return CKR_HOST_MEMORY;
+        }
+    }
+    else {
+        pulWrappedKey = ulWrappedKey;
+    }
+
+    if ((rv = module->function_list->C_WrapKey(hSession, &_pMechanism, hWrappingKey, hKey, _pWrappedKey, &pulWrappedKey)) != CKR_OK) {
+        if (!ulWrappedKey) {
+            free(_pWrappedKey);
+        }
+        return rv;
+    }
+
+    if (!ulWrappedKey) {
+        sv_setpvn(pWrappedKey, _pWrappedKey, pulWrappedKey * sizeof(CK_BYTE));
+        free(_pWrappedKey);
+    }
+    else if (pulWrappedKey != ulWrappedKey) {
+        SV* pNewWrappedKey = newSVpvn(_pWrappedKey, pulWrappedKey);
+
+        if (!pNewWrappedKey) {
+            return CKR_HOST_MEMORY;
+        }
+
+        sv_setsv(pWrappedKey, pNewWrappedKey);
+        SvREFCNT_dec(pNewWrappedKey);
+    }
+    SvSETMAGIC(pWrappedKey);
 
     return CKR_OK;
 }
 
 CK_RV crypt_pkcs11_xs_C_UnwrapKey(Crypt__PKCS11__XS* module, CK_SESSION_HANDLE hSession, HV* pMechanism, CK_OBJECT_HANDLE hUnwrappingKey, SV* pWrappedKey, AV* pTemplate, SV* phKey) {
+    CK_MECHANISM _pMechanism = { 0, NULL_PTR, 0 };
+    char* _pWrappedKey;
+    STRLEN ulWrappedKey;
+    CK_ATTRIBUTE_PTR _pTemplate = NULL_PTR;
+    CK_ULONG ulCount = 0;
+    CK_OBJECT_HANDLE hKey = CK_INVALID_HANDLE;
+    CK_RV rv;
+
     if (!module) {
         return CKR_ARGUMENTS_BAD;
     }
     if (!module->function_list) {
         return CKR_GENERAL_ERROR;
     }
+    if (!module->function_list->C_UnwrapKey) {
+        return CKR_GENERAL_ERROR;
+    }
+    if (hSession == CK_INVALID_HANDLE) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!pMechanism) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (hUnwrappingKey == CK_INVALID_HANDLE) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!pWrappedKey) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!pTemplate) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!phKey) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    if ((rv = __action_init(pMechanism, &_pMechanism)) != CKR_OK) {
+        return rv;
+    }
+
+    SvGETMAGIC(pWrappedKey);
+    if (!(_pWrappedKey = (CK_BYTE_PTR)SvPVbyte(pWrappedKey, ulWrappedKey))) {
+        return CKR_GENERAL_ERROR;
+    }
+    if (ulWrappedKey < 0) {
+        return CKR_GENERAL_ERROR;
+    }
+
+    if ((rv = __check_pTemplate(pTemplate, &ulCount, 1)) != CKR_OK) {
+        return rv;
+    }
+
+    if (ulCount) {
+        if ((rv = __create_CK_ATTRIBUTE(&_pTemplate, pTemplate, ulCount, 1)) != CKR_OK) {
+            return rv;
+        }
+    }
+
+    if ((rv = module->function_list->C_UnwrapKey(hSession, &_pMechanism, hUnwrappingKey, _pWrappedKey, ulWrappedKey, _pTemplate, ulCount, &hKey)) != CKR_OK) {
+        free(_pTemplate);
+        return rv;
+    }
+    free(_pTemplate);
+
+    SvGETMAGIC(phKey);
+    sv_setuv(phKey, hKey);
+    SvSETMAGIC(phKey);
 
     return CKR_OK;
 }
 
 CK_RV crypt_pkcs11_xs_C_DeriveKey(Crypt__PKCS11__XS* module, CK_SESSION_HANDLE hSession, HV* pMechanism, CK_OBJECT_HANDLE hBaseKey, AV* pTemplate, SV* phKey) {
+    CK_MECHANISM _pMechanism = { 0, NULL_PTR, 0 };
+    CK_ATTRIBUTE_PTR _pTemplate = NULL_PTR;
+    CK_ULONG ulCount = 0;
+    CK_OBJECT_HANDLE hKey = CK_INVALID_HANDLE;
+    CK_RV rv;
+
     if (!module) {
         return CKR_ARGUMENTS_BAD;
     }
     if (!module->function_list) {
         return CKR_GENERAL_ERROR;
     }
+    if (!module->function_list->C_DeriveKey) {
+        return CKR_GENERAL_ERROR;
+    }
+    if (hSession == CK_INVALID_HANDLE) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!pMechanism) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (hBaseKey == CK_INVALID_HANDLE) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!pTemplate) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!phKey) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    if ((rv = __action_init(pMechanism, &_pMechanism)) != CKR_OK) {
+        return rv;
+    }
+
+    if ((rv = __check_pTemplate(pTemplate, &ulCount, 1)) != CKR_OK) {
+        return rv;
+    }
+
+    if (ulCount) {
+        if ((rv = __create_CK_ATTRIBUTE(&_pTemplate, pTemplate, ulCount, 1)) != CKR_OK) {
+            return rv;
+        }
+    }
+
+    if ((rv = module->function_list->C_DeriveKey(hSession, &_pMechanism, hBaseKey, _pTemplate, ulCount, &hKey)) != CKR_OK) {
+        free(_pTemplate);
+        return rv;
+    }
+    free(_pTemplate);
+
+    SvGETMAGIC(phKey);
+    sv_setuv(phKey, hKey);
+    SvSETMAGIC(phKey);
 
     return CKR_OK;
 }

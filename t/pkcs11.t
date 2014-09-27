@@ -129,6 +129,9 @@ sub mytests {
             # TODO: C_DecryptVerifyUpdate
             # TODO: C_GenerateKey
             # TODO: C_GenerateKeyPair
+            # TODO: C_WrapKey
+            # TODO: C_UnwrapKey
+            # TODO: C_DeriveKey
             # TODO: C_SeedRandom
             # TODO: C_GenerateRandom
             # TODO: C_GetFunctionStatus
