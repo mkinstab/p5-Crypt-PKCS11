@@ -300,6 +300,71 @@ sub generateCheck {
     myis( $obj->C_Finalize, CKR_OK, 'generateCheck: C_Finalize' );
 }
 
+sub objectCheck {
+    my ($obj) = @_;
+    my @sessions = (CK_INVALID_HANDLE, CK_INVALID_HANDLE);
+    my $modulusBits = pack('Q', 768);
+    my $publicExponent = pack('C*', 0x01, 0x00, 0x01);
+    my $id = pack('C', 123);
+    my $true = pack('C', CK_TRUE);
+    my $publicKey;
+    my $privateKey;
+    my $object;
+    my $mechanism = {
+        mechanism => CKM_RSA_PKCS_KEY_PAIR_GEN
+    };
+    my @publicKeyTemplate = (
+        { type => CKA_ENCRYPT, pValue => $true },
+        { type => CKA_VERIFY, pValue => $true },
+        { type => CKA_WRAP, pValue => $true },
+        { type => CKA_PUBLIC_EXPONENT, pValue => $publicExponent },
+        { type => CKA_TOKEN, pValue => $true },
+        { type => CKA_MODULUS_BITS, pValue => $modulusBits }
+    );
+    my @privateKeyTemplate = (
+        { type => CKA_PRIVATE, pValue => $true },
+        { type => CKA_ID, pValue => $id },
+        { type => CKA_SENSITIVE, pValue => $true },
+        { type => CKA_DECRYPT, pValue => $true },
+        { type => CKA_SIGN, pValue => $true },
+        { type => CKA_UNWRAP, pValue => $true },
+        { type => CKA_TOKEN, pValue => $true }
+    );
+    my $list;
+    my $oClass = pack('Q', CKO_PUBLIC_KEY);
+    my @searchTemplate = (
+        { type => CKA_CLASS, pValue => $oClass }
+    );
+
+    myis2( $obj->C_FindObjectsInit(CK_INVALID_HANDLE, $list = []), CKR_CRYPTOKI_NOT_INITIALIZED, CKR_SESSION_HANDLE_INVALID, 'objectCheck: C_FindObjectsInit uninitialized' );
+    myis2( $obj->C_FindObjects(CK_INVALID_HANDLE, $list = [], 1), CKR_CRYPTOKI_NOT_INITIALIZED, CKR_SESSION_HANDLE_INVALID, 'objectCheck: C_FindObjects uninitialized' );
+    myis2( $obj->C_FindObjectsFinal(CK_INVALID_HANDLE), CKR_CRYPTOKI_NOT_INITIALIZED, CKR_SESSION_HANDLE_INVALID, 'objectCheck: C_FindObjectsFinal uninitialized' );
+    myis2( $obj->C_GetAttributeValue(CK_INVALID_HANDLE, CK_INVALID_HANDLE, $list = []), CKR_CRYPTOKI_NOT_INITIALIZED, CKR_SESSION_HANDLE_INVALID, 'objectCheck: C_GetAttributeValue uninitialized' );
+    myis2( $obj->C_SetAttributeValue(CK_INVALID_HANDLE, CK_INVALID_HANDLE, $list = []), CKR_CRYPTOKI_NOT_INITIALIZED, CKR_SESSION_HANDLE_INVALID, 'objectCheck: C_SetAttributeValue uninitialized' );
+
+    myis( $obj->C_Initialize, CKR_OK, 'generateCheck: C_Initialize' );
+    myis( $obj->C_OpenSession($slotWithToken, CKF_SERIAL_SESSION, undef, $sessions[0]), CKR_OK, 'objectCheck: C_OpenSession #0' );
+    myis( $obj->C_OpenSession($slotWithToken, CKF_SERIAL_SESSION | CKF_RW_SESSION, undef, $sessions[1]), CKR_OK, 'objectCheck: C_OpenSession #1' );
+    myis( $obj->C_Login($sessions[1], CKU_USER, "1234"), CKR_OK, 'objectCheck: C_Login' );
+    myis( $obj->C_GenerateKeyPair($sessions[1], $mechanism, \@publicKeyTemplate, \@privateKeyTemplate, $publicKey, $privateKey), CKR_OK, 'objectCheck: C_GenerateKeyPair' );
+    myis( $obj->C_Logout($sessions[1]), CKR_OK, 'objectCheck: C_Logout' );
+    myis( $obj->C_FindObjectsInit(CK_INVALID_HANDLE, \@searchTemplate), CKR_SESSION_HANDLE_INVALID, 'objectCheck: C_FindObjectsInit invalid handle' );
+    myis( $obj->C_FindObjectsInit($sessions[0], \@searchTemplate), CKR_OK, 'objectCheck: C_FindObjectsInit' );
+    myis( $obj->C_FindObjectsInit($sessions[0], \@searchTemplate), CKR_OPERATION_ACTIVE, 'objectCheck: C_FindObjectsInit active' );
+    myis( $obj->C_FindObjects(CK_INVALID_HANDLE, $list = [], 1), CKR_SESSION_HANDLE_INVALID, 'objectCheck: C_FindObjects invalid handle' );
+    myis( $obj->C_FindObjects($sessions[1], $list = [], 1), CKR_OPERATION_NOT_INITIALIZED, 'objectCheck: C_FindObjects op not init' );
+    myis( $obj->C_FindObjects($sessions[0], $list = [], 1), CKR_OK, 'objectCheck: C_FindObjects' );
+    myis( $obj->C_FindObjectsFinal(CK_INVALID_HANDLE), CKR_SESSION_HANDLE_INVALID, 'objectCheck: C_FindObjectsFinal invalid handle' );
+    myis( $obj->C_FindObjectsFinal($sessions[1]), CKR_OPERATION_NOT_INITIALIZED, 'objectCheck: C_FindObjectsFinal op not init' );
+    myis( $obj->C_FindObjectsFinal($sessions[0]), CKR_OK, 'objectCheck: C_FindObjectsFinal' );
+    # TODO: C_GetAttributeValue
+    myis( $obj->C_Login($sessions[1], CKU_USER, "1234"), CKR_OK, 'objectCheck: C_Login' );
+    # TODO: C_SetAttributeValue
+    myis( $obj->C_DestroyObject($sessions[1], $privateKey), CKR_OK, 'objectCheck: C_DestroyObject' );
+    myis( $obj->C_DestroyObject($sessions[1], $publicKey), CKR_OK, 'objectCheck: C_DestroyObject #2' );
+    myis( $obj->C_Finalize, CKR_OK, 'objectCheck: C_Finalize' );
+}
+
 sub mytests {
     my $obj = Crypt::PKCS11->new;
     myisa_ok( $obj, 'Crypt::PKCS11' );
@@ -339,6 +404,7 @@ sub mytests {
             userCheck($obj);
             randomCheck($obj);
             generateCheck($obj);
+            objectCheck($obj);
             last;
         }
 
