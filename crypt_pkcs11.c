@@ -1403,6 +1403,7 @@ static CK_RV __check_pTemplate(AV* pTemplate, CK_ULONG_PTR pulCount, int allow_u
     SV** item;
     SV** type;
     SV** pValue;
+    SV* entry;
 
     if (!pTemplate) {
         return CKR_ARGUMENTS_BAD;
@@ -1417,19 +1418,19 @@ static CK_RV __check_pTemplate(AV* pTemplate, CK_ULONG_PTR pulCount, int allow_u
      */
 
     *pulCount = 0;
-    for (key = 0; key < av_len(pTemplate); key++) {
+    for (key = 0; key < av_len(pTemplate) + 1; key++) {
         item = av_fetch(pTemplate, key, 0);
 
-        if (!item || !*item) {
+        if (!item || !*item || !SvROK(*item)) {
             continue;
         }
 
-        if (SvTYPE(*item) != SVt_PVHV) {
+        if (!(entry = SvRV(*item)) || SvTYPE(entry) != SVt_PVHV) {
             return CKR_ARGUMENTS_BAD;
         }
 
-        type = hv_fetch((HV*)*item, __type_str, sizeof(__type_str)-1, 0);
-        pValue = hv_fetch((HV*)*item, __pValue_str, sizeof(__pValue_str)-1, 0);
+        type = hv_fetch((HV*)entry, __type_str, sizeof(__type_str)-1, 0);
+        pValue = hv_fetch((HV*)entry, __pValue_str, sizeof(__pValue_str)-1, 0);
 
         if (!type
             || !*type
@@ -1446,7 +1447,7 @@ static CK_RV __check_pTemplate(AV* pTemplate, CK_ULONG_PTR pulCount, int allow_u
             return CKR_ARGUMENTS_BAD;
         }
 
-        *pulCount++;
+        (*pulCount)++;
     }
 
     return CKR_OK;
@@ -1460,6 +1461,7 @@ static CK_RV __create_CK_ATTRIBUTE(CK_ATTRIBUTE_PTR* ppTemplate, AV* pTemplate, 
     STRLEN len;
     CK_ULONG i;
     CK_VOID_PTR _pValue;
+    SV* entry;
 
     if (!ppTemplate) {
         return CKR_ARGUMENTS_BAD;
@@ -1479,14 +1481,14 @@ static CK_RV __create_CK_ATTRIBUTE(CK_ATTRIBUTE_PTR* ppTemplate, AV* pTemplate, 
         return CKR_HOST_MEMORY;
     }
 
-    for (i = 0, key = 0; key < av_len(pTemplate); key++) {
+    for (i = 0, key = 0; key < av_len(pTemplate) + 1; key++) {
         item = av_fetch(pTemplate, key, 0);
 
-        if (!item || !*item) {
+        if (!item || !*item || !SvROK(*item)) {
             continue;
         }
 
-        if (SvTYPE(*item) != SVt_PVHV) {
+        if (!(entry = SvRV(*item)) || SvTYPE(entry) != SVt_PVHV) {
             free(*ppTemplate);
             *ppTemplate = NULL_PTR;
             return CKR_GENERAL_ERROR;
@@ -1498,8 +1500,8 @@ static CK_RV __create_CK_ATTRIBUTE(CK_ATTRIBUTE_PTR* ppTemplate, AV* pTemplate, 
             return CKR_GENERAL_ERROR;
         }
 
-        type = hv_fetch((HV*)*item, __type_str, sizeof(__type_str)-1, 0);
-        pValue = hv_fetch((HV*)*item, __pValue_str, sizeof(__pValue_str)-1, 0);
+        type = hv_fetch((HV*)entry, __type_str, sizeof(__type_str)-1, 0);
+        pValue = hv_fetch((HV*)entry, __pValue_str, sizeof(__pValue_str)-1, 0);
 
         _pValue = NULL_PTR;
 
@@ -1779,7 +1781,7 @@ CK_RV crypt_pkcs11_xs_C_GetAttributeValue(Crypt__PKCS11__XS* module, CK_SESSION_
      * of the value for that type.
      */
 
-    for (i = 0, key = 0; key < av_len(pTemplate); key++) {
+    for (i = 0, key = 0; key < av_len(pTemplate) + 1; key++) {
         item = av_fetch(pTemplate, key, 0);
 
         if (!item || !*item) {
