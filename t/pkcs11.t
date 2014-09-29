@@ -199,6 +199,107 @@ sub randomCheck {
     myis( $obj->C_Finalize, CKR_OK, 'randomCheck: C_Finalize' );
 }
 
+sub generateCheck {
+    my ($obj) = @_;
+    my @sessions = (CK_INVALID_HANDLE, CK_INVALID_HANDLE);
+    my $modulusBits = pack('Q', 768);
+    my $publicExponent = pack('C*', 0x01, 0x00, 0x01);
+    my $modulus = pack('C*',
+        0xcb, 0x12, 0x9d, 0xba, 0x22, 0xfa, 0x2b, 0x33, 0x7e, 0x2a, 0x24, 0x65, 0x09, 0xa9,
+        0xfb, 0x41, 0x1a, 0x0e, 0x2f, 0x89, 0x3a, 0xd6, 0x97, 0x49, 0x77, 0x6d, 0x2a, 0x6e, 0x98,
+        0x48, 0x6b, 0xa8, 0xc4, 0x63, 0x8e, 0x46, 0x90, 0x70, 0x2e, 0xd4, 0x10, 0xc0, 0xdd, 0xa3,
+        0x56, 0xcf, 0x97, 0x2f, 0x2f, 0xfc, 0x2d, 0xff, 0x2b, 0xf2, 0x42, 0x69, 0x4a, 0x8c, 0xf1,
+        0x6f, 0x76, 0x32, 0xc8, 0xe1, 0x37, 0x52, 0xc1, 0xd1, 0x33, 0x82, 0x39, 0x1a, 0xb3, 0x2a,
+        0xa8, 0x80, 0x4e, 0x19, 0x91, 0xa6, 0xa6, 0x16, 0x65, 0x30, 0x72, 0x80, 0xc3, 0x5c, 0x84,
+        0x9b, 0x7b, 0x2c, 0x6d, 0x2d, 0x75, 0x51, 0x9f, 0xc9, 0x6d, 0xa8, 0x4d, 0x8c, 0x41, 0x41,
+        0x12, 0xc9, 0x14, 0xc7, 0x99, 0x31, 0xe4, 0xcd, 0x97, 0x38, 0x2c, 0xca, 0x32, 0x2f, 0xeb,
+        0x78, 0x37, 0x17, 0x87, 0xc8, 0x09, 0x5a, 0x1a, 0xaf, 0xe4, 0xc4, 0xcc, 0x83, 0xe3, 0x79,
+        0x01, 0xd6, 0xdb, 0x8b, 0xd6, 0x24, 0x90, 0x43, 0x7b, 0xc6, 0x40, 0x57, 0x58, 0xe4, 0x49,
+        0x2b, 0x99, 0x61, 0x71, 0x52, 0xf4, 0x8b, 0xda, 0xb7, 0x5a, 0xbf, 0xf7, 0xc5, 0x2a, 0x8b,
+        0x1f, 0x25, 0x5e, 0x5b, 0xfb, 0x9f, 0xcc, 0x8d, 0x1c, 0x92, 0x21, 0xe9, 0xba, 0xd0, 0x54,
+        0xf6, 0x0d, 0xe8, 0x7e, 0xb3, 0x9d, 0x9a, 0x47, 0xba, 0x1e, 0x45, 0x4e, 0xdc, 0xe5, 0x20,
+        0x95, 0xd8, 0xe5, 0xe9, 0x51, 0xff, 0x1f, 0x9e, 0x9e, 0x60, 0x3c, 0x27, 0x1c, 0xf3, 0xc7,
+        0xf4, 0x89, 0xaa, 0x2a, 0x80, 0xd4, 0x03, 0x5d, 0xf3, 0x39, 0xa3, 0xa7, 0xe7, 0x3f, 0xa9,
+        0xd1, 0x31, 0x50, 0xb7, 0x0f, 0x08, 0xa2, 0x71, 0xcc, 0x6a, 0xb4, 0xb5, 0x8f, 0xcb, 0xf7,
+        0x1f, 0x4e, 0xc8, 0x16, 0x08, 0xc0, 0x03, 0x8a, 0xce, 0x17, 0xd1, 0xdd, 0x13, 0x0f, 0xa3,
+        0xbe, 0xa3 );
+    my $id = pack('C', 123);
+    my $label = pack('a5', 'label');
+    my $pubClass = pack('Q', CKO_PUBLIC_KEY);
+    my $keyType = pack('Q', CKK_RSA);
+    my $true = pack('C', CK_TRUE);
+    my $false = pack('C', CK_FALSE);
+    my $certCategory = pack('Q', 0);
+    my $publicKey;
+    my $privateKey;
+    my $object;
+    my $mechanism = {
+        mechanism => CKM_VENDOR_DEFINED
+    };
+    my @publicKeyTemplate = (
+        { type => CKA_ENCRYPT, pValue => $true },
+        { type => CKA_VERIFY, pValue => $true },
+        { type => CKA_WRAP, pValue => $true },
+        { type => CKA_PUBLIC_EXPONENT, pValue => $publicExponent },
+        { type => CKA_TOKEN, pValue => $true }
+    );
+    my @privateKeyTemplate = (
+        { type => CKA_PRIVATE, pValue => $true },
+        { type => CKA_ID, pValue => $id },
+        { type => CKA_SENSITIVE, pValue => $true },
+        { type => CKA_DECRYPT, pValue => $true },
+        { type => CKA_SIGN, pValue => $true },
+        { type => CKA_UNWRAP, pValue => $true },
+        { type => CKA_TOKEN, pValue => $true }
+    );
+    my @pubTemplate = (
+        { type => CKA_CLASS, pValue => $pubClass },
+        { type => CKA_KEY_TYPE, pValue => $keyType },
+        { type => CKA_LABEL, pValue => $label },
+        { type => CKA_ID, pValue => $id },
+        { type => CKA_TOKEN, pValue => $true },
+        { type => CKA_VERIFY, pValue => $true },
+        { type => CKA_ENCRYPT, pValue => $false },
+        { type => CKA_WRAP, pValue => $false },
+        { type => CKA_PUBLIC_EXPONENT, pValue => $publicExponent }
+    );
+
+    myis2( $obj->C_GenerateKeyPair(CK_INVALID_HANDLE, {}, [], [], $publicKey, $privateKey), CKR_CRYPTOKI_NOT_INITIALIZED, CKR_SESSION_HANDLE_INVALID, 'generateCheck: C_GenerateKeyPair uninitialized' );
+    myis2( $obj->C_DestroyObject(CK_INVALID_HANDLE, CK_INVALID_HANDLE), CKR_CRYPTOKI_NOT_INITIALIZED, CKR_SESSION_HANDLE_INVALID, 'generateCheck: C_DestroyObject uninitialized' );
+    myis2( $obj->C_CreateObject(CK_INVALID_HANDLE, [], $object), CKR_CRYPTOKI_NOT_INITIALIZED, CKR_SESSION_HANDLE_INVALID, 'generateCheck: C_CreateObject uninitialized' );
+
+    myis( $obj->C_Initialize, CKR_OK, 'generateCheck: C_Initialize' );
+    myis( $obj->C_OpenSession($slotWithToken, CKF_SERIAL_SESSION, undef, $sessions[0]), CKR_OK, 'generateCheck: C_OpenSession #0' );
+    myis( $obj->C_OpenSession($slotWithToken, CKF_SERIAL_SESSION | CKF_RW_SESSION, undef, $sessions[1]), CKR_OK, 'generateCheck: C_OpenSession #1' );
+    myis( $obj->C_GenerateKeyPair(CK_INVALID_HANDLE, {}, [], [], $publicKey, $privateKey), CKR_SESSION_HANDLE_INVALID, 'generateCheck: C_GenerateKeyPair invalid handle' );
+    myis( $obj->C_GenerateKeyPair($sessions[0], $mechanism, \@publicKeyTemplate, \@privateKeyTemplate, $publicKey, $privateKey), CKR_USER_NOT_LOGGED_IN, 'generateCheck: C_GenerateKeyPair not logged in' );
+    myis( $obj->C_Login($sessions[0], CKU_USER, "1234"), CKR_OK, 'generateCheck: C_Login' );
+    myis( $obj->C_GenerateKeyPair($sessions[0], $mechanism, \@publicKeyTemplate, \@privateKeyTemplate, $publicKey, $privateKey), CKR_USER_NOT_LOGGED_IN, 'generateCheck: C_GenerateKeyPair not logged in #2' );
+    myis( $obj->C_GenerateKeyPair($sessions[1], $mechanism, \@publicKeyTemplate, \@privateKeyTemplate, $publicKey, $privateKey), CKR_MECHANISM_INVALID, 'generateCheck: C_GenerateKeyPair invalid mechanism' );
+    $mechanism->{mechanism} = CKM_RSA_PKCS_KEY_PAIR_GEN;
+    myis( $obj->C_GenerateKeyPair($sessions[1], $mechanism, \@publicKeyTemplate, \@privateKeyTemplate, $publicKey, $privateKey), CKR_TEMPLATE_INCOMPLETE, 'generateCheck: C_GenerateKeyPair template incomplete' );
+    push(@publicKeyTemplate, { type => CKA_MODULUS_BITS, pValue => $modulusBits });
+    myis( $obj->C_GenerateKeyPair($sessions[1], $mechanism, \@publicKeyTemplate, \@privateKeyTemplate, $publicKey, $privateKey), CKR_OK, 'generateCheck: C_GenerateKeyPair' );
+    myis( $obj->C_DestroyObject(CK_INVALID_HANDLE, CK_INVALID_HANDLE), CKR_SESSION_HANDLE_INVALID, 'generateCheck: C_DestroyObject invalid handle' );
+    myis( $obj->C_DestroyObject($sessions[0], CK_INVALID_HANDLE), CKR_OBJECT_HANDLE_INVALID, 'generateCheck: C_DestroyObject invalid handle #2' );
+    myis( $obj->C_DestroyObject($sessions[0], $privateKey), CKR_OBJECT_HANDLE_INVALID, 'generateCheck: C_DestroyObject invalid handle #3' );
+    myis( $obj->C_DestroyObject($sessions[1], $privateKey), CKR_OK, 'generateCheck: C_DestroyObject' );
+    myis( $obj->C_DestroyObject($sessions[1], $publicKey), CKR_OK, 'generateCheck: C_DestroyObject #2' );
+    myis( $obj->C_Logout($sessions[0]), CKR_OK, 'generateCheck: C_Logout' );
+    myis( $obj->C_CreateObject(CK_INVALID_HANDLE, [], $object), CKR_SESSION_HANDLE_INVALID, 'generateCheck: C_CreateObject invalid handle' );
+    myis( $obj->C_CreateObject($sessions[0], \@pubTemplate, $object), CKR_SESSION_READ_ONLY, 'generateCheck: C_CreateObject read only' );
+    myis( $obj->C_CreateObject($sessions[1], \@pubTemplate, $object), CKR_USER_NOT_LOGGED_IN, 'generateCheck: C_CreateObject not logged in' );
+    myis( $obj->C_Login($sessions[0], CKU_USER, "1234"), CKR_OK, 'generateCheck: C_Login #2' );
+    myis( $obj->C_CreateObject($sessions[1], \@pubTemplate, $object), CKR_TEMPLATE_INCOMPLETE, 'generateCheck: C_CreateObject template incomplete' );
+    push(@pubTemplate, { type => CKA_MODULUS, pValue => $modulus },
+        { type => CKA_CERTIFICATE_CATEGORY, pValue => $certCategory });
+    myis( $obj->C_CreateObject($sessions[1], \@pubTemplate, $object), CKR_ATTRIBUTE_TYPE_INVALID, 'generateCheck: C_CreateObject attribute invalid' );
+    pop(@pubTemplate);
+    myis( $obj->C_CreateObject($sessions[1], \@pubTemplate, $object), CKR_OK, 'generateCheck: C_CreateObject' );
+    myis( $obj->C_DestroyObject($sessions[1], $object), CKR_OK, 'generateCheck: C_DestroyObject #3' );
+    myis( $obj->C_Finalize, CKR_OK, 'generateCheck: C_Finalize' );
+}
+
 sub mytests {
     my $obj = Crypt::PKCS11->new;
     myisa_ok( $obj, 'Crypt::PKCS11' );
@@ -237,6 +338,7 @@ sub mytests {
             sessionCheck($obj);
             userCheck($obj);
             randomCheck($obj);
+            generateCheck($obj);
             last;
         }
 
