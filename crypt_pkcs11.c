@@ -750,7 +750,7 @@ CK_RV crypt_pkcs11_xs_C_GetInfo(Crypt__PKCS11__XS* module, HV* pInfo) {
 
 CK_RV crypt_pkcs11_xs_C_GetSlotList(Crypt__PKCS11__XS* module, CK_BBOOL tokenPresent, AV* pSlotList) {
     CK_SLOT_ID_PTR _pSlotList;
-    CK_ULONG ulCount, ulPos;
+    CK_ULONG ulCount = 0, ulPos = 0;
     CK_RV rv;
 
     if (!module) {
@@ -915,7 +915,7 @@ CK_RV crypt_pkcs11_xs_C_GetTokenInfo(Crypt__PKCS11__XS* module, CK_SLOT_ID slotI
 
 CK_RV crypt_pkcs11_xs_C_GetMechanismList(Crypt__PKCS11__XS* module, CK_SLOT_ID slotID, AV* pMechanismList) {
     CK_MECHANISM_TYPE_PTR _pMechanismList;
-    CK_ULONG ulCount, ulPos;
+    CK_ULONG ulCount = 0, ulPos = 0;
     CK_RV rv;
 
     if (!module) {
@@ -1928,7 +1928,7 @@ CK_RV crypt_pkcs11_xs_C_FindObjectsInit(Crypt__PKCS11__XS* module, CK_SESSION_HA
 
 CK_RV crypt_pkcs11_xs_C_FindObjects(Crypt__PKCS11__XS* module, CK_SESSION_HANDLE hSession, AV* phObject, CK_ULONG ulMaxObjectCount) {
     CK_OBJECT_HANDLE_PTR _phObject;
-    CK_ULONG ulObjectCount;
+    CK_ULONG ulObjectCount = 0;
     CK_ULONG i;
     CK_RV rv;
 
