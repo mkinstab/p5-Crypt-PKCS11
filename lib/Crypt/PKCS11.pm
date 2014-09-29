@@ -704,7 +704,7 @@ use constant CKD_SHA384_KDF => 0x00000007;
 use constant CKD_SHA512_KDF => 0x00000008;
 use constant CKD_CPDIVERSIFY_KDF => 0x00000009;
 
-our $VERSION = '0.01_08';
+our $VERSION = '0.10';
 
 our (@ISA, %EXPORT_TAGS, @EXPORT_OK);
 BEGIN {
