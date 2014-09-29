@@ -366,7 +366,6 @@ crypt_pkcs11_xs_C_FindObjects(module, hSession, phObject, ulMaxObjectCount)
 PROTOTYPE: $$$$
 OUTPUT:
     RETVAL
-    phObject
 
 CK_RV
 crypt_pkcs11_xs_C_FindObjectsFinal(module, hSession)
