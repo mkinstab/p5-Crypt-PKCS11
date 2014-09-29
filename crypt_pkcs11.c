@@ -1049,7 +1049,7 @@ CK_RV crypt_pkcs11_xs_C_InitPIN(Crypt__PKCS11__XS* module, CK_SESSION_HANDLE hSe
         return CKR_GENERAL_ERROR;
     }
     if (hSession == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_SESSION_HANDLE_INVALID;
     }
     if (!pPin) {
         return CKR_ARGUMENTS_BAD;
@@ -1092,7 +1092,7 @@ CK_RV crypt_pkcs11_xs_C_SetPIN(Crypt__PKCS11__XS* module, CK_SESSION_HANDLE hSes
         return CKR_GENERAL_ERROR;
     }
     if (hSession == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_SESSION_HANDLE_INVALID;
     }
     if (!pOldPin) {
         return CKR_ARGUMENTS_BAD;
@@ -1205,7 +1205,7 @@ CK_RV crypt_pkcs11_xs_C_CloseSession(Crypt__PKCS11__XS* module, CK_SESSION_HANDL
         return CKR_GENERAL_ERROR;
     }
     if (hSession == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_SESSION_HANDLE_INVALID;
     }
 
     return module->function_list->C_CloseSession(hSession);
@@ -1239,7 +1239,7 @@ CK_RV crypt_pkcs11_xs_C_GetSessionInfo(Crypt__PKCS11__XS* module, CK_SESSION_HAN
         return CKR_GENERAL_ERROR;
     }
     if (hSession == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_SESSION_HANDLE_INVALID;
     }
     if (!pInfo) {
         return CKR_ARGUMENTS_BAD;
@@ -1270,7 +1270,7 @@ CK_RV crypt_pkcs11_xs_C_GetOperationState(Crypt__PKCS11__XS* module, CK_SESSION_
         return CKR_GENERAL_ERROR;
     }
     if (hSession == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_SESSION_HANDLE_INVALID;
     }
     if (!pOperationState) {
         return CKR_ARGUMENTS_BAD;
@@ -1316,7 +1316,7 @@ CK_RV crypt_pkcs11_xs_C_SetOperationState(Crypt__PKCS11__XS* module, CK_SESSION_
         return CKR_GENERAL_ERROR;
     }
     if (hSession == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_SESSION_HANDLE_INVALID;
     }
     if (!pOperationState) {
         return CKR_ARGUMENTS_BAD;
@@ -1357,7 +1357,7 @@ CK_RV crypt_pkcs11_xs_C_Login(Crypt__PKCS11__XS* module, CK_SESSION_HANDLE hSess
         return CKR_GENERAL_ERROR;
     }
     if (hSession == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_SESSION_HANDLE_INVALID;
     }
     if (!pPin) {
         return CKR_GENERAL_ERROR;
@@ -1392,7 +1392,7 @@ CK_RV crypt_pkcs11_xs_C_Logout(Crypt__PKCS11__XS* module, CK_SESSION_HANDLE hSes
         return CKR_GENERAL_ERROR;
     }
     if (hSession == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_SESSION_HANDLE_INVALID;
     }
 
     return module->function_list->C_Logout(hSession);
@@ -1558,7 +1558,7 @@ CK_RV crypt_pkcs11_xs_C_CreateObject(Crypt__PKCS11__XS* module, CK_SESSION_HANDL
         return CKR_GENERAL_ERROR;
     }
     if (hSession == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_SESSION_HANDLE_INVALID;
     }
     if (!pTemplate) {
         return CKR_ARGUMENTS_BAD;
@@ -1619,10 +1619,10 @@ CK_RV crypt_pkcs11_xs_C_CopyObject(Crypt__PKCS11__XS* module, CK_SESSION_HANDLE 
         return CKR_GENERAL_ERROR;
     }
     if (hSession == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_SESSION_HANDLE_INVALID;
     }
     if (hObject == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_OBJECT_HANDLE_INVALID;
     }
     if (!pTemplate) {
         return CKR_ARGUMENTS_BAD;
@@ -1678,10 +1678,10 @@ CK_RV crypt_pkcs11_xs_C_DestroyObject(Crypt__PKCS11__XS* module, CK_SESSION_HAND
         return CKR_GENERAL_ERROR;
     }
     if (hSession == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_SESSION_HANDLE_INVALID;
     }
     if (hObject == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_OBJECT_HANDLE_INVALID;
     }
 
     return module->function_list->C_DestroyObject(hSession, hObject);
@@ -1701,10 +1701,10 @@ CK_RV crypt_pkcs11_xs_C_GetObjectSize(Crypt__PKCS11__XS* module, CK_SESSION_HAND
         return CKR_GENERAL_ERROR;
     }
     if (hSession == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_SESSION_HANDLE_INVALID;
     }
     if (hObject == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_OBJECT_HANDLE_INVALID;
     }
     if (!pulSize) {
         return CKR_ARGUMENTS_BAD;
@@ -1737,10 +1737,10 @@ CK_RV crypt_pkcs11_xs_C_GetAttributeValue(Crypt__PKCS11__XS* module, CK_SESSION_
         return CKR_GENERAL_ERROR;
     }
     if (hSession == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_SESSION_HANDLE_INVALID;
     }
     if (hObject == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_OBJECT_HANDLE_INVALID;
     }
     if (!pTemplate) {
         return CKR_ARGUMENTS_BAD;
@@ -1836,10 +1836,10 @@ CK_RV crypt_pkcs11_xs_C_SetAttributeValue(Crypt__PKCS11__XS* module, CK_SESSION_
         return CKR_GENERAL_ERROR;
     }
     if (hSession == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_SESSION_HANDLE_INVALID;
     }
     if (hObject == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_OBJECT_HANDLE_INVALID;
     }
     if (!pTemplate) {
         return CKR_ARGUMENTS_BAD;
@@ -1889,7 +1889,7 @@ CK_RV crypt_pkcs11_xs_C_FindObjectsInit(Crypt__PKCS11__XS* module, CK_SESSION_HA
         return CKR_GENERAL_ERROR;
     }
     if (hSession == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_SESSION_HANDLE_INVALID;
     }
     if (!pTemplate) {
         return CKR_ARGUMENTS_BAD;
@@ -1940,7 +1940,7 @@ CK_RV crypt_pkcs11_xs_C_FindObjects(Crypt__PKCS11__XS* module, CK_SESSION_HANDLE
         return CKR_GENERAL_ERROR;
     }
     if (hSession == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_SESSION_HANDLE_INVALID;
     }
     if (!phObject) {
         return CKR_ARGUMENTS_BAD;
@@ -1978,7 +1978,7 @@ CK_RV crypt_pkcs11_xs_C_FindObjectsFinal(Crypt__PKCS11__XS* module, CK_SESSION_H
         return CKR_GENERAL_ERROR;
     }
     if (hSession == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_SESSION_HANDLE_INVALID;
     }
 
     return module->function_list->C_FindObjectsFinal(hSession);
@@ -2038,7 +2038,7 @@ static CK_RV __action(__action_call_t call, CK_SESSION_HANDLE hSession, SV* pFro
         return CKR_ARGUMENTS_BAD;
     }
     if (hSession == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_SESSION_HANDLE_INVALID;
     }
     if (!pFrom) {
         return CKR_ARGUMENTS_BAD;
@@ -2117,7 +2117,7 @@ static CK_RV __action_update(__action_update_call_t call, CK_SESSION_HANDLE hSes
         return CKR_ARGUMENTS_BAD;
     }
     if (hSession == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_SESSION_HANDLE_INVALID;
     }
     if (!pFrom) {
         return CKR_ARGUMENTS_BAD;
@@ -2145,7 +2145,7 @@ static CK_RV __action_final(__action_final_call_t call, CK_SESSION_HANDLE hSessi
         return CKR_ARGUMENTS_BAD;
     }
     if (hSession == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_SESSION_HANDLE_INVALID;
     }
     if (!pLastPart) {
         return CKR_ARGUMENTS_BAD;
@@ -2222,13 +2222,13 @@ CK_RV crypt_pkcs11_xs_C_EncryptInit(Crypt__PKCS11__XS* module, CK_SESSION_HANDLE
         return CKR_GENERAL_ERROR;
     }
     if (hSession == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_SESSION_HANDLE_INVALID;
     }
     if (!pMechanism) {
         return CKR_ARGUMENTS_BAD;
     }
     if (hKey == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_KEY_HANDLE_INVALID;
     }
 
     if ((rv = __action_init(pMechanism, &_pMechanism)) != CKR_OK) {
@@ -2249,7 +2249,7 @@ CK_RV crypt_pkcs11_xs_C_Encrypt(Crypt__PKCS11__XS* module, CK_SESSION_HANDLE hSe
         return CKR_GENERAL_ERROR;
     }
     if (hSession == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_SESSION_HANDLE_INVALID;
     }
     if (!pData) {
         return CKR_ARGUMENTS_BAD;
@@ -2272,7 +2272,7 @@ CK_RV crypt_pkcs11_xs_C_EncryptUpdate(Crypt__PKCS11__XS* module, CK_SESSION_HAND
         return CKR_GENERAL_ERROR;
     }
     if (hSession == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_SESSION_HANDLE_INVALID;
     }
     if (!pPart) {
         return CKR_ARGUMENTS_BAD;
@@ -2295,7 +2295,7 @@ CK_RV crypt_pkcs11_xs_C_EncryptFinal(Crypt__PKCS11__XS* module, CK_SESSION_HANDL
         return CKR_GENERAL_ERROR;
     }
     if (hSession == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_SESSION_HANDLE_INVALID;
     }
     if (!pLastEncryptedPart) {
         return CKR_ARGUMENTS_BAD;
@@ -2318,13 +2318,13 @@ CK_RV crypt_pkcs11_xs_C_DecryptInit(Crypt__PKCS11__XS* module, CK_SESSION_HANDLE
         return CKR_GENERAL_ERROR;
     }
     if (hSession == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_SESSION_HANDLE_INVALID;
     }
     if (!pMechanism) {
         return CKR_ARGUMENTS_BAD;
     }
     if (hKey == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_KEY_HANDLE_INVALID;
     }
 
     if ((rv = __action_init(pMechanism, &_pMechanism)) != CKR_OK) {
@@ -2345,7 +2345,7 @@ CK_RV crypt_pkcs11_xs_C_Decrypt(Crypt__PKCS11__XS* module, CK_SESSION_HANDLE hSe
         return CKR_GENERAL_ERROR;
     }
     if (hSession == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_SESSION_HANDLE_INVALID;
     }
     if (!pEncryptedData) {
         return CKR_ARGUMENTS_BAD;
@@ -2368,7 +2368,7 @@ CK_RV crypt_pkcs11_xs_C_DecryptUpdate(Crypt__PKCS11__XS* module, CK_SESSION_HAND
         return CKR_GENERAL_ERROR;
     }
     if (hSession == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_SESSION_HANDLE_INVALID;
     }
     if (!pEncryptedPart) {
         return CKR_ARGUMENTS_BAD;
@@ -2391,7 +2391,7 @@ CK_RV crypt_pkcs11_xs_C_DecryptFinal(Crypt__PKCS11__XS* module, CK_SESSION_HANDL
         return CKR_GENERAL_ERROR;
     }
     if (hSession == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_SESSION_HANDLE_INVALID;
     }
     if (!pLastPart) {
         return CKR_ARGUMENTS_BAD;
@@ -2414,7 +2414,7 @@ CK_RV crypt_pkcs11_xs_C_DigestInit(Crypt__PKCS11__XS* module, CK_SESSION_HANDLE 
         return CKR_GENERAL_ERROR;
     }
     if (hSession == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_SESSION_HANDLE_INVALID;
     }
     if (!pMechanism) {
         return CKR_ARGUMENTS_BAD;
@@ -2438,7 +2438,7 @@ CK_RV crypt_pkcs11_xs_C_Digest(Crypt__PKCS11__XS* module, CK_SESSION_HANDLE hSes
         return CKR_GENERAL_ERROR;
     }
     if (hSession == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_SESSION_HANDLE_INVALID;
     }
     if (!pData) {
         return CKR_ARGUMENTS_BAD;
@@ -2461,7 +2461,7 @@ CK_RV crypt_pkcs11_xs_C_DigestUpdate(Crypt__PKCS11__XS* module, CK_SESSION_HANDL
         return CKR_GENERAL_ERROR;
     }
     if (hSession == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_SESSION_HANDLE_INVALID;
     }
     if (!pPart) {
         return CKR_ARGUMENTS_BAD;
@@ -2492,7 +2492,7 @@ CK_RV crypt_pkcs11_xs_C_DigestFinal(Crypt__PKCS11__XS* module, CK_SESSION_HANDLE
         return CKR_GENERAL_ERROR;
     }
     if (hSession == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_SESSION_HANDLE_INVALID;
     }
     if (!pDigest) {
         return CKR_ARGUMENTS_BAD;
@@ -2515,13 +2515,13 @@ CK_RV crypt_pkcs11_xs_C_SignInit(Crypt__PKCS11__XS* module, CK_SESSION_HANDLE hS
         return CKR_GENERAL_ERROR;
     }
     if (hSession == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_SESSION_HANDLE_INVALID;
     }
     if (!pMechanism) {
         return CKR_ARGUMENTS_BAD;
     }
     if (hKey == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_KEY_HANDLE_INVALID;
     }
 
     if ((rv = __action_init(pMechanism, &_pMechanism)) != CKR_OK) {
@@ -2542,7 +2542,7 @@ CK_RV crypt_pkcs11_xs_C_Sign(Crypt__PKCS11__XS* module, CK_SESSION_HANDLE hSessi
         return CKR_GENERAL_ERROR;
     }
     if (hSession == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_SESSION_HANDLE_INVALID;
     }
     if (!pData) {
         return CKR_ARGUMENTS_BAD;
@@ -2565,7 +2565,7 @@ CK_RV crypt_pkcs11_xs_C_SignUpdate(Crypt__PKCS11__XS* module, CK_SESSION_HANDLE 
         return CKR_GENERAL_ERROR;
     }
     if (hSession == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_SESSION_HANDLE_INVALID;
     }
     if (!pPart) {
         return CKR_ARGUMENTS_BAD;
@@ -2585,7 +2585,7 @@ CK_RV crypt_pkcs11_xs_C_SignFinal(Crypt__PKCS11__XS* module, CK_SESSION_HANDLE h
         return CKR_GENERAL_ERROR;
     }
     if (hSession == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_SESSION_HANDLE_INVALID;
     }
     if (!pSignature) {
         return CKR_ARGUMENTS_BAD;
@@ -2608,13 +2608,13 @@ CK_RV crypt_pkcs11_xs_C_SignRecoverInit(Crypt__PKCS11__XS* module, CK_SESSION_HA
         return CKR_GENERAL_ERROR;
     }
     if (hSession == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_SESSION_HANDLE_INVALID;
     }
     if (!pMechanism) {
         return CKR_ARGUMENTS_BAD;
     }
     if (hKey == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_KEY_HANDLE_INVALID;
     }
 
     if ((rv = __action_init(pMechanism, &_pMechanism)) != CKR_OK) {
@@ -2635,7 +2635,7 @@ CK_RV crypt_pkcs11_xs_C_SignRecover(Crypt__PKCS11__XS* module, CK_SESSION_HANDLE
         return CKR_GENERAL_ERROR;
     }
     if (hSession == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_SESSION_HANDLE_INVALID;
     }
     if (!pData) {
         return CKR_ARGUMENTS_BAD;
@@ -2661,13 +2661,13 @@ CK_RV crypt_pkcs11_xs_C_VerifyInit(Crypt__PKCS11__XS* module, CK_SESSION_HANDLE 
         return CKR_GENERAL_ERROR;
     }
     if (hSession == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_SESSION_HANDLE_INVALID;
     }
     if (!pMechanism) {
         return CKR_ARGUMENTS_BAD;
     }
     if (hKey == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_KEY_HANDLE_INVALID;
     }
 
     if ((rv = __action_init(pMechanism, &_pMechanism)) != CKR_OK) {
@@ -2693,7 +2693,7 @@ CK_RV crypt_pkcs11_xs_C_Verify(Crypt__PKCS11__XS* module, CK_SESSION_HANDLE hSes
         return CKR_GENERAL_ERROR;
     }
     if (hSession == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_SESSION_HANDLE_INVALID;
     }
     if (!pData) {
         return CKR_ARGUMENTS_BAD;
@@ -2726,7 +2726,7 @@ CK_RV crypt_pkcs11_xs_C_VerifyUpdate(Crypt__PKCS11__XS* module, CK_SESSION_HANDL
         return CKR_GENERAL_ERROR;
     }
     if (hSession == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_SESSION_HANDLE_INVALID;
     }
     if (!pPart) {
         return CKR_ARGUMENTS_BAD;
@@ -2749,7 +2749,7 @@ CK_RV crypt_pkcs11_xs_C_VerifyFinal(Crypt__PKCS11__XS* module, CK_SESSION_HANDLE
         return CKR_GENERAL_ERROR;
     }
     if (hSession == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_SESSION_HANDLE_INVALID;
     }
     if (!pSignature) {
         return CKR_ARGUMENTS_BAD;
@@ -2779,13 +2779,13 @@ CK_RV crypt_pkcs11_xs_C_VerifyRecoverInit(Crypt__PKCS11__XS* module, CK_SESSION_
         return CKR_GENERAL_ERROR;
     }
     if (hSession == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_SESSION_HANDLE_INVALID;
     }
     if (!pMechanism) {
         return CKR_ARGUMENTS_BAD;
     }
     if (hKey == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_KEY_HANDLE_INVALID;
     }
 
     if ((rv = __action_init(pMechanism, &_pMechanism)) != CKR_OK) {
@@ -2806,7 +2806,7 @@ CK_RV crypt_pkcs11_xs_C_VerifyRecover(Crypt__PKCS11__XS* module, CK_SESSION_HAND
         return CKR_GENERAL_ERROR;
     }
     if (hSession == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_SESSION_HANDLE_INVALID;
     }
     if (!pData) {
         return CKR_ARGUMENTS_BAD;
@@ -2829,7 +2829,7 @@ CK_RV crypt_pkcs11_xs_C_DigestEncryptUpdate(Crypt__PKCS11__XS* module, CK_SESSIO
         return CKR_GENERAL_ERROR;
     }
     if (hSession == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_SESSION_HANDLE_INVALID;
     }
     if (!pPart) {
         return CKR_ARGUMENTS_BAD;
@@ -2852,7 +2852,7 @@ CK_RV crypt_pkcs11_xs_C_DecryptDigestUpdate(Crypt__PKCS11__XS* module, CK_SESSIO
         return CKR_GENERAL_ERROR;
     }
     if (hSession == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_SESSION_HANDLE_INVALID;
     }
     if (!pEncryptedPart) {
         return CKR_ARGUMENTS_BAD;
@@ -2875,7 +2875,7 @@ CK_RV crypt_pkcs11_xs_C_SignEncryptUpdate(Crypt__PKCS11__XS* module, CK_SESSION_
         return CKR_GENERAL_ERROR;
     }
     if (hSession == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_SESSION_HANDLE_INVALID;
     }
     if (!pPart) {
         return CKR_ARGUMENTS_BAD;
@@ -2898,7 +2898,7 @@ CK_RV crypt_pkcs11_xs_C_DecryptVerifyUpdate(Crypt__PKCS11__XS* module, CK_SESSIO
         return CKR_GENERAL_ERROR;
     }
     if (hSession == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_SESSION_HANDLE_INVALID;
     }
     if (!pEncryptedPart) {
         return CKR_ARGUMENTS_BAD;
@@ -2927,7 +2927,7 @@ CK_RV crypt_pkcs11_xs_C_GenerateKey(Crypt__PKCS11__XS* module, CK_SESSION_HANDLE
         return CKR_GENERAL_ERROR;
     }
     if (hSession == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_SESSION_HANDLE_INVALID;
     }
     if (!pMechanism) {
         return CKR_ARGUMENTS_BAD;
@@ -2986,7 +2986,7 @@ CK_RV crypt_pkcs11_xs_C_GenerateKeyPair(Crypt__PKCS11__XS* module, CK_SESSION_HA
         return CKR_GENERAL_ERROR;
     }
     if (hSession == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_SESSION_HANDLE_INVALID;
     }
     if (!pMechanism) {
         return CKR_ARGUMENTS_BAD;
@@ -3063,16 +3063,16 @@ CK_RV crypt_pkcs11_xs_C_WrapKey(Crypt__PKCS11__XS* module, CK_SESSION_HANDLE hSe
         return CKR_GENERAL_ERROR;
     }
     if (hSession == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_SESSION_HANDLE_INVALID;
     }
     if (!pMechanism) {
         return CKR_ARGUMENTS_BAD;
     }
     if (hWrappingKey == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_WRAPPING_KEY_HANDLE_INVALID;
     }
     if (hKey == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_KEY_HANDLE_INVALID;
     }
     if (!pWrappedKey) {
         return CKR_ARGUMENTS_BAD;
@@ -3151,13 +3151,13 @@ CK_RV crypt_pkcs11_xs_C_UnwrapKey(Crypt__PKCS11__XS* module, CK_SESSION_HANDLE h
         return CKR_GENERAL_ERROR;
     }
     if (hSession == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_SESSION_HANDLE_INVALID;
     }
     if (!pMechanism) {
         return CKR_ARGUMENTS_BAD;
     }
     if (hUnwrappingKey == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_UNWRAPPING_KEY_HANDLE_INVALID;
     }
     if (!pWrappedKey) {
         return CKR_ARGUMENTS_BAD;
@@ -3221,13 +3221,13 @@ CK_RV crypt_pkcs11_xs_C_DeriveKey(Crypt__PKCS11__XS* module, CK_SESSION_HANDLE h
         return CKR_GENERAL_ERROR;
     }
     if (hSession == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_SESSION_HANDLE_INVALID;
     }
     if (!pMechanism) {
         return CKR_ARGUMENTS_BAD;
     }
     if (hBaseKey == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_KEY_HANDLE_INVALID;
     }
     if (!pTemplate) {
         return CKR_ARGUMENTS_BAD;
@@ -3277,7 +3277,7 @@ CK_RV crypt_pkcs11_xs_C_SeedRandom(Crypt__PKCS11__XS* module, CK_SESSION_HANDLE 
         return CKR_GENERAL_ERROR;
     }
     if (hSession == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_SESSION_HANDLE_INVALID;
     }
     if (!pSeed) {
         return CKR_ARGUMENTS_BAD;
@@ -3308,7 +3308,7 @@ CK_RV crypt_pkcs11_xs_C_GenerateRandom(Crypt__PKCS11__XS* module, CK_SESSION_HAN
         return CKR_GENERAL_ERROR;
     }
     if (hSession == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_SESSION_HANDLE_INVALID;
     }
     if (!RandomData) {
         return CKR_ARGUMENTS_BAD;
@@ -3348,7 +3348,7 @@ CK_RV crypt_pkcs11_xs_C_GetFunctionStatus(Crypt__PKCS11__XS* module, CK_SESSION_
         return CKR_GENERAL_ERROR;
     }
     if (hSession == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_SESSION_HANDLE_INVALID;
     }
 
     return module->function_list->C_GetFunctionStatus(hSession);
@@ -3365,7 +3365,7 @@ CK_RV crypt_pkcs11_xs_C_CancelFunction(Crypt__PKCS11__XS* module, CK_SESSION_HAN
         return CKR_GENERAL_ERROR;
     }
     if (hSession == CK_INVALID_HANDLE) {
-        return CKR_ARGUMENTS_BAD;
+        return CKR_SESSION_HANDLE_INVALID;
     }
 
     return module->function_list->C_CancelFunction(hSession);
