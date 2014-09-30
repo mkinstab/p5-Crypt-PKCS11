@@ -1726,6 +1726,7 @@ CK_RV crypt_pkcs11_xs_C_GetAttributeValue(Crypt__PKCS11__XS* module, CK_SESSION_
     SV** item;
     SV** type;
     SV** ulValueLen;
+    SV* entry;
     CK_ULONG i;
     CK_RV rv;
 
@@ -1784,11 +1785,11 @@ CK_RV crypt_pkcs11_xs_C_GetAttributeValue(Crypt__PKCS11__XS* module, CK_SESSION_
     for (i = 0, key = 0; key < av_len(pTemplate) + 1; key++) {
         item = av_fetch(pTemplate, key, 0);
 
-        if (!item || !*item) {
+        if (!item || !*item || !SvROK(*item)) {
             continue;
         }
 
-        if (SvTYPE(*item) != SVt_PVHV) {
+        if (!(entry = SvRV(*item)) || SvTYPE(entry) != SVt_PVHV) {
             free(_pTemplate);
             return CKR_GENERAL_ERROR;
         }
@@ -1798,8 +1799,8 @@ CK_RV crypt_pkcs11_xs_C_GetAttributeValue(Crypt__PKCS11__XS* module, CK_SESSION_
             return CKR_GENERAL_ERROR;
         }
 
-        type = hv_fetch((HV*)*item, __type_str, sizeof(__type_str)-1, 0);
-        ulValueLen = hv_fetch((HV*)*item, __ulValueLen_str, sizeof(__ulValueLen_str)-1, 0);
+        type = hv_fetch((HV*)entry, __type_str, sizeof(__type_str)-1, 0);
+        ulValueLen = hv_fetch((HV*)entry, __ulValueLen_str, sizeof(__ulValueLen_str)-1, 0);
 
         if (!type
             || !*type
@@ -1811,7 +1812,7 @@ CK_RV crypt_pkcs11_xs_C_GetAttributeValue(Crypt__PKCS11__XS* module, CK_SESSION_
         }
 
         if (!ulValueLen || !*ulValueLen) {
-            hv_store((HV*)*item, __ulValueLen_str, sizeof(__ulValueLen_str)-1, newSVuv(_pTemplate[i].ulValueLen), 0);
+            hv_store((HV*)entry, __ulValueLen_str, sizeof(__ulValueLen_str)-1, newSVuv(_pTemplate[i].ulValueLen), 0);
         }
         else {
             sv_setuv(*ulValueLen, _pTemplate[i].ulValueLen);
@@ -2032,7 +2033,7 @@ static CK_RV __action(__action_call_t call, CK_SESSION_HANDLE hSession, SV* pFro
     char* _pFrom;
     STRLEN ulFromLen;
     char* _pTo;
-    STRLEN ulToLen;
+    STRLEN ulToLen = 0;
     CK_ULONG pulToLen = 0;
     CK_RV rv;
 
@@ -2053,8 +2054,9 @@ static CK_RV __action(__action_call_t call, CK_SESSION_HANDLE hSession, SV* pFro
     SvGETMAGIC(pTo);
     if (!(_pFrom = SvPVbyte(pFrom, ulFromLen))
         || ulFromLen < 0
-        || !(_pTo = SvPVbyte(pTo, ulToLen))
-        || ulToLen < 0)
+        || (SvOK(pTo))
+            && (!(_pTo = SvPVbyte(pTo, ulToLen))
+                || ulToLen < 0))
     {
         return CKR_ARGUMENTS_BAD;
     }
@@ -2139,7 +2141,7 @@ typedef CK_RV (*__action_final_call_t)(CK_SESSION_HANDLE, CK_BYTE_PTR, CK_ULONG_
 
 static CK_RV __action_final(__action_final_call_t call, CK_SESSION_HANDLE hSession, SV* pLastPart) {
     char* _pLastPart;
-    STRLEN ulLastPartLen;
+    STRLEN ulLastPartLen = 0;
     CK_ULONG pulLastPartLen = 0;
     CK_RV rv;
 
@@ -2154,8 +2156,9 @@ static CK_RV __action_final(__action_final_call_t call, CK_SESSION_HANDLE hSessi
     }
 
     SvGETMAGIC(pLastPart);
-    if (!(_pLastPart = SvPVbyte(pLastPart, ulLastPartLen))
-        || ulLastPartLen < 0)
+    if (SvOK(pLastPart)
+        && (!(_pLastPart = SvPVbyte(pLastPart, ulLastPartLen))
+            || ulLastPartLen < 0))
     {
         return CKR_ARGUMENTS_BAD;
     }
