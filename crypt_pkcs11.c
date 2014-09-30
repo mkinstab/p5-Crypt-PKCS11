@@ -1720,7 +1720,7 @@ CK_RV crypt_pkcs11_xs_C_GetObjectSize(Crypt__PKCS11__XS* module, CK_SESSION_HAND
 }
 
 CK_RV crypt_pkcs11_xs_C_GetAttributeValue(Crypt__PKCS11__XS* module, CK_SESSION_HANDLE hSession, CK_OBJECT_HANDLE hObject, AV* pTemplate) {
-    CK_ATTRIBUTE_PTR _pTemplate;
+    CK_ATTRIBUTE_PTR _pTemplate = NULL_PTR;
     CK_ULONG ulCount = 0;
     I32 key;
     SV** item;

@@ -1,7 +1,6 @@
 #!perl
 
 use Config;
-use constant HAVE_LEAKTRACE => eval{ require Test::LeakTrace };
 use Test::More;
 
 use Crypt::PKCS11 qw(:constant);
@@ -658,9 +657,8 @@ sub mytests {
 BEGIN {
     mytests;
 
-    if (HAVE_LEAKTRACE) {
-        use Test::LeakTrace;
-        $LEAK_TESTING = 1;
+    eval "use Test::LeakTrace;";
+    unless ($@) {
         leaks_cmp_ok { mytests; } '<', 1;
     }
 
