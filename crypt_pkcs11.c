@@ -3329,7 +3329,7 @@ CK_RV crypt_pkcs11_xs_C_GenerateRandom(Crypt__PKCS11__XS* module, CK_SESSION_HAN
     }
 
     /*
-     * TODO: Do we need to turn of utf8?
+     * TODO: Do we need to turn off utf8 for SV* RandomData?
      */
 
     SvGETMAGIC(RandomData);
