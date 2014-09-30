@@ -5,6 +5,7 @@ use Test::More;
 
 use Crypt::PKCS11 qw(:constant);
 
+our $HAVE_LEAKTRACE;
 our $LEAK_TESTING;
 
 our $slotWithToken;
@@ -655,12 +656,15 @@ sub mytests {
 }
 
 BEGIN {
-    mytests;
-
-    eval "use Test::LeakTrace;";
-    unless ($@) {
-        leaks_cmp_ok { mytests; } '<', 1;
-    }
-
-    done_testing;
+    eval '
+        use Test::LeakTrace;
+        $HAVE_LEAKTRACE = 1;
+    ';
 }
+
+mytests;
+if ($HAVE_LEAKTRACE) {
+    $LEAK_TESTING = 1;
+    leaks_cmp_ok { mytests; } '<', 1;
+}
+done_testing;
