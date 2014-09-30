@@ -202,7 +202,7 @@ sub randomCheck {
 sub generateCheck {
     my ($obj) = @_;
     my @sessions = (CK_INVALID_HANDLE, CK_INVALID_HANDLE);
-    my $modulusBits = pack('Q', 768);
+    my $modulusBits = pack(CK_ULONG_SIZE < 8 ? 'L' : 'Q', 768);
     my $publicExponent = pack('C*', 0x01, 0x00, 0x01);
     my $modulus = pack('C*',
         0xcb, 0x12, 0x9d, 0xba, 0x22, 0xfa, 0x2b, 0x33, 0x7e, 0x2a, 0x24, 0x65, 0x09, 0xa9,
@@ -225,11 +225,11 @@ sub generateCheck {
         0xbe, 0xa3 );
     my $id = pack('C', 123);
     my $label = pack('a5', 'label');
-    my $pubClass = pack('Q', CKO_PUBLIC_KEY);
-    my $keyType = pack('Q', CKK_RSA);
+    my $pubClass = pack(CK_ULONG_SIZE < 8 ? 'L' : 'Q', CKO_PUBLIC_KEY);
+    my $keyType = pack(CK_ULONG_SIZE < 8 ? 'L' : 'Q', CKK_RSA);
     my $true = pack('C', CK_TRUE);
     my $false = pack('C', CK_FALSE);
-    my $certCategory = pack('Q', 0);
+    my $certCategory = pack(CK_ULONG_SIZE < 8 ? 'L' : 'Q', 0);
     my $publicKey;
     my $privateKey;
     my $object;
@@ -303,7 +303,7 @@ sub generateCheck {
 sub objectCheck {
     my ($obj) = @_;
     my @sessions = (CK_INVALID_HANDLE, CK_INVALID_HANDLE);
-    my $modulusBits = pack('Q', 768);
+    my $modulusBits = pack(CK_ULONG_SIZE < 8 ? 'L' : 'Q', 768);
     my $publicExponent = pack('C*', 0x01, 0x00, 0x01);
     my $id = pack('C', 123);
     my $true = pack('C', CK_TRUE);
@@ -331,7 +331,7 @@ sub objectCheck {
         { type => CKA_TOKEN, pValue => $true }
     );
     my $list;
-    my $oClass = pack('Q', CKO_PUBLIC_KEY);
+    my $oClass = pack(CK_ULONG_SIZE < 8 ? 'L' : 'Q', CKO_PUBLIC_KEY);
     my @searchTemplate = (
         { type => CKA_CLASS, pValue => $oClass }
     );

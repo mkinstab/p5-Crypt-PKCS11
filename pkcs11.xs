@@ -789,3 +789,9 @@ OUTPUT:
 MODULE = Crypt::PKCS11  PACKAGE = Crypt::PKCS11  PREFIX = crypt_pkcs11_
 
 PROTOTYPES: ENABLE
+
+BOOT:
+{
+    HV* stash = gv_stashpv("Crypt::PKCS11", TRUE);
+    newCONSTSUB(stash, "CK_ULONG_SIZE", newSVuv(sizeof(CK_ULONG)));
+}
