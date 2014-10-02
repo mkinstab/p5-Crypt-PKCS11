@@ -16,6 +16,7 @@ our $slotInvalid;
 our %MECHANISM_INFO;
 our %MECHANISM_SIGNVERIFY;
 our $VENDOR;
+our %SUPPORT;
 
 sub myisa_ok {
     my ($obj, $class, $name) = @_;
@@ -343,7 +344,7 @@ sub objectCheck {
     myis2( $obj->C_GetAttributeValue(CK_INVALID_HANDLE, CK_INVALID_HANDLE, $list = []), CKR_CRYPTOKI_NOT_INITIALIZED, CKR_SESSION_HANDLE_INVALID, 'objectCheck: C_GetAttributeValue uninitialized' );
     myis2( $obj->C_SetAttributeValue(CK_INVALID_HANDLE, CK_INVALID_HANDLE, $list = []), CKR_CRYPTOKI_NOT_INITIALIZED, CKR_SESSION_HANDLE_INVALID, 'objectCheck: C_SetAttributeValue uninitialized' );
 
-    myis( $obj->C_Initialize, CKR_OK, 'generateCheck: C_Initialize' );
+    myis( $obj->C_Initialize, CKR_OK, 'objectCheck: C_Initialize' );
     myis( $obj->C_OpenSession($slotWithToken, CKF_SERIAL_SESSION, undef, $sessions[0]), CKR_OK, 'objectCheck: C_OpenSession #0' );
     myis( $obj->C_OpenSession($slotWithToken, CKF_SERIAL_SESSION | CKF_RW_SESSION, undef, $sessions[1]), CKR_OK, 'objectCheck: C_OpenSession #1' );
     myis( $obj->C_Login($sessions[1], CKU_USER, "1234"), CKR_OK, 'objectCheck: C_Login' );
@@ -381,6 +382,67 @@ sub objectCheck {
     myis( $obj->C_SetAttributeValue($sessions[1], $privateKey, \@template1), CKR_OK, 'objectCheck: C_SetAttributeValue #3' );
     myis( $obj->C_DestroyObject($sessions[1], $privateKey), CKR_OK, 'objectCheck: C_DestroyObject' );
     myis( $obj->C_DestroyObject($sessions[1], $publicKey), CKR_OK, 'objectCheck: C_DestroyObject #2' );
+    if ($SUPPORT{C_CopyObject}) {
+        my @copyTemplate1 = (
+            { type => CKA_CLASS, pValue => pack(CK_ULONG_SIZE < 8 ? 'L' : 'Q', CKO_DATA) },
+            { type => CKA_TOKEN, pValue => pack('C', CK_FALSE) },
+            { type => CKA_PRIVATE, pValue => pack('C', CK_FALSE) },
+            { type => CKA_LABEL, pValue => pack('a*', 'C_CopyObject') }
+        );
+        my @copyTemplate2 = (
+            { type => CKA_LABEL, pValue => pack('a*', 'Label modified via C_CopyObject') }
+        );
+        my @copyTemplate3 = (
+            { type => CKA_CLASS, pValue => pack(CK_ULONG_SIZE < 8 ? 'L' : 'Q', CKO_DATA) },
+            { type => CKA_TOKEN, pValue => pack('C', CK_FALSE) },
+            { type => CKA_PRIVATE, pValue => pack('C', CK_FALSE) },
+            { type => CKA_LABEL, pValue => pack('a*', 'C_CopyObject') },
+            { type => CKA_APPLICATION, pValue => pack('a*', 'application') },
+            { type => CKA_OBJECT_ID, pValue => pack('a*', 'invalid object id') },
+            { type => CKA_VALUE, pValue => pack('a*', 'Sample data') }
+        );
+        my $copyKey1 = CK_INVALID_HANDLE;
+        my $copyKey2 = CK_INVALID_HANDLE;
+
+        myis( $obj->C_Logout($sessions[1]), CKR_OK, 'objectCheck: C_CopyObject C_Logout' );
+        myis( $obj->C_CreateObject($sessions[0], \@copyTemplate1, $copyKey1), CKR_OK, 'objectCheck: C_CopyObject C_CreateObject' );
+        myis( $obj->C_CopyObject($sessions[0], $copyKey1, \@copyTemplate2, $copyKey2), CKR_OK, 'objectCheck: C_CopyObject' );
+        myis( $obj->C_DestroyObject($sessions[0], $copyKey2), CKR_OK, 'objectCheck: C_CopyObject C_DestroyObject' );
+        push(@copyTemplate2,
+            { type => CKA_TOKEN, pValue => pack('C', CK_FALSE) },
+            { type => CKA_PRIVATE, pValue => pack('C', CK_FALSE) });
+        myis( $obj->C_CopyObject($sessions[0], $copyKey1, \@copyTemplate2, $copyKey2), CKR_OK, 'objectCheck: C_CopyObject #2' );
+        myis( $obj->C_DestroyObject($sessions[0], $copyKey2), CKR_OK, 'objectCheck: C_CopyObject C_DestroyObject #2' );
+        push(@copyTemplate2,
+            { type => CKA_CLASS, pValue => pack(CK_ULONG_SIZE < 8 ? 'L' : 'Q', CKO_DATA) });
+        myis( $obj->C_CopyObject($sessions[0], $copyKey1, \@copyTemplate2, $copyKey2), CKR_ATTRIBUTE_READ_ONLY, 'objectCheck: C_CopyObject #3' );
+        pop(@copyTemplate2);
+        $copyTemplate2[1]->{pValue} = pack('C', CK_TRUE);
+        myis( $obj->C_CopyObject($sessions[0], $copyKey1, \@copyTemplate2, $copyKey2), CKR_SESSION_READ_ONLY, 'objectCheck: C_CopyObject #4' );
+        $copyTemplate2[1]->{pValue} = pack('C', CK_FALSE);
+        $copyTemplate2[2]->{pValue} = pack('C', CK_TRUE);
+        myis( $obj->C_CopyObject($sessions[0], $copyKey1, \@copyTemplate2, $copyKey2), CKR_USER_NOT_LOGGED_IN, 'objectCheck: C_CopyObject #4' );
+        $copyTemplate2[2]->{pValue} = pack('C', CK_FALSE);
+        myis( $obj->C_DestroyObject($sessions[0], $copyKey1), CKR_OK, 'objectCheck: C_CopyObject C_DestroyObject #3' );
+        myis( $obj->C_Login($sessions[1], CKU_USER, "1234"), CKR_OK, 'objectCheck: C_CopyObject C_Login' );
+        myis( $obj->C_CreateObject($sessions[1], \@copyTemplate3, $copyKey1), CKR_OK, 'objectCheck: C_CopyObject C_CreateObject #2' );
+        $copyTemplate2[1]->{pValue} = pack('C', CK_TRUE);
+        myis( $obj->C_CopyObject($sessions[1], $copyKey1, \@copyTemplate2, $copyKey2), CKR_OK, 'objectCheck: C_CopyObject #2' );
+        myis( $obj->C_DestroyObject($sessions[1], $copyKey2), CKR_OK, 'objectCheck: C_CopyObject C_DestroyObject #4' );
+        $copyTemplate2[2]->{pValue} = pack('C', CK_TRUE);
+        myis( $obj->C_CopyObject($sessions[1], $copyKey1, \@copyTemplate2, $copyKey2), CKR_OK, 'objectCheck: C_CopyObject #3' );
+        myis( $obj->C_DestroyObject($sessions[1], $copyKey2), CKR_OK, 'objectCheck: C_CopyObject C_DestroyObject #5' );
+        push(@copyTemplate2,
+            { type => CKA_OBJECT_ID, pValue => pack('a*', 'Another object ID') });
+        myis( $obj->C_CopyObject($sessions[1], $copyKey1, \@copyTemplate2, $copyKey2), CKR_ATTRIBUTE_READ_ONLY, 'objectCheck: C_CopyObject #4' );
+        myis( $obj->C_DestroyObject($sessions[1], $copyKey1), CKR_OK, 'objectCheck: C_CopyObject C_DestroyObject #6' );
+        $copyTemplate3[2]->{pValue} = pack('C', CK_TRUE);
+        myis( $obj->C_CreateObject($sessions[1], \@copyTemplate3, $copyKey1), CKR_OK, 'objectCheck: C_CopyObject C_CreateObject #3' );
+        $copyTemplate2[1]->{pValue} = pack('C', CK_FALSE);
+        $copyTemplate2[2]->{pValue} = pack('C', CK_FALSE);
+        myis( $obj->C_CopyObject($sessions[1], $copyKey1, \@copyTemplate2, $copyKey2), CKR_TEMPLATE_INCONSISTENT, 'objectCheck: C_CopyObject #5' );
+        myis( $obj->C_DestroyObject($sessions[1], $copyKey1), CKR_OK, 'objectCheck: C_CopyObject C_DestroyObject #7' );
+    }
     myis( $obj->C_Finalize, CKR_OK, 'objectCheck: C_Finalize' );
 }
 
@@ -867,6 +929,7 @@ sub mytests {
             CKM_SHA512_RSA_PKCS_PSS => { mechanism => CKM_SHA512_RSA_PKCS_PSS, pParameter => pack($ulongx3, CKM_SHA512, CKG_MGF1_SHA512, 0) }
         );
         $VENDOR = '';
+        %SUPPORT = ();
 
         if ($so =~ /libsofthsm\.so$/o) {
             $ENV{SOFTHSM_CONF} = 'softhsm.conf';
@@ -884,6 +947,7 @@ sub mytests {
             delete $MECHANISM_INFO{CKM_RIPEMD160_RSA_PKCS};
             delete $MECHANISM_SIGNVERIFY{CKM_RIPEMD160_RSA_PKCS};
             $VENDOR = 'softhsm2';
+            $SUPPORT{C_CopyObject} = 1;
         }
 
         myis( $obj->load($so), Crypt::PKCS11::CKR_OK );
@@ -907,7 +971,6 @@ sub mytests {
 #            myis( $obj->C_InitToken($_, "12345678", "ѪѫѬѪѫѬ"), Crypt::PKCS11::CKR_OK );
 
             # Supported by SoftHSMv2:
-            # TODO: C_CopyObject
             # TODO: C_GetObjectSize
             # TODO: C_DigestKey
             # TODO: C_GenerateKey
