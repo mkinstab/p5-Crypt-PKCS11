@@ -104,7 +104,7 @@ sub infoCheck {
     myis( $obj->C_GetSlotInfo($slotInvalid, $info = {}), CKR_SLOT_ID_INVALID, 'infoCheck: C_GetSlotInfo slotInvalid' );
     myis( $obj->C_GetSlotInfo($slotWithToken, $info = {}), CKR_OK, 'infoCheck: C_GetSlotInfo' );
     myis( $obj->C_GetTokenInfo($slotInvalid, $info = {}), CKR_SLOT_ID_INVALID, 'infoCheck: C_GetTokenInfo slotInvalid' );
-    myis( $obj->C_GetTokenInfo($slotWithNoToken, $info = {}), CKR_TOKEN_NOT_PRESENT, 'infoCheck: C_GetTokenInfo slotWithNoToken' );
+    defined $slotWithNoToken and myis( $obj->C_GetTokenInfo($slotWithNoToken, $info = {}), CKR_TOKEN_NOT_PRESENT, 'infoCheck: C_GetTokenInfo slotWithNoToken' );
     myis( $obj->C_GetTokenInfo($slotWithToken, $info = {}), CKR_OK, 'infoCheck: C_GetTokenInfo' );
     myis( $obj->C_GetMechanismList($slotInvalid, $list = []), CKR_SLOT_ID_INVALID, 'infoCheck: C_GetMechanismList slotInvalid' );
     myis( $obj->C_GetMechanismList($slotWithToken, $list = []), CKR_OK, 'infoCheck: C_GetMechanismList' );
@@ -128,8 +128,8 @@ sub sessionCheck {
 
     myis( $obj->C_Initialize, CKR_OK, 'sessionCheck: C_Initialize' );
     myis( $obj->C_OpenSession($slotInvalid, 0, undef, $sessions[0]), CKR_SLOT_ID_INVALID, 'sessionCheck: C_OpenSession slotInvalid' );
-    myis( $obj->C_OpenSession($slotWithNoToken, 0, undef, $sessions[0]), CKR_TOKEN_NOT_PRESENT, 'sessionCheck: C_OpenSession slotWithNoToken' );
-    myis( $obj->C_OpenSession($slotWithNotInitToken, 0, undef, $sessions[0]), CKR_TOKEN_NOT_RECOGNIZED, 'sessionCheck: C_OpenSession slotWithNotInitToken' );
+    defined $slotWithNoToken and myis( $obj->C_OpenSession($slotWithNoToken, 0, undef, $sessions[0]), CKR_TOKEN_NOT_PRESENT, 'sessionCheck: C_OpenSession slotWithNoToken' );
+    defined $slotWithNotInitToken and myis( $obj->C_OpenSession($slotWithNotInitToken, 0, undef, $sessions[0]), CKR_TOKEN_NOT_RECOGNIZED, 'sessionCheck: C_OpenSession slotWithNotInitToken' );
     myis( $obj->C_OpenSession($slotWithToken, 0, undef, $sessions[0]), CKR_SESSION_PARALLEL_NOT_SUPPORTED, 'sessionCheck: C_OpenSession not serial' );
     myis( $obj->C_OpenSession($slotWithToken, CKF_SERIAL_SESSION, undef, $sessions[0]), CKR_OK, 'sessionCheck: C_OpenSession #0' );
     myis( $obj->C_CloseSession(CK_INVALID_HANDLE), CKR_SESSION_HANDLE_INVALID, 'sessionCheck: C_CloseSession invalid handle' );
@@ -140,7 +140,7 @@ sub sessionCheck {
     myis( $obj->C_OpenSession($slotWithToken, CKF_SERIAL_SESSION, undef, $sessions[4]), CKR_OK, 'sessionCheck: C_OpenSession #4' );
     myis( $obj->C_CloseSession($sessions[3]), CKR_OK, 'sessionCheck: C_CloseSession #3' );
     myis( $obj->C_CloseAllSessions($slotInvalid), CKR_SLOT_ID_INVALID, 'sessionCheck: C_CloseAllSessions slotInvalid' );
-    myis( $obj->C_CloseAllSessions($slotWithNoToken), CKR_OK, 'sessionCheck: C_CloseAllSessions slotWithNoToken' );
+    defined $slotWithNoToken and myis( $obj->C_CloseAllSessions($slotWithNoToken), CKR_OK, 'sessionCheck: C_CloseAllSessions slotWithNoToken' );
     myis( $obj->C_CloseSession($sessions[2]), CKR_OK, 'sessionCheck: C_CloseSession #2' );
     myis( $obj->C_CloseAllSessions($slotWithToken), CKR_OK, 'sessionCheck: C_CloseAllSessions slotWithToken' );
     myis( $obj->C_GetSessionInfo(CK_INVALID_HANDLE, $info = {}), CKR_SESSION_HANDLE_INVALID, 'sessionCheck: C_GetSessionInfo invalid handle' );
@@ -162,7 +162,7 @@ sub userCheck {
     myis( $obj->C_OpenSession($slotWithToken, CKF_SERIAL_SESSION, undef, $sessions[0]), CKR_OK, 'userCheck: C_OpenSession #0' );
     myis( $obj->C_OpenSession($slotWithToken, CKF_SERIAL_SESSION | CKF_RW_SESSION, undef, $sessions[1]), CKR_OK, 'userCheck: C_OpenSession #1' );
     myis( $obj->C_Login(CK_INVALID_HANDLE, 9999, ""), CKR_SESSION_HANDLE_INVALID, 'userCheck: C_Login invalid handle' );
-    myis2( $obj->C_Login($sessions[0], 9999, ""), CKR_ARGUMENTS_BAD, CKR_PIN_INCORRECT, 'userCheck: C_Login bad pin' );
+    myis2( $obj->C_Login($sessions[0], 9999, ""), CKR_ARGUMENTS_BAD, CKR_PIN_INCORRECT, CKR_USER_TYPE_INVALID, 'userCheck: C_Login bad pin' );
     myis( $obj->C_Login($sessions[0], 9999, "1234"), CKR_USER_TYPE_INVALID, 'userCheck: C_Login invalid user type' );
     myis( $obj->C_Login($sessions[0], CKU_CONTEXT_SPECIFIC, "1234"), CKR_OPERATION_NOT_INITIALIZED, 'userCheck: C_Login context specific' );
     myis( $obj->C_Login($sessions[0], CKU_USER, "123"), CKR_PIN_INCORRECT, 'userCheck: C_Login bad pin #2' );
@@ -802,53 +802,65 @@ sub signVerifyCheck {
 }
 
 sub mytests {
-    my $obj = Crypt::PKCS11->new;
-    myisa_ok( $obj, 'Crypt::PKCS11' );
-
-    # TODO: Check various PKCS#11 modules
-
-    my ($so) = grep -r "$_/softhsm/libsofthsm.so",
-        '/usr/local/lib64', '/usr/lib64',
-        '/usr/local/lib', '/usr/lib',
+    my @pkcs11_libraries = (
+        '/softhsm/libsofthsm.so',
+        '/softhsm/libsofthsm2.so'
+    );
+    my @library_paths = (
+        '/usr/local/lib64',
+        '/usr/lib64',
+        '/usr/local/lib',
+        '/usr/lib',
         split / /, $Config{loclibpth},
-        split / /, $Config{libpth};
-    $so .= '/softhsm/libsofthsm.so';
+        split / /, $Config{libpth}
+    );
+    my @libraries;
 
-    if ($so) {
-#        my $h = {};
-#        my $a = [];
-#        my $a2 = [];
-#        my $s;
+    foreach my $path (@library_paths) {
+        foreach my $so (@pkcs11_libraries) {
+            push(@libraries, $path.$so) if (-r $path.$so);
+        }
+    }
 
-        $ENV{SOFTHSM_CONF} = 'softhsm.conf';
-        chdir('t');
-#        system('softhsm --slot 0 --init-token --label ѪѫѬ --so-pin 12345678 --pin 1234');
-        system('softhsm --slot 1 --init-token --label slot1 --so-pin 12345678 --pin 1234');
-
-        myis( $obj->load($so), Crypt::PKCS11::CKR_OK );
+    foreach my $so (@libraries) {
+        my $obj = Crypt::PKCS11->new;
+        myisa_ok( $obj, 'Crypt::PKCS11' );
 
         $slotWithToken = 1;
         $slotWithNoToken = 0;
         $slotWithNotInitToken = 2;
         $slotInvalid = 9999;
 
-        my $i = 5;
-        while ($i--) {
-            initCheck($obj);
-            infoCheck($obj);
-            sessionCheck($obj);
-            userCheck($obj);
-            randomCheck($obj);
-            generateCheck($obj);
-            objectCheck($obj);
-            digestCheck($obj);
-            signCheck($obj);
-            verifyCheck($obj);
-            encryptCheck($obj);
-            decryptCheck($obj);
-            signVerifyCheck($obj);
-            last;
+        if ($so =~ /libsofthsm\.so$/o) {
+            $ENV{SOFTHSM_CONF} = 'softhsm.conf';
+            system('softhsm --slot 1 --init-token --label slot1 --so-pin 12345678 --pin 1234') == 0 || die;
         }
+        elsif ($so =~ /libsofthsm2\.so$/o) {
+            $ENV{SOFTHSM2_CONF} = 'softhsm2.conf';
+            system('softhsm2-util --slot 0 --init-token --label slot1 --so-pin 12345678 --pin 1234') == 0 || die;
+            system('mkdir -p tokens') == 0 || die;
+
+            $slotWithToken = 0;
+            $slotWithNoToken = undef;
+            $slotWithNotInitToken = undef;
+            $slotInvalid = 9999;
+        }
+
+        myis( $obj->load($so), Crypt::PKCS11::CKR_OK );
+
+        initCheck($obj);
+        infoCheck($obj);
+        sessionCheck($obj);
+        userCheck($obj);
+        randomCheck($obj);
+        generateCheck($obj);
+        objectCheck($obj);
+        digestCheck($obj);
+        signCheck($obj);
+        verifyCheck($obj);
+        encryptCheck($obj);
+        decryptCheck($obj);
+        signVerifyCheck($obj);
 
         # TODO: setCreate/Destroy/Lock/Unlock-Mutex
 #        foreach (@$a) {
@@ -878,6 +890,7 @@ sub mytests {
             # TODO: C_CancelFunction
             # TODO: C_WaitForSlotEvent
 #        }
+
         myis( $obj->unload, Crypt::PKCS11::CKR_OK );
         # TODO: clearCreate/Destroy/Lock/Unlock-Mutex
     }
@@ -890,6 +903,7 @@ BEGIN {
     ';
 }
 
+chdir('t');
 mytests;
 if ($HAVE_LEAKTRACE) {
     $LEAK_TESTING = 1;
