@@ -1,5 +1,6 @@
 #!perl
 
+use strict;
 use Config;
 use Test::More;
 
@@ -12,6 +13,9 @@ our $slotWithToken;
 our $slotWithNoToken;
 our $slotWithNotInitToken;
 our $slotInvalid;
+our %MECHANISM_INFO;
+our %MECHANISM_SIGNVERIFY;
+our $VENDOR;
 
 sub myisa_ok {
     my ($obj, $class, $name) = @_;
@@ -73,22 +77,6 @@ sub initCheck {
 sub infoCheck {
     my ($obj) = @_;
     my ($list, $info);
-    my @mechanism = (
-        [ CKM_RSA_PKCS_KEY_PAIR_GEN, 'CKM_RSA_PKCS_KEY_PAIR_GEN' ],
-        [ CKM_RSA_PKCS, 'CKM_RSA_PKCS' ],
-        [ CKM_MD5, 'CKM_MD5' ],
-        [ CKM_RIPEMD160, 'CKM_RIPEMD160' ],
-        [ CKM_SHA_1, 'CKM_SHA_1' ],
-        [ CKM_SHA256, 'CKM_SHA256' ],
-        [ CKM_SHA384, 'CKM_SHA384' ],
-        [ CKM_SHA512, 'CKM_SHA512' ],
-        [ CKM_MD5_RSA_PKCS, 'CKM_MD5_RSA_PKCS' ],
-        [ CKM_RIPEMD160_RSA_PKCS, 'CKM_RIPEMD160_RSA_PKCS' ],
-        [ CKM_SHA1_RSA_PKCS, 'CKM_SHA1_RSA_PKCS' ],
-        [ CKM_SHA256_RSA_PKCS, 'CKM_SHA256_RSA_PKCS' ],
-        [ CKM_SHA384_RSA_PKCS, 'CKM_SHA384_RSA_PKCS' ],
-        [ CKM_SHA512_RSA_PKCS, 'CKM_SHA512_RSA_PKCS' ]
-    );
 
     myis( $obj->C_GetInfo($info = {}), CKR_CRYPTOKI_NOT_INITIALIZED, 'infoCheck: C_GetInfo uninitialized' );
     myis( $obj->C_GetSlotList(CK_FALSE, $list = []), CKR_CRYPTOKI_NOT_INITIALIZED, 'infoCheck: C_GetSlotList uninitialized' );
@@ -110,7 +98,7 @@ sub infoCheck {
     myis( $obj->C_GetMechanismList($slotWithToken, $list = []), CKR_OK, 'infoCheck: C_GetMechanismList' );
     myis( $obj->C_GetMechanismInfo($slotInvalid, CKM_VENDOR_DEFINED, $info = {}), CKR_SLOT_ID_INVALID, 'infoCheck: C_GetMechanismInfo slotInvalid' );
     myis( $obj->C_GetMechanismInfo($slotWithToken, CKM_VENDOR_DEFINED, $info = {}), CKR_MECHANISM_INVALID, 'infoCheck: C_GetMechanismInfo invalid mechanism' );
-    foreach (@mechanism) {
+    foreach (values %MECHANISM_INFO) {
         myis2( $obj->C_GetMechanismInfo($slotWithToken, $_->[0], $info = {}), CKR_OK, 'infoCheck: '.CKR_MECHANISM_INVALID, 'C_GetMechanismInfo '.$_->[1] );
     }
     myis( $obj->C_Finalize, CKR_OK, 'infoCheck: C_Finalize' );
@@ -167,15 +155,15 @@ sub userCheck {
     myis( $obj->C_Login($sessions[0], CKU_CONTEXT_SPECIFIC, "1234"), CKR_OPERATION_NOT_INITIALIZED, 'userCheck: C_Login context specific' );
     myis( $obj->C_Login($sessions[0], CKU_USER, "123"), CKR_PIN_INCORRECT, 'userCheck: C_Login bad pin #2' );
     myis( $obj->C_Login($sessions[0], CKU_USER, "1234"), CKR_OK, 'userCheck: C_Login' );
-    myis( $obj->C_Login($sessions[0], CKU_CONTEXT_SPECIFIC, "1234"), CKR_OK, 'userCheck: C_Login context specific #2' );
-    myis( $obj->C_Login($sessions[1], CKU_SO, "12345678"), CKR_USER_ANOTHER_ALREADY_LOGGED_IN, 'userCheck: C_Login already logged in' );
+    myis2( $obj->C_Login($sessions[0], CKU_CONTEXT_SPECIFIC, "1234"), CKR_OK, CKR_OPERATION_NOT_INITIALIZED, 'userCheck: C_Login context specific #2' );
+    myis2( $obj->C_Login($sessions[1], CKU_SO, "12345678"), CKR_USER_ANOTHER_ALREADY_LOGGED_IN, CKR_SESSION_READ_ONLY_EXISTS, 'userCheck: C_Login already logged in' );
     myis( $obj->C_Logout($sessions[0]), CKR_OK, 'userCheck: C_Logout' );
     myis( $obj->C_Login($sessions[1], CKU_SO, "12345678"), CKR_SESSION_READ_ONLY_EXISTS, 'userCheck: C_Login read only exists' );
     myis( $obj->C_CloseSession($sessions[0]), CKR_OK, 'userCheck: C_CloseSession' );
     myis( $obj->C_Login($sessions[1], CKU_SO, "1234567"), CKR_PIN_INCORRECT, 'userCheck: C_Login SO bad pin' );
     myis( $obj->C_Login($sessions[1], CKU_SO, "12345678"), CKR_OK, 'userCheck: C_Login SO' );
-    myis( $obj->C_Login($sessions[1], CKU_CONTEXT_SPECIFIC, "12345678"), CKR_OK, 'userCheck: C_Login SO context specific' );
-    myis( $obj->C_Login($sessions[1], CKU_USER, "1234"), CKR_USER_ANOTHER_ALREADY_LOGGED_IN, 'userCheck: C_Login already logged in #2' );
+    myis2( $obj->C_Login($sessions[1], CKU_CONTEXT_SPECIFIC, "12345678"), CKR_OK, CKR_OPERATION_NOT_INITIALIZED, 'userCheck: C_Login SO context specific' );
+    myis2( $obj->C_Login($sessions[1], CKU_USER, "1234"), CKR_USER_ANOTHER_ALREADY_LOGGED_IN, CKR_SESSION_READ_ONLY_EXISTS, 'userCheck: C_Login already logged in #2' );
     myis( $obj->C_Logout(CK_INVALID_HANDLE), CKR_SESSION_HANDLE_INVALID, 'userCheck: C_Logout invalid handle' );
     myis( $obj->C_Logout($sessions[1]), CKR_OK, 'userCheck: C_Logout #2' );
     myis( $obj->C_Finalize, CKR_OK, 'userCheck: C_Finalize' );
@@ -272,9 +260,11 @@ sub generateCheck {
     myis( $obj->C_OpenSession($slotWithToken, CKF_SERIAL_SESSION, undef, $sessions[0]), CKR_OK, 'generateCheck: C_OpenSession #0' );
     myis( $obj->C_OpenSession($slotWithToken, CKF_SERIAL_SESSION | CKF_RW_SESSION, undef, $sessions[1]), CKR_OK, 'generateCheck: C_OpenSession #1' );
     myis( $obj->C_GenerateKeyPair(CK_INVALID_HANDLE, {}, [], [], $publicKey, $privateKey), CKR_SESSION_HANDLE_INVALID, 'generateCheck: C_GenerateKeyPair invalid handle' );
-    myis( $obj->C_GenerateKeyPair($sessions[0], $mechanism, \@publicKeyTemplate, \@privateKeyTemplate, $publicKey, $privateKey), CKR_USER_NOT_LOGGED_IN, 'generateCheck: C_GenerateKeyPair not logged in' );
+    $mechanism->{mechanism} = CKM_RSA_PKCS_KEY_PAIR_GEN;
+    myis2( $obj->C_GenerateKeyPair($sessions[0], $mechanism, \@publicKeyTemplate, \@privateKeyTemplate, $publicKey, $privateKey), CKR_USER_NOT_LOGGED_IN, CKR_SESSION_READ_ONLY, 'generateCheck: C_GenerateKeyPair not logged in' );
     myis( $obj->C_Login($sessions[0], CKU_USER, "1234"), CKR_OK, 'generateCheck: C_Login' );
-    myis( $obj->C_GenerateKeyPair($sessions[0], $mechanism, \@publicKeyTemplate, \@privateKeyTemplate, $publicKey, $privateKey), CKR_USER_NOT_LOGGED_IN, 'generateCheck: C_GenerateKeyPair not logged in #2' );
+    myis2( $obj->C_GenerateKeyPair($sessions[0], $mechanism, \@publicKeyTemplate, \@privateKeyTemplate, $publicKey, $privateKey), CKR_USER_NOT_LOGGED_IN, CKR_SESSION_READ_ONLY, 'generateCheck: C_GenerateKeyPair not logged in #2' );
+    $mechanism->{mechanism} = CKM_VENDOR_DEFINED;
     myis( $obj->C_GenerateKeyPair($sessions[1], $mechanism, \@publicKeyTemplate, \@privateKeyTemplate, $publicKey, $privateKey), CKR_MECHANISM_INVALID, 'generateCheck: C_GenerateKeyPair invalid mechanism' );
     $mechanism->{mechanism} = CKM_RSA_PKCS_KEY_PAIR_GEN;
     myis( $obj->C_GenerateKeyPair($sessions[1], $mechanism, \@publicKeyTemplate, \@privateKeyTemplate, $publicKey, $privateKey), CKR_TEMPLATE_INCOMPLETE, 'generateCheck: C_GenerateKeyPair template incomplete' );
@@ -282,7 +272,7 @@ sub generateCheck {
     myis( $obj->C_GenerateKeyPair($sessions[1], $mechanism, \@publicKeyTemplate, \@privateKeyTemplate, $publicKey, $privateKey), CKR_OK, 'generateCheck: C_GenerateKeyPair' );
     myis( $obj->C_DestroyObject(CK_INVALID_HANDLE, CK_INVALID_HANDLE), CKR_SESSION_HANDLE_INVALID, 'generateCheck: C_DestroyObject invalid handle' );
     myis( $obj->C_DestroyObject($sessions[0], CK_INVALID_HANDLE), CKR_OBJECT_HANDLE_INVALID, 'generateCheck: C_DestroyObject invalid handle #2' );
-    myis( $obj->C_DestroyObject($sessions[0], $privateKey), CKR_OBJECT_HANDLE_INVALID, 'generateCheck: C_DestroyObject invalid handle #3' );
+    myis2( $obj->C_DestroyObject($sessions[0], $privateKey), CKR_OBJECT_HANDLE_INVALID, CKR_SESSION_READ_ONLY, 'generateCheck: C_DestroyObject invalid handle #3' );
     myis( $obj->C_DestroyObject($sessions[1], $privateKey), CKR_OK, 'generateCheck: C_DestroyObject' );
     myis( $obj->C_DestroyObject($sessions[1], $publicKey), CKR_OK, 'generateCheck: C_DestroyObject #2' );
     myis( $obj->C_Logout($sessions[0]), CKR_OK, 'generateCheck: C_Logout' );
@@ -343,6 +333,9 @@ sub objectCheck {
     my @template2 = (
         { type => CKA_CLASS, pValue => pack(CK_ULONG_SIZE < 8 ? 'L' : 'Q', 1) }
     );
+    my @getAttr2 = (
+        { type => CKA_ID }
+    );
 
     myis2( $obj->C_FindObjectsInit(CK_INVALID_HANDLE, $list = []), CKR_CRYPTOKI_NOT_INITIALIZED, CKR_SESSION_HANDLE_INVALID, 'objectCheck: C_FindObjectsInit uninitialized' );
     myis2( $obj->C_FindObjects(CK_INVALID_HANDLE, $list = [], 1), CKR_CRYPTOKI_NOT_INITIALIZED, CKR_SESSION_HANDLE_INVALID, 'objectCheck: C_FindObjects uninitialized' );
@@ -355,31 +348,35 @@ sub objectCheck {
     myis( $obj->C_OpenSession($slotWithToken, CKF_SERIAL_SESSION | CKF_RW_SESSION, undef, $sessions[1]), CKR_OK, 'objectCheck: C_OpenSession #1' );
     myis( $obj->C_Login($sessions[1], CKU_USER, "1234"), CKR_OK, 'objectCheck: C_Login' );
     myis( $obj->C_GenerateKeyPair($sessions[1], $mechanism, \@publicKeyTemplate, \@privateKeyTemplate, $publicKey, $privateKey), CKR_OK, 'objectCheck: C_GenerateKeyPair' );
-    myis( $obj->C_Logout($sessions[1]), CKR_OK, 'objectCheck: C_Logout' );
-    myis( $obj->C_FindObjectsInit(CK_INVALID_HANDLE, \@searchTemplate), CKR_SESSION_HANDLE_INVALID, 'objectCheck: C_FindObjectsInit invalid handle' );
-    myis( $obj->C_FindObjectsInit($sessions[0], \@searchTemplate), CKR_OK, 'objectCheck: C_FindObjectsInit' );
-    myis( $obj->C_FindObjectsInit($sessions[0], \@searchTemplate), CKR_OPERATION_ACTIVE, 'objectCheck: C_FindObjectsInit active' );
-    myis( $obj->C_FindObjects(CK_INVALID_HANDLE, $list = [], 1), CKR_SESSION_HANDLE_INVALID, 'objectCheck: C_FindObjects invalid handle' );
-    myis( $obj->C_FindObjects($sessions[1], $list = [], 1), CKR_OPERATION_NOT_INITIALIZED, 'objectCheck: C_FindObjects op not init' );
-    myis( $obj->C_FindObjects($sessions[0], $list = [], 1), CKR_OK, 'objectCheck: C_FindObjects' );
-    myis( $obj->C_FindObjectsFinal(CK_INVALID_HANDLE), CKR_SESSION_HANDLE_INVALID, 'objectCheck: C_FindObjectsFinal invalid handle' );
-    myis( $obj->C_FindObjectsFinal($sessions[1]), CKR_OPERATION_NOT_INITIALIZED, 'objectCheck: C_FindObjectsFinal op not init' );
-    myis( $obj->C_FindObjectsFinal($sessions[0]), CKR_OK, 'objectCheck: C_FindObjectsFinal' );
-    myis( $obj->C_GetAttributeValue(CK_INVALID_HANDLE, CK_INVALID_HANDLE, $list = []), CKR_SESSION_HANDLE_INVALID, 'objectCheck: C_GetAttributeValue invalid handle' );
-    myis( $obj->C_GetAttributeValue($sessions[0], CK_INVALID_HANDLE, $list = []), CKR_OBJECT_HANDLE_INVALID, 'objectCheck: C_GetAttributeValue invalid handle #2' );
-    myis( $obj->C_GetAttributeValue($sessions[0], $privateKey, $list = []), CKR_OBJECT_HANDLE_INVALID, 'objectCheck: C_GetAttributeValue invalid handle #3' );
-    myis( $obj->C_Login($sessions[1], CKU_USER, "1234"), CKR_OK, 'objectCheck: C_Login #2' );
+    if ($VENDOR ne 'softhsm2') {
+        myis( $obj->C_Logout($sessions[1]), CKR_OK, 'objectCheck: C_Logout' );
+        myis( $obj->C_FindObjectsInit(CK_INVALID_HANDLE, \@searchTemplate), CKR_SESSION_HANDLE_INVALID, 'objectCheck: C_FindObjectsInit invalid handle' );
+        myis( $obj->C_FindObjectsInit($sessions[0], \@searchTemplate), CKR_OK, 'objectCheck: C_FindObjectsInit' );
+        myis( $obj->C_FindObjectsInit($sessions[0], \@searchTemplate), CKR_OPERATION_ACTIVE, 'objectCheck: C_FindObjectsInit active' );
+        myis( $obj->C_FindObjects(CK_INVALID_HANDLE, $list = [], 1), CKR_SESSION_HANDLE_INVALID, 'objectCheck: C_FindObjects invalid handle' );
+        myis( $obj->C_FindObjects($sessions[1], $list = [], 1), CKR_OPERATION_NOT_INITIALIZED, 'objectCheck: C_FindObjects op not init' );
+        myis( $obj->C_FindObjects($sessions[0], $list = [], 1), CKR_OK, 'objectCheck: C_FindObjects' );
+        myis( $obj->C_FindObjectsFinal(CK_INVALID_HANDLE), CKR_SESSION_HANDLE_INVALID, 'objectCheck: C_FindObjectsFinal invalid handle' );
+        myis( $obj->C_FindObjectsFinal($sessions[1]), CKR_OPERATION_NOT_INITIALIZED, 'objectCheck: C_FindObjectsFinal op not init' );
+        myis( $obj->C_FindObjectsFinal($sessions[0]), CKR_OK, 'objectCheck: C_FindObjectsFinal' );
+        myis( $obj->C_GetAttributeValue(CK_INVALID_HANDLE, CK_INVALID_HANDLE, $list = []), CKR_SESSION_HANDLE_INVALID, 'objectCheck: C_GetAttributeValue invalid handle' );
+        myis( $obj->C_GetAttributeValue($sessions[0], CK_INVALID_HANDLE, $list = []), CKR_OBJECT_HANDLE_INVALID, 'objectCheck: C_GetAttributeValue invalid handle #2' );
+        myis( $obj->C_GetAttributeValue($sessions[0], $privateKey, \@getAttr2), CKR_OBJECT_HANDLE_INVALID, 'objectCheck: C_GetAttributeValue invalid handle #3' );
+        myis( $obj->C_Login($sessions[1], CKU_USER, "1234"), CKR_OK, 'objectCheck: C_Login #2' );
+    }
     myis( $obj->C_GetAttributeValue($sessions[0], $privateKey, \@getAttr), CKR_ATTRIBUTE_SENSITIVE, 'objectCheck: C_GetAttributeValue' );
     $getAttr[0]->{type} = 999999;
     myis( $obj->C_GetAttributeValue($sessions[0], $privateKey, \@getAttr), CKR_ATTRIBUTE_TYPE_INVALID, 'objectCheck: C_GetAttributeValue #2' );
     $getAttr[0]->{type} = CKA_ID;
     myis( $obj->C_GetAttributeValue($sessions[0], $privateKey, \@getAttr), CKR_OK, 'objectCheck: C_GetAttributeValue #3' );
-    myis( $obj->C_Logout($sessions[1]), CKR_OK, 'objectCheck: C_Logout #2' );
-    myis( $obj->C_SetAttributeValue(CK_INVALID_HANDLE, CK_INVALID_HANDLE, $list = []), CKR_SESSION_HANDLE_INVALID, 'objectCheck: C_SetAttributeValue invalid handle' );
-    myis( $obj->C_SetAttributeValue($sessions[0], CK_INVALID_HANDLE, $list = []), CKR_OBJECT_HANDLE_INVALID, 'objectCheck: C_SetAttributeValue invalid handle #2' );
-    myis( $obj->C_SetAttributeValue($sessions[0], $privateKey, $list = []), CKR_OBJECT_HANDLE_INVALID, 'objectCheck: C_SetAttributeValue invalid handle #3' );
-    myis( $obj->C_Login($sessions[1], CKU_USER, "1234"), CKR_OK, 'objectCheck: C_Login #3' );
-    myis( $obj->C_SetAttributeValue($sessions[0], $privateKey, $list = []), CKR_OBJECT_HANDLE_INVALID, 'objectCheck: C_SetAttributeValue' );
+    if ($VENDOR ne 'softhsm2') {
+        myis( $obj->C_Logout($sessions[1]), CKR_OK, 'objectCheck: C_Logout #2' );
+        myis( $obj->C_SetAttributeValue(CK_INVALID_HANDLE, CK_INVALID_HANDLE, $list = []), CKR_SESSION_HANDLE_INVALID, 'objectCheck: C_SetAttributeValue invalid handle' );
+        myis( $obj->C_SetAttributeValue($sessions[0], CK_INVALID_HANDLE, $list = []), CKR_OBJECT_HANDLE_INVALID, 'objectCheck: C_SetAttributeValue invalid handle #2' );
+        myis( $obj->C_SetAttributeValue($sessions[0], $privateKey, $list = []), CKR_OBJECT_HANDLE_INVALID, 'objectCheck: C_SetAttributeValue invalid handle #3' );
+        myis( $obj->C_Login($sessions[1], CKU_USER, "1234"), CKR_OK, 'objectCheck: C_Login #3' );
+    }
+    myis2( $obj->C_SetAttributeValue($sessions[0], $privateKey, $list = []), CKR_OBJECT_HANDLE_INVALID, CKR_ARGUMENTS_BAD, 'objectCheck: C_SetAttributeValue' );
     myis( $obj->C_SetAttributeValue($sessions[1], $privateKey, \@template2), CKR_ATTRIBUTE_READ_ONLY, 'objectCheck: C_SetAttributeValue #2' );
     myis( $obj->C_SetAttributeValue($sessions[1], $privateKey, \@template1), CKR_OK, 'objectCheck: C_SetAttributeValue #3' );
     myis( $obj->C_DestroyObject($sessions[1], $privateKey), CKR_OK, 'objectCheck: C_DestroyObject' );
@@ -470,12 +467,14 @@ sub signCheck {
     myis( $obj->C_OpenSession($slotWithToken, CKF_SERIAL_SESSION | CKF_RW_SESSION, undef, $sessions[1]), CKR_OK, 'signCheck: C_OpenSession #1' );
     myis( $obj->C_Login($sessions[1], CKU_USER, "1234"), CKR_OK, 'signCheck: C_Login' );
     myis( $obj->C_GenerateKeyPair($sessions[1], $mechanism, \@publicKeyTemplate, \@privateKeyTemplate, $publicKey, $privateKey), CKR_OK, 'signCheck: C_GenerateKeyPair' );
-    myis( $obj->C_Logout($sessions[1]), CKR_OK, 'signCheck: C_Logout' );
-    $mechanism->{mechanism} = CKM_VENDOR_DEFINED;
-    myis( $obj->C_SignInit(CK_INVALID_HANDLE, $mechanism, CK_INVALID_HANDLE), CKR_SESSION_HANDLE_INVALID, 'signCheck: C_SignInit invalid handle' );
-    myis( $obj->C_SignInit($sessions[0], $mechanism, CK_INVALID_HANDLE), CKR_KEY_HANDLE_INVALID, 'signCheck: C_SignInit invalid handle #2' );
-    myis( $obj->C_SignInit($sessions[0], $mechanism, $privateKey), CKR_KEY_HANDLE_INVALID, 'signCheck: C_SignInit invalid handle #3' );
-    myis( $obj->C_Login($sessions[1], CKU_USER, "1234"), CKR_OK, 'signCheck: C_Login #2' );
+    if ($VENDOR ne 'softhsm2') {
+        myis( $obj->C_Logout($sessions[1]), CKR_OK, 'signCheck: C_Logout' );
+        $mechanism->{mechanism} = CKM_VENDOR_DEFINED;
+        myis( $obj->C_SignInit(CK_INVALID_HANDLE, $mechanism, CK_INVALID_HANDLE), CKR_SESSION_HANDLE_INVALID, 'signCheck: C_SignInit invalid handle' );
+        myis( $obj->C_SignInit($sessions[0], $mechanism, CK_INVALID_HANDLE), CKR_KEY_HANDLE_INVALID, 'signCheck: C_SignInit invalid handle #2' );
+        myis( $obj->C_SignInit($sessions[0], $mechanism, $privateKey), CKR_KEY_HANDLE_INVALID, 'signCheck: C_SignInit invalid handle #3' );
+        myis( $obj->C_Login($sessions[1], CKU_USER, "1234"), CKR_OK, 'signCheck: C_Login #2' );
+    }
     myis( $obj->C_SignInit($sessions[0], $mechanism, $privateKey), CKR_MECHANISM_INVALID, 'signCheck: C_SignInit' );
     $mechanism->{mechanism} = CKM_SHA512_RSA_PKCS;
     myis( $obj->C_SignInit($sessions[0], $mechanism, $privateKey), CKR_OK, 'signCheck: C_SignInit #2' );
@@ -543,12 +542,14 @@ sub verifyCheck {
     myis( $obj->C_OpenSession($slotWithToken, CKF_SERIAL_SESSION | CKF_RW_SESSION, undef, $sessions[1]), CKR_OK, 'verifyCheck: C_OpenSession #1' );
     myis( $obj->C_Login($sessions[1], CKU_USER, "1234"), CKR_OK, 'verifyCheck: C_Login' );
     myis( $obj->C_GenerateKeyPair($sessions[1], $mechanism, \@publicKeyTemplate, \@privateKeyTemplate, $publicKey, $privateKey), CKR_OK, 'verifyCheck: C_GenerateKeyPair' );
-    myis( $obj->C_Logout($sessions[1]), CKR_OK, 'verifyCheck: C_Logout' );
     $mechanism->{mechanism} = CKM_VENDOR_DEFINED;
-    myis( $obj->C_VerifyInit(CK_INVALID_HANDLE, $mechanism, CK_INVALID_HANDLE), CKR_SESSION_HANDLE_INVALID, 'verifyCheck: C_VerifyInit invalid handle' );
-    myis( $obj->C_VerifyInit($sessions[0], $mechanism, CK_INVALID_HANDLE), CKR_KEY_HANDLE_INVALID, 'verifyCheck: C_VerifyInit invalid handle #2' );
-    myis( $obj->C_VerifyInit($sessions[0], $mechanism, $publicKey), CKR_KEY_HANDLE_INVALID, 'verifyCheck: C_VerifyInit invalid handle #3' );
-    myis( $obj->C_Login($sessions[1], CKU_USER, "1234"), CKR_OK, 'verifyCheck: C_Login #2' );
+    if ($VENDOR ne 'softhsm2') {
+        myis( $obj->C_Logout($sessions[1]), CKR_OK, 'verifyCheck: C_Logout' );
+        myis( $obj->C_VerifyInit(CK_INVALID_HANDLE, $mechanism, CK_INVALID_HANDLE), CKR_SESSION_HANDLE_INVALID, 'verifyCheck: C_VerifyInit invalid handle' );
+        myis( $obj->C_VerifyInit($sessions[0], $mechanism, CK_INVALID_HANDLE), CKR_KEY_HANDLE_INVALID, 'verifyCheck: C_VerifyInit invalid handle #2' );
+        myis( $obj->C_VerifyInit($sessions[0], $mechanism, $publicKey), CKR_KEY_HANDLE_INVALID, 'verifyCheck: C_VerifyInit invalid handle #3' );
+        myis( $obj->C_Login($sessions[1], CKU_USER, "1234"), CKR_OK, 'verifyCheck: C_Login #2' );
+    }
     myis( $obj->C_VerifyInit($sessions[0], $mechanism, $publicKey), CKR_MECHANISM_INVALID, 'verifyCheck: C_VerifyInit' );
     $mechanism->{mechanism} = CKM_SHA512_RSA_PKCS;
     myis( $obj->C_VerifyInit($sessions[0], $mechanism, $publicKey), CKR_OK, 'verifyCheck: C_VerifyInit #2' );
@@ -621,13 +622,15 @@ sub encryptCheck {
     myis( $obj->C_Login($sessions[1], CKU_USER, "1234"), CKR_OK, 'encryptCheck: C_Login' );
     myis( $obj->C_GenerateKeyPair($sessions[1], $mechanism, \@publicKeyTemplate1, \@privateKeyTemplate, $publicKey1, $privateKey1), CKR_OK, 'encryptCheck: C_GenerateKeyPair' );
     myis( $obj->C_GenerateKeyPair($sessions[1], $mechanism, \@publicKeyTemplate2, \@privateKeyTemplate, $publicKey2, $privateKey2), CKR_OK, 'encryptCheck: C_GenerateKeyPair #2' );
-    myis( $obj->C_Logout($sessions[1]), CKR_OK, 'encryptCheck: C_Logout' );
     $mechanism->{mechanism} = CKM_VENDOR_DEFINED;
-    myis( $obj->C_EncryptInit(CK_INVALID_HANDLE, $mechanism, CK_INVALID_HANDLE), CKR_SESSION_HANDLE_INVALID, 'encryptCheck: C_EncryptInit invalid handle' );
-    myis( $obj->C_EncryptInit($sessions[0], $mechanism, CK_INVALID_HANDLE), CKR_KEY_HANDLE_INVALID, 'encryptCheck: C_EncryptInit invalid handle #2' );
-    myis( $obj->C_EncryptInit($sessions[0], $mechanism, $publicKey1), CKR_KEY_HANDLE_INVALID, 'encryptCheck: C_EncryptInit invalid handle #3' );
-    myis( $obj->C_Login($sessions[1], CKU_USER, "1234"), CKR_OK, 'encryptCheck: C_Login #2' );
-    myis( $obj->C_EncryptInit($sessions[0], $mechanism, $privateKey1), CKR_KEY_TYPE_INCONSISTENT, 'encryptCheck: C_EncryptInit' );
+    if ($VENDOR ne 'softhsm2') {
+        myis( $obj->C_Logout($sessions[1]), CKR_OK, 'encryptCheck: C_Logout' );
+        myis( $obj->C_EncryptInit(CK_INVALID_HANDLE, $mechanism, CK_INVALID_HANDLE), CKR_SESSION_HANDLE_INVALID, 'encryptCheck: C_EncryptInit invalid handle' );
+        myis( $obj->C_EncryptInit($sessions[0], $mechanism, CK_INVALID_HANDLE), CKR_KEY_HANDLE_INVALID, 'encryptCheck: C_EncryptInit invalid handle #2' );
+        myis( $obj->C_EncryptInit($sessions[0], $mechanism, $publicKey1), CKR_KEY_HANDLE_INVALID, 'encryptCheck: C_EncryptInit invalid handle #3' );
+        myis( $obj->C_Login($sessions[1], CKU_USER, "1234"), CKR_OK, 'encryptCheck: C_Login #2' );
+    }
+    myis2( $obj->C_EncryptInit($sessions[0], $mechanism, $privateKey1), CKR_KEY_TYPE_INCONSISTENT, CKR_KEY_FUNCTION_NOT_PERMITTED, 'encryptCheck: C_EncryptInit' );
     myis( $obj->C_EncryptInit($sessions[0], $mechanism, $publicKey2), CKR_KEY_FUNCTION_NOT_PERMITTED, 'encryptCheck: C_EncryptInit #2' );
     myis( $obj->C_EncryptInit($sessions[0], $mechanism, $publicKey1), CKR_MECHANISM_INVALID, 'encryptCheck: C_EncryptInit #3' );
     $mechanism->{mechanism} = CKM_RSA_PKCS;
@@ -700,22 +703,34 @@ sub decryptCheck {
     myis( $obj->C_Login($sessions[1], CKU_USER, "1234"), CKR_OK, 'decryptCheck: C_Login' );
     myis( $obj->C_GenerateKeyPair($sessions[1], $mechanism, \@publicKeyTemplate, \@privateKeyTemplate1, $publicKey1, $privateKey1), CKR_OK, 'decryptCheck: C_GenerateKeyPair' );
     myis( $obj->C_GenerateKeyPair($sessions[1], $mechanism, \@publicKeyTemplate, \@privateKeyTemplate2, $publicKey2, $privateKey2), CKR_OK, 'decryptCheck: C_GenerateKeyPair #2' );
-    myis( $obj->C_Logout($sessions[1]), CKR_OK, 'decryptCheck: C_Logout' );
     $mechanism->{mechanism} = CKM_VENDOR_DEFINED;
-    myis( $obj->C_DecryptInit(CK_INVALID_HANDLE, $mechanism, CK_INVALID_HANDLE), CKR_SESSION_HANDLE_INVALID, 'decryptCheck: C_DecryptInit invalid handle' );
-    myis( $obj->C_DecryptInit($sessions[0], $mechanism, CK_INVALID_HANDLE), CKR_KEY_HANDLE_INVALID, 'decryptCheck: C_DecryptInit invalid handle #2' );
-    myis( $obj->C_DecryptInit($sessions[0], $mechanism, $privateKey1), CKR_KEY_HANDLE_INVALID, 'decryptCheck: C_DecryptInit invalid handle #3' );
-    myis( $obj->C_Login($sessions[1], CKU_USER, "1234"), CKR_OK, 'decryptCheck: C_Login #2' );
-    myis( $obj->C_DecryptInit($sessions[0], $mechanism, $publicKey1), CKR_KEY_TYPE_INCONSISTENT, 'decryptCheck: C_DecryptInit' );
+    if ($VENDOR ne 'softhsm2') {
+        myis( $obj->C_Logout($sessions[1]), CKR_OK, 'decryptCheck: C_Logout' );
+        myis( $obj->C_DecryptInit(CK_INVALID_HANDLE, $mechanism, CK_INVALID_HANDLE), CKR_SESSION_HANDLE_INVALID, 'decryptCheck: C_DecryptInit invalid handle' );
+        myis( $obj->C_DecryptInit($sessions[0], $mechanism, CK_INVALID_HANDLE), CKR_KEY_HANDLE_INVALID, 'decryptCheck: C_DecryptInit invalid handle #2' );
+        myis( $obj->C_DecryptInit($sessions[0], $mechanism, $privateKey1), CKR_KEY_HANDLE_INVALID, 'decryptCheck: C_DecryptInit invalid handle #3' );
+        myis( $obj->C_Login($sessions[1], CKU_USER, "1234"), CKR_OK, 'decryptCheck: C_Login #2' );
+    }
+    if ($VENDOR eq 'softhsm2') {
+        $mechanism->{mechanism} = CKM_RSA_PKCS;
+        myis( $obj->C_EncryptInit($sessions[0], $mechanism, $publicKey1), CKR_OK, 'decryptCheck: C_EncryptInit' );
+        myis( $obj->C_Encrypt($sessions[0], $data, $encrypted), CKR_OK, 'decryptCheck: C_Encrypt' );
+        myisnt( $encrypted, undef, 'decryptCheck: C_Encrypt not undef' );
+        myisnt( $encrypted, '', 'decryptCheck: C_Encrypt not empty string' );
+        $mechanism->{mechanism} = CKM_VENDOR_DEFINED;
+    }
+    myis2( $obj->C_DecryptInit($sessions[0], $mechanism, $publicKey1), CKR_KEY_TYPE_INCONSISTENT, CKR_KEY_FUNCTION_NOT_PERMITTED, 'decryptCheck: C_DecryptInit' );
     myis( $obj->C_DecryptInit($sessions[0], $mechanism, $privateKey2), CKR_KEY_FUNCTION_NOT_PERMITTED, 'decryptCheck: C_DecryptInit #2' );
     myis( $obj->C_DecryptInit($sessions[0], $mechanism, $privateKey1), CKR_MECHANISM_INVALID, 'decryptCheck: C_DecryptInit #3' );
     $mechanism->{mechanism} = CKM_RSA_PKCS;
     myis( $obj->C_DecryptInit($sessions[0], $mechanism, $privateKey1), CKR_OK, 'decryptCheck: C_DecryptInit #4' );
     myis( $obj->C_DecryptInit($sessions[0], $mechanism, $privateKey1), CKR_OPERATION_ACTIVE, 'decryptCheck: C_DecryptInit #5' );
-    myis( $obj->C_EncryptInit($sessions[0], $mechanism, $publicKey1), CKR_OK, 'decryptCheck: C_EncryptInit' );
-    myis( $obj->C_Encrypt($sessions[0], $data, $encrypted), CKR_OK, 'decryptCheck: C_Encrypt' );
-    myisnt( $encrypted, undef, 'decryptCheck: C_Encrypt not undef' );
-    myisnt( $encrypted, '', 'decryptCheck: C_Encrypt not empty string' );
+    if ($VENDOR ne 'softhsm2') {
+        myis( $obj->C_EncryptInit($sessions[0], $mechanism, $publicKey1), CKR_OK, 'decryptCheck: C_EncryptInit' );
+        myis( $obj->C_Encrypt($sessions[0], $data, $encrypted), CKR_OK, 'decryptCheck: C_Encrypt' );
+        myisnt( $encrypted, undef, 'decryptCheck: C_Encrypt not undef' );
+        myisnt( $encrypted, '', 'decryptCheck: C_Encrypt not empty string' );
+    }
     myis( $obj->C_Decrypt(CK_INVALID_HANDLE, $encrypted, $decrypted), CKR_SESSION_HANDLE_INVALID, 'decryptCheck: C_Decrypt invalid handle' );
     myis( $obj->C_Decrypt($sessions[1], $encrypted, $decrypted), CKR_OPERATION_NOT_INITIALIZED, 'decryptCheck: C_Decrypt op not init' );
     myis( $obj->C_Decrypt($sessions[0], $encrypted, $decrypted), CKR_OK, 'decryptCheck: C_Decrypt' );
@@ -729,7 +744,7 @@ sub decryptCheck {
     myisnt( $encrypted, '', 'decryptCheck: C_Encrypt not empty string #2' );
     myis( $obj->C_DecryptInit($sessions[0], $mechanism, $privateKey1), CKR_OK, 'decryptCheck: C_DecryptInit #6' );
     $decrypted = undef;
-    myis( $obj->C_Decrypt($sessions[0], $encrypted, $decrypted), CKR_ENCRYPTED_DATA_INVALID, 'decryptCheck: C_Decrypt #3' );
+    myis2( $obj->C_Decrypt($sessions[0], $encrypted, $decrypted), CKR_ENCRYPTED_DATA_INVALID, CKR_GENERAL_ERROR, 'decryptCheck: C_Decrypt #3' );
     myis( $obj->C_DestroyObject($sessions[1], $privateKey1), CKR_OK, 'decryptCheck: C_DestroyObject' );
     myis( $obj->C_DestroyObject($sessions[1], $publicKey1), CKR_OK, 'decryptCheck: C_DestroyObject #2' );
     myis( $obj->C_DestroyObject($sessions[1], $privateKey2), CKR_OK, 'decryptCheck: C_DestroyObject #3' );
@@ -769,32 +784,17 @@ sub signVerifyCheck {
     );
     my $data = 'Text';
     my $signature;
-    my $ulongx3 = CK_ULONG_SIZE < 8 ? 'L'x3 : 'Q'x3;
-    my @mechanisms = (
-        { mechanism => CKM_RSA_PKCS },
-        { mechanism => CKM_RSA_X_509 },
-        { mechanism => CKM_MD5_RSA_PKCS },
-        { mechanism => CKM_RIPEMD160_RSA_PKCS },
-        { mechanism => CKM_SHA1_RSA_PKCS },
-        { mechanism => CKM_SHA256_RSA_PKCS },
-        { mechanism => CKM_SHA384_RSA_PKCS },
-        { mechanism => CKM_SHA512_RSA_PKCS },
-        { mechanism => CKM_SHA1_RSA_PKCS_PSS, pParameter => pack($ulongx3, CKM_SHA_1, CKG_MGF1_SHA1, 20) },
-        { mechanism => CKM_SHA256_RSA_PKCS_PSS, pParameter => pack($ulongx3, CKM_SHA256, CKG_MGF1_SHA256, 0) },
-        { mechanism => CKM_SHA384_RSA_PKCS_PSS, pParameter => pack($ulongx3, CKM_SHA384, CKG_MGF1_SHA384, 0) },
-        { mechanism => CKM_SHA512_RSA_PKCS_PSS, pParameter => pack($ulongx3, CKM_SHA512, CKG_MGF1_SHA512, 0) }
-    );
 
     myis( $obj->C_Initialize, CKR_OK, 'signVerifyCheck: C_Initialize' );
     myis( $obj->C_OpenSession($slotWithToken, CKF_SERIAL_SESSION | CKF_RW_SESSION, undef, $sessions[0]), CKR_OK, 'signVerifyCheck: C_OpenSession #1' );
     myis( $obj->C_Login($sessions[0], CKU_USER, "1234"), CKR_OK, 'signVerifyCheck: C_Login' );
     myis( $obj->C_GenerateKeyPair($sessions[0], $mechanism, \@publicKeyTemplate, \@privateKeyTemplate, $publicKey, $privateKey), CKR_OK, 'signVerifyCheck: C_GenerateKeyPair' );
-    foreach (@mechanisms) {
-        myis( $obj->C_SignInit($sessions[0], $_, $privateKey), CKR_OK, 'signVerifyCheck: C_SignInit mech '.$_->{mechanism} );
+    foreach (values %MECHANISM_SIGNVERIFY) {
+        myis( $obj->C_SignInit($sessions[0], $_, $privateKey), CKR_OK, 'signVerifyCheck: C_SignInit mech '.($MECHANISM_INFO{$_->{mechanism}} ? $MECHANISM_INFO{$_->{mechanism}}->[1] : $_->{mechanism}) );
         $signature = undef;
-        myis( $obj->C_Sign($sessions[0], $data, $signature), CKR_OK, 'signVerifyCheck: C_Sign mech '.$_->{mechanism} );
-        myis( $obj->C_VerifyInit($sessions[0], $_, $publicKey), CKR_OK, 'signVerifyCheck: C_VerifyInit mech '.$_->{mechanism} );
-        myis( $obj->C_Verify($sessions[0], $data, $signature), CKR_OK, 'signVerifyCheck: C_Verify mech '.$_->{mechanism} );
+        myis( $obj->C_Sign($sessions[0], $data, $signature), CKR_OK, 'signVerifyCheck: C_Sign mech '.($MECHANISM_INFO{$_->{mechanism}} ? $MECHANISM_INFO{$_->{mechanism}}->[1] : $_->{mechanism}) );
+        myis( $obj->C_VerifyInit($sessions[0], $_, $publicKey), CKR_OK, 'signVerifyCheck: C_VerifyInit mech '.($MECHANISM_INFO{$_->{mechanism}} ? $MECHANISM_INFO{$_->{mechanism}}->[1] : $_->{mechanism}) );
+        myis( $obj->C_Verify($sessions[0], $data, $signature), CKR_OK, 'signVerifyCheck: C_Verify mech '.($MECHANISM_INFO{$_->{mechanism}} ? $MECHANISM_INFO{$_->{mechanism}}->[1] : $_->{mechanism}) );
     }
     myis( $obj->C_DestroyObject($sessions[0], $privateKey), CKR_OK, 'signVerifyCheck: C_DestroyObject' );
     myis( $obj->C_DestroyObject($sessions[0], $publicKey), CKR_OK, 'signVerifyCheck: C_DestroyObject #2' );
@@ -806,17 +806,23 @@ sub mytests {
         '/softhsm/libsofthsm.so',
         '/softhsm/libsofthsm2.so'
     );
-    my @library_paths = (
-        '/usr/local/lib64',
-        '/usr/lib64',
-        '/usr/local/lib',
-        '/usr/lib',
-        split / /, $Config{loclibpth},
-        split / /, $Config{libpth}
+    my %library_paths = (
+        '/usr/local/lib64' => 1,
+        '/usr/lib64' => 1,
+        '/usr/local/lib' => 1,
+        '/usr/lib' => 1
     );
     my @libraries;
+    my $ulongx3 = CK_ULONG_SIZE < 8 ? 'L'x3 : 'Q'x3;
 
-    foreach my $path (@library_paths) {
+    foreach my $path (
+        split / /, $Config{loclibpth},
+        split / /, $Config{libpth} )
+    {
+        $library_paths{$path} = 1;
+    }
+
+    foreach my $path (keys %library_paths) {
         foreach my $so (@pkcs11_libraries) {
             push(@libraries, $path.$so) if (-r $path.$so);
         }
@@ -830,6 +836,37 @@ sub mytests {
         $slotWithNoToken = 0;
         $slotWithNotInitToken = 2;
         $slotInvalid = 9999;
+        %MECHANISM_INFO = (
+            CKM_RSA_PKCS_KEY_PAIR_GEN => [ CKM_RSA_PKCS_KEY_PAIR_GEN, 'CKM_RSA_PKCS_KEY_PAIR_GEN' ],
+            CKM_RSA_PKCS => [ CKM_RSA_PKCS, 'CKM_RSA_PKCS' ],
+            CKM_MD5 => [ CKM_MD5, 'CKM_MD5' ],
+            CKM_RIPEMD160 => [ CKM_RIPEMD160, 'CKM_RIPEMD160' ],
+            CKM_SHA_1 => [ CKM_SHA_1, 'CKM_SHA_1' ],
+            CKM_SHA256 => [ CKM_SHA256, 'CKM_SHA256' ],
+            CKM_SHA384 => [ CKM_SHA384, 'CKM_SHA384' ],
+            CKM_SHA512 => [ CKM_SHA512, 'CKM_SHA512' ],
+            CKM_MD5_RSA_PKCS => [ CKM_MD5_RSA_PKCS, 'CKM_MD5_RSA_PKCS' ],
+            CKM_RIPEMD160_RSA_PKCS => [ CKM_RIPEMD160_RSA_PKCS, 'CKM_RIPEMD160_RSA_PKCS' ],
+            CKM_SHA1_RSA_PKCS => [ CKM_SHA1_RSA_PKCS, 'CKM_SHA1_RSA_PKCS' ],
+            CKM_SHA256_RSA_PKCS => [ CKM_SHA256_RSA_PKCS, 'CKM_SHA256_RSA_PKCS' ],
+            CKM_SHA384_RSA_PKCS => [ CKM_SHA384_RSA_PKCS, 'CKM_SHA384_RSA_PKCS' ],
+            CKM_SHA512_RSA_PKCS => [ CKM_SHA512_RSA_PKCS, 'CKM_SHA512_RSA_PKCS' ]
+        );
+        %MECHANISM_SIGNVERIFY = (
+            CKM_RSA_PKCS => { mechanism => CKM_RSA_PKCS },
+            CKM_RSA_X_509 => { mechanism => CKM_RSA_X_509 },
+            CKM_MD5_RSA_PKCS => { mechanism => CKM_MD5_RSA_PKCS },
+            CKM_RIPEMD160_RSA_PKCS => { mechanism => CKM_RIPEMD160_RSA_PKCS },
+            CKM_SHA1_RSA_PKCS => { mechanism => CKM_SHA1_RSA_PKCS },
+            CKM_SHA256_RSA_PKCS => { mechanism => CKM_SHA256_RSA_PKCS },
+            CKM_SHA384_RSA_PKCS => { mechanism => CKM_SHA384_RSA_PKCS },
+            CKM_SHA512_RSA_PKCS => { mechanism => CKM_SHA512_RSA_PKCS },
+            CKM_SHA1_RSA_PKCS_PSS => { mechanism => CKM_SHA1_RSA_PKCS_PSS, pParameter => pack($ulongx3, CKM_SHA_1, CKG_MGF1_SHA1, 20) },
+            CKM_SHA256_RSA_PKCS_PSS => { mechanism => CKM_SHA256_RSA_PKCS_PSS, pParameter => pack($ulongx3, CKM_SHA256, CKG_MGF1_SHA256, 0) },
+            CKM_SHA384_RSA_PKCS_PSS => { mechanism => CKM_SHA384_RSA_PKCS_PSS, pParameter => pack($ulongx3, CKM_SHA384, CKG_MGF1_SHA384, 0) },
+            CKM_SHA512_RSA_PKCS_PSS => { mechanism => CKM_SHA512_RSA_PKCS_PSS, pParameter => pack($ulongx3, CKM_SHA512, CKG_MGF1_SHA512, 0) }
+        );
+        $VENDOR = '';
 
         if ($so =~ /libsofthsm\.so$/o) {
             $ENV{SOFTHSM_CONF} = 'softhsm.conf';
@@ -837,13 +874,16 @@ sub mytests {
         }
         elsif ($so =~ /libsofthsm2\.so$/o) {
             $ENV{SOFTHSM2_CONF} = 'softhsm2.conf';
-            system('softhsm2-util --slot 0 --init-token --label slot1 --so-pin 12345678 --pin 1234') == 0 || die;
             system('mkdir -p tokens') == 0 || die;
+            system('softhsm2-util --slot 0 --init-token --label slot1 --so-pin 12345678 --pin 1234') == 0 || die;
 
             $slotWithToken = 0;
             $slotWithNoToken = undef;
             $slotWithNotInitToken = undef;
-            $slotInvalid = 9999;
+            delete $MECHANISM_INFO{CKM_RIPEMD160};
+            delete $MECHANISM_INFO{CKM_RIPEMD160_RSA_PKCS};
+            delete $MECHANISM_SIGNVERIFY{CKM_RIPEMD160_RSA_PKCS};
+            $VENDOR = 'softhsm2';
         }
 
         myis( $obj->load($so), Crypt::PKCS11::CKR_OK );
@@ -865,15 +905,22 @@ sub mytests {
         # TODO: setCreate/Destroy/Lock/Unlock-Mutex
 #        foreach (@$a) {
 #            myis( $obj->C_InitToken($_, "12345678", "ѪѫѬѪѫѬ"), Crypt::PKCS11::CKR_OK );
-            # TODO: C_GetOperationState
-            # TODO: C_SetOperationState
+
+            # Supported by SoftHSMv2:
             # TODO: C_CopyObject
             # TODO: C_GetObjectSize
+            # TODO: C_DigestKey
+            # TODO: C_GenerateKey
+            # TODO: C_WrapKey
+            # TODO: C_UnwrapKey
+            # TODO: C_DeriveKey
+
+            # TODO: C_GetOperationState
+            # TODO: C_SetOperationState
             # TODO: C_EncryptUpdate
             # TODO: C_EncryptFinal
             # TODO: C_DecryptUpdate
             # TODO: C_DecryptFinal
-            # TODO: C_DigestKey
             # TODO: C_SignRecoverInit
             # TODO: C_SignRecover
             # TODO: C_VerifyRecoverInit
@@ -882,10 +929,6 @@ sub mytests {
             # TODO: C_DecryptDigestUpdate
             # TODO: C_SignEncryptUpdate
             # TODO: C_DecryptVerifyUpdate
-            # TODO: C_GenerateKey
-            # TODO: C_WrapKey
-            # TODO: C_UnwrapKey
-            # TODO: C_DeriveKey
             # TODO: C_GetFunctionStatus
             # TODO: C_CancelFunction
             # TODO: C_WaitForSlotEvent
