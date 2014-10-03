@@ -32,7 +32,6 @@ use Carp;
 sub new {
     my $this = shift;
     my $class = ref($this) || $this;
-    my %args = ( @_ );
     my $self = {
     };
     bless $self, $class;

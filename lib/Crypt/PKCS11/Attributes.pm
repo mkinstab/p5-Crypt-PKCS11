@@ -28,16 +28,212 @@ package Crypt::PKCS11::Attributes;
 use strict;
 use warnings;
 use Carp;
+use Scalar::Util qw(blessed);
 
 use Crypt::PKCS11 qw(:constant);
+use Crypt::PKCS11::Attribute::Value;
+
+our %ATTRIBUTE_MAP = (
+    CKA_CLASS => 'Crypt::PKCS11::Attribute::Class',
+    CKA_TOKEN => 'Crypt::PKCS11::Attribute::Token',
+    CKA_PRIVATE => 'Crypt::PKCS11::Attribute::Private',
+    CKA_LABEL => 'Crypt::PKCS11::Attribute::Label',
+    CKA_APPLICATION => 'Crypt::PKCS11::Attribute::Application',
+    CKA_VALUE => 'Crypt::PKCS11::Attribute::Value',
+    CKA_OBJECT_ID => 'Crypt::PKCS11::Attribute::ObjectId',
+    CKA_CERTIFICATE_TYPE => 'Crypt::PKCS11::Attribute::CertificateType',
+    CKA_ISSUER => 'Crypt::PKCS11::Attribute::Issuer',
+    CKA_SERIAL_NUMBER => 'Crypt::PKCS11::Attribute::SerialNumber',
+    CKA_AC_ISSUER => 'Crypt::PKCS11::Attribute::AcIssuer',
+    CKA_OWNER => 'Crypt::PKCS11::Attribute::Owner',
+    CKA_ATTR_TYPES => 'Crypt::PKCS11::Attribute::AttrTypes',
+    CKA_TRUSTED => 'Crypt::PKCS11::Attribute::Trusted',
+    CKA_CERTIFICATE_CATEGORY => 'Crypt::PKCS11::Attribute::CertificateCategory',
+    CKA_JAVA_MIDP_SECURITY_DOMAIN => 'Crypt::PKCS11::Attribute::JavaMidpSecurityDomain',
+    CKA_URL => 'Crypt::PKCS11::Attribute::Url',
+    CKA_HASH_OF_SUBJECT_PUBLIC_KEY => 'Crypt::PKCS11::Attribute::HashOfSubjectPublicKey',
+    CKA_HASH_OF_ISSUER_PUBLIC_KEY => 'Crypt::PKCS11::Attribute::HashOfIssuerPublicKey',
+    CKA_NAME_HASH_ALGORITHM => 'Crypt::PKCS11::Attribute::NameHashAlgorithm',
+    CKA_CHECK_VALUE => 'Crypt::PKCS11::Attribute::CheckValue',
+    CKA_KEY_TYPE => 'Crypt::PKCS11::Attribute::KeyType',
+    CKA_SUBJECT => 'Crypt::PKCS11::Attribute::Subject',
+    CKA_ID => 'Crypt::PKCS11::Attribute::Id',
+    CKA_SENSITIVE => 'Crypt::PKCS11::Attribute::Sensitive',
+    CKA_ENCRYPT => 'Crypt::PKCS11::Attribute::Encrypt',
+    CKA_DECRYPT => 'Crypt::PKCS11::Attribute::Decrypt',
+    CKA_WRAP => 'Crypt::PKCS11::Attribute::Wrap',
+    CKA_UNWRAP => 'Crypt::PKCS11::Attribute::Unwrap',
+    CKA_SIGN => 'Crypt::PKCS11::Attribute::Sign',
+    CKA_SIGN_RECOVER => 'Crypt::PKCS11::Attribute::SignRecover',
+    CKA_VERIFY => 'Crypt::PKCS11::Attribute::Verify',
+    CKA_VERIFY_RECOVER => 'Crypt::PKCS11::Attribute::VerifyRecover',
+    CKA_DERIVE => 'Crypt::PKCS11::Attribute::Derive',
+    CKA_START_DATE => 'Crypt::PKCS11::Attribute::StartDate',
+    CKA_END_DATE => 'Crypt::PKCS11::Attribute::EndDate',
+    CKA_MODULUS => 'Crypt::PKCS11::Attribute::Modulus',
+    CKA_MODULUS_BITS => 'Crypt::PKCS11::Attribute::ModulusBits',
+    CKA_PUBLIC_EXPONENT => 'Crypt::PKCS11::Attribute::PublicExponent',
+    CKA_PRIVATE_EXPONENT => 'Crypt::PKCS11::Attribute::PrivateExponent',
+    CKA_PRIME_1 => 'Crypt::PKCS11::Attribute::Prime1',
+    CKA_PRIME_2 => 'Crypt::PKCS11::Attribute::Prime2',
+    CKA_EXPONENT_1 => 'Crypt::PKCS11::Attribute::Exponent1',
+    CKA_EXPONENT_2 => 'Crypt::PKCS11::Attribute::Exponent2',
+    CKA_COEFFICIENT => 'Crypt::PKCS11::Attribute::Coefficient',
+    CKA_PRIME => 'Crypt::PKCS11::Attribute::Prime',
+    CKA_SUBPRIME => 'Crypt::PKCS11::Attribute::Subprime',
+    CKA_BASE => 'Crypt::PKCS11::Attribute::Base',
+    CKA_PRIME_BITS => 'Crypt::PKCS11::Attribute::PrimeBits',
+    CKA_SUBPRIME_BITS => 'Crypt::PKCS11::Attribute::SubprimeBits',
+    CKA_SUB_PRIME_BITS => 'Crypt::PKCS11::Attribute::SubPrimeBits',
+    CKA_VALUE_BITS => 'Crypt::PKCS11::Attribute::ValueBits',
+    CKA_VALUE_LEN => 'Crypt::PKCS11::Attribute::ValueLen',
+    CKA_EXTRACTABLE => 'Crypt::PKCS11::Attribute::Extractable',
+    CKA_LOCAL => 'Crypt::PKCS11::Attribute::Local',
+    CKA_NEVER_EXTRACTABLE => 'Crypt::PKCS11::Attribute::NeverExtractable',
+    CKA_ALWAYS_SENSITIVE => 'Crypt::PKCS11::Attribute::AlwaysSensitive',
+    CKA_KEY_GEN_MECHANISM => 'Crypt::PKCS11::Attribute::KeyGenMechanism',
+    CKA_MODIFIABLE => 'Crypt::PKCS11::Attribute::Modifiable',
+    CKA_COPYABLE => 'Crypt::PKCS11::Attribute::Copyable',
+    CKA_ECDSA_PARAMS => 'Crypt::PKCS11::Attribute::EcdsaParams',
+    CKA_EC_PARAMS => 'Crypt::PKCS11::Attribute::EcParams',
+    CKA_EC_POINT => 'Crypt::PKCS11::Attribute::EcPoint',
+    CKA_SECONDARY_AUTH => 'Crypt::PKCS11::Attribute::SecondaryAuth',
+    CKA_AUTH_PIN_FLAGS => 'Crypt::PKCS11::Attribute::AuthPinFlags',
+    CKA_ALWAYS_AUTHENTICATE => 'Crypt::PKCS11::Attribute::AlwaysAuthenticate',
+    CKA_WRAP_WITH_TRUSTED => 'Crypt::PKCS11::Attribute::WrapWithTrusted',
+    CKA_WRAP_TEMPLATE => 'Crypt::PKCS11::Attribute::WrapTemplate',
+    CKA_UNWRAP_TEMPLATE => 'Crypt::PKCS11::Attribute::UnwrapTemplate',
+    CKA_DERIVE_TEMPLATE => 'Crypt::PKCS11::Attribute::DeriveTemplate',
+    CKA_OTP_FORMAT => 'Crypt::PKCS11::Attribute::OtpFormat',
+    CKA_OTP_LENGTH => 'Crypt::PKCS11::Attribute::OtpLength',
+    CKA_OTP_TIME_INTERVAL => 'Crypt::PKCS11::Attribute::OtpTimeInterval',
+    CKA_OTP_USER_FRIENDLY_MODE => 'Crypt::PKCS11::Attribute::OtpUserFriendlyMode',
+    CKA_OTP_CHALLENGE_REQUIREMENT => 'Crypt::PKCS11::Attribute::OtpChallengeRequirement',
+    CKA_OTP_TIME_REQUIREMENT => 'Crypt::PKCS11::Attribute::OtpTimeRequirement',
+    CKA_OTP_COUNTER_REQUIREMENT => 'Crypt::PKCS11::Attribute::OtpCounterRequirement',
+    CKA_OTP_PIN_REQUIREMENT => 'Crypt::PKCS11::Attribute::OtpPinRequirement',
+    CKA_OTP_COUNTER => 'Crypt::PKCS11::Attribute::OtpCounter',
+    CKA_OTP_TIME => 'Crypt::PKCS11::Attribute::OtpTime',
+    CKA_OTP_USER_IDENTIFIER => 'Crypt::PKCS11::Attribute::OtpUserIdentifier',
+    CKA_OTP_SERVICE_IDENTIFIER => 'Crypt::PKCS11::Attribute::OtpServiceIdentifier',
+    CKA_OTP_SERVICE_LOGO => 'Crypt::PKCS11::Attribute::OtpServiceLogo',
+    CKA_OTP_SERVICE_LOGO_TYPE => 'Crypt::PKCS11::Attribute::OtpServiceLogoType',
+    CKA_GOSTR3410_PARAMS => 'Crypt::PKCS11::Attribute::Gostr3410Params',
+    CKA_GOSTR3411_PARAMS => 'Crypt::PKCS11::Attribute::Gostr3411Params',
+    CKA_GOST28147_PARAMS => 'Crypt::PKCS11::Attribute::Gost28147Params',
+    CKA_HW_FEATURE_TYPE => 'Crypt::PKCS11::Attribute::HwFeatureType',
+    CKA_RESET_ON_INIT => 'Crypt::PKCS11::Attribute::ResetOnInit',
+    CKA_HAS_RESET => 'Crypt::PKCS11::Attribute::HasReset',
+    CKA_PIXEL_X => 'Crypt::PKCS11::Attribute::PixelX',
+    CKA_PIXEL_Y => 'Crypt::PKCS11::Attribute::PixelY',
+    CKA_RESOLUTION => 'Crypt::PKCS11::Attribute::Resolution',
+    CKA_CHAR_ROWS => 'Crypt::PKCS11::Attribute::CharRows',
+    CKA_CHAR_COLUMNS => 'Crypt::PKCS11::Attribute::CharColumns',
+    CKA_COLOR => 'Crypt::PKCS11::Attribute::Color',
+    CKA_BITS_PER_PIXEL => 'Crypt::PKCS11::Attribute::BitsPerPixel',
+    CKA_CHAR_SETS => 'Crypt::PKCS11::Attribute::CharSets',
+    CKA_ENCODING_METHODS => 'Crypt::PKCS11::Attribute::EncodingMethods',
+    CKA_MIME_TYPES => 'Crypt::PKCS11::Attribute::MimeTypes',
+    CKA_MECHANISM_TYPE => 'Crypt::PKCS11::Attribute::MechanismType',
+    CKA_REQUIRED_CMS_ATTRIBUTES => 'Crypt::PKCS11::Attribute::RequiredCmsAttributes',
+    CKA_DEFAULT_CMS_ATTRIBUTES => 'Crypt::PKCS11::Attribute::DefaultCmsAttributes',
+    CKA_SUPPORTED_CMS_ATTRIBUTES => 'Crypt::PKCS11::Attribute::SupportedCmsAttributes',
+    CKA_ALLOWED_MECHANISMS => 'Crypt::PKCS11::Attribute::AllowedMechanisms',
+    CKA_VENDOR_DEFINED => 'Crypt::PKCS11::Attribute::VendorDefined',
+);
 
 sub new {
-    my $this = shift;
+    my $this = CORE::shift;
     my $class = ref($this) || $this;
-    my %args = ( @_ );
     my $self = {
+        attributes => []
     };
     bless $self, $class;
+
+    return $self;
+}
+
+sub push {
+    my ($self) = CORE::shift;
+
+    CORE::foreach (@_) {
+        unless (blessed($_) and $_->isa('Crypt::PKCS11::Attribute')) {
+            confess 'Value to push is not a Crypt::PKCS11::Attribute object';
+        }
+    }
+    CORE::push(@{$self->{attributes}}, @_);
+
+    return $self;
+}
+
+sub pop {
+    return CORE::pop(@{$_[0]->{attributes}});
+}
+
+sub shift {
+    return CORE::shift(@{$_[0]->{attributes}});
+}
+
+sub unshift {
+    my ($self) = CORE::shift;
+
+    CORE::foreach (@_) {
+        unless (blessed($_) and $_->isa('Crypt::PKCS11::Attribute')) {
+            confess 'Value to unshift is not a Crypt::PKCS11::Attribute object';
+        }
+    }
+    CORE::unshift(@{$self->{attributes}}, @_);
+
+    return $self;
+}
+
+sub foreach {
+    my ($self, $cb) = @_;
+
+    unless (ref($cb) eq 'CODE') {
+        confess '$cb argument is not CODE';
+    }
+    CORE::foreach (@{$self->{attributes}}) {
+        $cb->($_);
+    }
+
+    return $self;
+}
+
+sub toArray {
+    my ($self) = @_;
+    my @array;
+
+    CORE::foreach (@{$self->{attributes}}) {
+        CORE::push(@array, { type => $_->type, pValue => $_->pValue });
+    }
+
+    return \@array;
+}
+
+sub fromArray {
+    my ($self, $array) = @_;
+    my @attributes;
+
+    unless (ref($array) eq 'ARRAY') {
+        confess '$array argument is not ARRAY';
+    }
+
+    CORE::foreach (@{$array}) {
+        unless (ref($_) eq 'HASH'
+            and defined($_->{type})
+            and defined($_->{pValue})
+            and exists($ATTRIBUTE_MAP{$_->{type}}))
+        {
+            confess 'invalid $array';
+        }
+
+        my $attribute = $ATTRIBUTE_MAP{$_->{type}}->new;
+        $attribute->{pValue} = $_->{pValue};
+        CORE::push(@attributes, $attribute);
+    }
+
+    $self->{attributes} = \@attributes;
 
     return $self;
 }
@@ -61,10 +257,6 @@ sub type () { CKA_LABEL }
 package Crypt::PKCS11::Attribute::Application;
 use base qw(Crypt::PKCS11::Attribute::RFC2279string);
 sub type () { CKA_APPLICATION }
-
-package Crypt::PKCS11::Attribute::Value;
-use base qw(Crypt::PKCS11::Attribute::Value);
-sub type () { CKA_VALUE }
 
 package Crypt::PKCS11::Attribute::ObjectId;
 use base qw(Crypt::PKCS11::Attribute::ByteArray);

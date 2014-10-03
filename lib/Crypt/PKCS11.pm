@@ -704,6 +704,11 @@ use constant CKD_SHA384_KDF => 0x00000007;
 use constant CKD_SHA512_KDF => 0x00000008;
 use constant CKD_CPDIVERSIFY_KDF => 0x00000009;
 
+# constants missing from .h files but defined in v2.30 documentation
+
+use constant CKA_NAME_HASH_ALGORITHM => 0x0000008C;
+use constant CKA_COPYABLE => 0x00000171;
+
 our $VERSION = '0.10';
 
 our (@ISA, %EXPORT_TAGS, @EXPORT_OK);
@@ -890,7 +895,9 @@ CKM_GOST28147_KEY_WRAP CKM_AES_OFB CKM_AES_CFB64 CKM_AES_CFB8 CKM_AES_CFB128
 CKM_RSA_PKCS_TPM_1_1 CKM_RSA_PKCS_OAEP_TPM_1_1 CKR_EXCEEDED_MAX_ITERATIONS
 CKR_FIPS_SELF_TEST_FAILED CKR_LIBRARY_LOAD_FAILED CKR_PIN_TOO_WEAK
 CKR_PUBLIC_KEY_INVALID CKD_SHA224_KDF CKD_SHA256_KDF CKD_SHA384_KDF
-CKD_SHA512_KDF CKD_CPDIVERSIFY_KDF )]
+CKD_SHA512_KDF CKD_CPDIVERSIFY_KDF
+
+CKA_NAME_HASH_ALGORITHM CKA_COPYABLE)]
     );
     @EXPORT_OK = @{ $EXPORT_TAGS{constant} };
 }
@@ -898,19 +905,21 @@ CKD_SHA512_KDF CKD_CPDIVERSIFY_KDF )]
 require XSLoader;
 XSLoader::load('Crypt::PKCS11', $VERSION);
 
+use Crypt::PKCS11::Session;
+
 sub new {
     my $this = shift;
     my $class = ref($this) || $this;
-    my %args = ( @_ );
     my $self = {
-        module => undef
+        module => undef,
+        rv => CKR_OK
     };
     bless $self, $class;
 
     unless (defined($self->{module} = Crypt::PKCS11::XS::new())) {
         confess __PACKAGE__, 'Unable to create Crypt::PKCS11::XS object';
     }
-    
+
     return $self;
 }
 
@@ -921,48 +930,235 @@ END {
     Crypt::PKCS11::XS::clearUnlockMutex();
 }
 
-sub rv2str {
+sub load {
+    my ($self, $so) = @_;
+
+    unless (defined $so) {
+        confess '$so must be defined';
+    }
+
+    $self->{rv} = $self->C_load($so);
+    return $self->{rv} == CKR_OK ? 1 : undef;
+}
+
+sub unload {
+    my ($self) = @_;
+
+    $self->{rv} = $self->C_unload;
+    return $self->{rv} == CKR_OK ? 1 : undef;
+}
+
+sub Initialize {
+    my ($self) = shift;
+    my $args;
+
+    if (scalar @_ == 1) {
+        unless (ref($_[0]) eq 'HASH') {
+            confess 'argument is not a HASH';
+        }
+        $args = $_[0];
+    }
+    else {
+        $args = { @_ };
+    }
+
+    if (exists $args->{CreateMutex}
+        or exists $args->{DestroyMutex}
+        or exists $args->{LockMutex}
+        or exists $args->{UnlockMutex})
+    {
+        unless (ref($args->{CreateMutex}) eq 'CODE'
+            or ref($args->{DestroyMutex}) eq 'CODE'
+            or ref($args->{LockMutex}) eq 'CODE'
+            or ref($args->{UnlockMutex}) eq 'CODE')
+        {
+            confess 'Any or all of Mutex options are invalid';
+        }
+    }
+
+    $self->{rv} = $self->C_Initialize($args);
+    return $self->{rv} == CKR_OK ? 1 : undef;
+}
+
+sub Finalize {
+    my ($self) = @_;
+
+    $self->{rv} = $self->C_Finalize;
+    return $self->{rv} == CKR_OK ? 1 : undef;
+}
+
+sub GetInfo {
+    my ($self) = @_;
+    my %info;
+
+    $self->{rv} = $self->C_GetInfo(\%info);
+    return $self->{rv} == CKR_OK ? wantarray ? %info : \%info : undef;
+}
+
+sub GetSlotList {
+    my ($self, $tokenPresent) = @_;
+    my @slotList;
+
+    $self->{rv} = $self->C_GetSlotList($tokenPresent, \@slotList);
+    return $self->{rv} == CKR_OK ? wantarray ? @slotList : \@slotList : undef;
+}
+
+sub GetSlotInfo {
+    my ($self, $slotID) = @_;
+    my %info;
+
+    unless (defined $slotID) {
+        confess '$slotID must be defined';
+    }
+
+    $self->{rv} = $self->C_GetSlotInfo($slotID, \%info);
+    return $self->{rv} == CKR_OK ? wantarray ? %info : \%info : undef;
+}
+
+sub GetTokenInfo {
+    my ($self, $slotID) = @_;
+    my %info;
+
+    unless (defined $slotID) {
+        confess '$slotID must be defined';
+    }
+
+    $self->{rv} = $self->C_GetTokenInfo($slotID, \%info);
+    return $self->{rv} == CKR_OK ? wantarray ? %info : \%info : undef;
+}
+
+sub GetMechanismList {
+    my ($self, $slotID) = @_;
+    my @mechanismList;
+
+    unless (defined $slotID) {
+        confess '$slotID must be defined';
+    }
+
+    $self->{rv} = $self->C_GetMechanismList($slotID, \@mechanismList);
+    return $self->{rv} == CKR_OK ? wantarray ? @mechanismList : \@mechanismList : undef;
+}
+
+sub GetMechanismInfo {
+    my ($self, $slotID, $mechanismType) = @_;
+    my %info;
+
+    unless (defined $slotID) {
+        confess '$slotID must be defined';
+    }
+    unless (defined $mechanismType) {
+        confess '$mechanismType must be defined';
+    }
+
+    $self->{rv} = $self->C_GetMechanismInfo($slotID, $mechanismType, \%info);
+    return $self->{rv} == CKR_OK ? wantarray ? %info : \%info : undef;
+}
+
+sub InitToken {
+    my ($self, $slotID, $pin, $label) = @_;
+
+    unless (defined $slotID) {
+        confess '$slotID must be defined';
+    }
+    unless (defined $pin) {
+        confess '$pin must be defined';
+    }
+    unless (defined $label) {
+        confess '$label must be defined';
+    }
+
+    $self->{rv} = $self->C_InitToken($slotID, $pin, $label);
+    return $self->{rv} == CKR_OK ? 1 : undef;
+}
+
+sub OpenSession {
+    my ($self, $slotID, $flags, $notifycb) = @_;
+    my $session;
+
+    unless (defined $slotID) {
+        confess '$slotID must be defined';
+    }
+    if (defined $notifycb and ref($notifycb) ne 'CODE') {
+        confess '$notifycb must be CODE if defined';
+    }
+
+    $self->{rv} = $self->C_OpenSession($slotID, defined $flags ? $flags : 0, $notifycb, $session);
+    return $self->{rv} == CKR_OK ? Crypt::PKCS11::Session->new($self, $session) : undef;
+}
+
+sub CloseAllSessions {
+    my ($self, $slotID) = @_;
+
+    unless (defined $slotID) {
+        confess '$slotID must be defined';
+    }
+
+    $self->{rv} = $self->C_CloseAllSessions($slotID);
+    return $self->{rv} == CKR_OK ? 1 : undef;
+}
+
+sub WaitForSlotEvent {
+    my ($self, $flags) = @_;
+    my $slotID;
+
+    $self->{rv} = $self->C_WaitForSlotEvent(defined $flags ? $flags : 0, $slotID);
+    return $self->{rv} == CKR_OK ? $slotID : undef;
+}
+
+sub errno {
+    return $_[0]->{rv};
+}
+
+sub errstr {
+    return C_rv2str($_[0]->{rv});
+}
+
+#
+# Low-level binding interfaces
+#
+
+sub C_rv2str {
     return Crypt::PKCS11::XS::rv2str(shift);
 }
 
-sub setCreateMutex {
+sub C_setCreateMutex {
     return Crypt::PKCS11::XS::setCreateMutex(@_);
 }
 
-sub clearCreateMutex {
+sub C_clearCreateMutex {
     return Crypt::PKCS11::XS::clearCreateMutex();
 }
 
-sub setDestroyMutex {
+sub C_setDestroyMutex {
     return Crypt::PKCS11::XS::setDestroyMutex(@_);
 }
 
-sub clearDestroMutex {
+sub C_clearDestroMutex {
     return Crypt::PKCS11::XS::clearDestroMutex();
 }
 
-sub setLockMutex {
+sub C_setLockMutex {
     return Crypt::PKCS11::XS::setLockMutex(@_);
 }
 
-sub clearLockMutex {
+sub C_clearLockMutex {
     return Crypt::PKCS11::XS::clearLockMutex();
 }
 
-sub setUnlockMutex {
+sub C_setUnlockMutex {
     return Crypt::PKCS11::XS::setUnlockMutex(@_);
 }
 
-sub clearUnlockMutex {
+sub C_clearUnlockMutex {
     return Crypt::PKCS11::XS::clearUnlockMutex();
 }
 
-sub load {
+sub C_load {
     my $self = shift;
     return $self->{module} ? $self->{module}->load(@_) : CKR_ARGUMENTS_BAD;
 }
 
-sub unload {
+sub C_unload {
     my $self = shift;
     return $self->{module} ? $self->{module}->unload(@_) : CKR_ARGUMENTS_BAD;
 }

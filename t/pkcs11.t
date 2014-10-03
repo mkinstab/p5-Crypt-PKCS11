@@ -950,7 +950,7 @@ sub mytests {
             $SUPPORT{C_CopyObject} = 1;
         }
 
-        myis( $obj->load($so), Crypt::PKCS11::CKR_OK );
+        myis( $obj->C_load($so), Crypt::PKCS11::CKR_OK );
 
         initCheck($obj);
         infoCheck($obj);
@@ -997,7 +997,7 @@ sub mytests {
             # TODO: C_WaitForSlotEvent
 #        }
 
-        myis( $obj->unload, Crypt::PKCS11::CKR_OK );
+        myis( $obj->C_unload, Crypt::PKCS11::CKR_OK );
         # TODO: clearCreate/Destroy/Lock/Unlock-Mutex
     }
 }

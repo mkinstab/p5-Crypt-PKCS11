@@ -132,10 +132,29 @@ unless (-r 'pkcs11t.h') {
     confess;
 }
 
+print 'our %ATTRIBUTE_MAP = (
+';
 open(HEADER, 'pkcs11t.h') || confess;
 while (<HEADER>) {
     s/[\r\n]+$//o;
-    
+
+    if (/#define CKA_(\S+)/o) {
+        my $attribute = $1;
+        my $camelize = camelize(lc($attribute));
+
+print '    CKA_'.$attribute.' => \'Crypt::PKCS11::Attribute::'.$camelize.'\'
+';
+    }
+}
+close(HEADER);
+print ');
+
+';
+
+open(HEADER, 'pkcs11t.h') || confess;
+while (<HEADER>) {
+    s/[\r\n]+$//o;
+
     if (/#define CKA_(\S+)/o) {
         my $attribute = $1;
         my $camelize = camelize(lc($attribute));

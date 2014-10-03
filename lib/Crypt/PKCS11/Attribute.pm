@@ -32,13 +32,16 @@ use Carp;
 sub new {
     my $this = shift;
     my $class = ref($this) || $this;
-    my %args = ( @_ );
     my $self = {
         pValue => undef
     };
     bless $self, $class;
 
     return $self;
+}
+
+sub type {
+    confess 'unimplemented';
 }
 
 sub pValue {

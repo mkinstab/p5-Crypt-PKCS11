@@ -28,16 +28,29 @@ package Crypt::PKCS11::Session;
 use strict;
 use warnings;
 use Carp;
+use Scalar::Util qw(blessed);
 
 sub new {
     my $this = shift;
     my $class = ref($this) || $this;
-    my %args = ( @_ );
     my $self = {
+        pkcs11 => undef,
+        session => undef
     };
     bless $self, $class;
 
+    unless (blessed($self->{pkcs11} = shift) and $self->{pkcs11}->isa('Crypt::PKCS11')) {
+        confess 'first argument is not Crypt::PKCS11';
+    }
+    unless (defined ($self->{session} = shift)) {
+        confess 'second argument is not a session';
+    }
+
     return $self;
+}
+
+sub DESTROY {
+    $_[0]->{pkcs11}->C_CloseSession($_[0]->{session});
 }
 
 1;

@@ -31,6 +31,8 @@ use Carp;
 
 use base qw(Crypt::PKCS11::Attribute);
 
+sub type () { CKA_VALUE }
+
 1;
 
 __END__
