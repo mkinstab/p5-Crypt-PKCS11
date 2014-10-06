@@ -35,12 +35,12 @@ use Crypt::PKCS11 qw(:constant);
 
 sub set {
     my ($self, $byte) = @_;
-    
+
     $byte += 0;
     if ($byte < 0 or $byte > 255) {
         return;
     }
-    
+
     $self->{pValue} = pack('C', $byte);
 
     return 1;
@@ -48,11 +48,11 @@ sub set {
 
 sub get {
     my ($self) = @_;
-    
+
     unless (defined $self->{pValue}) {
         return undef;
     }
-    
+
     return unpack('C', $self->{pValue});
 }
 

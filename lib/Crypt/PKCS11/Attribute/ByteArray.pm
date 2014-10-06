@@ -31,6 +31,31 @@ use Carp;
 
 use base qw(Crypt::PKCS11::Attribute);
 
+sub set {
+    my ($self) = @_;
+
+    foreach my $byte (@_) {
+        $byte += 0;
+        if ($byte < 0 or $byte > 255) {
+            return;
+        }
+    }
+
+    $self->{pValue} = pack('C*', @_);
+
+    return 1;
+}
+
+sub get {
+    my ($self) = @_;
+
+    unless (defined $self->{pValue}) {
+        return undef;
+    }
+
+    return unpack('C*', $self->{pValue});
+}
+
 1;
 
 __END__

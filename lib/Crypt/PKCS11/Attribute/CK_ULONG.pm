@@ -35,7 +35,7 @@ use Crypt::PKCS11 qw(:constant);
 
 sub set {
     my ($self, $ulong) = @_;
-    
+
     $ulong += 0;
     $self->{pValue} = pack(CK_ULONG_SIZE < 8 ? 'L' : 'Q', $ulong);
 
@@ -44,11 +44,11 @@ sub set {
 
 sub get {
     my ($self) = @_;
-    
+
     unless (defined $self->{pValue}) {
         return undef;
     }
-    
+
     return unpack(CK_ULONG_SIZE < 8 ? 'L' : 'Q', $self->{pValue});
 }
 

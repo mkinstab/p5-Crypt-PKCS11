@@ -4,6 +4,7 @@ use Test::More;
 use Config;
 
 use Crypt::PKCS11 qw(:constant);
+use Crypt::PKCS11::Attributes;
 
 my @pkcs11_libraries = (
     '/softhsm/libsofthsm.so',

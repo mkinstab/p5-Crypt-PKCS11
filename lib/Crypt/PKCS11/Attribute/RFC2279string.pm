@@ -31,6 +31,32 @@ use Carp;
 
 use base qw(Crypt::PKCS11::Attribute);
 
+sub set {
+    my ($self, $string) = @_;
+
+    unless (defined $string and utf8::downgrade($string, 1)) {
+        return;
+    }
+
+    $self->{pValue} = pack('a*', $string);
+
+    return 1;
+}
+
+sub get {
+    my ($self) = @_;
+    my $string;
+
+    unless (defined $self->{pValue}) {
+        return undef;
+    }
+
+    $string = unpack('u*', $self->{pValue});
+    utf8::upgrade($string);
+
+    return $string;
+}
+
 1;
 
 __END__

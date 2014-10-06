@@ -35,24 +35,24 @@ use Crypt::PKCS11 qw(:constant);
 
 sub set {
     my ($self, $bool) = @_;
-    
+
     if ($bool) {
         $self->{pValue} = pack('C', CK_TRUE);
     }
     else {
         $self->{pValue} = pack('C', CK_FALSE);
     }
-    
+
     return 1;
 }
 
 sub get {
     my ($self) = @_;
-    
+
     unless (defined $self->{pValue}) {
         return undef;
     }
-    
+
     return unpack('C', $self->{pValue}) ? 1 : 0;
 }
 

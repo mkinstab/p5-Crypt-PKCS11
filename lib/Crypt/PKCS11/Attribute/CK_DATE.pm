@@ -31,6 +31,36 @@ use Carp;
 
 use base qw(Crypt::PKCS11::Attribute);
 
+sub set {
+    my ($self, $year, $month, $day) = @_;
+
+    unless (defined $month and defined $day) {
+        if ($year =~ /^([0-9]{4})-?([0-9]{2})-?([0-9]{2})$/o) {
+            ($year, $month, $day) = ($1, $2, $3);
+        }
+        else {
+            return;
+        }
+    }
+    unless (defined $year and defined $month and defined $day) {
+        return;
+    }
+
+    $self->{pValue} = pack('a8', sprintf("%04d%02d%0d2", $year, $month, $day));
+
+    return 1;
+}
+
+sub get {
+    my ($self) = @_;
+
+    unless (defined $self->{pValue}) {
+        return undef;
+    }
+
+    return unpack('a4a2a2', $self->{pValue});
+}
+
 1;
 
 __END__

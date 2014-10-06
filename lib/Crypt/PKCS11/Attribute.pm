@@ -37,6 +37,10 @@ sub new {
     };
     bless $self, $class;
 
+    if (scalar @_) {
+        $self->set(@_);
+    }
+
     return $self;
 }
 
