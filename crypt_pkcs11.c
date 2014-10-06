@@ -1442,8 +1442,8 @@ static CK_RV __check_pTemplate(AV* pTemplate, CK_ULONG_PTR pulCount, int allow_u
         pValue = hv_fetch((HV*)entry, __pValue_str, sizeof(__pValue_str)-1, 0);
 
         /*
-         * TODO: Add support for Crypt::PKCS11::Attribute::AttributeArray as
-         * pValue.
+         * TODO: Add support for pValue to be a nested hash with more attribute
+         * values.
          */
 
         if (!type
@@ -1520,8 +1520,8 @@ static CK_RV __create_CK_ATTRIBUTE(CK_ATTRIBUTE_PTR* ppTemplate, AV* pTemplate, 
         _pValue = NULL_PTR;
 
         /*
-         * TODO: Add support for Crypt::PKCS11::Attribute::AttributeArray as
-         * pValue.
+         * TODO: Add support for pValue to be a nested hash with more attribute
+         * values.
          */
 
         if (!type

@@ -79,6 +79,17 @@ sub foreach {
     return $self;
 }
 
+sub toArray {
+    my ($self) = @_;
+    my @array;
+
+    CORE::foreach (@{$self->{attributes}}) {
+        CORE::push(@array, { type => $_->type, pValue => $_->pValue });
+    }
+
+    return \@array;
+}
+
 sub set {
     my $self = CORE::shift;
 
@@ -94,7 +105,7 @@ sub set {
 }
 
 sub pValue {
-    return $_[0];
+    return $_[0]->toArray;
 }
 
 1;
