@@ -77,7 +77,7 @@ sub initCheck {
 
 sub infoCheck {
     my ($obj) = @_;
-    my ($list, $info);
+    my ($list, $info, $rv);
 
     myis( $obj->C_GetInfo($info = {}), CKR_CRYPTOKI_NOT_INITIALIZED, 'infoCheck: C_GetInfo uninitialized' );
     myis( $obj->C_GetSlotList(CK_FALSE, $list = []), CKR_CRYPTOKI_NOT_INITIALIZED, 'infoCheck: C_GetSlotList uninitialized' );
@@ -93,7 +93,10 @@ sub infoCheck {
     myis( $obj->C_GetSlotInfo($slotInvalid, $info = {}), CKR_SLOT_ID_INVALID, 'infoCheck: C_GetSlotInfo slotInvalid' );
     myis( $obj->C_GetSlotInfo($slotWithToken, $info = {}), CKR_OK, 'infoCheck: C_GetSlotInfo' );
     myis( $obj->C_GetTokenInfo($slotInvalid, $info = {}), CKR_SLOT_ID_INVALID, 'infoCheck: C_GetTokenInfo slotInvalid' );
-    defined $slotWithNoToken and myis( $obj->C_GetTokenInfo($slotWithNoToken, $info = {}), CKR_TOKEN_NOT_PRESENT, 'infoCheck: C_GetTokenInfo slotWithNoToken' );
+    defined $slotWithNoToken and myis2( ($rv = $obj->C_GetTokenInfo($slotWithNoToken, $info = {})), CKR_OK, CKR_TOKEN_NOT_PRESENT, 'infoCheck: C_GetTokenInfo slotWithNoToken' );
+    if ($rv == CKR_OK) {
+        myisnt( scalar $info, 0, 'infoCheck: C_GetTokenInfo slotWithNoToken CKR_OK' );
+    }
     myis( $obj->C_GetTokenInfo($slotWithToken, $info = {}), CKR_OK, 'infoCheck: C_GetTokenInfo' );
     myis( $obj->C_GetMechanismList($slotInvalid, $list = []), CKR_SLOT_ID_INVALID, 'infoCheck: C_GetMechanismList slotInvalid' );
     myis( $obj->C_GetMechanismList($slotWithToken, $list = []), CKR_OK, 'infoCheck: C_GetMechanismList' );
@@ -117,8 +120,9 @@ sub sessionCheck {
 
     myis( $obj->C_Initialize, CKR_OK, 'sessionCheck: C_Initialize' );
     myis( $obj->C_OpenSession($slotInvalid, 0, undef, $sessions[0]), CKR_SLOT_ID_INVALID, 'sessionCheck: C_OpenSession slotInvalid' );
-    defined $slotWithNoToken and myis( $obj->C_OpenSession($slotWithNoToken, 0, undef, $sessions[0]), CKR_TOKEN_NOT_PRESENT, 'sessionCheck: C_OpenSession slotWithNoToken' );
-    defined $slotWithNotInitToken and myis( $obj->C_OpenSession($slotWithNotInitToken, 0, undef, $sessions[0]), CKR_TOKEN_NOT_RECOGNIZED, 'sessionCheck: C_OpenSession slotWithNotInitToken' );
+    defined $slotWithNoToken and myis2( $obj->C_OpenSession($slotWithNoToken, 0, undef, $sessions[0]), CKR_TOKEN_NOT_PRESENT, CKR_SESSION_PARALLEL_NOT_SUPPORTED, 'sessionCheck: C_OpenSession slotWithNoToken' );
+    defined $slotWithNotInitToken and myis2( $obj->C_OpenSession($slotWithNotInitToken, 0, undef, $sessions[0]), CKR_TOKEN_NOT_RECOGNIZED, CKR_SESSION_PARALLEL_NOT_SUPPORTED, 'sessionCheck: C_OpenSession slotWithNotInitToken' );
+    defined $slotWithNotInitToken and myis( $obj->C_OpenSession($slotWithNotInitToken, CKF_SERIAL_SESSION, undef, $sessions[0]), CKR_TOKEN_NOT_RECOGNIZED, 'sessionCheck: C_OpenSession slotWithNotInitToken #2' );
     myis( $obj->C_OpenSession($slotWithToken, 0, undef, $sessions[0]), CKR_SESSION_PARALLEL_NOT_SUPPORTED, 'sessionCheck: C_OpenSession not serial' );
     myis( $obj->C_OpenSession($slotWithToken, CKF_SERIAL_SESSION, undef, $sessions[0]), CKR_OK, 'sessionCheck: C_OpenSession #0' );
     myis( $obj->C_CloseSession(CK_INVALID_HANDLE), CKR_SESSION_HANDLE_INVALID, 'sessionCheck: C_CloseSession invalid handle' );
@@ -938,11 +942,11 @@ sub mytests {
         elsif ($so =~ /libsofthsm2\.so$/o) {
             $ENV{SOFTHSM2_CONF} = 'softhsm2.conf';
             system('mkdir -p tokens') == 0 || die;
-            system('softhsm2-util --slot 0 --init-token --label slot1 --so-pin 12345678 --pin 1234') == 0 || die;
+            system('softhsm2-util --slot 0 --init-token --label slot0 --so-pin 12345678 --pin 1234') == 0 || die;
+            system('softhsm2-util --slot 1 --init-token --label slot1 --so-pin 12345678 --pin 1234') == 0 || die;
 
             $slotWithToken = 0;
-            $slotWithNoToken = undef;
-            $slotWithNotInitToken = undef;
+            $slotWithNoToken = 1;
             delete $MECHANISM_INFO{CKM_RIPEMD160};
             delete $MECHANISM_INFO{CKM_RIPEMD160_RSA_PKCS};
             delete $MECHANISM_SIGNVERIFY{CKM_RIPEMD160_RSA_PKCS};
