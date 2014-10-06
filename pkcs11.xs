@@ -51,6 +51,13 @@ PROTOTYPE: $
 OUTPUT:
     RETVAL
 
+int
+crypt_pkcs11_xs_SvIOK(sv)
+    SV* sv
+PROTOTYPE: $
+OUTPUT:
+    RETVAL
+
 void
 crypt_pkcs11_xs_setCreateMutex(pCreateMutex)
     SV* pCreateMutex

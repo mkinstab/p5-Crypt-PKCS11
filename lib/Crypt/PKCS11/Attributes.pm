@@ -503,15 +503,15 @@ use base qw(Crypt::PKCS11::Attribute::CK_BBOOL);
 sub type () { CKA_WRAP_WITH_TRUSTED }
 
 package Crypt::PKCS11::Attribute::WrapTemplate;
-use base qw(Crypt::PKCS11::Attribute::CK_ATTRIBUTE_PTR);
+use base qw(Crypt::PKCS11::Attribute::AttributeArray);
 sub type () { CKA_WRAP_TEMPLATE }
 
 package Crypt::PKCS11::Attribute::UnwrapTemplate;
-use base qw(Crypt::PKCS11::Attribute::CK_ATTRIBUTE_PTR);
+use base qw(Crypt::PKCS11::Attribute::AttributeArray);
 sub type () { CKA_UNWRAP_TEMPLATE }
 
 package Crypt::PKCS11::Attribute::DeriveTemplate;
-use base qw(Crypt::PKCS11::Attribute::CK_ATTRIBUTE_PTR);
+use base qw(Crypt::PKCS11::Attribute::AttributeArray);
 sub type () { CKA_DERIVE_TEMPLATE }
 
 package Crypt::PKCS11::Attribute::OtpFormat;
@@ -651,7 +651,7 @@ use base qw(Crypt::PKCS11::Attribute::ByteArray);
 sub type () { CKA_SUPPORTED_CMS_ATTRIBUTES }
 
 package Crypt::PKCS11::Attribute::AllowedMechanisms;
-use base qw(Crypt::PKCS11::Attribute::CK_MECHANISM_TYPE_PTR);
+use base qw(Crypt::PKCS11::Attribute::UlongArray);
 sub type () { CKA_ALLOWED_MECHANISMS }
 
 package Crypt::PKCS11::Attribute::VendorDefined;

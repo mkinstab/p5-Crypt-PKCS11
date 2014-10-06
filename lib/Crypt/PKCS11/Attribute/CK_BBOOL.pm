@@ -36,6 +36,10 @@ use Crypt::PKCS11 qw(:constant);
 sub set {
     my ($self, $bool) = @_;
 
+    unless (defined $bool) {
+        confess 'Value to set is not a valid bool';
+    }
+
     if ($bool) {
         $self->{pValue} = pack('C', CK_TRUE);
     }

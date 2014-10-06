@@ -44,6 +44,7 @@ struct crypt_pkcs11_xs_object {
 
 Crypt__PKCS11__XS* crypt_pkcs11_xs_new(void);
 const char* crypt_pkcs11_xs_rv2str(CK_RV rv);
+int crypt_pkcs11_xs_SvIOK(SV* sv);
 void crypt_pkcs11_xs_setCreateMutex(SV* pCreateMutex);
 void crypt_pkcs11_xs_clearCreateMutex(void);
 void crypt_pkcs11_xs_setDestroyMutex(SV* pDestroyMutex);

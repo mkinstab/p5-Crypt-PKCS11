@@ -39,11 +39,11 @@ sub set {
             ($year, $month, $day) = ($1, $2, $3);
         }
         else {
-            return;
+            confess 'Value to set is not a valid date';
         }
     }
     unless (defined $year and defined $month and defined $day) {
-        return;
+        confess 'Value to set is not a valid date';
     }
 
     $self->{pValue} = pack('a8', sprintf("%04d%02d%0d2", $year, $month, $day));

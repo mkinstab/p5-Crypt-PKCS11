@@ -23,13 +23,39 @@
 # OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package Crypt::PKCS11::Attribute::CK_ATTRIBUTE_PTR;
+package Crypt::PKCS11::Attribute::UlongArray;
 
 use strict;
 use warnings;
 use Carp;
 
 use base qw(Crypt::PKCS11::Attribute);
+
+use Crypt::PKCS11 qw(:constant);
+
+sub set {
+    my $self = shift;
+
+    foreach (@_) {
+        unless (defined $_ and Crypt::PKCS11::XS::SvIOK($_) and $_ >= 0) {
+            confess 'Value to set is not a valid unsigned long';
+        }
+    }
+
+    $self->{pValue} = pack(CK_ULONG_SIZE < 8 ? 'L*' : 'Q*', @_);
+
+    return 1;
+}
+
+sub get {
+    my ($self) = @_;
+
+    unless (defined $self->{pValue}) {
+        return undef;
+    }
+
+    return unpack(CK_ULONG_SIZE < 8 ? 'L*' : 'Q*', $self->{pValue});
+}
 
 1;
 

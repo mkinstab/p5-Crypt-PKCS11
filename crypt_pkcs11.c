@@ -354,6 +354,15 @@ const char* crypt_pkcs11_xs_rv2str(CK_RV rv) {
     return str;
 }
 
+int crypt_pkcs11_xs_SvIOK(SV* sv) {
+    if (!sv) {
+        return 0;
+    }
+
+    SvGETMAGIC(sv);
+    return SvIOK(sv) ? 1 : 0;
+}
+
 static SV* __CreateMutexSV = NULL_PTR;
 
 static CK_RV __CreateMutex(CK_VOID_PTR_PTR ppMutex) {
@@ -1432,6 +1441,11 @@ static CK_RV __check_pTemplate(AV* pTemplate, CK_ULONG_PTR pulCount, int allow_u
         type = hv_fetch((HV*)entry, __type_str, sizeof(__type_str)-1, 0);
         pValue = hv_fetch((HV*)entry, __pValue_str, sizeof(__pValue_str)-1, 0);
 
+        /*
+         * TODO: Add support for Crypt::PKCS11::Attribute::AttributeArray as
+         * pValue.
+         */
+
         if (!type
             || !*type
             || !SvIOK(*type)
@@ -1504,6 +1518,11 @@ static CK_RV __create_CK_ATTRIBUTE(CK_ATTRIBUTE_PTR* ppTemplate, AV* pTemplate, 
         pValue = hv_fetch((HV*)entry, __pValue_str, sizeof(__pValue_str)-1, 0);
 
         _pValue = NULL_PTR;
+
+        /*
+         * TODO: Add support for Crypt::PKCS11::Attribute::AttributeArray as
+         * pValue.
+         */
 
         if (!type
             || !*type

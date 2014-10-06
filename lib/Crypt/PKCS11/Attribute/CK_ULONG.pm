@@ -36,7 +36,10 @@ use Crypt::PKCS11 qw(:constant);
 sub set {
     my ($self, $ulong) = @_;
 
-    $ulong += 0;
+    unless (defined $ulong and Crypt::PKCS11::XS::SvIOK($ulong)) {
+        confess 'Value to set is not a valid unsigned long';
+    }
+
     $self->{pValue} = pack(CK_ULONG_SIZE < 8 ? 'L' : 'Q', $ulong);
 
     return 1;

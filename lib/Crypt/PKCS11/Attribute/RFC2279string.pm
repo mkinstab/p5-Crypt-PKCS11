@@ -35,7 +35,7 @@ sub set {
     my ($self, $string) = @_;
 
     unless (defined $string and utf8::downgrade($string, 1)) {
-        return;
+        confess 'Value to set is not a valid string';
     }
 
     $self->{pValue} = pack('a*', $string);
@@ -51,7 +51,7 @@ sub get {
         return undef;
     }
 
-    $string = unpack('u*', $self->{pValue});
+    $string = unpack('a*', $self->{pValue});
     utf8::upgrade($string);
 
     return $string;

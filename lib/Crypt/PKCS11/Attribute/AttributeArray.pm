@@ -23,13 +23,79 @@
 # OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package Crypt::PKCS11::Attribute::CK_MECHANISM_TYPE_PTR;
+package Crypt::PKCS11::Attribute::AttributeArray;
 
 use strict;
 use warnings;
 use Carp;
+use Scalar::Util qw(blessed);
 
 use base qw(Crypt::PKCS11::Attribute);
+
+sub push {
+    my ($self) = CORE::shift;
+
+    CORE::foreach (@_) {
+        unless (blessed($_) and $_->isa('Crypt::PKCS11::Attribute')) {
+            confess 'Value to push is not a Crypt::PKCS11::Attribute object';
+        }
+    }
+    CORE::push(@{$self->{attributes}}, @_);
+
+    return $self;
+}
+
+sub pop {
+    return CORE::pop(@{$_[0]->{attributes}});
+}
+
+sub shift {
+    return CORE::shift(@{$_[0]->{attributes}});
+}
+
+sub unshift {
+    my ($self) = CORE::shift;
+
+    CORE::foreach (@_) {
+        unless (blessed($_) and $_->isa('Crypt::PKCS11::Attribute')) {
+            confess 'Value to unshift is not a Crypt::PKCS11::Attribute object';
+        }
+    }
+    CORE::unshift(@{$self->{attributes}}, @_);
+
+    return $self;
+}
+
+sub foreach {
+    my ($self, $cb) = @_;
+
+    unless (ref($cb) eq 'CODE') {
+        confess '$cb argument is not CODE';
+    }
+    CORE::foreach (@{$self->{attributes}}) {
+        $cb->($_);
+    }
+
+    return $self;
+}
+
+sub set {
+    my $self = CORE::shift;
+
+    foreach (@_) {
+        unless (blessed($_) and $_->isa('Crypt::PKCS11::Attribute')) {
+            confess 'Value to set is not a Crypt::PKCS11::Attribute object';
+        }
+    }
+
+    $self->{attributes} = [ @_ ];
+
+    return 1;
+}
+
+sub pValue {
+    return $_[0];
+}
 
 1;
 
