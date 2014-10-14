@@ -34,13 +34,13 @@ sub new {
     my $this = shift;
     my $class = ref($this) || $this;
     my $self = {
-        pkcs11 => undef,
+        pkcs11xs => undef,
         session => undef
     };
     bless $self, $class;
 
-    unless (blessed($self->{pkcs11} = shift) and $self->{pkcs11}->isa('Crypt::PKCS11')) {
-        confess 'first argument is not Crypt::PKCS11';
+    unless (blessed($self->{pkcs11xs} = shift) and $self->{pkcs11xs}->isa('Crypt::PKCS11::XSPtr')) {
+        confess 'first argument is not Crypt::PKCS11::XSPtr';
     }
     unless (defined ($self->{session} = shift)) {
         confess 'second argument is not a session';
@@ -50,7 +50,7 @@ sub new {
 }
 
 sub DESTROY {
-    $_[0]->{pkcs11}->C_CloseSession($_[0]->{session});
+    $_[0]->{pkcs11xs}->C_CloseSession($_[0]->{session});
 }
 
 1;

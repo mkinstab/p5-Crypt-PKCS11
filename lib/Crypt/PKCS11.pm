@@ -911,12 +911,12 @@ sub new {
     my $this = shift;
     my $class = ref($this) || $this;
     my $self = {
-        module => undef,
+        pkcs11xs => undef,
         rv => CKR_OK
     };
     bless $self, $class;
 
-    unless (defined($self->{module} = Crypt::PKCS11::XS::new())) {
+    unless (defined($self->{pkcs11xs} = Crypt::PKCS11::XS->new())) {
         confess __PACKAGE__, 'Unable to create Crypt::PKCS11::XS object';
     }
 
@@ -937,14 +937,14 @@ sub load {
         confess '$so must be defined';
     }
 
-    $self->{rv} = $self->C_load($so);
+    $self->{rv} = $self->{pkcs11xs}->load($so);
     return $self->{rv} == CKR_OK ? 1 : undef;
 }
 
 sub unload {
     my ($self) = @_;
 
-    $self->{rv} = $self->C_unload;
+    $self->{rv} = $self->{pkcs11xs}->unload;
     return $self->{rv} == CKR_OK ? 1 : undef;
 }
 
@@ -976,14 +976,14 @@ sub Initialize {
         }
     }
 
-    $self->{rv} = $self->C_Initialize($args);
+    $self->{rv} = $self->{pkcs11xs}->C_Initialize($args);
     return $self->{rv} == CKR_OK ? 1 : undef;
 }
 
 sub Finalize {
     my ($self) = @_;
 
-    $self->{rv} = $self->C_Finalize;
+    $self->{rv} = $self->{pkcs11xs}->C_Finalize;
     return $self->{rv} == CKR_OK ? 1 : undef;
 }
 
@@ -991,7 +991,7 @@ sub GetInfo {
     my ($self) = @_;
     my %info;
 
-    $self->{rv} = $self->C_GetInfo(\%info);
+    $self->{rv} = $self->{pkcs11xs}->C_GetInfo(\%info);
     return $self->{rv} == CKR_OK ? wantarray ? %info : \%info : undef;
 }
 
@@ -999,7 +999,7 @@ sub GetSlotList {
     my ($self, $tokenPresent) = @_;
     my @slotList;
 
-    $self->{rv} = $self->C_GetSlotList($tokenPresent, \@slotList);
+    $self->{rv} = $self->{pkcs11xs}->C_GetSlotList($tokenPresent, \@slotList);
     return $self->{rv} == CKR_OK ? wantarray ? @slotList : \@slotList : undef;
 }
 
@@ -1011,7 +1011,7 @@ sub GetSlotInfo {
         confess '$slotID must be defined';
     }
 
-    $self->{rv} = $self->C_GetSlotInfo($slotID, \%info);
+    $self->{rv} = $self->{pkcs11xs}->C_GetSlotInfo($slotID, \%info);
     return $self->{rv} == CKR_OK ? wantarray ? %info : \%info : undef;
 }
 
@@ -1023,7 +1023,7 @@ sub GetTokenInfo {
         confess '$slotID must be defined';
     }
 
-    $self->{rv} = $self->C_GetTokenInfo($slotID, \%info);
+    $self->{rv} = $self->{pkcs11xs}->C_GetTokenInfo($slotID, \%info);
     return $self->{rv} == CKR_OK ? wantarray ? %info : \%info : undef;
 }
 
@@ -1035,7 +1035,7 @@ sub GetMechanismList {
         confess '$slotID must be defined';
     }
 
-    $self->{rv} = $self->C_GetMechanismList($slotID, \@mechanismList);
+    $self->{rv} = $self->{pkcs11xs}->C_GetMechanismList($slotID, \@mechanismList);
     return $self->{rv} == CKR_OK ? wantarray ? @mechanismList : \@mechanismList : undef;
 }
 
@@ -1050,7 +1050,7 @@ sub GetMechanismInfo {
         confess '$mechanismType must be defined';
     }
 
-    $self->{rv} = $self->C_GetMechanismInfo($slotID, $mechanismType, \%info);
+    $self->{rv} = $self->{pkcs11xs}->C_GetMechanismInfo($slotID, $mechanismType, \%info);
     return $self->{rv} == CKR_OK ? wantarray ? %info : \%info : undef;
 }
 
@@ -1067,7 +1067,7 @@ sub InitToken {
         confess '$label must be defined';
     }
 
-    $self->{rv} = $self->C_InitToken($slotID, $pin, $label);
+    $self->{rv} = $self->{pkcs11xs}->C_InitToken($slotID, $pin, $label);
     return $self->{rv} == CKR_OK ? 1 : undef;
 }
 
@@ -1082,8 +1082,8 @@ sub OpenSession {
         confess '$notifycb must be CODE if defined';
     }
 
-    $self->{rv} = $self->C_OpenSession($slotID, defined $flags ? $flags : 0, $notifycb, $session);
-    return $self->{rv} == CKR_OK ? Crypt::PKCS11::Session->new($self, $session) : undef;
+    $self->{rv} = $self->{pkcs11xs}->C_OpenSession($slotID, defined $flags ? $flags : 0, $notifycb, $session);
+    return $self->{rv} == CKR_OK ? Crypt::PKCS11::Session->new($self->{pkcs11xs}, $session) : undef;
 }
 
 sub CloseAllSessions {
@@ -1093,7 +1093,7 @@ sub CloseAllSessions {
         confess '$slotID must be defined';
     }
 
-    $self->{rv} = $self->C_CloseAllSessions($slotID);
+    $self->{rv} = $self->{pkcs11xs}->C_CloseAllSessions($slotID);
     return $self->{rv} == CKR_OK ? 1 : undef;
 }
 
@@ -1101,7 +1101,7 @@ sub WaitForSlotEvent {
     my ($self, $flags) = @_;
     my $slotID;
 
-    $self->{rv} = $self->C_WaitForSlotEvent(defined $flags ? $flags : 0, $slotID);
+    $self->{rv} = $self->{pkcs11xs}->C_WaitForSlotEvent(defined $flags ? $flags : 0, $slotID);
     return $self->{rv} == CKR_OK ? $slotID : undef;
 }
 
@@ -1111,391 +1111,6 @@ sub errno {
 
 sub errstr {
     return C_rv2str($_[0]->{rv});
-}
-
-#
-# Low-level binding interfaces
-#
-
-sub C_rv2str {
-    return Crypt::PKCS11::XS::rv2str(shift);
-}
-
-sub C_setCreateMutex {
-    return Crypt::PKCS11::XS::setCreateMutex(@_);
-}
-
-sub C_clearCreateMutex {
-    return Crypt::PKCS11::XS::clearCreateMutex();
-}
-
-sub C_setDestroyMutex {
-    return Crypt::PKCS11::XS::setDestroyMutex(@_);
-}
-
-sub C_clearDestroMutex {
-    return Crypt::PKCS11::XS::clearDestroMutex();
-}
-
-sub C_setLockMutex {
-    return Crypt::PKCS11::XS::setLockMutex(@_);
-}
-
-sub C_clearLockMutex {
-    return Crypt::PKCS11::XS::clearLockMutex();
-}
-
-sub C_setUnlockMutex {
-    return Crypt::PKCS11::XS::setUnlockMutex(@_);
-}
-
-sub C_clearUnlockMutex {
-    return Crypt::PKCS11::XS::clearUnlockMutex();
-}
-
-sub C_load {
-    my $self = shift;
-    return $self->{module} ? $self->{module}->load(@_) : CKR_ARGUMENTS_BAD;
-}
-
-sub C_unload {
-    my $self = shift;
-    return $self->{module} ? $self->{module}->unload(@_) : CKR_ARGUMENTS_BAD;
-}
-
-sub C_Initialize {
-    my ($self, $pInitArgs) = @_;
-    return $self->{module} ? $self->{module}->C_Initialize($pInitArgs ? $pInitArgs : {}) : CKR_ARGUMENTS_BAD;
-}
-
-sub C_Finalize {
-    my $self = shift;
-    return $self->{module} ? $self->{module}->C_Finalize(@_) : CKR_ARGUMENTS_BAD;
-}
-
-sub C_GetInfo {
-    my $self = shift;
-    return $self->{module} ? $self->{module}->C_GetInfo(@_) : CKR_ARGUMENTS_BAD;
-}
-
-sub C_GetSlotList {
-    my $self = shift;
-    return $self->{module} ? $self->{module}->C_GetSlotList(@_) : CKR_ARGUMENTS_BAD;
-}
-
-sub C_GetSlotInfo {
-    my $self = shift;
-    return $self->{module} ? $self->{module}->C_GetSlotInfo(@_) : CKR_ARGUMENTS_BAD;
-}
-
-sub C_GetTokenInfo {
-    my $self = shift;
-    return $self->{module} ? $self->{module}->C_GetTokenInfo(@_) : CKR_ARGUMENTS_BAD;
-}
-
-sub C_GetMechanismList {
-    my $self = shift;
-    return $self->{module} ? $self->{module}->C_GetMechanismList(@_) : CKR_ARGUMENTS_BAD;
-}
-
-sub C_GetMechanismInfo {
-    my $self = shift;
-    return $self->{module} ? $self->{module}->C_GetMechanismInfo(@_) : CKR_ARGUMENTS_BAD;
-}
-
-sub C_InitToken {
-    my ($self, $slotID, $pPin, $pLabel) = @_;
-    return $self->{module} ? $self->{module}->C_InitToken($slotID, $pPin, sprintf("%-32s", $pLabel)) : CKR_ARGUMENTS_BAD;
-}
-
-sub C_InitPIN {
-    my $self = shift;
-    return $self->{module} ? $self->{module}->C_InitPIN(@_) : CKR_ARGUMENTS_BAD;
-}
-
-sub C_SetPIN {
-    my $self = shift;
-    return $self->{module} ? $self->{module}->C_SetPIN(@_) : CKR_ARGUMENTS_BAD;
-}
-
-sub C_OpenSession {
-    my $self = shift;
-    return $self->{module} ? $self->{module}->C_OpenSession(@_) : CKR_ARGUMENTS_BAD;
-}
-
-sub C_CloseSession {
-    my $self = shift;
-    return $self->{module} ? $self->{module}->C_CloseSession(@_) : CKR_ARGUMENTS_BAD;
-}
-
-sub C_CloseAllSessions {
-    my $self = shift;
-    return $self->{module} ? $self->{module}->C_CloseAllSessions(@_) : CKR_ARGUMENTS_BAD;
-}
-
-sub C_GetSessionInfo {
-    my $self = shift;
-    return $self->{module} ? $self->{module}->C_GetSessionInfo(@_) : CKR_ARGUMENTS_BAD;
-}
-
-sub C_GetOperationState {
-    my $self = shift;
-    return $self->{module} ? $self->{module}->C_GetOperationState(@_) : CKR_ARGUMENTS_BAD;
-}
-
-sub C_SetOperationState {
-    my $self = shift;
-    return $self->{module} ? $self->{module}->C_SetOperationState(@_) : CKR_ARGUMENTS_BAD;
-}
-
-sub C_Login {
-    my $self = shift;
-    return $self->{module} ? $self->{module}->C_Login(@_) : CKR_ARGUMENTS_BAD;
-}
-
-sub C_Logout {
-    my $self = shift;
-    return $self->{module} ? $self->{module}->C_Logout(@_) : CKR_ARGUMENTS_BAD;
-}
-
-sub C_CreateObject {
-    my $self = shift;
-    return $self->{module} ? $self->{module}->C_CreateObject(@_) : CKR_ARGUMENTS_BAD;
-}
-
-sub C_CopyObject {
-    my $self = shift;
-    return $self->{module} ? $self->{module}->C_CopyObject(@_) : CKR_ARGUMENTS_BAD;
-}
-
-sub C_DestroyObject {
-    my $self = shift;
-    return $self->{module} ? $self->{module}->C_DestroyObject(@_) : CKR_ARGUMENTS_BAD;
-}
-
-sub C_GetObjectSize {
-    my $self = shift;
-    return $self->{module} ? $self->{module}->C_GetObjectSize(@_) : CKR_ARGUMENTS_BAD;
-}
-
-sub C_GetAttributeValue {
-    my $self = shift;
-    return $self->{module} ? $self->{module}->C_GetAttributeValue(@_) : CKR_ARGUMENTS_BAD;
-}
-
-sub C_SetAttributeValue {
-    my $self = shift;
-    return $self->{module} ? $self->{module}->C_SetAttributeValue(@_) : CKR_ARGUMENTS_BAD;
-}
-
-sub C_FindObjectsInit {
-    my $self = shift;
-    return $self->{module} ? $self->{module}->C_FindObjectsInit(@_) : CKR_ARGUMENTS_BAD;
-}
-
-sub C_FindObjects {
-    my $self = shift;
-    return $self->{module} ? $self->{module}->C_FindObjects(@_) : CKR_ARGUMENTS_BAD;
-}
-
-sub C_FindObjectsFinal {
-    my $self = shift;
-    return $self->{module} ? $self->{module}->C_FindObjectsFinal(@_) : CKR_ARGUMENTS_BAD;
-}
-
-sub C_EncryptInit {
-    my $self = shift;
-    return $self->{module} ? $self->{module}->C_EncryptInit(@_) : CKR_ARGUMENTS_BAD;
-}
-
-sub C_Encrypt {
-    my $self = shift;
-    return $self->{module} ? $self->{module}->C_Encrypt(@_) : CKR_ARGUMENTS_BAD;
-}
-
-sub C_EncryptUpdate {
-    my $self = shift;
-    return $self->{module} ? $self->{module}->C_EncryptUpdate(@_) : CKR_ARGUMENTS_BAD;
-}
-
-sub C_EncryptFinal {
-    my $self = shift;
-    return $self->{module} ? $self->{module}->C_EncryptFinal(@_) : CKR_ARGUMENTS_BAD;
-}
-
-sub C_DecryptInit {
-    my $self = shift;
-    return $self->{module} ? $self->{module}->C_DecryptInit(@_) : CKR_ARGUMENTS_BAD;
-}
-
-sub C_Decrypt {
-    my $self = shift;
-    return $self->{module} ? $self->{module}->C_Decrypt(@_) : CKR_ARGUMENTS_BAD;
-}
-
-sub C_DecryptUpdate {
-    my $self = shift;
-    return $self->{module} ? $self->{module}->C_DecryptUpdate(@_) : CKR_ARGUMENTS_BAD;
-}
-
-sub C_DecryptFinal {
-    my $self = shift;
-    return $self->{module} ? $self->{module}->C_DecryptFinal(@_) : CKR_ARGUMENTS_BAD;
-}
-
-sub C_DigestInit {
-    my $self = shift;
-    return $self->{module} ? $self->{module}->C_DigestInit(@_) : CKR_ARGUMENTS_BAD;
-}
-
-sub C_Digest {
-    my $self = shift;
-    return $self->{module} ? $self->{module}->C_Digest(@_) : CKR_ARGUMENTS_BAD;
-}
-
-sub C_DigestUpdate {
-    my $self = shift;
-    return $self->{module} ? $self->{module}->C_DigestUpdate(@_) : CKR_ARGUMENTS_BAD;
-}
-
-sub C_DigestKey {
-    my $self = shift;
-    return $self->{module} ? $self->{module}->C_DigestKey(@_) : CKR_ARGUMENTS_BAD;
-}
-
-sub C_DigestFinal {
-    my $self = shift;
-    return $self->{module} ? $self->{module}->C_DigestFinal(@_) : CKR_ARGUMENTS_BAD;
-}
-
-sub C_SignInit {
-    my $self = shift;
-    return $self->{module} ? $self->{module}->C_SignInit(@_) : CKR_ARGUMENTS_BAD;
-}
-
-sub C_Sign {
-    my $self = shift;
-    return $self->{module} ? $self->{module}->C_Sign(@_) : CKR_ARGUMENTS_BAD;
-}
-
-sub C_SignUpdate {
-    my $self = shift;
-    return $self->{module} ? $self->{module}->C_SignUpdate(@_) : CKR_ARGUMENTS_BAD;
-}
-
-sub C_SignFinal {
-    my $self = shift;
-    return $self->{module} ? $self->{module}->C_SignFinal(@_) : CKR_ARGUMENTS_BAD;
-}
-
-sub C_SignRecoverInit {
-    my $self = shift;
-    return $self->{module} ? $self->{module}->C_SignRecoverInit(@_) : CKR_ARGUMENTS_BAD;
-}
-
-sub C_SignRecover {
-    my $self = shift;
-    return $self->{module} ? $self->{module}->C_SignRecover(@_) : CKR_ARGUMENTS_BAD;
-}
-
-sub C_VerifyInit {
-    my $self = shift;
-    return $self->{module} ? $self->{module}->C_VerifyInit(@_) : CKR_ARGUMENTS_BAD;
-}
-
-sub C_Verify {
-    my $self = shift;
-    return $self->{module} ? $self->{module}->C_Verify(@_) : CKR_ARGUMENTS_BAD;
-}
-
-sub C_VerifyUpdate {
-    my $self = shift;
-    return $self->{module} ? $self->{module}->C_VerifyUpdate(@_) : CKR_ARGUMENTS_BAD;
-}
-
-sub C_VerifyFinal {
-    my $self = shift;
-    return $self->{module} ? $self->{module}->C_VerifyFinal(@_) : CKR_ARGUMENTS_BAD;
-}
-
-sub C_VerifyRecoverInit {
-    my $self = shift;
-    return $self->{module} ? $self->{module}->C_VerifyRecoverInit(@_) : CKR_ARGUMENTS_BAD;
-}
-
-sub C_VerifyRecover {
-    my $self = shift;
-    return $self->{module} ? $self->{module}->C_VerifyRecover(@_) : CKR_ARGUMENTS_BAD;
-}
-
-sub C_DigestEncryptUpdate {
-    my $self = shift;
-    return $self->{module} ? $self->{module}->C_DigestEncryptUpdate(@_) : CKR_ARGUMENTS_BAD;
-}
-
-sub C_DecryptDigestUpdate {
-    my $self = shift;
-    return $self->{module} ? $self->{module}->C_DecryptDigestUpdate(@_) : CKR_ARGUMENTS_BAD;
-}
-
-sub C_SignEncryptUpdate {
-    my $self = shift;
-    return $self->{module} ? $self->{module}->C_SignEncryptUpdate(@_) : CKR_ARGUMENTS_BAD;
-}
-
-sub C_DecryptVerifyUpdate {
-    my $self = shift;
-    return $self->{module} ? $self->{module}->C_DecryptVerifyUpdate(@_) : CKR_ARGUMENTS_BAD;
-}
-
-sub C_GenerateKey {
-    my $self = shift;
-    return $self->{module} ? $self->{module}->C_GenerateKey(@_) : CKR_ARGUMENTS_BAD;
-}
-
-sub C_GenerateKeyPair {
-    my $self = shift;
-    return $self->{module} ? $self->{module}->C_GenerateKeyPair(@_) : CKR_ARGUMENTS_BAD;
-}
-
-sub C_WrapKey {
-    my $self = shift;
-    return $self->{module} ? $self->{module}->C_WrapKey(@_) : CKR_ARGUMENTS_BAD;
-}
-
-sub C_UnwrapKey {
-    my $self = shift;
-    return $self->{module} ? $self->{module}->C_UnwrapKey(@_) : CKR_ARGUMENTS_BAD;
-}
-
-sub C_DeriveKey {
-    my $self = shift;
-    return $self->{module} ? $self->{module}->C_DeriveKey(@_) : CKR_ARGUMENTS_BAD;
-}
-
-sub C_SeedRandom {
-    my $self = shift;
-    return $self->{module} ? $self->{module}->C_SeedRandom(@_) : CKR_ARGUMENTS_BAD;
-}
-
-sub C_GenerateRandom {
-    my $self = shift;
-    return $self->{module} ? $self->{module}->C_GenerateRandom(@_) : CKR_ARGUMENTS_BAD;
-}
-
-sub C_GetFunctionStatus {
-    my $self = shift;
-    return $self->{module} ? $self->{module}->C_GetFunctionStatus(@_) : CKR_ARGUMENTS_BAD;
-}
-
-sub C_CancelFunction {
-    my $self = shift;
-    return $self->{module} ? $self->{module}->C_CancelFunction(@_) : CKR_ARGUMENTS_BAD;
-}
-
-sub C_WaitForSlotEvent {
-    my $self = shift;
-    return $self->{module} ? $self->{module}->C_WaitForSlotEvent(@_) : CKR_ARGUMENTS_BAD;
 }
 
 1;

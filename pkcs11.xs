@@ -28,19 +28,14 @@
 
 #include "crypt_pkcs11.h"
 
-/*
-CK_RV
-crypt_pkcs11_xs_C_GetFunctionList
-    CK_FUNCTION_LIST_PTR_PTR ppFunctionList
-*/
-
 MODULE = Crypt::PKCS11::XS  PACKAGE = Crypt::PKCS11::XS  PREFIX = crypt_pkcs11_xs_
 
 PROTOTYPES: ENABLE
 
 Crypt::PKCS11::XS*
-crypt_pkcs11_xs_new()
-PROTOTYPE: DISABLE
+crypt_pkcs11_xs_new(class)
+    const char* class
+PROTOTYPE: $
 OUTPUT:
     RETVAL
 

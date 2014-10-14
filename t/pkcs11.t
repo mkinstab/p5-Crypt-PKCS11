@@ -71,7 +71,7 @@ sub initCheck {
     myis( $obj->C_Initialize(\%initArgs), CKR_OK, 'initCheck: C_Initialize' );
     myis( $obj->C_Initialize(\%initArgs), CKR_CRYPTOKI_ALREADY_INITIALIZED, 'initCheck: C_Initialize already initialized' );
     myis( $obj->C_Finalize, CKR_OK, 'initCheck: C_Finalize' );
-    myis( $obj->C_Initialize, CKR_OK, 'initCheck: C_Initialize #2' );
+    myis( $obj->C_Initialize({}), CKR_OK, 'initCheck: C_Initialize #2' );
     myis( $obj->C_Finalize, CKR_OK, 'initCheck: C_Finalize #2' );
 }
 
@@ -86,7 +86,7 @@ sub infoCheck {
     myis( $obj->C_GetMechanismList($slotInvalid, $list = []), CKR_CRYPTOKI_NOT_INITIALIZED, 'infoCheck: C_GetMechanismList uninitialized' );
     myis( $obj->C_GetMechanismInfo($slotInvalid, CKM_VENDOR_DEFINED, $info = {}), CKR_CRYPTOKI_NOT_INITIALIZED, 'infoCheck: C_GetMechanismInfo uninitialized' );
 
-    myis( $obj->C_Initialize, CKR_OK, 'infoCheck: C_Initialize' );
+    myis( $obj->C_Initialize({}), CKR_OK, 'infoCheck: C_Initialize' );
     myis( $obj->C_GetInfo($info = {}), CKR_OK, 'infoCheck: C_GetInfo' );
     myis( $obj->C_GetSlotList(CK_FALSE, $list = []), CKR_OK, 'infoCheck: C_GetSlotList' );
     myis( $obj->C_GetSlotList(CK_TRUE, $list = []), CKR_OK, 'infoCheck: C_GetSlotList' );
@@ -118,7 +118,7 @@ sub sessionCheck {
     myis( $obj->C_CloseAllSessions($slotInvalid), CKR_CRYPTOKI_NOT_INITIALIZED, 'sessionCheck: C_CloseAllSessions uninitialized' );
     myis( $obj->C_GetSessionInfo($slotInvalid, $info = {}), CKR_CRYPTOKI_NOT_INITIALIZED, 'sessionCheck: C_GetSessionInfo uninitialized' );
 
-    myis( $obj->C_Initialize, CKR_OK, 'sessionCheck: C_Initialize' );
+    myis( $obj->C_Initialize({}), CKR_OK, 'sessionCheck: C_Initialize' );
     myis( $obj->C_OpenSession($slotInvalid, 0, undef, $sessions[0]), CKR_SLOT_ID_INVALID, 'sessionCheck: C_OpenSession slotInvalid' );
     defined $slotWithNoToken and myis2( $obj->C_OpenSession($slotWithNoToken, 0, undef, $sessions[0]), CKR_TOKEN_NOT_PRESENT, CKR_SESSION_PARALLEL_NOT_SUPPORTED, 'sessionCheck: C_OpenSession slotWithNoToken' );
     defined $slotWithNotInitToken and myis2( $obj->C_OpenSession($slotWithNotInitToken, 0, undef, $sessions[0]), CKR_TOKEN_NOT_RECOGNIZED, CKR_SESSION_PARALLEL_NOT_SUPPORTED, 'sessionCheck: C_OpenSession slotWithNotInitToken' );
@@ -151,7 +151,7 @@ sub userCheck {
     myis2( $obj->C_Login(CK_INVALID_HANDLE, 9999, ""), CKR_CRYPTOKI_NOT_INITIALIZED, CKR_SESSION_HANDLE_INVALID, 'userCheck: C_Login uninitialized' );
     myis2( $obj->C_Logout(CK_INVALID_HANDLE), CKR_CRYPTOKI_NOT_INITIALIZED, CKR_SESSION_HANDLE_INVALID, 'userCheck: C_Logout uninitialized' );
 
-    myis( $obj->C_Initialize, CKR_OK, 'userCheck: C_Initialize' );
+    myis( $obj->C_Initialize({}), CKR_OK, 'userCheck: C_Initialize' );
     myis( $obj->C_OpenSession($slotWithToken, CKF_SERIAL_SESSION, undef, $sessions[0]), CKR_OK, 'userCheck: C_OpenSession #0' );
     myis( $obj->C_OpenSession($slotWithToken, CKF_SERIAL_SESSION | CKF_RW_SESSION, undef, $sessions[1]), CKR_OK, 'userCheck: C_OpenSession #1' );
     myis( $obj->C_Login(CK_INVALID_HANDLE, 9999, ""), CKR_SESSION_HANDLE_INVALID, 'userCheck: C_Login invalid handle' );
@@ -183,7 +183,7 @@ sub randomCheck {
     myis2( $obj->C_SeedRandom(CK_INVALID_HANDLE, $seed), CKR_CRYPTOKI_NOT_INITIALIZED, CKR_SESSION_HANDLE_INVALID, 'randomCheck: C_SeedRandom uninitialized' );
     myis2( $obj->C_GenerateRandom(CK_INVALID_HANDLE, $random, 1), CKR_CRYPTOKI_NOT_INITIALIZED, CKR_SESSION_HANDLE_INVALID, 'randomCheck: C_GenerateRandom uninitialized' );
 
-    myis( $obj->C_Initialize, CKR_OK, 'randomCheck: C_Initialize' );
+    myis( $obj->C_Initialize({}), CKR_OK, 'randomCheck: C_Initialize' );
     myis( $obj->C_OpenSession($slotWithToken, CKF_SERIAL_SESSION, undef, $session), CKR_OK, 'randomCheck: C_OpenSession' );
     myis( $obj->C_SeedRandom(CK_INVALID_HANDLE, $seed), CKR_SESSION_HANDLE_INVALID, 'randomCheck: C_SeedRandom invalid handle' );
     myis( $obj->C_SeedRandom($session, $seed), CKR_OK, 'randomCheck: C_SeedRandom' );
@@ -261,7 +261,7 @@ sub generateCheck {
     myis2( $obj->C_DestroyObject(CK_INVALID_HANDLE, CK_INVALID_HANDLE), CKR_CRYPTOKI_NOT_INITIALIZED, CKR_SESSION_HANDLE_INVALID, 'generateCheck: C_DestroyObject uninitialized' );
     myis2( $obj->C_CreateObject(CK_INVALID_HANDLE, [], $object), CKR_CRYPTOKI_NOT_INITIALIZED, CKR_SESSION_HANDLE_INVALID, 'generateCheck: C_CreateObject uninitialized' );
 
-    myis( $obj->C_Initialize, CKR_OK, 'generateCheck: C_Initialize' );
+    myis( $obj->C_Initialize({}), CKR_OK, 'generateCheck: C_Initialize' );
     myis( $obj->C_OpenSession($slotWithToken, CKF_SERIAL_SESSION, undef, $sessions[0]), CKR_OK, 'generateCheck: C_OpenSession #0' );
     myis( $obj->C_OpenSession($slotWithToken, CKF_SERIAL_SESSION | CKF_RW_SESSION, undef, $sessions[1]), CKR_OK, 'generateCheck: C_OpenSession #1' );
     myis( $obj->C_GenerateKeyPair(CK_INVALID_HANDLE, {}, [], [], $publicKey, $privateKey), CKR_SESSION_HANDLE_INVALID, 'generateCheck: C_GenerateKeyPair invalid handle' );
@@ -348,7 +348,7 @@ sub objectCheck {
     myis2( $obj->C_GetAttributeValue(CK_INVALID_HANDLE, CK_INVALID_HANDLE, $list = []), CKR_CRYPTOKI_NOT_INITIALIZED, CKR_SESSION_HANDLE_INVALID, 'objectCheck: C_GetAttributeValue uninitialized' );
     myis2( $obj->C_SetAttributeValue(CK_INVALID_HANDLE, CK_INVALID_HANDLE, $list = []), CKR_CRYPTOKI_NOT_INITIALIZED, CKR_SESSION_HANDLE_INVALID, 'objectCheck: C_SetAttributeValue uninitialized' );
 
-    myis( $obj->C_Initialize, CKR_OK, 'objectCheck: C_Initialize' );
+    myis( $obj->C_Initialize({}), CKR_OK, 'objectCheck: C_Initialize' );
     myis( $obj->C_OpenSession($slotWithToken, CKF_SERIAL_SESSION, undef, $sessions[0]), CKR_OK, 'objectCheck: C_OpenSession #0' );
     myis( $obj->C_OpenSession($slotWithToken, CKF_SERIAL_SESSION | CKF_RW_SESSION, undef, $sessions[1]), CKR_OK, 'objectCheck: C_OpenSession #1' );
     myis( $obj->C_Login($sessions[1], CKU_USER, "1234"), CKR_OK, 'objectCheck: C_Login' );
@@ -464,7 +464,7 @@ sub digestCheck {
     myis2( $obj->C_DigestUpdate(CK_INVALID_HANDLE, $data), CKR_CRYPTOKI_NOT_INITIALIZED, CKR_SESSION_HANDLE_INVALID, 'digestCheck: C_DigestUpdate uninitialized' );
     myis2( $obj->C_DigestFinal(CK_INVALID_HANDLE, $digest), CKR_CRYPTOKI_NOT_INITIALIZED, CKR_SESSION_HANDLE_INVALID, 'digestCheck: C_DigestFinal uninitialized' );
 
-    myis( $obj->C_Initialize, CKR_OK, 'digestCheck: C_Initialize' );
+    myis( $obj->C_Initialize({}), CKR_OK, 'digestCheck: C_Initialize' );
     myis( $obj->C_OpenSession($slotWithToken, CKF_SERIAL_SESSION, undef, $sessions[0]), CKR_OK, 'digestCheck: C_OpenSession #0' );
     myis( $obj->C_OpenSession($slotWithToken, CKF_SERIAL_SESSION, undef, $sessions[1]), CKR_OK, 'digestCheck: C_OpenSession #1' );
     myis( $obj->C_DigestInit(CK_INVALID_HANDLE, $mechanism), CKR_SESSION_HANDLE_INVALID, 'digestCheck: C_DigestInit invalid handle' );
@@ -528,7 +528,7 @@ sub signCheck {
     myis2( $obj->C_SignUpdate(CK_INVALID_HANDLE, $data), CKR_CRYPTOKI_NOT_INITIALIZED, CKR_SESSION_HANDLE_INVALID, 'signCheck: C_SignUpdate uninitialized' );
     myis2( $obj->C_SignFinal(CK_INVALID_HANDLE, $signature), CKR_CRYPTOKI_NOT_INITIALIZED, CKR_SESSION_HANDLE_INVALID, 'signCheck: C_SignFinal uninitialized' );
 
-    myis( $obj->C_Initialize, CKR_OK, 'signCheck: C_Initialize' );
+    myis( $obj->C_Initialize({}), CKR_OK, 'signCheck: C_Initialize' );
     myis( $obj->C_OpenSession($slotWithToken, CKF_SERIAL_SESSION, undef, $sessions[0]), CKR_OK, 'signCheck: C_OpenSession #0' );
     myis( $obj->C_OpenSession($slotWithToken, CKF_SERIAL_SESSION | CKF_RW_SESSION, undef, $sessions[1]), CKR_OK, 'signCheck: C_OpenSession #1' );
     myis( $obj->C_Login($sessions[1], CKU_USER, "1234"), CKR_OK, 'signCheck: C_Login' );
@@ -603,7 +603,7 @@ sub verifyCheck {
     myis2( $obj->C_VerifyUpdate(CK_INVALID_HANDLE, $data), CKR_CRYPTOKI_NOT_INITIALIZED, CKR_SESSION_HANDLE_INVALID, 'verifyCheck: C_VerifyUpdate uninitialized' );
     myis2( $obj->C_VerifyFinal(CK_INVALID_HANDLE, $signature), CKR_CRYPTOKI_NOT_INITIALIZED, CKR_SESSION_HANDLE_INVALID, 'verifyCheck: C_VerifyFinal uninitialized' );
 
-    myis( $obj->C_Initialize, CKR_OK, 'verifyCheck: C_Initialize' );
+    myis( $obj->C_Initialize({}), CKR_OK, 'verifyCheck: C_Initialize' );
     myis( $obj->C_OpenSession($slotWithToken, CKF_SERIAL_SESSION, undef, $sessions[0]), CKR_OK, 'verifyCheck: C_OpenSession #0' );
     myis( $obj->C_OpenSession($slotWithToken, CKF_SERIAL_SESSION | CKF_RW_SESSION, undef, $sessions[1]), CKR_OK, 'verifyCheck: C_OpenSession #1' );
     myis( $obj->C_Login($sessions[1], CKU_USER, "1234"), CKR_OK, 'verifyCheck: C_Login' );
@@ -682,7 +682,7 @@ sub encryptCheck {
     myis2( $obj->C_EncryptInit(CK_INVALID_HANDLE, $mechanism, $publicKey1), CKR_CRYPTOKI_NOT_INITIALIZED, CKR_SESSION_HANDLE_INVALID, 'encryptCheck: C_VerifyInit uninitialized' );
     myis2( $obj->C_Encrypt(CK_INVALID_HANDLE, $data, $encrypted), CKR_CRYPTOKI_NOT_INITIALIZED, CKR_SESSION_HANDLE_INVALID, 'encryptCheck: C_VerifyInit uninitialized' );
 
-    myis( $obj->C_Initialize, CKR_OK, 'encryptCheck: C_Initialize' );
+    myis( $obj->C_Initialize({}), CKR_OK, 'encryptCheck: C_Initialize' );
     myis( $obj->C_OpenSession($slotWithToken, CKF_SERIAL_SESSION, undef, $sessions[0]), CKR_OK, 'encryptCheck: C_OpenSession #0' );
     myis( $obj->C_OpenSession($slotWithToken, CKF_SERIAL_SESSION | CKF_RW_SESSION, undef, $sessions[1]), CKR_OK, 'encryptCheck: C_OpenSession #1' );
     myis( $obj->C_Login($sessions[1], CKU_USER, "1234"), CKR_OK, 'encryptCheck: C_Login' );
@@ -763,7 +763,7 @@ sub decryptCheck {
     myis2( $obj->C_DecryptInit(CK_INVALID_HANDLE, $mechanism, $privateKey1), CKR_CRYPTOKI_NOT_INITIALIZED, CKR_SESSION_HANDLE_INVALID, 'decryptCheck: C_VerifyInit uninitialized' );
     myis2( $obj->C_Decrypt(CK_INVALID_HANDLE, $data, $encrypted), CKR_CRYPTOKI_NOT_INITIALIZED, CKR_SESSION_HANDLE_INVALID, 'decryptCheck: C_VerifyInit uninitialized' );
 
-    myis( $obj->C_Initialize, CKR_OK, 'decryptCheck: C_Initialize' );
+    myis( $obj->C_Initialize({}), CKR_OK, 'decryptCheck: C_Initialize' );
     myis( $obj->C_OpenSession($slotWithToken, CKF_SERIAL_SESSION, undef, $sessions[0]), CKR_OK, 'decryptCheck: C_OpenSession #0' );
     myis( $obj->C_OpenSession($slotWithToken, CKF_SERIAL_SESSION | CKF_RW_SESSION, undef, $sessions[1]), CKR_OK, 'decryptCheck: C_OpenSession #1' );
     myis( $obj->C_Login($sessions[1], CKU_USER, "1234"), CKR_OK, 'decryptCheck: C_Login' );
@@ -851,7 +851,7 @@ sub signVerifyCheck {
     my $data = 'Text';
     my $signature;
 
-    myis( $obj->C_Initialize, CKR_OK, 'signVerifyCheck: C_Initialize' );
+    myis( $obj->C_Initialize({}), CKR_OK, 'signVerifyCheck: C_Initialize' );
     myis( $obj->C_OpenSession($slotWithToken, CKF_SERIAL_SESSION | CKF_RW_SESSION, undef, $sessions[0]), CKR_OK, 'signVerifyCheck: C_OpenSession #1' );
     myis( $obj->C_Login($sessions[0], CKU_USER, "1234"), CKR_OK, 'signVerifyCheck: C_Login' );
     myis( $obj->C_GenerateKeyPair($sessions[0], $mechanism, \@publicKeyTemplate, \@privateKeyTemplate, $publicKey, $privateKey), CKR_OK, 'signVerifyCheck: C_GenerateKeyPair' );
@@ -895,8 +895,8 @@ sub mytests {
     }
 
     foreach my $so (@libraries) {
-        my $obj = Crypt::PKCS11->new;
-        myisa_ok( $obj, 'Crypt::PKCS11' );
+        my $obj = Crypt::PKCS11::XS->new;
+        myisa_ok( $obj, 'Crypt::PKCS11::XSPtr' );
 
         $slotWithToken = 1;
         $slotWithNoToken = 0;
@@ -954,7 +954,7 @@ sub mytests {
             $SUPPORT{C_CopyObject} = 1;
         }
 
-        myis( $obj->C_load($so), Crypt::PKCS11::CKR_OK );
+        myis( $obj->load($so), Crypt::PKCS11::CKR_OK );
 
         initCheck($obj);
         infoCheck($obj);
@@ -1001,7 +1001,7 @@ sub mytests {
             # TODO: C_WaitForSlotEvent
 #        }
 
-        myis( $obj->C_unload, Crypt::PKCS11::CKR_OK );
+        myis( $obj->unload, Crypt::PKCS11::CKR_OK );
         # TODO: clearCreate/Destroy/Lock/Unlock-Mutex
     }
 }

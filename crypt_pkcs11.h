@@ -42,7 +42,7 @@ struct crypt_pkcs11_xs_object {
     CK_INFO info;
 };
 
-Crypt__PKCS11__XS* crypt_pkcs11_xs_new(void);
+Crypt__PKCS11__XS* crypt_pkcs11_xs_new(const char* class);
 const char* crypt_pkcs11_xs_rv2str(CK_RV rv);
 int crypt_pkcs11_xs_SvIOK(SV* sv);
 void crypt_pkcs11_xs_setCreateMutex(SV* pCreateMutex);

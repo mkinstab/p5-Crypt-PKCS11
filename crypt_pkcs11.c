@@ -73,7 +73,7 @@ static const char __ulValueLen_str[] = "ulValueLen";
 static const char __mechanism_str[] = "mechanism";
 static const char __pParameter_str[] = "pParameter";
 
-Crypt__PKCS11__XS* crypt_pkcs11_xs_new(void) {
+Crypt__PKCS11__XS* crypt_pkcs11_xs_new(const char* class) {
     Crypt__PKCS11__XS * module = calloc(1, sizeof(Crypt__PKCS11__XS));
 
     return module;
@@ -997,6 +997,7 @@ CK_RV crypt_pkcs11_xs_C_InitToken(Crypt__PKCS11__XS* module, CK_SLOT_ID slotID, 
     STRLEN len2;
     char* _pPin2;
     char* _pLabel2;
+    char* _pLabel3 = 0;
 
     if (!module) {
         return CKR_ARGUMENTS_BAD;
@@ -1027,17 +1028,29 @@ CK_RV crypt_pkcs11_xs_C_InitToken(Crypt__PKCS11__XS* module, CK_SLOT_ID slotID, 
     if (!sv_utf8_downgrade(_pPin, 0)
         || !sv_utf8_downgrade(_pLabel, 0)
         || !(_pPin2 = SvPV(_pPin, len))
-        || !(_pLabel2 = SvPV(_pLabel, len2))
-        || len2 != 32)
+        || !(_pLabel2 = SvPV(_pLabel, len2)))
     {
         SvREFCNT_dec(_pPin);
         SvREFCNT_dec(_pLabel);
         return CKR_GENERAL_ERROR;
     }
 
-    rv = module->function_list->C_InitToken(slotID, _pPin2, len, _pLabel2);
+    if (len2 < 32) {
+        if (!(_pLabel3 = calloc(1, 32))) {
+            SvREFCNT_dec(_pPin);
+            SvREFCNT_dec(_pLabel);
+            return CKR_GENERAL_ERROR;
+        }
+        memcpy(_pLabel3, _pLabel2, len2);
+    }
+
+    rv = module->function_list->C_InitToken(slotID, _pPin2, len, _pLabel3 ? _pLabel3 : _pLabel2);
     SvREFCNT_dec(_pPin);
     SvREFCNT_dec(_pLabel);
+
+    if (_pLabel3) {
+        free(_pLabel3);
+    }
 
     return rv;
 }
