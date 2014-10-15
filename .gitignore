@@ -8,4 +8,5 @@ PKCS11.bs
 MYMETA.yml
 Makefile
 pkcs11.c
+pkcs11_struct.c
 pm_to_blib

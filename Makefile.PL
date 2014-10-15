@@ -26,4 +26,5 @@ WriteMakefile(
     DEFINE            => join(' ', @DEFINES), # e.g., '-DHAVE_SOMETHING'
     INC               => '-I.', # e.g., '-I. -I/usr/include/other'
     OBJECT            => '$(O_FILES)', # link all the C files too
+    TYPEMAPS          => [ 'typemap', 'typemap.struct' ],
 );
