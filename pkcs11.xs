@@ -94,51 +94,51 @@ MODULE = Crypt::PKCS11::XS  PACKAGE = Crypt::PKCS11::XSPtr  PREFIX = crypt_pkcs1
 PROTOTYPES: ENABLE
 
 CK_RV
-crypt_pkcs11_xs_load(module, path)
-    Crypt::PKCS11::XS* module
+crypt_pkcs11_xs_load(object, path)
+    Crypt::PKCS11::XS* object
     const char* path
 PROTOTYPE: $$
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_xs_unload(module)
-    Crypt::PKCS11::XS* module
+crypt_pkcs11_xs_unload(object)
+    Crypt::PKCS11::XS* object
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 void
-crypt_pkcs11_xs_DESTROY(module)
-    Crypt::PKCS11::XS* module
+crypt_pkcs11_xs_DESTROY(object)
+    Crypt::PKCS11::XS* object
 PROTOTYPE: $
 
 CK_RV
-crypt_pkcs11_xs_C_Initialize(module, pInitArgs)
-    Crypt::PKCS11::XS* module
+crypt_pkcs11_xs_C_Initialize(object, pInitArgs)
+    Crypt::PKCS11::XS* object
     HV* pInitArgs
 PROTOTYPE: $$
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_xs_C_Finalize(module)
-    Crypt::PKCS11::XS* module
+crypt_pkcs11_xs_C_Finalize(object)
+    Crypt::PKCS11::XS* object
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_xs_C_GetInfo(module, pInfo)
-    Crypt::PKCS11::XS* module
+crypt_pkcs11_xs_C_GetInfo(object, pInfo)
+    Crypt::PKCS11::XS* object
     HV* pInfo
 PROTOTYPE: $$
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_xs_C_GetSlotList(module, tokenPresent, pSlotList)
-    Crypt::PKCS11::XS* module
+crypt_pkcs11_xs_C_GetSlotList(object, tokenPresent, pSlotList)
+    Crypt::PKCS11::XS* object
     CK_BBOOL tokenPresent
     AV* pSlotList
 PROTOTYPE: $$$
@@ -146,8 +146,8 @@ OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_xs_C_GetSlotInfo(module, slotID, pInfo)
-    Crypt::PKCS11::XS* module
+crypt_pkcs11_xs_C_GetSlotInfo(object, slotID, pInfo)
+    Crypt::PKCS11::XS* object
     CK_SLOT_ID slotID
     HV* pInfo
 PROTOTYPE: $$$
@@ -155,8 +155,8 @@ OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_xs_C_GetTokenInfo(module, slotID, pInfo)
-    Crypt::PKCS11::XS* module
+crypt_pkcs11_xs_C_GetTokenInfo(object, slotID, pInfo)
+    Crypt::PKCS11::XS* object
     CK_SLOT_ID slotID
     HV* pInfo
 PROTOTYPE: $$$
@@ -164,8 +164,8 @@ OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_xs_C_GetMechanismList(module, slotID, pMechanismList)
-    Crypt::PKCS11::XS* module
+crypt_pkcs11_xs_C_GetMechanismList(object, slotID, pMechanismList)
+    Crypt::PKCS11::XS* object
     CK_SLOT_ID slotID
     AV* pMechanismList
 PROTOTYPE: $$$
@@ -173,8 +173,8 @@ OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_xs_C_GetMechanismInfo(module, slotID, type, pInfo)
-    Crypt::PKCS11::XS* module
+crypt_pkcs11_xs_C_GetMechanismInfo(object, slotID, type, pInfo)
+    Crypt::PKCS11::XS* object
     CK_SLOT_ID slotID
     CK_MECHANISM_TYPE type
     HV* pInfo
@@ -183,8 +183,8 @@ OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_xs_C_InitToken(module, slotID, pPin, pLabel)
-    Crypt::PKCS11::XS* module
+crypt_pkcs11_xs_C_InitToken(object, slotID, pPin, pLabel)
+    Crypt::PKCS11::XS* object
     CK_SLOT_ID slotID
     SV* pPin
     SV* pLabel
@@ -193,8 +193,8 @@ OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_xs_C_InitPIN(module, hSession, pPin)
-    Crypt::PKCS11::XS* module
+crypt_pkcs11_xs_C_InitPIN(object, hSession, pPin)
+    Crypt::PKCS11::XS* object
     CK_SESSION_HANDLE hSession
     SV* pPin
 PROTOTYPE: $$$
@@ -202,8 +202,8 @@ OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_xs_C_SetPIN(module, hSession, pOldPin, pNewPin)
-    Crypt::PKCS11::XS* module
+crypt_pkcs11_xs_C_SetPIN(object, hSession, pOldPin, pNewPin)
+    Crypt::PKCS11::XS* object
     CK_SESSION_HANDLE hSession
     SV* pOldPin
     SV* pNewPin
@@ -212,8 +212,8 @@ OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_xs_C_OpenSession(module, slotID, flags, Notify, phSession)
-    Crypt::PKCS11::XS* module
+crypt_pkcs11_xs_C_OpenSession(object, slotID, flags, Notify, phSession)
+    Crypt::PKCS11::XS* object
     CK_SLOT_ID slotID
     CK_FLAGS flags
     SV* Notify
@@ -224,24 +224,24 @@ OUTPUT:
     phSession
 
 CK_RV
-crypt_pkcs11_xs_C_CloseSession(module, hSession)
-    Crypt::PKCS11::XS* module
+crypt_pkcs11_xs_C_CloseSession(object, hSession)
+    Crypt::PKCS11::XS* object
     CK_SESSION_HANDLE hSession
 PROTOTYPE: $$
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_xs_C_CloseAllSessions(module, slotID)
-    Crypt::PKCS11::XS* module
+crypt_pkcs11_xs_C_CloseAllSessions(object, slotID)
+    Crypt::PKCS11::XS* object
     CK_SLOT_ID slotID
 PROTOTYPE: $$
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_xs_C_GetSessionInfo(module, hSession, pInfo)
-    Crypt::PKCS11::XS* module
+crypt_pkcs11_xs_C_GetSessionInfo(object, hSession, pInfo)
+    Crypt::PKCS11::XS* object
     CK_SESSION_HANDLE hSession
     HV* pInfo
 PROTOTYPE: $$$
@@ -249,8 +249,8 @@ OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_xs_C_GetOperationState(module, hSession, pOperationState)
-    Crypt::PKCS11::XS* module
+crypt_pkcs11_xs_C_GetOperationState(object, hSession, pOperationState)
+    Crypt::PKCS11::XS* object
     CK_SESSION_HANDLE hSession
     SV* pOperationState
 PROTOTYPE: $$$
@@ -259,8 +259,8 @@ OUTPUT:
     pOperationState
 
 CK_RV
-crypt_pkcs11_xs_C_SetOperationState(module, hSession, pOperationState, hEncryptionKey, hAuthenticationKey)
-    Crypt::PKCS11::XS* module
+crypt_pkcs11_xs_C_SetOperationState(object, hSession, pOperationState, hEncryptionKey, hAuthenticationKey)
+    Crypt::PKCS11::XS* object
     CK_SESSION_HANDLE hSession
     SV* pOperationState
     CK_OBJECT_HANDLE hEncryptionKey
@@ -270,8 +270,8 @@ OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_xs_C_Login(module, hSession, userType, pPin)
-    Crypt::PKCS11::XS* module
+crypt_pkcs11_xs_C_Login(object, hSession, userType, pPin)
+    Crypt::PKCS11::XS* object
     CK_SESSION_HANDLE hSession
     CK_USER_TYPE userType
     SV* pPin
@@ -280,16 +280,16 @@ OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_xs_C_Logout(module, hSession)
-    Crypt::PKCS11::XS* module
+crypt_pkcs11_xs_C_Logout(object, hSession)
+    Crypt::PKCS11::XS* object
     CK_SESSION_HANDLE hSession
 PROTOTYPE: $$
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_xs_C_CreateObject(module, hSession, pTemplate, phObject)
-    Crypt::PKCS11::XS* module
+crypt_pkcs11_xs_C_CreateObject(object, hSession, pTemplate, phObject)
+    Crypt::PKCS11::XS* object
     CK_SESSION_HANDLE hSession
     AV* pTemplate
     SV* phObject
@@ -299,8 +299,8 @@ OUTPUT:
     phObject
 
 CK_RV
-crypt_pkcs11_xs_C_CopyObject(module, hSession, hObject, pTemplate, phNewObject)
-    Crypt::PKCS11::XS* module
+crypt_pkcs11_xs_C_CopyObject(object, hSession, hObject, pTemplate, phNewObject)
+    Crypt::PKCS11::XS* object
     CK_SESSION_HANDLE hSession
     CK_OBJECT_HANDLE hObject
     AV* pTemplate
@@ -311,8 +311,8 @@ OUTPUT:
     phNewObject
 
 CK_RV
-crypt_pkcs11_xs_C_DestroyObject(module, hSession, hObject)
-    Crypt::PKCS11::XS* module
+crypt_pkcs11_xs_C_DestroyObject(object, hSession, hObject)
+    Crypt::PKCS11::XS* object
     CK_SESSION_HANDLE hSession
     CK_OBJECT_HANDLE hObject
 PROTOTYPE: $$$
@@ -320,8 +320,8 @@ OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_xs_C_GetObjectSize(module, hSession, hObject, pulSize)
-    Crypt::PKCS11::XS* module
+crypt_pkcs11_xs_C_GetObjectSize(object, hSession, hObject, pulSize)
+    Crypt::PKCS11::XS* object
     CK_SESSION_HANDLE hSession
     CK_OBJECT_HANDLE hObject
     SV* pulSize
@@ -331,8 +331,8 @@ OUTPUT:
     pulSize
 
 CK_RV
-crypt_pkcs11_xs_C_GetAttributeValue(module, hSession, hObject, pTemplate)
-    Crypt::PKCS11::XS* module
+crypt_pkcs11_xs_C_GetAttributeValue(object, hSession, hObject, pTemplate)
+    Crypt::PKCS11::XS* object
     CK_SESSION_HANDLE hSession
     CK_OBJECT_HANDLE hObject
     AV* pTemplate
@@ -341,8 +341,8 @@ OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_xs_C_SetAttributeValue(module, hSession, hObject, pTemplate)
-    Crypt::PKCS11::XS* module
+crypt_pkcs11_xs_C_SetAttributeValue(object, hSession, hObject, pTemplate)
+    Crypt::PKCS11::XS* object
     CK_SESSION_HANDLE hSession
     CK_OBJECT_HANDLE hObject
     AV* pTemplate
@@ -351,8 +351,8 @@ OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_xs_C_FindObjectsInit(module, hSession, pTemplate)
-    Crypt::PKCS11::XS* module
+crypt_pkcs11_xs_C_FindObjectsInit(object, hSession, pTemplate)
+    Crypt::PKCS11::XS* object
     CK_SESSION_HANDLE hSession
     AV* pTemplate
 PROTOTYPE: $$$
@@ -360,8 +360,8 @@ OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_xs_C_FindObjects(module, hSession, phObject, ulMaxObjectCount)
-    Crypt::PKCS11::XS* module
+crypt_pkcs11_xs_C_FindObjects(object, hSession, phObject, ulMaxObjectCount)
+    Crypt::PKCS11::XS* object
     CK_SESSION_HANDLE hSession
     AV* phObject
     CK_ULONG ulMaxObjectCount
@@ -370,16 +370,16 @@ OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_xs_C_FindObjectsFinal(module, hSession)
-    Crypt::PKCS11::XS* module
+crypt_pkcs11_xs_C_FindObjectsFinal(object, hSession)
+    Crypt::PKCS11::XS* object
     CK_SESSION_HANDLE hSession
 PROTOTYPE: $$
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_xs_C_EncryptInit(module, hSession, pMechanism, hKey)
-    Crypt::PKCS11::XS* module
+crypt_pkcs11_xs_C_EncryptInit(object, hSession, pMechanism, hKey)
+    Crypt::PKCS11::XS* object
     CK_SESSION_HANDLE hSession
     HV* pMechanism
     CK_OBJECT_HANDLE hKey
@@ -388,8 +388,8 @@ OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_xs_C_Encrypt(module, hSession, pData, pEncryptedData)
-    Crypt::PKCS11::XS* module
+crypt_pkcs11_xs_C_Encrypt(object, hSession, pData, pEncryptedData)
+    Crypt::PKCS11::XS* object
     CK_SESSION_HANDLE hSession
     SV* pData
     SV* pEncryptedData
@@ -399,8 +399,8 @@ OUTPUT:
     pEncryptedData
 
 CK_RV
-crypt_pkcs11_xs_C_EncryptUpdate(module, hSession, pPart, pEncryptedPart)
-    Crypt::PKCS11::XS* module
+crypt_pkcs11_xs_C_EncryptUpdate(object, hSession, pPart, pEncryptedPart)
+    Crypt::PKCS11::XS* object
     CK_SESSION_HANDLE hSession
     SV* pPart
     SV* pEncryptedPart
@@ -410,8 +410,8 @@ OUTPUT:
     pEncryptedPart
 
 CK_RV
-crypt_pkcs11_xs_C_EncryptFinal(module, hSession, pLastEncryptedPart)
-    Crypt::PKCS11::XS* module
+crypt_pkcs11_xs_C_EncryptFinal(object, hSession, pLastEncryptedPart)
+    Crypt::PKCS11::XS* object
     CK_SESSION_HANDLE hSession
     SV* pLastEncryptedPart
 PROTOTYPE: $$$
@@ -420,8 +420,8 @@ OUTPUT:
     pLastEncryptedPart
 
 CK_RV
-crypt_pkcs11_xs_C_DecryptInit(module, hSession, pMechanism, hKey)
-    Crypt::PKCS11::XS* module
+crypt_pkcs11_xs_C_DecryptInit(object, hSession, pMechanism, hKey)
+    Crypt::PKCS11::XS* object
     CK_SESSION_HANDLE hSession
     HV* pMechanism
     CK_OBJECT_HANDLE hKey
@@ -430,8 +430,8 @@ OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_xs_C_Decrypt(module, hSession, pEncryptedData, pData)
-    Crypt::PKCS11::XS* module
+crypt_pkcs11_xs_C_Decrypt(object, hSession, pEncryptedData, pData)
+    Crypt::PKCS11::XS* object
     CK_SESSION_HANDLE hSession
     SV* pEncryptedData
     SV* pData
@@ -441,8 +441,8 @@ OUTPUT:
     pData
 
 CK_RV
-crypt_pkcs11_xs_C_DecryptUpdate(module, hSession, pEncryptedPart, pPart)
-    Crypt::PKCS11::XS* module
+crypt_pkcs11_xs_C_DecryptUpdate(object, hSession, pEncryptedPart, pPart)
+    Crypt::PKCS11::XS* object
     CK_SESSION_HANDLE hSession
     SV* pEncryptedPart
     SV* pPart
@@ -452,8 +452,8 @@ OUTPUT:
     pPart
 
 CK_RV
-crypt_pkcs11_xs_C_DecryptFinal(module, hSession, pLastPart)
-    Crypt::PKCS11::XS* module
+crypt_pkcs11_xs_C_DecryptFinal(object, hSession, pLastPart)
+    Crypt::PKCS11::XS* object
     CK_SESSION_HANDLE hSession
     SV* pLastPart
 PROTOTYPE: $$$
@@ -462,8 +462,8 @@ OUTPUT:
     pLastPart
 
 CK_RV
-crypt_pkcs11_xs_C_DigestInit(module, hSession, pMechanism)
-    Crypt::PKCS11::XS* module
+crypt_pkcs11_xs_C_DigestInit(object, hSession, pMechanism)
+    Crypt::PKCS11::XS* object
     CK_SESSION_HANDLE hSession
     HV* pMechanism
 PROTOTYPE: $$$
@@ -471,8 +471,8 @@ OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_xs_C_Digest(module, hSession, pData, pDigest)
-    Crypt::PKCS11::XS* module
+crypt_pkcs11_xs_C_Digest(object, hSession, pData, pDigest)
+    Crypt::PKCS11::XS* object
     CK_SESSION_HANDLE hSession
     SV* pData
     SV* pDigest
@@ -482,8 +482,8 @@ OUTPUT:
     pDigest
 
 CK_RV
-crypt_pkcs11_xs_C_DigestUpdate(module, hSession, pPart)
-    Crypt::PKCS11::XS* module
+crypt_pkcs11_xs_C_DigestUpdate(object, hSession, pPart)
+    Crypt::PKCS11::XS* object
     CK_SESSION_HANDLE hSession
     SV* pPart
 PROTOTYPE: $$$
@@ -491,8 +491,8 @@ OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_xs_C_DigestKey(module, hSession, hKey)
-    Crypt::PKCS11::XS* module
+crypt_pkcs11_xs_C_DigestKey(object, hSession, hKey)
+    Crypt::PKCS11::XS* object
     CK_SESSION_HANDLE hSession
     CK_OBJECT_HANDLE hKey
 PROTOTYPE: $$$
@@ -500,8 +500,8 @@ OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_xs_C_DigestFinal(module, hSession, pDigest)
-    Crypt::PKCS11::XS* module
+crypt_pkcs11_xs_C_DigestFinal(object, hSession, pDigest)
+    Crypt::PKCS11::XS* object
     CK_SESSION_HANDLE hSession
     SV* pDigest
 PROTOTYPE: $$$
@@ -510,8 +510,8 @@ OUTPUT:
     pDigest
 
 CK_RV
-crypt_pkcs11_xs_C_SignInit(module, hSession, pMechanism, hKey)
-    Crypt::PKCS11::XS* module
+crypt_pkcs11_xs_C_SignInit(object, hSession, pMechanism, hKey)
+    Crypt::PKCS11::XS* object
     CK_SESSION_HANDLE hSession
     HV* pMechanism
     CK_OBJECT_HANDLE hKey
@@ -520,8 +520,8 @@ OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_xs_C_Sign(module, hSession, pData, pSignature)
-    Crypt::PKCS11::XS* module
+crypt_pkcs11_xs_C_Sign(object, hSession, pData, pSignature)
+    Crypt::PKCS11::XS* object
     CK_SESSION_HANDLE hSession
     SV* pData
     SV* pSignature
@@ -531,8 +531,8 @@ OUTPUT:
     pSignature
 
 CK_RV
-crypt_pkcs11_xs_C_SignUpdate(module, hSession, pPart)
-    Crypt::PKCS11::XS* module
+crypt_pkcs11_xs_C_SignUpdate(object, hSession, pPart)
+    Crypt::PKCS11::XS* object
     CK_SESSION_HANDLE hSession
     SV* pPart
 PROTOTYPE: $$$
@@ -540,8 +540,8 @@ OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_xs_C_SignFinal(module, hSession, pSignature)
-    Crypt::PKCS11::XS* module
+crypt_pkcs11_xs_C_SignFinal(object, hSession, pSignature)
+    Crypt::PKCS11::XS* object
     CK_SESSION_HANDLE hSession
     SV* pSignature
 PROTOTYPE: $$$
@@ -550,8 +550,8 @@ OUTPUT:
     pSignature
 
 CK_RV
-crypt_pkcs11_xs_C_SignRecoverInit(module, hSession, pMechanism, hKey)
-    Crypt::PKCS11::XS* module
+crypt_pkcs11_xs_C_SignRecoverInit(object, hSession, pMechanism, hKey)
+    Crypt::PKCS11::XS* object
     CK_SESSION_HANDLE hSession
     HV* pMechanism
     CK_OBJECT_HANDLE hKey
@@ -560,8 +560,8 @@ OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_xs_C_SignRecover(module, hSession, pData, pSignature)
-    Crypt::PKCS11::XS* module
+crypt_pkcs11_xs_C_SignRecover(object, hSession, pData, pSignature)
+    Crypt::PKCS11::XS* object
     CK_SESSION_HANDLE hSession
     SV* pData
     SV* pSignature
@@ -571,8 +571,8 @@ OUTPUT:
     pSignature
 
 CK_RV
-crypt_pkcs11_xs_C_VerifyInit(module, hSession, pMechanism, hKey)
-    Crypt::PKCS11::XS* module
+crypt_pkcs11_xs_C_VerifyInit(object, hSession, pMechanism, hKey)
+    Crypt::PKCS11::XS* object
     CK_SESSION_HANDLE hSession
     HV* pMechanism
     CK_OBJECT_HANDLE hKey
@@ -581,8 +581,8 @@ OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_xs_C_Verify(module, hSession, pData, pSignature)
-    Crypt::PKCS11::XS* module
+crypt_pkcs11_xs_C_Verify(object, hSession, pData, pSignature)
+    Crypt::PKCS11::XS* object
     CK_SESSION_HANDLE hSession
     SV* pData
     SV* pSignature
@@ -592,8 +592,8 @@ OUTPUT:
     pSignature
 
 CK_RV
-crypt_pkcs11_xs_C_VerifyUpdate(module, hSession, pPart)
-    Crypt::PKCS11::XS* module
+crypt_pkcs11_xs_C_VerifyUpdate(object, hSession, pPart)
+    Crypt::PKCS11::XS* object
     CK_SESSION_HANDLE hSession
     SV* pPart
 PROTOTYPE: $$$
@@ -601,8 +601,8 @@ OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_xs_C_VerifyFinal(module, hSession, pSignature)
-    Crypt::PKCS11::XS* module
+crypt_pkcs11_xs_C_VerifyFinal(object, hSession, pSignature)
+    Crypt::PKCS11::XS* object
     CK_SESSION_HANDLE hSession
     SV* pSignature
 PROTOTYPE: $
@@ -611,8 +611,8 @@ OUTPUT:
     pSignature
 
 CK_RV
-crypt_pkcs11_xs_C_VerifyRecoverInit(module, hSession, pMechanism, hKey)
-    Crypt::PKCS11::XS* module
+crypt_pkcs11_xs_C_VerifyRecoverInit(object, hSession, pMechanism, hKey)
+    Crypt::PKCS11::XS* object
     CK_SESSION_HANDLE hSession
     HV* pMechanism
     CK_OBJECT_HANDLE hKey
@@ -621,8 +621,8 @@ OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_xs_C_VerifyRecover(module, hSession, pData, pSignature)
-    Crypt::PKCS11::XS* module
+crypt_pkcs11_xs_C_VerifyRecover(object, hSession, pData, pSignature)
+    Crypt::PKCS11::XS* object
     CK_SESSION_HANDLE hSession
     SV* pData
     SV* pSignature
@@ -632,8 +632,8 @@ OUTPUT:
     pSignature
 
 CK_RV
-crypt_pkcs11_xs_C_DigestEncryptUpdate(module, hSession, pPart, pEncryptedPart)
-    Crypt::PKCS11::XS* module
+crypt_pkcs11_xs_C_DigestEncryptUpdate(object, hSession, pPart, pEncryptedPart)
+    Crypt::PKCS11::XS* object
     CK_SESSION_HANDLE hSession
     SV* pPart
     SV* pEncryptedPart
@@ -643,8 +643,8 @@ OUTPUT:
     pEncryptedPart
 
 CK_RV
-crypt_pkcs11_xs_C_DecryptDigestUpdate(module, hSession, pEncryptedPart, pPart)
-    Crypt::PKCS11::XS* module
+crypt_pkcs11_xs_C_DecryptDigestUpdate(object, hSession, pEncryptedPart, pPart)
+    Crypt::PKCS11::XS* object
     CK_SESSION_HANDLE hSession
     SV* pEncryptedPart
     SV* pPart
@@ -654,8 +654,8 @@ OUTPUT:
     pPart
 
 CK_RV
-crypt_pkcs11_xs_C_SignEncryptUpdate(module, hSession, pPart, pEncryptedPart)
-    Crypt::PKCS11::XS* module
+crypt_pkcs11_xs_C_SignEncryptUpdate(object, hSession, pPart, pEncryptedPart)
+    Crypt::PKCS11::XS* object
     CK_SESSION_HANDLE hSession
     SV* pPart
     SV* pEncryptedPart
@@ -665,8 +665,8 @@ OUTPUT:
     pEncryptedPart
 
 CK_RV
-crypt_pkcs11_xs_C_DecryptVerifyUpdate(module, hSession, pEncryptedPart, pPart)
-    Crypt::PKCS11::XS* module
+crypt_pkcs11_xs_C_DecryptVerifyUpdate(object, hSession, pEncryptedPart, pPart)
+    Crypt::PKCS11::XS* object
     CK_SESSION_HANDLE hSession
     SV* pEncryptedPart
     SV* pPart
@@ -676,8 +676,8 @@ OUTPUT:
     pPart
 
 CK_RV
-crypt_pkcs11_xs_C_GenerateKey(module, hSession, pMechanism, pTemplate, phKey)
-    Crypt::PKCS11::XS* module
+crypt_pkcs11_xs_C_GenerateKey(object, hSession, pMechanism, pTemplate, phKey)
+    Crypt::PKCS11::XS* object
     CK_SESSION_HANDLE hSession
     HV* pMechanism
     AV* pTemplate
@@ -688,8 +688,8 @@ OUTPUT:
     phKey
 
 CK_RV
-crypt_pkcs11_xs_C_GenerateKeyPair(module, hSession, pMechanism, pPublicKeyTemplate, pPrivateKeyTemplate, phPublicKey, phPrivateKey)
-    Crypt::PKCS11::XS* module
+crypt_pkcs11_xs_C_GenerateKeyPair(object, hSession, pMechanism, pPublicKeyTemplate, pPrivateKeyTemplate, phPublicKey, phPrivateKey)
+    Crypt::PKCS11::XS* object
     CK_SESSION_HANDLE hSession
     HV* pMechanism
     AV* pPublicKeyTemplate
@@ -703,8 +703,8 @@ OUTPUT:
     phPrivateKey
 
 CK_RV
-crypt_pkcs11_xs_C_WrapKey(module, hSession, pMechanism, hWrappingKey, hKey, pWrappedKey)
-    Crypt::PKCS11::XS* module
+crypt_pkcs11_xs_C_WrapKey(object, hSession, pMechanism, hWrappingKey, hKey, pWrappedKey)
+    Crypt::PKCS11::XS* object
     CK_SESSION_HANDLE hSession
     HV* pMechanism
     CK_OBJECT_HANDLE hWrappingKey
@@ -716,8 +716,8 @@ OUTPUT:
     pWrappedKey
 
 CK_RV
-crypt_pkcs11_xs_C_UnwrapKey(module, hSession, pMechanism, hUnwrappingKey, pWrappedKey, pTemplate, phKey)
-    Crypt::PKCS11::XS* module
+crypt_pkcs11_xs_C_UnwrapKey(object, hSession, pMechanism, hUnwrappingKey, pWrappedKey, pTemplate, phKey)
+    Crypt::PKCS11::XS* object
     CK_SESSION_HANDLE hSession
     HV* pMechanism
     CK_OBJECT_HANDLE hUnwrappingKey
@@ -730,8 +730,8 @@ OUTPUT:
     phKey
 
 CK_RV
-crypt_pkcs11_xs_C_DeriveKey(module, hSession, pMechanism, hBaseKey, pTemplate, phKey)
-    Crypt::PKCS11::XS* module
+crypt_pkcs11_xs_C_DeriveKey(object, hSession, pMechanism, hBaseKey, pTemplate, phKey)
+    Crypt::PKCS11::XS* object
     CK_SESSION_HANDLE hSession
     HV* pMechanism
     CK_OBJECT_HANDLE hBaseKey
@@ -743,8 +743,8 @@ OUTPUT:
     phKey
 
 CK_RV
-crypt_pkcs11_xs_C_SeedRandom(module, hSession, pSeed)
-    Crypt::PKCS11::XS* module
+crypt_pkcs11_xs_C_SeedRandom(object, hSession, pSeed)
+    Crypt::PKCS11::XS* object
     CK_SESSION_HANDLE hSession
     SV* pSeed
 PROTOTYPE: $$$
@@ -752,8 +752,8 @@ OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_xs_C_GenerateRandom(module, hSession, RandomData, ulRandomLen)
-    Crypt::PKCS11::XS* module
+crypt_pkcs11_xs_C_GenerateRandom(object, hSession, RandomData, ulRandomLen)
+    Crypt::PKCS11::XS* object
     CK_SESSION_HANDLE hSession
     SV* RandomData
     CK_ULONG ulRandomLen
@@ -763,24 +763,24 @@ OUTPUT:
     RandomData
 
 CK_RV
-crypt_pkcs11_xs_C_GetFunctionStatus(module, hSession)
-    Crypt::PKCS11::XS* module
+crypt_pkcs11_xs_C_GetFunctionStatus(object, hSession)
+    Crypt::PKCS11::XS* object
     CK_SESSION_HANDLE hSession
 PROTOTYPE: $$
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_xs_C_CancelFunction(module, hSession)
-    Crypt::PKCS11::XS* module
+crypt_pkcs11_xs_C_CancelFunction(object, hSession)
+    Crypt::PKCS11::XS* object
     CK_SESSION_HANDLE hSession
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_xs_C_WaitForSlotEvent(module, flags, pSlot)
-    Crypt::PKCS11::XS* module
+crypt_pkcs11_xs_C_WaitForSlotEvent(object, flags, pSlot)
+    Crypt::PKCS11::XS* object
     CK_FLAGS flags
     SV* pSlot
 PROTOTYPE: $
