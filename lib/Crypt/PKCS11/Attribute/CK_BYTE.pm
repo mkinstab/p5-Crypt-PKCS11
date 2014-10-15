@@ -34,7 +34,7 @@ use base qw(Crypt::PKCS11::Attribute);
 sub set {
     my ($self, $byte) = @_;
 
-    unless (defined $byte and Crypt::PKCS11::XS::SvIOK($byte) and $byte >= 0 and $byte <= 255) {
+    unless (defined $byte and Crypt::PKCS11::XS::SvUOK($byte) and $byte >= 0 and $byte <= 255) {
         confess 'Value to set is not a valid byte';
     }
 

@@ -37,7 +37,7 @@ sub set {
     my $self = shift;
 
     foreach (@_) {
-        unless (defined $_ and Crypt::PKCS11::XS::SvIOK($_) and $_ >= 0 and $_ <= 255) {
+        unless (defined $_ and Crypt::PKCS11::XS::SvUOK($_) and $_ >= 0 and $_ <= 255) {
             confess 'Value to set is not a valid byte';
         }
     }

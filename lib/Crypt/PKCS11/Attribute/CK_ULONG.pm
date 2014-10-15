@@ -36,7 +36,7 @@ use Crypt::PKCS11 qw(:constant);
 sub set {
     my ($self, $ulong) = @_;
 
-    unless (defined $ulong and Crypt::PKCS11::XS::SvIOK($ulong)) {
+    unless (defined $ulong and Crypt::PKCS11::XS::SvUOK($ulong)) {
         confess 'Value to set is not a valid unsigned long';
     }
 

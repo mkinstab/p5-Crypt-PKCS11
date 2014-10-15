@@ -47,7 +47,7 @@ OUTPUT:
     RETVAL
 
 int
-crypt_pkcs11_xs_SvIOK(sv)
+crypt_pkcs11_xs_SvUOK(sv)
     SV* sv
 PROTOTYPE: $
 OUTPUT:

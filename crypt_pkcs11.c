@@ -358,13 +358,18 @@ const char* crypt_pkcs11_xs_rv2str(CK_RV rv) {
     return str;
 }
 
-int crypt_pkcs11_xs_SvIOK(SV* sv) {
+int crypt_pkcs11_xs_SvUOK(SV* sv) {
     if (!sv) {
         return 0;
     }
 
     SvGETMAGIC(sv);
-    return SvIOK(sv) ? 1 : 0;
+
+    if (SvIOK(sv)) {
+        return SvIV(sv) < 0 ? 0 : 1;
+    }
+
+    return SvUOK(sv) ? 1 : 0;
 }
 
 static SV* __CreateMutexSV = NULL_PTR;
@@ -685,7 +690,7 @@ CK_RV crypt_pkcs11_xs_C_Initialize(Crypt__PKCS11__XS* object, HV* pInitArgs) {
         }
 
         if (flags) {
-            if (!*flags || !SvIOK(*flags))
+            if (!*flags || !crypt_pkcs11_xs_SvUOK(*flags))
             {
                 return CKR_ARGUMENTS_BAD;
             }
@@ -1465,7 +1470,7 @@ static CK_RV __check_pTemplate(AV* pTemplate, CK_ULONG_PTR pulCount, int allow_u
 
         if (!type
             || !*type
-            || !SvIOK(*type)
+            || !crypt_pkcs11_xs_SvUOK(*type)
             || (!allow_undef_pValue
                 && (!pValue
                     || !*pValue
@@ -1543,7 +1548,7 @@ static CK_RV __create_CK_ATTRIBUTE(CK_ATTRIBUTE_PTR* ppTemplate, AV* pTemplate, 
 
         if (!type
             || !*type
-            || !SvIOK(*type)
+            || !crypt_pkcs11_xs_SvUOK(*type)
             || (!allow_undef_pValue
                 && (!pValue
                     || !*pValue
@@ -1840,7 +1845,7 @@ CK_RV crypt_pkcs11_xs_C_GetAttributeValue(Crypt__PKCS11__XS* object, CK_SESSION_
 
         if (!type
             || !*type
-            || !SvIOK(*type)
+            || !crypt_pkcs11_xs_SvUOK(*type)
             || _pTemplate[i].type != SvUV(*type))
         {
             free(_pTemplate);
@@ -2041,7 +2046,7 @@ static CK_RV __action_init(HV* pMechanism, CK_MECHANISM_PTR _pMechanism) {
 
     if (!mechanism
         || !*mechanism
-        || !SvIOK(*mechanism)
+        || !crypt_pkcs11_xs_SvUOK(*mechanism)
         || (pParameter
             && (!*pParameter
                 || !SvPOK(*pParameter)
