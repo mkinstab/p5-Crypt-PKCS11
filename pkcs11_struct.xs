@@ -28,6 +28,110 @@
 
 #include "crypt_pkcs11_struct.h"
 
+MODULE = Crypt::PKCS11::CK_VERSION  PACKAGE = Crypt::PKCS11::CK_VERSION  PREFIX = crypt_pkcs11_ck_version_
+
+PROTOTYPES: ENABLE
+
+Crypt::PKCS11::CK_VERSION*
+crypt_pkcs11_ck_version_new(class)
+    const char* class
+PROTOTYPE: $
+OUTPUT:
+    RETVAL
+
+MODULE = Crypt::PKCS11::CK_VERSION  PACKAGE = Crypt::PKCS11::CK_VERSIONPtr  PREFIX = crypt_pkcs11_ck_version_
+
+PROTOTYPES: ENABLE
+
+void
+crypt_pkcs11_ck_version_DESTROY(object)
+    Crypt::PKCS11::CK_VERSION* object
+PROTOTYPE: $
+
+CK_RV
+crypt_pkcs11_ck_version_get_major(object, sv)
+    Crypt::PKCS11::CK_VERSION* object
+    SV* sv
+PROTOTYPE: $
+OUTPUT:
+    RETVAL
+
+CK_RV
+crypt_pkcs11_ck_version_set_major(object, sv)
+    Crypt::PKCS11::CK_VERSION* object
+    SV* sv
+PROTOTYPE: $
+OUTPUT:
+    RETVAL
+
+CK_RV
+crypt_pkcs11_ck_version_get_minor(object, sv)
+    Crypt::PKCS11::CK_VERSION* object
+    SV* sv
+PROTOTYPE: $
+OUTPUT:
+    RETVAL
+
+CK_RV
+crypt_pkcs11_ck_version_set_minor(object, sv)
+    Crypt::PKCS11::CK_VERSION* object
+    SV* sv
+PROTOTYPE: $
+OUTPUT:
+    RETVAL
+
+MODULE = Crypt::PKCS11::CK_MECHANISM  PACKAGE = Crypt::PKCS11::CK_MECHANISM  PREFIX = crypt_pkcs11_ck_mechanism_
+
+PROTOTYPES: ENABLE
+
+Crypt::PKCS11::CK_MECHANISM*
+crypt_pkcs11_ck_mechanism_new(class)
+    const char* class
+PROTOTYPE: $
+OUTPUT:
+    RETVAL
+
+MODULE = Crypt::PKCS11::CK_MECHANISM  PACKAGE = Crypt::PKCS11::CK_MECHANISMPtr  PREFIX = crypt_pkcs11_ck_mechanism_
+
+PROTOTYPES: ENABLE
+
+void
+crypt_pkcs11_ck_mechanism_DESTROY(object)
+    Crypt::PKCS11::CK_MECHANISM* object
+PROTOTYPE: $
+
+CK_RV
+crypt_pkcs11_ck_mechanism_get_mechanism(object, sv)
+    Crypt::PKCS11::CK_MECHANISM* object
+    SV* sv
+PROTOTYPE: $
+OUTPUT:
+    RETVAL
+
+CK_RV
+crypt_pkcs11_ck_mechanism_set_mechanism(object, sv)
+    Crypt::PKCS11::CK_MECHANISM* object
+    SV* sv
+PROTOTYPE: $
+OUTPUT:
+    RETVAL
+
+CK_RV
+crypt_pkcs11_ck_mechanism_get_pParameter(object, sv)
+    Crypt::PKCS11::CK_MECHANISM* object
+    SV* sv
+PROTOTYPE: $
+OUTPUT:
+    RETVAL
+
+CK_RV
+crypt_pkcs11_ck_mechanism_set_pParameter(object, sv)
+    Crypt::PKCS11::CK_MECHANISM* object
+    SV* sv
+PROTOTYPE: $
+OUTPUT:
+    RETVAL
+
 MODULE = Crypt::PKCS11::CK_RSA_PKCS_OAEP_PARAMS  PACKAGE = Crypt::PKCS11::CK_RSA_PKCS_OAEP_PARAMS  PREFIX = crypt_pkcs11_ck_rsa_pkcs_oaep_params_
 
 PROTOTYPES: ENABLE
@@ -49,65 +153,65 @@ crypt_pkcs11_ck_rsa_pkcs_oaep_params_DESTROY(object)
 PROTOTYPE: $
 
 CK_RV
-crypt_pkcs11_ck_rsa_pkcs_oaep_params_get_hashAlg(object, hashAlg)
+crypt_pkcs11_ck_rsa_pkcs_oaep_params_get_hashAlg(object, sv)
     Crypt::PKCS11::CK_RSA_PKCS_OAEP_PARAMS* object
-    SV* hashAlg
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_rsa_pkcs_oaep_params_set_hashAlg(object, hashAlg)
+crypt_pkcs11_ck_rsa_pkcs_oaep_params_set_hashAlg(object, sv)
     Crypt::PKCS11::CK_RSA_PKCS_OAEP_PARAMS* object
-    SV* hashAlg
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_rsa_pkcs_oaep_params_get_mgf(object, mgf)
+crypt_pkcs11_ck_rsa_pkcs_oaep_params_get_mgf(object, sv)
     Crypt::PKCS11::CK_RSA_PKCS_OAEP_PARAMS* object
-    SV* mgf
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_rsa_pkcs_oaep_params_set_mgf(object, mgf)
+crypt_pkcs11_ck_rsa_pkcs_oaep_params_set_mgf(object, sv)
     Crypt::PKCS11::CK_RSA_PKCS_OAEP_PARAMS* object
-    SV* mgf
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_rsa_pkcs_oaep_params_get_source(object, source)
+crypt_pkcs11_ck_rsa_pkcs_oaep_params_get_source(object, sv)
     Crypt::PKCS11::CK_RSA_PKCS_OAEP_PARAMS* object
-    SV* source
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_rsa_pkcs_oaep_params_set_source(object, source)
+crypt_pkcs11_ck_rsa_pkcs_oaep_params_set_source(object, sv)
     Crypt::PKCS11::CK_RSA_PKCS_OAEP_PARAMS* object
-    SV* source
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_rsa_pkcs_oaep_params_get_pSourceData(object, pSourceData)
+crypt_pkcs11_ck_rsa_pkcs_oaep_params_get_pSourceData(object, sv)
     Crypt::PKCS11::CK_RSA_PKCS_OAEP_PARAMS* object
-    SV* pSourceData
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_rsa_pkcs_oaep_params_set_pSourceData(object, pSourceData)
+crypt_pkcs11_ck_rsa_pkcs_oaep_params_set_pSourceData(object, sv)
     Crypt::PKCS11::CK_RSA_PKCS_OAEP_PARAMS* object
-    SV* pSourceData
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
@@ -133,49 +237,49 @@ crypt_pkcs11_ck_rsa_pkcs_pss_params_DESTROY(object)
 PROTOTYPE: $
 
 CK_RV
-crypt_pkcs11_ck_rsa_pkcs_pss_params_get_hashAlg(object, hashAlg)
+crypt_pkcs11_ck_rsa_pkcs_pss_params_get_hashAlg(object, sv)
     Crypt::PKCS11::CK_RSA_PKCS_PSS_PARAMS* object
-    SV* hashAlg
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_rsa_pkcs_pss_params_set_hashAlg(object, hashAlg)
+crypt_pkcs11_ck_rsa_pkcs_pss_params_set_hashAlg(object, sv)
     Crypt::PKCS11::CK_RSA_PKCS_PSS_PARAMS* object
-    SV* hashAlg
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_rsa_pkcs_pss_params_get_mgf(object, mgf)
+crypt_pkcs11_ck_rsa_pkcs_pss_params_get_mgf(object, sv)
     Crypt::PKCS11::CK_RSA_PKCS_PSS_PARAMS* object
-    SV* mgf
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_rsa_pkcs_pss_params_set_mgf(object, mgf)
+crypt_pkcs11_ck_rsa_pkcs_pss_params_set_mgf(object, sv)
     Crypt::PKCS11::CK_RSA_PKCS_PSS_PARAMS* object
-    SV* mgf
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_rsa_pkcs_pss_params_get_sLen(object, sLen)
+crypt_pkcs11_ck_rsa_pkcs_pss_params_get_sLen(object, sv)
     Crypt::PKCS11::CK_RSA_PKCS_PSS_PARAMS* object
-    SV* sLen
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_rsa_pkcs_pss_params_set_sLen(object, sLen)
+crypt_pkcs11_ck_rsa_pkcs_pss_params_set_sLen(object, sv)
     Crypt::PKCS11::CK_RSA_PKCS_PSS_PARAMS* object
-    SV* sLen
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
@@ -201,49 +305,49 @@ crypt_pkcs11_ck_ecdh1_derive_params_DESTROY(object)
 PROTOTYPE: $
 
 CK_RV
-crypt_pkcs11_ck_ecdh1_derive_params_get_kdf(object, kdf)
+crypt_pkcs11_ck_ecdh1_derive_params_get_kdf(object, sv)
     Crypt::PKCS11::CK_ECDH1_DERIVE_PARAMS* object
-    SV* kdf
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_ecdh1_derive_params_set_kdf(object, kdf)
+crypt_pkcs11_ck_ecdh1_derive_params_set_kdf(object, sv)
     Crypt::PKCS11::CK_ECDH1_DERIVE_PARAMS* object
-    SV* kdf
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_ecdh1_derive_params_get_pSharedData(object, pSharedData)
+crypt_pkcs11_ck_ecdh1_derive_params_get_pSharedData(object, sv)
     Crypt::PKCS11::CK_ECDH1_DERIVE_PARAMS* object
-    SV* pSharedData
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_ecdh1_derive_params_set_pSharedData(object, pSharedData)
+crypt_pkcs11_ck_ecdh1_derive_params_set_pSharedData(object, sv)
     Crypt::PKCS11::CK_ECDH1_DERIVE_PARAMS* object
-    SV* pSharedData
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_ecdh1_derive_params_get_pPublicData(object, pPublicData)
+crypt_pkcs11_ck_ecdh1_derive_params_get_pPublicData(object, sv)
     Crypt::PKCS11::CK_ECDH1_DERIVE_PARAMS* object
-    SV* pPublicData
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_ecdh1_derive_params_set_pPublicData(object, pPublicData)
+crypt_pkcs11_ck_ecdh1_derive_params_set_pPublicData(object, sv)
     Crypt::PKCS11::CK_ECDH1_DERIVE_PARAMS* object
-    SV* pPublicData
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
@@ -269,97 +373,81 @@ crypt_pkcs11_ck_ecdh2_derive_params_DESTROY(object)
 PROTOTYPE: $
 
 CK_RV
-crypt_pkcs11_ck_ecdh2_derive_params_get_kdf(object, kdf)
+crypt_pkcs11_ck_ecdh2_derive_params_get_kdf(object, sv)
     Crypt::PKCS11::CK_ECDH2_DERIVE_PARAMS* object
-    SV* kdf
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_ecdh2_derive_params_set_kdf(object, kdf)
+crypt_pkcs11_ck_ecdh2_derive_params_set_kdf(object, sv)
     Crypt::PKCS11::CK_ECDH2_DERIVE_PARAMS* object
-    SV* kdf
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_ecdh2_derive_params_get_pSharedData(object, pSharedData)
+crypt_pkcs11_ck_ecdh2_derive_params_get_pSharedData(object, sv)
     Crypt::PKCS11::CK_ECDH2_DERIVE_PARAMS* object
-    SV* pSharedData
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_ecdh2_derive_params_set_pSharedData(object, pSharedData)
+crypt_pkcs11_ck_ecdh2_derive_params_set_pSharedData(object, sv)
     Crypt::PKCS11::CK_ECDH2_DERIVE_PARAMS* object
-    SV* pSharedData
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_ecdh2_derive_params_get_pPublicData(object, pPublicData)
+crypt_pkcs11_ck_ecdh2_derive_params_get_pPublicData(object, sv)
     Crypt::PKCS11::CK_ECDH2_DERIVE_PARAMS* object
-    SV* pPublicData
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_ecdh2_derive_params_set_pPublicData(object, pPublicData)
+crypt_pkcs11_ck_ecdh2_derive_params_set_pPublicData(object, sv)
     Crypt::PKCS11::CK_ECDH2_DERIVE_PARAMS* object
-    SV* pPublicData
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_ecdh2_derive_params_get_hPrivateData(object, hPrivateData)
+crypt_pkcs11_ck_ecdh2_derive_params_get_hPrivateData(object, sv)
     Crypt::PKCS11::CK_ECDH2_DERIVE_PARAMS* object
-    SV* hPrivateData
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_ecdh2_derive_params_set_hPrivateData(object, hPrivateData)
+crypt_pkcs11_ck_ecdh2_derive_params_set_hPrivateData(object, sv)
     Crypt::PKCS11::CK_ECDH2_DERIVE_PARAMS* object
-    SV* hPrivateData
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_ecdh2_derive_params_get_ulPublicDataLen2(object, ulPublicDataLen2)
+crypt_pkcs11_ck_ecdh2_derive_params_get_pPublicData2(object, sv)
     Crypt::PKCS11::CK_ECDH2_DERIVE_PARAMS* object
-    SV* ulPublicDataLen2
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_ecdh2_derive_params_set_ulPublicDataLen2(object, ulPublicDataLen2)
+crypt_pkcs11_ck_ecdh2_derive_params_set_pPublicData2(object, sv)
     Crypt::PKCS11::CK_ECDH2_DERIVE_PARAMS* object
-    SV* ulPublicDataLen2
-PROTOTYPE: $
-OUTPUT:
-    RETVAL
-
-CK_RV
-crypt_pkcs11_ck_ecdh2_derive_params_get_pPublicData2(object, pPublicData2)
-    Crypt::PKCS11::CK_ECDH2_DERIVE_PARAMS* object
-    SV* pPublicData2
-PROTOTYPE: $
-OUTPUT:
-    RETVAL
-
-CK_RV
-crypt_pkcs11_ck_ecdh2_derive_params_set_pPublicData2(object, pPublicData2)
-    Crypt::PKCS11::CK_ECDH2_DERIVE_PARAMS* object
-    SV* pPublicData2
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
@@ -385,113 +473,97 @@ crypt_pkcs11_ck_ecmqv_derive_params_DESTROY(object)
 PROTOTYPE: $
 
 CK_RV
-crypt_pkcs11_ck_ecmqv_derive_params_get_kdf(object, kdf)
+crypt_pkcs11_ck_ecmqv_derive_params_get_kdf(object, sv)
     Crypt::PKCS11::CK_ECMQV_DERIVE_PARAMS* object
-    SV* kdf
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_ecmqv_derive_params_set_kdf(object, kdf)
+crypt_pkcs11_ck_ecmqv_derive_params_set_kdf(object, sv)
     Crypt::PKCS11::CK_ECMQV_DERIVE_PARAMS* object
-    SV* kdf
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_ecmqv_derive_params_get_pSharedData(object, pSharedData)
+crypt_pkcs11_ck_ecmqv_derive_params_get_pSharedData(object, sv)
     Crypt::PKCS11::CK_ECMQV_DERIVE_PARAMS* object
-    SV* pSharedData
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_ecmqv_derive_params_set_pSharedData(object, pSharedData)
+crypt_pkcs11_ck_ecmqv_derive_params_set_pSharedData(object, sv)
     Crypt::PKCS11::CK_ECMQV_DERIVE_PARAMS* object
-    SV* pSharedData
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_ecmqv_derive_params_get_pPublicData(object, pPublicData)
+crypt_pkcs11_ck_ecmqv_derive_params_get_pPublicData(object, sv)
     Crypt::PKCS11::CK_ECMQV_DERIVE_PARAMS* object
-    SV* pPublicData
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_ecmqv_derive_params_set_pPublicData(object, pPublicData)
+crypt_pkcs11_ck_ecmqv_derive_params_set_pPublicData(object, sv)
     Crypt::PKCS11::CK_ECMQV_DERIVE_PARAMS* object
-    SV* pPublicData
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_ecmqv_derive_params_get_hPrivateData(object, hPrivateData)
+crypt_pkcs11_ck_ecmqv_derive_params_get_hPrivateData(object, sv)
     Crypt::PKCS11::CK_ECMQV_DERIVE_PARAMS* object
-    SV* hPrivateData
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_ecmqv_derive_params_set_hPrivateData(object, hPrivateData)
+crypt_pkcs11_ck_ecmqv_derive_params_set_hPrivateData(object, sv)
     Crypt::PKCS11::CK_ECMQV_DERIVE_PARAMS* object
-    SV* hPrivateData
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_ecmqv_derive_params_get_ulPublicDataLen2(object, ulPublicDataLen2)
+crypt_pkcs11_ck_ecmqv_derive_params_get_pPublicData2(object, sv)
     Crypt::PKCS11::CK_ECMQV_DERIVE_PARAMS* object
-    SV* ulPublicDataLen2
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_ecmqv_derive_params_set_ulPublicDataLen2(object, ulPublicDataLen2)
+crypt_pkcs11_ck_ecmqv_derive_params_set_pPublicData2(object, sv)
     Crypt::PKCS11::CK_ECMQV_DERIVE_PARAMS* object
-    SV* ulPublicDataLen2
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_ecmqv_derive_params_get_pPublicData2(object, pPublicData2)
+crypt_pkcs11_ck_ecmqv_derive_params_get_publicKey(object, sv)
     Crypt::PKCS11::CK_ECMQV_DERIVE_PARAMS* object
-    SV* pPublicData2
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_ecmqv_derive_params_set_pPublicData2(object, pPublicData2)
+crypt_pkcs11_ck_ecmqv_derive_params_set_publicKey(object, sv)
     Crypt::PKCS11::CK_ECMQV_DERIVE_PARAMS* object
-    SV* pPublicData2
-PROTOTYPE: $
-OUTPUT:
-    RETVAL
-
-CK_RV
-crypt_pkcs11_ck_ecmqv_derive_params_get_publicKey(object, publicKey)
-    Crypt::PKCS11::CK_ECMQV_DERIVE_PARAMS* object
-    SV* publicKey
-PROTOTYPE: $
-OUTPUT:
-    RETVAL
-
-CK_RV
-crypt_pkcs11_ck_ecmqv_derive_params_set_publicKey(object, publicKey)
-    Crypt::PKCS11::CK_ECMQV_DERIVE_PARAMS* object
-    SV* publicKey
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
@@ -517,49 +589,49 @@ crypt_pkcs11_ck_x9_42_dh1_derive_params_DESTROY(object)
 PROTOTYPE: $
 
 CK_RV
-crypt_pkcs11_ck_x9_42_dh1_derive_params_get_kdf(object, kdf)
+crypt_pkcs11_ck_x9_42_dh1_derive_params_get_kdf(object, sv)
     Crypt::PKCS11::CK_X9_42_DH1_DERIVE_PARAMS* object
-    SV* kdf
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_x9_42_dh1_derive_params_set_kdf(object, kdf)
+crypt_pkcs11_ck_x9_42_dh1_derive_params_set_kdf(object, sv)
     Crypt::PKCS11::CK_X9_42_DH1_DERIVE_PARAMS* object
-    SV* kdf
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_x9_42_dh1_derive_params_get_pOtherInfo(object, pOtherInfo)
+crypt_pkcs11_ck_x9_42_dh1_derive_params_get_pOtherInfo(object, sv)
     Crypt::PKCS11::CK_X9_42_DH1_DERIVE_PARAMS* object
-    SV* pOtherInfo
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_x9_42_dh1_derive_params_set_pOtherInfo(object, pOtherInfo)
+crypt_pkcs11_ck_x9_42_dh1_derive_params_set_pOtherInfo(object, sv)
     Crypt::PKCS11::CK_X9_42_DH1_DERIVE_PARAMS* object
-    SV* pOtherInfo
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_x9_42_dh1_derive_params_get_pPublicData(object, pPublicData)
+crypt_pkcs11_ck_x9_42_dh1_derive_params_get_pPublicData(object, sv)
     Crypt::PKCS11::CK_X9_42_DH1_DERIVE_PARAMS* object
-    SV* pPublicData
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_x9_42_dh1_derive_params_set_pPublicData(object, pPublicData)
+crypt_pkcs11_ck_x9_42_dh1_derive_params_set_pPublicData(object, sv)
     Crypt::PKCS11::CK_X9_42_DH1_DERIVE_PARAMS* object
-    SV* pPublicData
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
@@ -585,97 +657,81 @@ crypt_pkcs11_ck_x9_42_dh2_derive_params_DESTROY(object)
 PROTOTYPE: $
 
 CK_RV
-crypt_pkcs11_ck_x9_42_dh2_derive_params_get_kdf(object, kdf)
+crypt_pkcs11_ck_x9_42_dh2_derive_params_get_kdf(object, sv)
     Crypt::PKCS11::CK_X9_42_DH2_DERIVE_PARAMS* object
-    SV* kdf
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_x9_42_dh2_derive_params_set_kdf(object, kdf)
+crypt_pkcs11_ck_x9_42_dh2_derive_params_set_kdf(object, sv)
     Crypt::PKCS11::CK_X9_42_DH2_DERIVE_PARAMS* object
-    SV* kdf
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_x9_42_dh2_derive_params_get_pOtherInfo(object, pOtherInfo)
+crypt_pkcs11_ck_x9_42_dh2_derive_params_get_pOtherInfo(object, sv)
     Crypt::PKCS11::CK_X9_42_DH2_DERIVE_PARAMS* object
-    SV* pOtherInfo
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_x9_42_dh2_derive_params_set_pOtherInfo(object, pOtherInfo)
+crypt_pkcs11_ck_x9_42_dh2_derive_params_set_pOtherInfo(object, sv)
     Crypt::PKCS11::CK_X9_42_DH2_DERIVE_PARAMS* object
-    SV* pOtherInfo
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_x9_42_dh2_derive_params_get_pPublicData(object, pPublicData)
+crypt_pkcs11_ck_x9_42_dh2_derive_params_get_pPublicData(object, sv)
     Crypt::PKCS11::CK_X9_42_DH2_DERIVE_PARAMS* object
-    SV* pPublicData
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_x9_42_dh2_derive_params_set_pPublicData(object, pPublicData)
+crypt_pkcs11_ck_x9_42_dh2_derive_params_set_pPublicData(object, sv)
     Crypt::PKCS11::CK_X9_42_DH2_DERIVE_PARAMS* object
-    SV* pPublicData
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_x9_42_dh2_derive_params_get_hPrivateData(object, hPrivateData)
+crypt_pkcs11_ck_x9_42_dh2_derive_params_get_hPrivateData(object, sv)
     Crypt::PKCS11::CK_X9_42_DH2_DERIVE_PARAMS* object
-    SV* hPrivateData
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_x9_42_dh2_derive_params_set_hPrivateData(object, hPrivateData)
+crypt_pkcs11_ck_x9_42_dh2_derive_params_set_hPrivateData(object, sv)
     Crypt::PKCS11::CK_X9_42_DH2_DERIVE_PARAMS* object
-    SV* hPrivateData
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_x9_42_dh2_derive_params_get_ulPublicDataLen2(object, ulPublicDataLen2)
+crypt_pkcs11_ck_x9_42_dh2_derive_params_get_pPublicData2(object, sv)
     Crypt::PKCS11::CK_X9_42_DH2_DERIVE_PARAMS* object
-    SV* ulPublicDataLen2
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_x9_42_dh2_derive_params_set_ulPublicDataLen2(object, ulPublicDataLen2)
+crypt_pkcs11_ck_x9_42_dh2_derive_params_set_pPublicData2(object, sv)
     Crypt::PKCS11::CK_X9_42_DH2_DERIVE_PARAMS* object
-    SV* ulPublicDataLen2
-PROTOTYPE: $
-OUTPUT:
-    RETVAL
-
-CK_RV
-crypt_pkcs11_ck_x9_42_dh2_derive_params_get_pPublicData2(object, pPublicData2)
-    Crypt::PKCS11::CK_X9_42_DH2_DERIVE_PARAMS* object
-    SV* pPublicData2
-PROTOTYPE: $
-OUTPUT:
-    RETVAL
-
-CK_RV
-crypt_pkcs11_ck_x9_42_dh2_derive_params_set_pPublicData2(object, pPublicData2)
-    Crypt::PKCS11::CK_X9_42_DH2_DERIVE_PARAMS* object
-    SV* pPublicData2
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
@@ -701,113 +757,97 @@ crypt_pkcs11_ck_x9_42_mqv_derive_params_DESTROY(object)
 PROTOTYPE: $
 
 CK_RV
-crypt_pkcs11_ck_x9_42_mqv_derive_params_get_kdf(object, kdf)
+crypt_pkcs11_ck_x9_42_mqv_derive_params_get_kdf(object, sv)
     Crypt::PKCS11::CK_X9_42_MQV_DERIVE_PARAMS* object
-    SV* kdf
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_x9_42_mqv_derive_params_set_kdf(object, kdf)
+crypt_pkcs11_ck_x9_42_mqv_derive_params_set_kdf(object, sv)
     Crypt::PKCS11::CK_X9_42_MQV_DERIVE_PARAMS* object
-    SV* kdf
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_x9_42_mqv_derive_params_get_pOtherInfo(object, pOtherInfo)
+crypt_pkcs11_ck_x9_42_mqv_derive_params_get_pOtherInfo(object, sv)
     Crypt::PKCS11::CK_X9_42_MQV_DERIVE_PARAMS* object
-    SV* pOtherInfo
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_x9_42_mqv_derive_params_set_pOtherInfo(object, pOtherInfo)
+crypt_pkcs11_ck_x9_42_mqv_derive_params_set_pOtherInfo(object, sv)
     Crypt::PKCS11::CK_X9_42_MQV_DERIVE_PARAMS* object
-    SV* pOtherInfo
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_x9_42_mqv_derive_params_get_pPublicData(object, pPublicData)
+crypt_pkcs11_ck_x9_42_mqv_derive_params_get_pPublicData(object, sv)
     Crypt::PKCS11::CK_X9_42_MQV_DERIVE_PARAMS* object
-    SV* pPublicData
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_x9_42_mqv_derive_params_set_pPublicData(object, pPublicData)
+crypt_pkcs11_ck_x9_42_mqv_derive_params_set_pPublicData(object, sv)
     Crypt::PKCS11::CK_X9_42_MQV_DERIVE_PARAMS* object
-    SV* pPublicData
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_x9_42_mqv_derive_params_get_hPrivateData(object, hPrivateData)
+crypt_pkcs11_ck_x9_42_mqv_derive_params_get_hPrivateData(object, sv)
     Crypt::PKCS11::CK_X9_42_MQV_DERIVE_PARAMS* object
-    SV* hPrivateData
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_x9_42_mqv_derive_params_set_hPrivateData(object, hPrivateData)
+crypt_pkcs11_ck_x9_42_mqv_derive_params_set_hPrivateData(object, sv)
     Crypt::PKCS11::CK_X9_42_MQV_DERIVE_PARAMS* object
-    SV* hPrivateData
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_x9_42_mqv_derive_params_get_ulPublicDataLen2(object, ulPublicDataLen2)
+crypt_pkcs11_ck_x9_42_mqv_derive_params_get_pPublicData2(object, sv)
     Crypt::PKCS11::CK_X9_42_MQV_DERIVE_PARAMS* object
-    SV* ulPublicDataLen2
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_x9_42_mqv_derive_params_set_ulPublicDataLen2(object, ulPublicDataLen2)
+crypt_pkcs11_ck_x9_42_mqv_derive_params_set_pPublicData2(object, sv)
     Crypt::PKCS11::CK_X9_42_MQV_DERIVE_PARAMS* object
-    SV* ulPublicDataLen2
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_x9_42_mqv_derive_params_get_pPublicData2(object, pPublicData2)
+crypt_pkcs11_ck_x9_42_mqv_derive_params_get_publicKey(object, sv)
     Crypt::PKCS11::CK_X9_42_MQV_DERIVE_PARAMS* object
-    SV* pPublicData2
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_x9_42_mqv_derive_params_set_pPublicData2(object, pPublicData2)
+crypt_pkcs11_ck_x9_42_mqv_derive_params_set_publicKey(object, sv)
     Crypt::PKCS11::CK_X9_42_MQV_DERIVE_PARAMS* object
-    SV* pPublicData2
-PROTOTYPE: $
-OUTPUT:
-    RETVAL
-
-CK_RV
-crypt_pkcs11_ck_x9_42_mqv_derive_params_get_publicKey(object, publicKey)
-    Crypt::PKCS11::CK_X9_42_MQV_DERIVE_PARAMS* object
-    SV* publicKey
-PROTOTYPE: $
-OUTPUT:
-    RETVAL
-
-CK_RV
-crypt_pkcs11_ck_x9_42_mqv_derive_params_set_publicKey(object, publicKey)
-    Crypt::PKCS11::CK_X9_42_MQV_DERIVE_PARAMS* object
-    SV* publicKey
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
@@ -833,65 +873,65 @@ crypt_pkcs11_ck_kea_derive_params_DESTROY(object)
 PROTOTYPE: $
 
 CK_RV
-crypt_pkcs11_ck_kea_derive_params_get_isSender(object, isSender)
+crypt_pkcs11_ck_kea_derive_params_get_isSender(object, sv)
     Crypt::PKCS11::CK_KEA_DERIVE_PARAMS* object
-    SV* isSender
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_kea_derive_params_set_isSender(object, isSender)
+crypt_pkcs11_ck_kea_derive_params_set_isSender(object, sv)
     Crypt::PKCS11::CK_KEA_DERIVE_PARAMS* object
-    SV* isSender
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_kea_derive_params_get_pRandomA(object, pRandomA)
+crypt_pkcs11_ck_kea_derive_params_get_pRandomA(object, sv)
     Crypt::PKCS11::CK_KEA_DERIVE_PARAMS* object
-    SV* pRandomA
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_kea_derive_params_set_pRandomA(object, pRandomA)
+crypt_pkcs11_ck_kea_derive_params_set_pRandomA(object, sv)
     Crypt::PKCS11::CK_KEA_DERIVE_PARAMS* object
-    SV* pRandomA
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_kea_derive_params_get_pRandomB(object, pRandomB)
+crypt_pkcs11_ck_kea_derive_params_get_pRandomB(object, sv)
     Crypt::PKCS11::CK_KEA_DERIVE_PARAMS* object
-    SV* pRandomB
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_kea_derive_params_set_pRandomB(object, pRandomB)
+crypt_pkcs11_ck_kea_derive_params_set_pRandomB(object, sv)
     Crypt::PKCS11::CK_KEA_DERIVE_PARAMS* object
-    SV* pRandomB
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_kea_derive_params_get_pPublicData(object, pPublicData)
+crypt_pkcs11_ck_kea_derive_params_get_pPublicData(object, sv)
     Crypt::PKCS11::CK_KEA_DERIVE_PARAMS* object
-    SV* pPublicData
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_kea_derive_params_set_pPublicData(object, pPublicData)
+crypt_pkcs11_ck_kea_derive_params_set_pPublicData(object, sv)
     Crypt::PKCS11::CK_KEA_DERIVE_PARAMS* object
-    SV* pPublicData
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
@@ -917,33 +957,33 @@ crypt_pkcs11_ck_rc2_cbc_params_DESTROY(object)
 PROTOTYPE: $
 
 CK_RV
-crypt_pkcs11_ck_rc2_cbc_params_get_ulEffectiveBits(object, ulEffectiveBits)
+crypt_pkcs11_ck_rc2_cbc_params_get_ulEffectiveBits(object, sv)
     Crypt::PKCS11::CK_RC2_CBC_PARAMS* object
-    SV* ulEffectiveBits
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_rc2_cbc_params_set_ulEffectiveBits(object, ulEffectiveBits)
+crypt_pkcs11_ck_rc2_cbc_params_set_ulEffectiveBits(object, sv)
     Crypt::PKCS11::CK_RC2_CBC_PARAMS* object
-    SV* ulEffectiveBits
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_rc2_cbc_params_get_iv(object, iv)
+crypt_pkcs11_ck_rc2_cbc_params_get_iv(object, sv)
     Crypt::PKCS11::CK_RC2_CBC_PARAMS* object
-    SV* iv
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_rc2_cbc_params_set_iv(object, iv)
+crypt_pkcs11_ck_rc2_cbc_params_set_iv(object, sv)
     Crypt::PKCS11::CK_RC2_CBC_PARAMS* object
-    SV* iv
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
@@ -969,33 +1009,17 @@ crypt_pkcs11_ck_rc2_mac_general_params_DESTROY(object)
 PROTOTYPE: $
 
 CK_RV
-crypt_pkcs11_ck_rc2_mac_general_params_get_ulEffectiveBits(object, ulEffectiveBits)
+crypt_pkcs11_ck_rc2_mac_general_params_get_ulEffectiveBits(object, sv)
     Crypt::PKCS11::CK_RC2_MAC_GENERAL_PARAMS* object
-    SV* ulEffectiveBits
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_rc2_mac_general_params_set_ulEffectiveBits(object, ulEffectiveBits)
+crypt_pkcs11_ck_rc2_mac_general_params_set_ulEffectiveBits(object, sv)
     Crypt::PKCS11::CK_RC2_MAC_GENERAL_PARAMS* object
-    SV* ulEffectiveBits
-PROTOTYPE: $
-OUTPUT:
-    RETVAL
-
-CK_RV
-crypt_pkcs11_ck_rc2_mac_general_params_get_ulMacLength(object, ulMacLength)
-    Crypt::PKCS11::CK_RC2_MAC_GENERAL_PARAMS* object
-    SV* ulMacLength
-PROTOTYPE: $
-OUTPUT:
-    RETVAL
-
-CK_RV
-crypt_pkcs11_ck_rc2_mac_general_params_set_ulMacLength(object, ulMacLength)
-    Crypt::PKCS11::CK_RC2_MAC_GENERAL_PARAMS* object
-    SV* ulMacLength
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
@@ -1021,33 +1045,33 @@ crypt_pkcs11_ck_rc5_params_DESTROY(object)
 PROTOTYPE: $
 
 CK_RV
-crypt_pkcs11_ck_rc5_params_get_ulWordsize(object, ulWordsize)
+crypt_pkcs11_ck_rc5_params_get_ulWordsize(object, sv)
     Crypt::PKCS11::CK_RC5_PARAMS* object
-    SV* ulWordsize
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_rc5_params_set_ulWordsize(object, ulWordsize)
+crypt_pkcs11_ck_rc5_params_set_ulWordsize(object, sv)
     Crypt::PKCS11::CK_RC5_PARAMS* object
-    SV* ulWordsize
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_rc5_params_get_ulRounds(object, ulRounds)
+crypt_pkcs11_ck_rc5_params_get_ulRounds(object, sv)
     Crypt::PKCS11::CK_RC5_PARAMS* object
-    SV* ulRounds
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_rc5_params_set_ulRounds(object, ulRounds)
+crypt_pkcs11_ck_rc5_params_set_ulRounds(object, sv)
     Crypt::PKCS11::CK_RC5_PARAMS* object
-    SV* ulRounds
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
@@ -1073,49 +1097,49 @@ crypt_pkcs11_ck_rc5_cbc_params_DESTROY(object)
 PROTOTYPE: $
 
 CK_RV
-crypt_pkcs11_ck_rc5_cbc_params_get_ulWordsize(object, ulWordsize)
+crypt_pkcs11_ck_rc5_cbc_params_get_ulWordsize(object, sv)
     Crypt::PKCS11::CK_RC5_CBC_PARAMS* object
-    SV* ulWordsize
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_rc5_cbc_params_set_ulWordsize(object, ulWordsize)
+crypt_pkcs11_ck_rc5_cbc_params_set_ulWordsize(object, sv)
     Crypt::PKCS11::CK_RC5_CBC_PARAMS* object
-    SV* ulWordsize
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_rc5_cbc_params_get_ulRounds(object, ulRounds)
+crypt_pkcs11_ck_rc5_cbc_params_get_ulRounds(object, sv)
     Crypt::PKCS11::CK_RC5_CBC_PARAMS* object
-    SV* ulRounds
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_rc5_cbc_params_set_ulRounds(object, ulRounds)
+crypt_pkcs11_ck_rc5_cbc_params_set_ulRounds(object, sv)
     Crypt::PKCS11::CK_RC5_CBC_PARAMS* object
-    SV* ulRounds
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_rc5_cbc_params_get_pIv(object, pIv)
+crypt_pkcs11_ck_rc5_cbc_params_get_pIv(object, sv)
     Crypt::PKCS11::CK_RC5_CBC_PARAMS* object
-    SV* pIv
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_rc5_cbc_params_set_pIv(object, pIv)
+crypt_pkcs11_ck_rc5_cbc_params_set_pIv(object, sv)
     Crypt::PKCS11::CK_RC5_CBC_PARAMS* object
-    SV* pIv
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
@@ -1141,49 +1165,33 @@ crypt_pkcs11_ck_rc5_mac_general_params_DESTROY(object)
 PROTOTYPE: $
 
 CK_RV
-crypt_pkcs11_ck_rc5_mac_general_params_get_ulWordsize(object, ulWordsize)
+crypt_pkcs11_ck_rc5_mac_general_params_get_ulWordsize(object, sv)
     Crypt::PKCS11::CK_RC5_MAC_GENERAL_PARAMS* object
-    SV* ulWordsize
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_rc5_mac_general_params_set_ulWordsize(object, ulWordsize)
+crypt_pkcs11_ck_rc5_mac_general_params_set_ulWordsize(object, sv)
     Crypt::PKCS11::CK_RC5_MAC_GENERAL_PARAMS* object
-    SV* ulWordsize
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_rc5_mac_general_params_get_ulRounds(object, ulRounds)
+crypt_pkcs11_ck_rc5_mac_general_params_get_ulRounds(object, sv)
     Crypt::PKCS11::CK_RC5_MAC_GENERAL_PARAMS* object
-    SV* ulRounds
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_rc5_mac_general_params_set_ulRounds(object, ulRounds)
+crypt_pkcs11_ck_rc5_mac_general_params_set_ulRounds(object, sv)
     Crypt::PKCS11::CK_RC5_MAC_GENERAL_PARAMS* object
-    SV* ulRounds
-PROTOTYPE: $
-OUTPUT:
-    RETVAL
-
-CK_RV
-crypt_pkcs11_ck_rc5_mac_general_params_get_ulMacLength(object, ulMacLength)
-    Crypt::PKCS11::CK_RC5_MAC_GENERAL_PARAMS* object
-    SV* ulMacLength
-PROTOTYPE: $
-OUTPUT:
-    RETVAL
-
-CK_RV
-crypt_pkcs11_ck_rc5_mac_general_params_set_ulMacLength(object, ulMacLength)
-    Crypt::PKCS11::CK_RC5_MAC_GENERAL_PARAMS* object
-    SV* ulMacLength
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
@@ -1209,33 +1217,33 @@ crypt_pkcs11_ck_des_cbc_encrypt_data_params_DESTROY(object)
 PROTOTYPE: $
 
 CK_RV
-crypt_pkcs11_ck_des_cbc_encrypt_data_params_get_iv(object, iv)
+crypt_pkcs11_ck_des_cbc_encrypt_data_params_get_iv(object, sv)
     Crypt::PKCS11::CK_DES_CBC_ENCRYPT_DATA_PARAMS* object
-    SV* iv
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_des_cbc_encrypt_data_params_set_iv(object, iv)
+crypt_pkcs11_ck_des_cbc_encrypt_data_params_set_iv(object, sv)
     Crypt::PKCS11::CK_DES_CBC_ENCRYPT_DATA_PARAMS* object
-    SV* iv
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_des_cbc_encrypt_data_params_get_pData(object, pData)
+crypt_pkcs11_ck_des_cbc_encrypt_data_params_get_pData(object, sv)
     Crypt::PKCS11::CK_DES_CBC_ENCRYPT_DATA_PARAMS* object
-    SV* pData
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_des_cbc_encrypt_data_params_set_pData(object, pData)
+crypt_pkcs11_ck_des_cbc_encrypt_data_params_set_pData(object, sv)
     Crypt::PKCS11::CK_DES_CBC_ENCRYPT_DATA_PARAMS* object
-    SV* pData
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
@@ -1261,33 +1269,33 @@ crypt_pkcs11_ck_aes_cbc_encrypt_data_params_DESTROY(object)
 PROTOTYPE: $
 
 CK_RV
-crypt_pkcs11_ck_aes_cbc_encrypt_data_params_get_iv(object, iv)
+crypt_pkcs11_ck_aes_cbc_encrypt_data_params_get_iv(object, sv)
     Crypt::PKCS11::CK_AES_CBC_ENCRYPT_DATA_PARAMS* object
-    SV* iv
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_aes_cbc_encrypt_data_params_set_iv(object, iv)
+crypt_pkcs11_ck_aes_cbc_encrypt_data_params_set_iv(object, sv)
     Crypt::PKCS11::CK_AES_CBC_ENCRYPT_DATA_PARAMS* object
-    SV* iv
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_aes_cbc_encrypt_data_params_get_pData(object, pData)
+crypt_pkcs11_ck_aes_cbc_encrypt_data_params_get_pData(object, sv)
     Crypt::PKCS11::CK_AES_CBC_ENCRYPT_DATA_PARAMS* object
-    SV* pData
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_aes_cbc_encrypt_data_params_set_pData(object, pData)
+crypt_pkcs11_ck_aes_cbc_encrypt_data_params_set_pData(object, sv)
     Crypt::PKCS11::CK_AES_CBC_ENCRYPT_DATA_PARAMS* object
-    SV* pData
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
@@ -1313,97 +1321,97 @@ crypt_pkcs11_ck_skipjack_private_wrap_params_DESTROY(object)
 PROTOTYPE: $
 
 CK_RV
-crypt_pkcs11_ck_skipjack_private_wrap_params_get_pPassword(object, pPassword)
+crypt_pkcs11_ck_skipjack_private_wrap_params_get_pPassword(object, sv)
     Crypt::PKCS11::CK_SKIPJACK_PRIVATE_WRAP_PARAMS* object
-    SV* pPassword
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_skipjack_private_wrap_params_set_pPassword(object, pPassword)
+crypt_pkcs11_ck_skipjack_private_wrap_params_set_pPassword(object, sv)
     Crypt::PKCS11::CK_SKIPJACK_PRIVATE_WRAP_PARAMS* object
-    SV* pPassword
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_skipjack_private_wrap_params_get_pPublicData(object, pPublicData)
+crypt_pkcs11_ck_skipjack_private_wrap_params_get_pPublicData(object, sv)
     Crypt::PKCS11::CK_SKIPJACK_PRIVATE_WRAP_PARAMS* object
-    SV* pPublicData
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_skipjack_private_wrap_params_set_pPublicData(object, pPublicData)
+crypt_pkcs11_ck_skipjack_private_wrap_params_set_pPublicData(object, sv)
     Crypt::PKCS11::CK_SKIPJACK_PRIVATE_WRAP_PARAMS* object
-    SV* pPublicData
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_skipjack_private_wrap_params_get_pRandomA(object, pRandomA)
+crypt_pkcs11_ck_skipjack_private_wrap_params_get_pRandomA(object, sv)
     Crypt::PKCS11::CK_SKIPJACK_PRIVATE_WRAP_PARAMS* object
-    SV* pRandomA
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_skipjack_private_wrap_params_set_pRandomA(object, pRandomA)
+crypt_pkcs11_ck_skipjack_private_wrap_params_set_pRandomA(object, sv)
     Crypt::PKCS11::CK_SKIPJACK_PRIVATE_WRAP_PARAMS* object
-    SV* pRandomA
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_skipjack_private_wrap_params_get_pPrimeP(object, pPrimeP)
+crypt_pkcs11_ck_skipjack_private_wrap_params_get_pPrimeP(object, sv)
     Crypt::PKCS11::CK_SKIPJACK_PRIVATE_WRAP_PARAMS* object
-    SV* pPrimeP
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_skipjack_private_wrap_params_set_pPrimeP(object, pPrimeP)
+crypt_pkcs11_ck_skipjack_private_wrap_params_set_pPrimeP(object, sv)
     Crypt::PKCS11::CK_SKIPJACK_PRIVATE_WRAP_PARAMS* object
-    SV* pPrimeP
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_skipjack_private_wrap_params_get_pBaseG(object, pBaseG)
+crypt_pkcs11_ck_skipjack_private_wrap_params_get_pBaseG(object, sv)
     Crypt::PKCS11::CK_SKIPJACK_PRIVATE_WRAP_PARAMS* object
-    SV* pBaseG
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_skipjack_private_wrap_params_set_pBaseG(object, pBaseG)
+crypt_pkcs11_ck_skipjack_private_wrap_params_set_pBaseG(object, sv)
     Crypt::PKCS11::CK_SKIPJACK_PRIVATE_WRAP_PARAMS* object
-    SV* pBaseG
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_skipjack_private_wrap_params_get_pSubprimeQ(object, pSubprimeQ)
+crypt_pkcs11_ck_skipjack_private_wrap_params_get_pSubprimeQ(object, sv)
     Crypt::PKCS11::CK_SKIPJACK_PRIVATE_WRAP_PARAMS* object
-    SV* pSubprimeQ
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_skipjack_private_wrap_params_set_pSubprimeQ(object, pSubprimeQ)
+crypt_pkcs11_ck_skipjack_private_wrap_params_set_pSubprimeQ(object, sv)
     Crypt::PKCS11::CK_SKIPJACK_PRIVATE_WRAP_PARAMS* object
-    SV* pSubprimeQ
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
@@ -1429,113 +1437,113 @@ crypt_pkcs11_ck_skipjack_relayx_params_DESTROY(object)
 PROTOTYPE: $
 
 CK_RV
-crypt_pkcs11_ck_skipjack_relayx_params_get_pOldWrappedX(object, pOldWrappedX)
+crypt_pkcs11_ck_skipjack_relayx_params_get_pOldWrappedX(object, sv)
     Crypt::PKCS11::CK_SKIPJACK_RELAYX_PARAMS* object
-    SV* pOldWrappedX
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_skipjack_relayx_params_set_pOldWrappedX(object, pOldWrappedX)
+crypt_pkcs11_ck_skipjack_relayx_params_set_pOldWrappedX(object, sv)
     Crypt::PKCS11::CK_SKIPJACK_RELAYX_PARAMS* object
-    SV* pOldWrappedX
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_skipjack_relayx_params_get_pOldPassword(object, pOldPassword)
+crypt_pkcs11_ck_skipjack_relayx_params_get_pOldPassword(object, sv)
     Crypt::PKCS11::CK_SKIPJACK_RELAYX_PARAMS* object
-    SV* pOldPassword
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_skipjack_relayx_params_set_pOldPassword(object, pOldPassword)
+crypt_pkcs11_ck_skipjack_relayx_params_set_pOldPassword(object, sv)
     Crypt::PKCS11::CK_SKIPJACK_RELAYX_PARAMS* object
-    SV* pOldPassword
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_skipjack_relayx_params_get_pOldPublicData(object, pOldPublicData)
+crypt_pkcs11_ck_skipjack_relayx_params_get_pOldPublicData(object, sv)
     Crypt::PKCS11::CK_SKIPJACK_RELAYX_PARAMS* object
-    SV* pOldPublicData
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_skipjack_relayx_params_set_pOldPublicData(object, pOldPublicData)
+crypt_pkcs11_ck_skipjack_relayx_params_set_pOldPublicData(object, sv)
     Crypt::PKCS11::CK_SKIPJACK_RELAYX_PARAMS* object
-    SV* pOldPublicData
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_skipjack_relayx_params_get_pOldRandomA(object, pOldRandomA)
+crypt_pkcs11_ck_skipjack_relayx_params_get_pOldRandomA(object, sv)
     Crypt::PKCS11::CK_SKIPJACK_RELAYX_PARAMS* object
-    SV* pOldRandomA
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_skipjack_relayx_params_set_pOldRandomA(object, pOldRandomA)
+crypt_pkcs11_ck_skipjack_relayx_params_set_pOldRandomA(object, sv)
     Crypt::PKCS11::CK_SKIPJACK_RELAYX_PARAMS* object
-    SV* pOldRandomA
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_skipjack_relayx_params_get_pNewPassword(object, pNewPassword)
+crypt_pkcs11_ck_skipjack_relayx_params_get_pNewPassword(object, sv)
     Crypt::PKCS11::CK_SKIPJACK_RELAYX_PARAMS* object
-    SV* pNewPassword
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_skipjack_relayx_params_set_pNewPassword(object, pNewPassword)
+crypt_pkcs11_ck_skipjack_relayx_params_set_pNewPassword(object, sv)
     Crypt::PKCS11::CK_SKIPJACK_RELAYX_PARAMS* object
-    SV* pNewPassword
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_skipjack_relayx_params_get_pNewPublicData(object, pNewPublicData)
+crypt_pkcs11_ck_skipjack_relayx_params_get_pNewPublicData(object, sv)
     Crypt::PKCS11::CK_SKIPJACK_RELAYX_PARAMS* object
-    SV* pNewPublicData
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_skipjack_relayx_params_set_pNewPublicData(object, pNewPublicData)
+crypt_pkcs11_ck_skipjack_relayx_params_set_pNewPublicData(object, sv)
     Crypt::PKCS11::CK_SKIPJACK_RELAYX_PARAMS* object
-    SV* pNewPublicData
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_skipjack_relayx_params_get_pNewRandomA(object, pNewRandomA)
+crypt_pkcs11_ck_skipjack_relayx_params_get_pNewRandomA(object, sv)
     Crypt::PKCS11::CK_SKIPJACK_RELAYX_PARAMS* object
-    SV* pNewRandomA
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_skipjack_relayx_params_set_pNewRandomA(object, pNewRandomA)
+crypt_pkcs11_ck_skipjack_relayx_params_set_pNewRandomA(object, sv)
     Crypt::PKCS11::CK_SKIPJACK_RELAYX_PARAMS* object
-    SV* pNewRandomA
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
@@ -1561,65 +1569,65 @@ crypt_pkcs11_ck_pbe_params_DESTROY(object)
 PROTOTYPE: $
 
 CK_RV
-crypt_pkcs11_ck_pbe_params_get_pInitVector(object, pInitVector)
+crypt_pkcs11_ck_pbe_params_get_pInitVector(object, sv)
     Crypt::PKCS11::CK_PBE_PARAMS* object
-    SV* pInitVector
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_pbe_params_set_pInitVector(object, pInitVector)
+crypt_pkcs11_ck_pbe_params_set_pInitVector(object, sv)
     Crypt::PKCS11::CK_PBE_PARAMS* object
-    SV* pInitVector
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_pbe_params_get_pPassword(object, pPassword)
+crypt_pkcs11_ck_pbe_params_get_pPassword(object, sv)
     Crypt::PKCS11::CK_PBE_PARAMS* object
-    SV* pPassword
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_pbe_params_set_pPassword(object, pPassword)
+crypt_pkcs11_ck_pbe_params_set_pPassword(object, sv)
     Crypt::PKCS11::CK_PBE_PARAMS* object
-    SV* pPassword
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_pbe_params_get_pSalt(object, pSalt)
+crypt_pkcs11_ck_pbe_params_get_pSalt(object, sv)
     Crypt::PKCS11::CK_PBE_PARAMS* object
-    SV* pSalt
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_pbe_params_set_pSalt(object, pSalt)
+crypt_pkcs11_ck_pbe_params_set_pSalt(object, sv)
     Crypt::PKCS11::CK_PBE_PARAMS* object
-    SV* pSalt
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_pbe_params_get_ulIteration(object, ulIteration)
+crypt_pkcs11_ck_pbe_params_get_ulIteration(object, sv)
     Crypt::PKCS11::CK_PBE_PARAMS* object
-    SV* ulIteration
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_pbe_params_set_ulIteration(object, ulIteration)
+crypt_pkcs11_ck_pbe_params_set_ulIteration(object, sv)
     Crypt::PKCS11::CK_PBE_PARAMS* object
-    SV* ulIteration
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
@@ -1645,33 +1653,33 @@ crypt_pkcs11_ck_key_wrap_set_oaep_params_DESTROY(object)
 PROTOTYPE: $
 
 CK_RV
-crypt_pkcs11_ck_key_wrap_set_oaep_params_get_bBC(object, bBC)
+crypt_pkcs11_ck_key_wrap_set_oaep_params_get_bBC(object, sv)
     Crypt::PKCS11::CK_KEY_WRAP_SET_OAEP_PARAMS* object
-    SV* bBC
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_key_wrap_set_oaep_params_set_bBC(object, bBC)
+crypt_pkcs11_ck_key_wrap_set_oaep_params_set_bBC(object, sv)
     Crypt::PKCS11::CK_KEY_WRAP_SET_OAEP_PARAMS* object
-    SV* bBC
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_key_wrap_set_oaep_params_get_pX(object, pX)
+crypt_pkcs11_ck_key_wrap_set_oaep_params_get_pX(object, sv)
     Crypt::PKCS11::CK_KEY_WRAP_SET_OAEP_PARAMS* object
-    SV* pX
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_key_wrap_set_oaep_params_set_pX(object, pX)
+crypt_pkcs11_ck_key_wrap_set_oaep_params_set_pX(object, sv)
     Crypt::PKCS11::CK_KEY_WRAP_SET_OAEP_PARAMS* object
-    SV* pX
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
@@ -1697,33 +1705,33 @@ crypt_pkcs11_ck_ssl3_random_data_DESTROY(object)
 PROTOTYPE: $
 
 CK_RV
-crypt_pkcs11_ck_ssl3_random_data_get_pClientRandom(object, pClientRandom)
+crypt_pkcs11_ck_ssl3_random_data_get_pClientRandom(object, sv)
     Crypt::PKCS11::CK_SSL3_RANDOM_DATA* object
-    SV* pClientRandom
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_ssl3_random_data_set_pClientRandom(object, pClientRandom)
+crypt_pkcs11_ck_ssl3_random_data_set_pClientRandom(object, sv)
     Crypt::PKCS11::CK_SSL3_RANDOM_DATA* object
-    SV* pClientRandom
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_ssl3_random_data_get_pServerRandom(object, pServerRandom)
+crypt_pkcs11_ck_ssl3_random_data_get_pServerRandom(object, sv)
     Crypt::PKCS11::CK_SSL3_RANDOM_DATA* object
-    SV* pServerRandom
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_ssl3_random_data_set_pServerRandom(object, pServerRandom)
+crypt_pkcs11_ck_ssl3_random_data_set_pServerRandom(object, sv)
     Crypt::PKCS11::CK_SSL3_RANDOM_DATA* object
-    SV* pServerRandom
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
@@ -1749,33 +1757,33 @@ crypt_pkcs11_ck_ssl3_master_key_derive_params_DESTROY(object)
 PROTOTYPE: $
 
 CK_RV
-crypt_pkcs11_ck_ssl3_master_key_derive_params_get_RandomInfo(object, RandomInfo)
+crypt_pkcs11_ck_ssl3_master_key_derive_params_get_RandomInfo(object, sv)
     Crypt::PKCS11::CK_SSL3_MASTER_KEY_DERIVE_PARAMS* object
-    SV* RandomInfo
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_ssl3_master_key_derive_params_set_RandomInfo(object, RandomInfo)
+crypt_pkcs11_ck_ssl3_master_key_derive_params_set_RandomInfo(object, sv)
     Crypt::PKCS11::CK_SSL3_MASTER_KEY_DERIVE_PARAMS* object
-    SV* RandomInfo
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_ssl3_master_key_derive_params_get_pVersion(object, pVersion)
+crypt_pkcs11_ck_ssl3_master_key_derive_params_get_pVersion(object, sv)
     Crypt::PKCS11::CK_SSL3_MASTER_KEY_DERIVE_PARAMS* object
-    SV* pVersion
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_ssl3_master_key_derive_params_set_pVersion(object, pVersion)
+crypt_pkcs11_ck_ssl3_master_key_derive_params_set_pVersion(object, sv)
     Crypt::PKCS11::CK_SSL3_MASTER_KEY_DERIVE_PARAMS* object
-    SV* pVersion
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
@@ -1801,97 +1809,97 @@ crypt_pkcs11_ck_ssl3_key_mat_out_DESTROY(object)
 PROTOTYPE: $
 
 CK_RV
-crypt_pkcs11_ck_ssl3_key_mat_out_get_hClientMacSecret(object, hClientMacSecret)
+crypt_pkcs11_ck_ssl3_key_mat_out_get_hClientMacSecret(object, sv)
     Crypt::PKCS11::CK_SSL3_KEY_MAT_OUT* object
-    SV* hClientMacSecret
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_ssl3_key_mat_out_set_hClientMacSecret(object, hClientMacSecret)
+crypt_pkcs11_ck_ssl3_key_mat_out_set_hClientMacSecret(object, sv)
     Crypt::PKCS11::CK_SSL3_KEY_MAT_OUT* object
-    SV* hClientMacSecret
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_ssl3_key_mat_out_get_hServerMacSecret(object, hServerMacSecret)
+crypt_pkcs11_ck_ssl3_key_mat_out_get_hServerMacSecret(object, sv)
     Crypt::PKCS11::CK_SSL3_KEY_MAT_OUT* object
-    SV* hServerMacSecret
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_ssl3_key_mat_out_set_hServerMacSecret(object, hServerMacSecret)
+crypt_pkcs11_ck_ssl3_key_mat_out_set_hServerMacSecret(object, sv)
     Crypt::PKCS11::CK_SSL3_KEY_MAT_OUT* object
-    SV* hServerMacSecret
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_ssl3_key_mat_out_get_hClientKey(object, hClientKey)
+crypt_pkcs11_ck_ssl3_key_mat_out_get_hClientKey(object, sv)
     Crypt::PKCS11::CK_SSL3_KEY_MAT_OUT* object
-    SV* hClientKey
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_ssl3_key_mat_out_set_hClientKey(object, hClientKey)
+crypt_pkcs11_ck_ssl3_key_mat_out_set_hClientKey(object, sv)
     Crypt::PKCS11::CK_SSL3_KEY_MAT_OUT* object
-    SV* hClientKey
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_ssl3_key_mat_out_get_hServerKey(object, hServerKey)
+crypt_pkcs11_ck_ssl3_key_mat_out_get_hServerKey(object, sv)
     Crypt::PKCS11::CK_SSL3_KEY_MAT_OUT* object
-    SV* hServerKey
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_ssl3_key_mat_out_set_hServerKey(object, hServerKey)
+crypt_pkcs11_ck_ssl3_key_mat_out_set_hServerKey(object, sv)
     Crypt::PKCS11::CK_SSL3_KEY_MAT_OUT* object
-    SV* hServerKey
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_ssl3_key_mat_out_get_pIVClient(object, pIVClient)
+crypt_pkcs11_ck_ssl3_key_mat_out_get_pIVClient(object, sv)
     Crypt::PKCS11::CK_SSL3_KEY_MAT_OUT* object
-    SV* pIVClient
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_ssl3_key_mat_out_set_pIVClient(object, pIVClient)
+crypt_pkcs11_ck_ssl3_key_mat_out_set_pIVClient(object, sv)
     Crypt::PKCS11::CK_SSL3_KEY_MAT_OUT* object
-    SV* pIVClient
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_ssl3_key_mat_out_get_pIVServer(object, pIVServer)
+crypt_pkcs11_ck_ssl3_key_mat_out_get_pIVServer(object, sv)
     Crypt::PKCS11::CK_SSL3_KEY_MAT_OUT* object
-    SV* pIVServer
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_ssl3_key_mat_out_set_pIVServer(object, pIVServer)
+crypt_pkcs11_ck_ssl3_key_mat_out_set_pIVServer(object, sv)
     Crypt::PKCS11::CK_SSL3_KEY_MAT_OUT* object
-    SV* pIVServer
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
@@ -1917,97 +1925,97 @@ crypt_pkcs11_ck_ssl3_key_mat_params_DESTROY(object)
 PROTOTYPE: $
 
 CK_RV
-crypt_pkcs11_ck_ssl3_key_mat_params_get_ulMacSizeInBits(object, ulMacSizeInBits)
+crypt_pkcs11_ck_ssl3_key_mat_params_get_ulMacSizeInBits(object, sv)
     Crypt::PKCS11::CK_SSL3_KEY_MAT_PARAMS* object
-    SV* ulMacSizeInBits
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_ssl3_key_mat_params_set_ulMacSizeInBits(object, ulMacSizeInBits)
+crypt_pkcs11_ck_ssl3_key_mat_params_set_ulMacSizeInBits(object, sv)
     Crypt::PKCS11::CK_SSL3_KEY_MAT_PARAMS* object
-    SV* ulMacSizeInBits
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_ssl3_key_mat_params_get_ulKeySizeInBits(object, ulKeySizeInBits)
+crypt_pkcs11_ck_ssl3_key_mat_params_get_ulKeySizeInBits(object, sv)
     Crypt::PKCS11::CK_SSL3_KEY_MAT_PARAMS* object
-    SV* ulKeySizeInBits
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_ssl3_key_mat_params_set_ulKeySizeInBits(object, ulKeySizeInBits)
+crypt_pkcs11_ck_ssl3_key_mat_params_set_ulKeySizeInBits(object, sv)
     Crypt::PKCS11::CK_SSL3_KEY_MAT_PARAMS* object
-    SV* ulKeySizeInBits
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_ssl3_key_mat_params_get_ulIVSizeInBits(object, ulIVSizeInBits)
+crypt_pkcs11_ck_ssl3_key_mat_params_get_ulIVSizeInBits(object, sv)
     Crypt::PKCS11::CK_SSL3_KEY_MAT_PARAMS* object
-    SV* ulIVSizeInBits
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_ssl3_key_mat_params_set_ulIVSizeInBits(object, ulIVSizeInBits)
+crypt_pkcs11_ck_ssl3_key_mat_params_set_ulIVSizeInBits(object, sv)
     Crypt::PKCS11::CK_SSL3_KEY_MAT_PARAMS* object
-    SV* ulIVSizeInBits
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_ssl3_key_mat_params_get_bIsExport(object, bIsExport)
+crypt_pkcs11_ck_ssl3_key_mat_params_get_bIsExport(object, sv)
     Crypt::PKCS11::CK_SSL3_KEY_MAT_PARAMS* object
-    SV* bIsExport
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_ssl3_key_mat_params_set_bIsExport(object, bIsExport)
+crypt_pkcs11_ck_ssl3_key_mat_params_set_bIsExport(object, sv)
     Crypt::PKCS11::CK_SSL3_KEY_MAT_PARAMS* object
-    SV* bIsExport
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_ssl3_key_mat_params_get_RandomInfo(object, RandomInfo)
+crypt_pkcs11_ck_ssl3_key_mat_params_get_RandomInfo(object, sv)
     Crypt::PKCS11::CK_SSL3_KEY_MAT_PARAMS* object
-    SV* RandomInfo
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_ssl3_key_mat_params_set_RandomInfo(object, RandomInfo)
+crypt_pkcs11_ck_ssl3_key_mat_params_set_RandomInfo(object, sv)
     Crypt::PKCS11::CK_SSL3_KEY_MAT_PARAMS* object
-    SV* RandomInfo
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_ssl3_key_mat_params_get_pReturnedKeyMaterial(object, pReturnedKeyMaterial)
+crypt_pkcs11_ck_ssl3_key_mat_params_get_pReturnedKeyMaterial(object, sv)
     Crypt::PKCS11::CK_SSL3_KEY_MAT_PARAMS* object
-    SV* pReturnedKeyMaterial
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_ssl3_key_mat_params_set_pReturnedKeyMaterial(object, pReturnedKeyMaterial)
+crypt_pkcs11_ck_ssl3_key_mat_params_set_pReturnedKeyMaterial(object, sv)
     Crypt::PKCS11::CK_SSL3_KEY_MAT_PARAMS* object
-    SV* pReturnedKeyMaterial
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
@@ -2033,65 +2041,49 @@ crypt_pkcs11_ck_tls_prf_params_DESTROY(object)
 PROTOTYPE: $
 
 CK_RV
-crypt_pkcs11_ck_tls_prf_params_get_pSeed(object, pSeed)
+crypt_pkcs11_ck_tls_prf_params_get_pSeed(object, sv)
     Crypt::PKCS11::CK_TLS_PRF_PARAMS* object
-    SV* pSeed
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_tls_prf_params_set_pSeed(object, pSeed)
+crypt_pkcs11_ck_tls_prf_params_set_pSeed(object, sv)
     Crypt::PKCS11::CK_TLS_PRF_PARAMS* object
-    SV* pSeed
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_tls_prf_params_get_pLabel(object, pLabel)
+crypt_pkcs11_ck_tls_prf_params_get_pLabel(object, sv)
     Crypt::PKCS11::CK_TLS_PRF_PARAMS* object
-    SV* pLabel
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_tls_prf_params_set_pLabel(object, pLabel)
+crypt_pkcs11_ck_tls_prf_params_set_pLabel(object, sv)
     Crypt::PKCS11::CK_TLS_PRF_PARAMS* object
-    SV* pLabel
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_tls_prf_params_get_pOutput(object, pOutput)
+crypt_pkcs11_ck_tls_prf_params_get_pOutput(object, sv)
     Crypt::PKCS11::CK_TLS_PRF_PARAMS* object
-    SV* pOutput
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_tls_prf_params_set_pOutput(object, pOutput)
+crypt_pkcs11_ck_tls_prf_params_set_pOutput(object, sv)
     Crypt::PKCS11::CK_TLS_PRF_PARAMS* object
-    SV* pOutput
-PROTOTYPE: $
-OUTPUT:
-    RETVAL
-
-CK_RV
-crypt_pkcs11_ck_tls_prf_params_get_pulOutputLen(object, pulOutputLen)
-    Crypt::PKCS11::CK_TLS_PRF_PARAMS* object
-    SV* pulOutputLen
-PROTOTYPE: $
-OUTPUT:
-    RETVAL
-
-CK_RV
-crypt_pkcs11_ck_tls_prf_params_set_pulOutputLen(object, pulOutputLen)
-    Crypt::PKCS11::CK_TLS_PRF_PARAMS* object
-    SV* pulOutputLen
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
@@ -2117,33 +2109,33 @@ crypt_pkcs11_ck_wtls_random_data_DESTROY(object)
 PROTOTYPE: $
 
 CK_RV
-crypt_pkcs11_ck_wtls_random_data_get_pClientRandom(object, pClientRandom)
+crypt_pkcs11_ck_wtls_random_data_get_pClientRandom(object, sv)
     Crypt::PKCS11::CK_WTLS_RANDOM_DATA* object
-    SV* pClientRandom
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_wtls_random_data_set_pClientRandom(object, pClientRandom)
+crypt_pkcs11_ck_wtls_random_data_set_pClientRandom(object, sv)
     Crypt::PKCS11::CK_WTLS_RANDOM_DATA* object
-    SV* pClientRandom
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_wtls_random_data_get_pServerRandom(object, pServerRandom)
+crypt_pkcs11_ck_wtls_random_data_get_pServerRandom(object, sv)
     Crypt::PKCS11::CK_WTLS_RANDOM_DATA* object
-    SV* pServerRandom
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_wtls_random_data_set_pServerRandom(object, pServerRandom)
+crypt_pkcs11_ck_wtls_random_data_set_pServerRandom(object, sv)
     Crypt::PKCS11::CK_WTLS_RANDOM_DATA* object
-    SV* pServerRandom
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
@@ -2169,49 +2161,49 @@ crypt_pkcs11_ck_wtls_master_key_derive_params_DESTROY(object)
 PROTOTYPE: $
 
 CK_RV
-crypt_pkcs11_ck_wtls_master_key_derive_params_get_DigestMechanism(object, DigestMechanism)
+crypt_pkcs11_ck_wtls_master_key_derive_params_get_DigestMechanism(object, sv)
     Crypt::PKCS11::CK_WTLS_MASTER_KEY_DERIVE_PARAMS* object
-    SV* DigestMechanism
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_wtls_master_key_derive_params_set_DigestMechanism(object, DigestMechanism)
+crypt_pkcs11_ck_wtls_master_key_derive_params_set_DigestMechanism(object, sv)
     Crypt::PKCS11::CK_WTLS_MASTER_KEY_DERIVE_PARAMS* object
-    SV* DigestMechanism
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_wtls_master_key_derive_params_get_RandomInfo(object, RandomInfo)
+crypt_pkcs11_ck_wtls_master_key_derive_params_get_RandomInfo(object, sv)
     Crypt::PKCS11::CK_WTLS_MASTER_KEY_DERIVE_PARAMS* object
-    SV* RandomInfo
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_wtls_master_key_derive_params_set_RandomInfo(object, RandomInfo)
+crypt_pkcs11_ck_wtls_master_key_derive_params_set_RandomInfo(object, sv)
     Crypt::PKCS11::CK_WTLS_MASTER_KEY_DERIVE_PARAMS* object
-    SV* RandomInfo
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_wtls_master_key_derive_params_get_pVersion(object, pVersion)
+crypt_pkcs11_ck_wtls_master_key_derive_params_get_pVersion(object, sv)
     Crypt::PKCS11::CK_WTLS_MASTER_KEY_DERIVE_PARAMS* object
-    SV* pVersion
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_wtls_master_key_derive_params_set_pVersion(object, pVersion)
+crypt_pkcs11_ck_wtls_master_key_derive_params_set_pVersion(object, sv)
     Crypt::PKCS11::CK_WTLS_MASTER_KEY_DERIVE_PARAMS* object
-    SV* pVersion
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
@@ -2237,81 +2229,65 @@ crypt_pkcs11_ck_wtls_prf_params_DESTROY(object)
 PROTOTYPE: $
 
 CK_RV
-crypt_pkcs11_ck_wtls_prf_params_get_DigestMechanism(object, DigestMechanism)
+crypt_pkcs11_ck_wtls_prf_params_get_DigestMechanism(object, sv)
     Crypt::PKCS11::CK_WTLS_PRF_PARAMS* object
-    SV* DigestMechanism
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_wtls_prf_params_set_DigestMechanism(object, DigestMechanism)
+crypt_pkcs11_ck_wtls_prf_params_set_DigestMechanism(object, sv)
     Crypt::PKCS11::CK_WTLS_PRF_PARAMS* object
-    SV* DigestMechanism
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_wtls_prf_params_get_pSeed(object, pSeed)
+crypt_pkcs11_ck_wtls_prf_params_get_pSeed(object, sv)
     Crypt::PKCS11::CK_WTLS_PRF_PARAMS* object
-    SV* pSeed
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_wtls_prf_params_set_pSeed(object, pSeed)
+crypt_pkcs11_ck_wtls_prf_params_set_pSeed(object, sv)
     Crypt::PKCS11::CK_WTLS_PRF_PARAMS* object
-    SV* pSeed
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_wtls_prf_params_get_pLabel(object, pLabel)
+crypt_pkcs11_ck_wtls_prf_params_get_pLabel(object, sv)
     Crypt::PKCS11::CK_WTLS_PRF_PARAMS* object
-    SV* pLabel
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_wtls_prf_params_set_pLabel(object, pLabel)
+crypt_pkcs11_ck_wtls_prf_params_set_pLabel(object, sv)
     Crypt::PKCS11::CK_WTLS_PRF_PARAMS* object
-    SV* pLabel
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_wtls_prf_params_get_pOutput(object, pOutput)
+crypt_pkcs11_ck_wtls_prf_params_get_pOutput(object, sv)
     Crypt::PKCS11::CK_WTLS_PRF_PARAMS* object
-    SV* pOutput
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_wtls_prf_params_set_pOutput(object, pOutput)
+crypt_pkcs11_ck_wtls_prf_params_set_pOutput(object, sv)
     Crypt::PKCS11::CK_WTLS_PRF_PARAMS* object
-    SV* pOutput
-PROTOTYPE: $
-OUTPUT:
-    RETVAL
-
-CK_RV
-crypt_pkcs11_ck_wtls_prf_params_get_pulOutputLen(object, pulOutputLen)
-    Crypt::PKCS11::CK_WTLS_PRF_PARAMS* object
-    SV* pulOutputLen
-PROTOTYPE: $
-OUTPUT:
-    RETVAL
-
-CK_RV
-crypt_pkcs11_ck_wtls_prf_params_set_pulOutputLen(object, pulOutputLen)
-    Crypt::PKCS11::CK_WTLS_PRF_PARAMS* object
-    SV* pulOutputLen
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
@@ -2337,49 +2313,49 @@ crypt_pkcs11_ck_wtls_key_mat_out_DESTROY(object)
 PROTOTYPE: $
 
 CK_RV
-crypt_pkcs11_ck_wtls_key_mat_out_get_hMacSecret(object, hMacSecret)
+crypt_pkcs11_ck_wtls_key_mat_out_get_hMacSecret(object, sv)
     Crypt::PKCS11::CK_WTLS_KEY_MAT_OUT* object
-    SV* hMacSecret
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_wtls_key_mat_out_set_hMacSecret(object, hMacSecret)
+crypt_pkcs11_ck_wtls_key_mat_out_set_hMacSecret(object, sv)
     Crypt::PKCS11::CK_WTLS_KEY_MAT_OUT* object
-    SV* hMacSecret
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_wtls_key_mat_out_get_hKey(object, hKey)
+crypt_pkcs11_ck_wtls_key_mat_out_get_hKey(object, sv)
     Crypt::PKCS11::CK_WTLS_KEY_MAT_OUT* object
-    SV* hKey
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_wtls_key_mat_out_set_hKey(object, hKey)
+crypt_pkcs11_ck_wtls_key_mat_out_set_hKey(object, sv)
     Crypt::PKCS11::CK_WTLS_KEY_MAT_OUT* object
-    SV* hKey
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_wtls_key_mat_out_get_pIV(object, pIV)
+crypt_pkcs11_ck_wtls_key_mat_out_get_pIV(object, sv)
     Crypt::PKCS11::CK_WTLS_KEY_MAT_OUT* object
-    SV* pIV
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_wtls_key_mat_out_set_pIV(object, pIV)
+crypt_pkcs11_ck_wtls_key_mat_out_set_pIV(object, sv)
     Crypt::PKCS11::CK_WTLS_KEY_MAT_OUT* object
-    SV* pIV
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
@@ -2405,129 +2381,129 @@ crypt_pkcs11_ck_wtls_key_mat_params_DESTROY(object)
 PROTOTYPE: $
 
 CK_RV
-crypt_pkcs11_ck_wtls_key_mat_params_get_DigestMechanism(object, DigestMechanism)
+crypt_pkcs11_ck_wtls_key_mat_params_get_DigestMechanism(object, sv)
     Crypt::PKCS11::CK_WTLS_KEY_MAT_PARAMS* object
-    SV* DigestMechanism
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_wtls_key_mat_params_set_DigestMechanism(object, DigestMechanism)
+crypt_pkcs11_ck_wtls_key_mat_params_set_DigestMechanism(object, sv)
     Crypt::PKCS11::CK_WTLS_KEY_MAT_PARAMS* object
-    SV* DigestMechanism
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_wtls_key_mat_params_get_ulMacSizeInBits(object, ulMacSizeInBits)
+crypt_pkcs11_ck_wtls_key_mat_params_get_ulMacSizeInBits(object, sv)
     Crypt::PKCS11::CK_WTLS_KEY_MAT_PARAMS* object
-    SV* ulMacSizeInBits
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_wtls_key_mat_params_set_ulMacSizeInBits(object, ulMacSizeInBits)
+crypt_pkcs11_ck_wtls_key_mat_params_set_ulMacSizeInBits(object, sv)
     Crypt::PKCS11::CK_WTLS_KEY_MAT_PARAMS* object
-    SV* ulMacSizeInBits
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_wtls_key_mat_params_get_ulKeySizeInBits(object, ulKeySizeInBits)
+crypt_pkcs11_ck_wtls_key_mat_params_get_ulKeySizeInBits(object, sv)
     Crypt::PKCS11::CK_WTLS_KEY_MAT_PARAMS* object
-    SV* ulKeySizeInBits
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_wtls_key_mat_params_set_ulKeySizeInBits(object, ulKeySizeInBits)
+crypt_pkcs11_ck_wtls_key_mat_params_set_ulKeySizeInBits(object, sv)
     Crypt::PKCS11::CK_WTLS_KEY_MAT_PARAMS* object
-    SV* ulKeySizeInBits
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_wtls_key_mat_params_get_ulIVSizeInBits(object, ulIVSizeInBits)
+crypt_pkcs11_ck_wtls_key_mat_params_get_ulIVSizeInBits(object, sv)
     Crypt::PKCS11::CK_WTLS_KEY_MAT_PARAMS* object
-    SV* ulIVSizeInBits
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_wtls_key_mat_params_set_ulIVSizeInBits(object, ulIVSizeInBits)
+crypt_pkcs11_ck_wtls_key_mat_params_set_ulIVSizeInBits(object, sv)
     Crypt::PKCS11::CK_WTLS_KEY_MAT_PARAMS* object
-    SV* ulIVSizeInBits
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_wtls_key_mat_params_get_ulSequenceNumber(object, ulSequenceNumber)
+crypt_pkcs11_ck_wtls_key_mat_params_get_ulSequenceNumber(object, sv)
     Crypt::PKCS11::CK_WTLS_KEY_MAT_PARAMS* object
-    SV* ulSequenceNumber
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_wtls_key_mat_params_set_ulSequenceNumber(object, ulSequenceNumber)
+crypt_pkcs11_ck_wtls_key_mat_params_set_ulSequenceNumber(object, sv)
     Crypt::PKCS11::CK_WTLS_KEY_MAT_PARAMS* object
-    SV* ulSequenceNumber
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_wtls_key_mat_params_get_bIsExport(object, bIsExport)
+crypt_pkcs11_ck_wtls_key_mat_params_get_bIsExport(object, sv)
     Crypt::PKCS11::CK_WTLS_KEY_MAT_PARAMS* object
-    SV* bIsExport
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_wtls_key_mat_params_set_bIsExport(object, bIsExport)
+crypt_pkcs11_ck_wtls_key_mat_params_set_bIsExport(object, sv)
     Crypt::PKCS11::CK_WTLS_KEY_MAT_PARAMS* object
-    SV* bIsExport
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_wtls_key_mat_params_get_RandomInfo(object, RandomInfo)
+crypt_pkcs11_ck_wtls_key_mat_params_get_RandomInfo(object, sv)
     Crypt::PKCS11::CK_WTLS_KEY_MAT_PARAMS* object
-    SV* RandomInfo
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_wtls_key_mat_params_set_RandomInfo(object, RandomInfo)
+crypt_pkcs11_ck_wtls_key_mat_params_set_RandomInfo(object, sv)
     Crypt::PKCS11::CK_WTLS_KEY_MAT_PARAMS* object
-    SV* RandomInfo
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_wtls_key_mat_params_get_pReturnedKeyMaterial(object, pReturnedKeyMaterial)
+crypt_pkcs11_ck_wtls_key_mat_params_get_pReturnedKeyMaterial(object, sv)
     Crypt::PKCS11::CK_WTLS_KEY_MAT_PARAMS* object
-    SV* pReturnedKeyMaterial
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_wtls_key_mat_params_set_pReturnedKeyMaterial(object, pReturnedKeyMaterial)
+crypt_pkcs11_ck_wtls_key_mat_params_set_pReturnedKeyMaterial(object, sv)
     Crypt::PKCS11::CK_WTLS_KEY_MAT_PARAMS* object
-    SV* pReturnedKeyMaterial
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
@@ -2553,97 +2529,97 @@ crypt_pkcs11_ck_cms_sig_params_DESTROY(object)
 PROTOTYPE: $
 
 CK_RV
-crypt_pkcs11_ck_cms_sig_params_get_certificateHandle(object, certificateHandle)
+crypt_pkcs11_ck_cms_sig_params_get_certificateHandle(object, sv)
     Crypt::PKCS11::CK_CMS_SIG_PARAMS* object
-    SV* certificateHandle
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_cms_sig_params_set_certificateHandle(object, certificateHandle)
+crypt_pkcs11_ck_cms_sig_params_set_certificateHandle(object, sv)
     Crypt::PKCS11::CK_CMS_SIG_PARAMS* object
-    SV* certificateHandle
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_cms_sig_params_get_pSigningMechanism(object, pSigningMechanism)
+crypt_pkcs11_ck_cms_sig_params_get_pSigningMechanism(object, sv)
     Crypt::PKCS11::CK_CMS_SIG_PARAMS* object
-    SV* pSigningMechanism
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_cms_sig_params_set_pSigningMechanism(object, pSigningMechanism)
+crypt_pkcs11_ck_cms_sig_params_set_pSigningMechanism(object, sv)
     Crypt::PKCS11::CK_CMS_SIG_PARAMS* object
-    SV* pSigningMechanism
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_cms_sig_params_get_pDigestMechanism(object, pDigestMechanism)
+crypt_pkcs11_ck_cms_sig_params_get_pDigestMechanism(object, sv)
     Crypt::PKCS11::CK_CMS_SIG_PARAMS* object
-    SV* pDigestMechanism
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_cms_sig_params_set_pDigestMechanism(object, pDigestMechanism)
+crypt_pkcs11_ck_cms_sig_params_set_pDigestMechanism(object, sv)
     Crypt::PKCS11::CK_CMS_SIG_PARAMS* object
-    SV* pDigestMechanism
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_cms_sig_params_get_pContentType(object, pContentType)
+crypt_pkcs11_ck_cms_sig_params_get_pContentType(object, sv)
     Crypt::PKCS11::CK_CMS_SIG_PARAMS* object
-    SV* pContentType
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_cms_sig_params_set_pContentType(object, pContentType)
+crypt_pkcs11_ck_cms_sig_params_set_pContentType(object, sv)
     Crypt::PKCS11::CK_CMS_SIG_PARAMS* object
-    SV* pContentType
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_cms_sig_params_get_pRequestedAttributes(object, pRequestedAttributes)
+crypt_pkcs11_ck_cms_sig_params_get_pRequestedAttributes(object, sv)
     Crypt::PKCS11::CK_CMS_SIG_PARAMS* object
-    SV* pRequestedAttributes
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_cms_sig_params_set_pRequestedAttributes(object, pRequestedAttributes)
+crypt_pkcs11_ck_cms_sig_params_set_pRequestedAttributes(object, sv)
     Crypt::PKCS11::CK_CMS_SIG_PARAMS* object
-    SV* pRequestedAttributes
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_cms_sig_params_get_pRequiredAttributes(object, pRequiredAttributes)
+crypt_pkcs11_ck_cms_sig_params_get_pRequiredAttributes(object, sv)
     Crypt::PKCS11::CK_CMS_SIG_PARAMS* object
-    SV* pRequiredAttributes
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_cms_sig_params_set_pRequiredAttributes(object, pRequiredAttributes)
+crypt_pkcs11_ck_cms_sig_params_set_pRequiredAttributes(object, sv)
     Crypt::PKCS11::CK_CMS_SIG_PARAMS* object
-    SV* pRequiredAttributes
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
@@ -2669,33 +2645,17 @@ crypt_pkcs11_ck_key_derivation_string_data_DESTROY(object)
 PROTOTYPE: $
 
 CK_RV
-crypt_pkcs11_ck_key_derivation_string_data_get_pData(object, pData)
+crypt_pkcs11_ck_key_derivation_string_data_get_pData(object, sv)
     Crypt::PKCS11::CK_KEY_DERIVATION_STRING_DATA* object
-    SV* pData
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_key_derivation_string_data_set_pData(object, pData)
+crypt_pkcs11_ck_key_derivation_string_data_set_pData(object, sv)
     Crypt::PKCS11::CK_KEY_DERIVATION_STRING_DATA* object
-    SV* pData
-PROTOTYPE: $
-OUTPUT:
-    RETVAL
-
-CK_RV
-crypt_pkcs11_ck_key_derivation_string_data_get_ulLen(object, ulLen)
-    Crypt::PKCS11::CK_KEY_DERIVATION_STRING_DATA* object
-    SV* ulLen
-PROTOTYPE: $
-OUTPUT:
-    RETVAL
-
-CK_RV
-crypt_pkcs11_ck_key_derivation_string_data_set_ulLen(object, ulLen)
-    Crypt::PKCS11::CK_KEY_DERIVATION_STRING_DATA* object
-    SV* ulLen
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
@@ -2721,113 +2681,97 @@ crypt_pkcs11_ck_pkcs5_pbkd2_params_DESTROY(object)
 PROTOTYPE: $
 
 CK_RV
-crypt_pkcs11_ck_pkcs5_pbkd2_params_get_saltSource(object, saltSource)
+crypt_pkcs11_ck_pkcs5_pbkd2_params_get_saltSource(object, sv)
     Crypt::PKCS11::CK_PKCS5_PBKD2_PARAMS* object
-    SV* saltSource
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_pkcs5_pbkd2_params_set_saltSource(object, saltSource)
+crypt_pkcs11_ck_pkcs5_pbkd2_params_set_saltSource(object, sv)
     Crypt::PKCS11::CK_PKCS5_PBKD2_PARAMS* object
-    SV* saltSource
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_pkcs5_pbkd2_params_get_pSaltSourceData(object, pSaltSourceData)
+crypt_pkcs11_ck_pkcs5_pbkd2_params_get_pSaltSourceData(object, sv)
     Crypt::PKCS11::CK_PKCS5_PBKD2_PARAMS* object
-    SV* pSaltSourceData
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_pkcs5_pbkd2_params_set_pSaltSourceData(object, pSaltSourceData)
+crypt_pkcs11_ck_pkcs5_pbkd2_params_set_pSaltSourceData(object, sv)
     Crypt::PKCS11::CK_PKCS5_PBKD2_PARAMS* object
-    SV* pSaltSourceData
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_pkcs5_pbkd2_params_get_iterations(object, iterations)
+crypt_pkcs11_ck_pkcs5_pbkd2_params_get_iterations(object, sv)
     Crypt::PKCS11::CK_PKCS5_PBKD2_PARAMS* object
-    SV* iterations
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_pkcs5_pbkd2_params_set_iterations(object, iterations)
+crypt_pkcs11_ck_pkcs5_pbkd2_params_set_iterations(object, sv)
     Crypt::PKCS11::CK_PKCS5_PBKD2_PARAMS* object
-    SV* iterations
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_pkcs5_pbkd2_params_get_prf(object, prf)
+crypt_pkcs11_ck_pkcs5_pbkd2_params_get_prf(object, sv)
     Crypt::PKCS11::CK_PKCS5_PBKD2_PARAMS* object
-    SV* prf
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_pkcs5_pbkd2_params_set_prf(object, prf)
+crypt_pkcs11_ck_pkcs5_pbkd2_params_set_prf(object, sv)
     Crypt::PKCS11::CK_PKCS5_PBKD2_PARAMS* object
-    SV* prf
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_pkcs5_pbkd2_params_get_pPrfData(object, pPrfData)
+crypt_pkcs11_ck_pkcs5_pbkd2_params_get_pPrfData(object, sv)
     Crypt::PKCS11::CK_PKCS5_PBKD2_PARAMS* object
-    SV* pPrfData
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_pkcs5_pbkd2_params_set_pPrfData(object, pPrfData)
+crypt_pkcs11_ck_pkcs5_pbkd2_params_set_pPrfData(object, sv)
     Crypt::PKCS11::CK_PKCS5_PBKD2_PARAMS* object
-    SV* pPrfData
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_pkcs5_pbkd2_params_get_pPassword(object, pPassword)
+crypt_pkcs11_ck_pkcs5_pbkd2_params_get_pPassword(object, sv)
     Crypt::PKCS11::CK_PKCS5_PBKD2_PARAMS* object
-    SV* pPassword
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_pkcs5_pbkd2_params_set_pPassword(object, pPassword)
+crypt_pkcs11_ck_pkcs5_pbkd2_params_set_pPassword(object, sv)
     Crypt::PKCS11::CK_PKCS5_PBKD2_PARAMS* object
-    SV* pPassword
-PROTOTYPE: $
-OUTPUT:
-    RETVAL
-
-CK_RV
-crypt_pkcs11_ck_pkcs5_pbkd2_params_get_ulPasswordLen(object, ulPasswordLen)
-    Crypt::PKCS11::CK_PKCS5_PBKD2_PARAMS* object
-    SV* ulPasswordLen
-PROTOTYPE: $
-OUTPUT:
-    RETVAL
-
-CK_RV
-crypt_pkcs11_ck_pkcs5_pbkd2_params_set_ulPasswordLen(object, ulPasswordLen)
-    Crypt::PKCS11::CK_PKCS5_PBKD2_PARAMS* object
-    SV* ulPasswordLen
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
@@ -2853,33 +2797,33 @@ crypt_pkcs11_ck_otp_param_DESTROY(object)
 PROTOTYPE: $
 
 CK_RV
-crypt_pkcs11_ck_otp_param_get_type(object, type)
+crypt_pkcs11_ck_otp_param_get_type(object, sv)
     Crypt::PKCS11::CK_OTP_PARAM* object
-    SV* type
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_otp_param_set_type(object, type)
+crypt_pkcs11_ck_otp_param_set_type(object, sv)
     Crypt::PKCS11::CK_OTP_PARAM* object
-    SV* type
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_otp_param_get_pValue(object, pValue)
+crypt_pkcs11_ck_otp_param_get_pValue(object, sv)
     Crypt::PKCS11::CK_OTP_PARAM* object
-    SV* pValue
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_otp_param_set_pValue(object, pValue)
+crypt_pkcs11_ck_otp_param_set_pValue(object, sv)
     Crypt::PKCS11::CK_OTP_PARAM* object
-    SV* pValue
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
@@ -2905,33 +2849,33 @@ crypt_pkcs11_ck_otp_params_DESTROY(object)
 PROTOTYPE: $
 
 CK_RV
-crypt_pkcs11_ck_otp_params_get_pParams(object, pParams)
+crypt_pkcs11_ck_otp_params_get_pParams(object, sv)
     Crypt::PKCS11::CK_OTP_PARAMS* object
-    SV* pParams
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_otp_params_set_pParams(object, pParams)
+crypt_pkcs11_ck_otp_params_set_pParams(object, sv)
     Crypt::PKCS11::CK_OTP_PARAMS* object
-    SV* pParams
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_otp_params_get_ulCount(object, ulCount)
+crypt_pkcs11_ck_otp_params_get_ulCount(object, sv)
     Crypt::PKCS11::CK_OTP_PARAMS* object
-    SV* ulCount
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_otp_params_set_ulCount(object, ulCount)
+crypt_pkcs11_ck_otp_params_set_ulCount(object, sv)
     Crypt::PKCS11::CK_OTP_PARAMS* object
-    SV* ulCount
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
@@ -2957,33 +2901,33 @@ crypt_pkcs11_ck_otp_signature_info_DESTROY(object)
 PROTOTYPE: $
 
 CK_RV
-crypt_pkcs11_ck_otp_signature_info_get_pParams(object, pParams)
+crypt_pkcs11_ck_otp_signature_info_get_pParams(object, sv)
     Crypt::PKCS11::CK_OTP_SIGNATURE_INFO* object
-    SV* pParams
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_otp_signature_info_set_pParams(object, pParams)
+crypt_pkcs11_ck_otp_signature_info_set_pParams(object, sv)
     Crypt::PKCS11::CK_OTP_SIGNATURE_INFO* object
-    SV* pParams
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_otp_signature_info_get_ulCount(object, ulCount)
+crypt_pkcs11_ck_otp_signature_info_get_ulCount(object, sv)
     Crypt::PKCS11::CK_OTP_SIGNATURE_INFO* object
-    SV* ulCount
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_otp_signature_info_set_ulCount(object, ulCount)
+crypt_pkcs11_ck_otp_signature_info_set_ulCount(object, sv)
     Crypt::PKCS11::CK_OTP_SIGNATURE_INFO* object
-    SV* ulCount
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
@@ -3009,49 +2953,49 @@ crypt_pkcs11_ck_kip_params_DESTROY(object)
 PROTOTYPE: $
 
 CK_RV
-crypt_pkcs11_ck_kip_params_get_pMechanism(object, pMechanism)
+crypt_pkcs11_ck_kip_params_get_pMechanism(object, sv)
     Crypt::PKCS11::CK_KIP_PARAMS* object
-    SV* pMechanism
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_kip_params_set_pMechanism(object, pMechanism)
+crypt_pkcs11_ck_kip_params_set_pMechanism(object, sv)
     Crypt::PKCS11::CK_KIP_PARAMS* object
-    SV* pMechanism
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_kip_params_get_hKey(object, hKey)
+crypt_pkcs11_ck_kip_params_get_hKey(object, sv)
     Crypt::PKCS11::CK_KIP_PARAMS* object
-    SV* hKey
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_kip_params_set_hKey(object, hKey)
+crypt_pkcs11_ck_kip_params_set_hKey(object, sv)
     Crypt::PKCS11::CK_KIP_PARAMS* object
-    SV* hKey
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_kip_params_get_pSeed(object, pSeed)
+crypt_pkcs11_ck_kip_params_get_pSeed(object, sv)
     Crypt::PKCS11::CK_KIP_PARAMS* object
-    SV* pSeed
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_kip_params_set_pSeed(object, pSeed)
+crypt_pkcs11_ck_kip_params_set_pSeed(object, sv)
     Crypt::PKCS11::CK_KIP_PARAMS* object
-    SV* pSeed
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
@@ -3077,33 +3021,33 @@ crypt_pkcs11_ck_aes_ctr_params_DESTROY(object)
 PROTOTYPE: $
 
 CK_RV
-crypt_pkcs11_ck_aes_ctr_params_get_ulCounterBits(object, ulCounterBits)
+crypt_pkcs11_ck_aes_ctr_params_get_ulCounterBits(object, sv)
     Crypt::PKCS11::CK_AES_CTR_PARAMS* object
-    SV* ulCounterBits
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_aes_ctr_params_set_ulCounterBits(object, ulCounterBits)
+crypt_pkcs11_ck_aes_ctr_params_set_ulCounterBits(object, sv)
     Crypt::PKCS11::CK_AES_CTR_PARAMS* object
-    SV* ulCounterBits
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_aes_ctr_params_get_cb(object, cb)
+crypt_pkcs11_ck_aes_ctr_params_get_cb(object, sv)
     Crypt::PKCS11::CK_AES_CTR_PARAMS* object
-    SV* cb
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_aes_ctr_params_set_cb(object, cb)
+crypt_pkcs11_ck_aes_ctr_params_set_cb(object, sv)
     Crypt::PKCS11::CK_AES_CTR_PARAMS* object
-    SV* cb
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
@@ -3129,65 +3073,65 @@ crypt_pkcs11_ck_aes_gcm_params_DESTROY(object)
 PROTOTYPE: $
 
 CK_RV
-crypt_pkcs11_ck_aes_gcm_params_get_pIv(object, pIv)
+crypt_pkcs11_ck_aes_gcm_params_get_pIv(object, sv)
     Crypt::PKCS11::CK_AES_GCM_PARAMS* object
-    SV* pIv
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_aes_gcm_params_set_pIv(object, pIv)
+crypt_pkcs11_ck_aes_gcm_params_set_pIv(object, sv)
     Crypt::PKCS11::CK_AES_GCM_PARAMS* object
-    SV* pIv
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_aes_gcm_params_get_ulIvBits(object, ulIvBits)
+crypt_pkcs11_ck_aes_gcm_params_get_ulIvBits(object, sv)
     Crypt::PKCS11::CK_AES_GCM_PARAMS* object
-    SV* ulIvBits
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_aes_gcm_params_set_ulIvBits(object, ulIvBits)
+crypt_pkcs11_ck_aes_gcm_params_set_ulIvBits(object, sv)
     Crypt::PKCS11::CK_AES_GCM_PARAMS* object
-    SV* ulIvBits
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_aes_gcm_params_get_pAAD(object, pAAD)
+crypt_pkcs11_ck_aes_gcm_params_get_pAAD(object, sv)
     Crypt::PKCS11::CK_AES_GCM_PARAMS* object
-    SV* pAAD
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_aes_gcm_params_set_pAAD(object, pAAD)
+crypt_pkcs11_ck_aes_gcm_params_set_pAAD(object, sv)
     Crypt::PKCS11::CK_AES_GCM_PARAMS* object
-    SV* pAAD
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_aes_gcm_params_get_ulTagBits(object, ulTagBits)
+crypt_pkcs11_ck_aes_gcm_params_get_ulTagBits(object, sv)
     Crypt::PKCS11::CK_AES_GCM_PARAMS* object
-    SV* ulTagBits
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_aes_gcm_params_set_ulTagBits(object, ulTagBits)
+crypt_pkcs11_ck_aes_gcm_params_set_ulTagBits(object, sv)
     Crypt::PKCS11::CK_AES_GCM_PARAMS* object
-    SV* ulTagBits
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
@@ -3213,33 +3157,33 @@ crypt_pkcs11_ck_aes_ccm_params_DESTROY(object)
 PROTOTYPE: $
 
 CK_RV
-crypt_pkcs11_ck_aes_ccm_params_get_pNonce(object, pNonce)
+crypt_pkcs11_ck_aes_ccm_params_get_pNonce(object, sv)
     Crypt::PKCS11::CK_AES_CCM_PARAMS* object
-    SV* pNonce
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_aes_ccm_params_set_pNonce(object, pNonce)
+crypt_pkcs11_ck_aes_ccm_params_set_pNonce(object, sv)
     Crypt::PKCS11::CK_AES_CCM_PARAMS* object
-    SV* pNonce
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_aes_ccm_params_get_pAAD(object, pAAD)
+crypt_pkcs11_ck_aes_ccm_params_get_pAAD(object, sv)
     Crypt::PKCS11::CK_AES_CCM_PARAMS* object
-    SV* pAAD
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_aes_ccm_params_set_pAAD(object, pAAD)
+crypt_pkcs11_ck_aes_ccm_params_set_pAAD(object, sv)
     Crypt::PKCS11::CK_AES_CCM_PARAMS* object
-    SV* pAAD
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
@@ -3265,33 +3209,33 @@ crypt_pkcs11_ck_camellia_ctr_params_DESTROY(object)
 PROTOTYPE: $
 
 CK_RV
-crypt_pkcs11_ck_camellia_ctr_params_get_ulCounterBits(object, ulCounterBits)
+crypt_pkcs11_ck_camellia_ctr_params_get_ulCounterBits(object, sv)
     Crypt::PKCS11::CK_CAMELLIA_CTR_PARAMS* object
-    SV* ulCounterBits
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_camellia_ctr_params_set_ulCounterBits(object, ulCounterBits)
+crypt_pkcs11_ck_camellia_ctr_params_set_ulCounterBits(object, sv)
     Crypt::PKCS11::CK_CAMELLIA_CTR_PARAMS* object
-    SV* ulCounterBits
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_camellia_ctr_params_get_cb(object, cb)
+crypt_pkcs11_ck_camellia_ctr_params_get_cb(object, sv)
     Crypt::PKCS11::CK_CAMELLIA_CTR_PARAMS* object
-    SV* cb
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_camellia_ctr_params_set_cb(object, cb)
+crypt_pkcs11_ck_camellia_ctr_params_set_cb(object, sv)
     Crypt::PKCS11::CK_CAMELLIA_CTR_PARAMS* object
-    SV* cb
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
@@ -3317,33 +3261,33 @@ crypt_pkcs11_ck_camellia_cbc_encrypt_data_params_DESTROY(object)
 PROTOTYPE: $
 
 CK_RV
-crypt_pkcs11_ck_camellia_cbc_encrypt_data_params_get_iv(object, iv)
+crypt_pkcs11_ck_camellia_cbc_encrypt_data_params_get_iv(object, sv)
     Crypt::PKCS11::CK_CAMELLIA_CBC_ENCRYPT_DATA_PARAMS* object
-    SV* iv
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_camellia_cbc_encrypt_data_params_set_iv(object, iv)
+crypt_pkcs11_ck_camellia_cbc_encrypt_data_params_set_iv(object, sv)
     Crypt::PKCS11::CK_CAMELLIA_CBC_ENCRYPT_DATA_PARAMS* object
-    SV* iv
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_camellia_cbc_encrypt_data_params_get_pData(object, pData)
+crypt_pkcs11_ck_camellia_cbc_encrypt_data_params_get_pData(object, sv)
     Crypt::PKCS11::CK_CAMELLIA_CBC_ENCRYPT_DATA_PARAMS* object
-    SV* pData
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_camellia_cbc_encrypt_data_params_set_pData(object, pData)
+crypt_pkcs11_ck_camellia_cbc_encrypt_data_params_set_pData(object, sv)
     Crypt::PKCS11::CK_CAMELLIA_CBC_ENCRYPT_DATA_PARAMS* object
-    SV* pData
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
@@ -3369,33 +3313,33 @@ crypt_pkcs11_ck_aria_cbc_encrypt_data_params_DESTROY(object)
 PROTOTYPE: $
 
 CK_RV
-crypt_pkcs11_ck_aria_cbc_encrypt_data_params_get_iv(object, iv)
+crypt_pkcs11_ck_aria_cbc_encrypt_data_params_get_iv(object, sv)
     Crypt::PKCS11::CK_ARIA_CBC_ENCRYPT_DATA_PARAMS* object
-    SV* iv
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_aria_cbc_encrypt_data_params_set_iv(object, iv)
+crypt_pkcs11_ck_aria_cbc_encrypt_data_params_set_iv(object, sv)
     Crypt::PKCS11::CK_ARIA_CBC_ENCRYPT_DATA_PARAMS* object
-    SV* iv
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_aria_cbc_encrypt_data_params_get_pData(object, pData)
+crypt_pkcs11_ck_aria_cbc_encrypt_data_params_get_pData(object, sv)
     Crypt::PKCS11::CK_ARIA_CBC_ENCRYPT_DATA_PARAMS* object
-    SV* pData
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_ck_aria_cbc_encrypt_data_params_set_pData(object, pData)
+crypt_pkcs11_ck_aria_cbc_encrypt_data_params_set_pData(object, sv)
     Crypt::PKCS11::CK_ARIA_CBC_ENCRYPT_DATA_PARAMS* object
-    SV* pData
+    SV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL

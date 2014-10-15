@@ -1325,7 +1325,7 @@ CK_RV crypt_pkcs11_xs_C_GetOperationState(Crypt__PKCS11__XS* object, CK_SESSION_
 
     SvGETMAGIC(pOperationState);
     SvUTF8_off(pOperationState);
-    sv_setpvn(pOperationState, _pOperationState, ulOperationStateLen * sizeof(CK_BYTE));
+    sv_setpvn(pOperationState, _pOperationState, ulOperationStateLen);
     SvSETMAGIC(pOperationState);
     free(_pOperationState);
 
@@ -2130,7 +2130,7 @@ static CK_RV __action(__action_call_t call, CK_SESSION_HANDLE hSession, SV* pFro
     }
 
     if (!ulToLen) {
-        sv_setpvn(pTo, _pTo, pulToLen * sizeof(CK_BYTE));
+        sv_setpvn(pTo, _pTo, pulToLen);
         free(_pTo);
     }
     else if (pulToLen != ulToLen) {
@@ -2232,7 +2232,7 @@ static CK_RV __action_final(__action_final_call_t call, CK_SESSION_HANDLE hSessi
     }
 
     if (!ulLastPartLen) {
-        sv_setpvn(pLastPart, _pLastPart, pulLastPartLen * sizeof(CK_BYTE));
+        sv_setpvn(pLastPart, _pLastPart, pulLastPartLen);
         free(_pLastPart);
     }
     else if (pulLastPartLen != ulLastPartLen) {
@@ -3160,7 +3160,7 @@ CK_RV crypt_pkcs11_xs_C_WrapKey(Crypt__PKCS11__XS* object, CK_SESSION_HANDLE hSe
     }
 
     if (!ulWrappedKey) {
-        sv_setpvn(pWrappedKey, _pWrappedKey, pulWrappedKey * sizeof(CK_BYTE));
+        sv_setpvn(pWrappedKey, _pWrappedKey, pulWrappedKey);
         free(_pWrappedKey);
     }
     else if (pulWrappedKey != ulWrappedKey) {
