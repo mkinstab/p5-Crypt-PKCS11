@@ -29,6 +29,10 @@ pkcs11.xs
 crypt_pkcs11.c
 crypt_pkcs11.h
 typemap
+pkcs11_struct.xs
+crypt_pkcs11_struct.c
+crypt_pkcs11_struct.h
+typemap.struct
 t/00-load.t
 t/boilerplate.t
 t/manifest.t
