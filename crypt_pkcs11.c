@@ -1020,7 +1020,13 @@ CK_RV crypt_pkcs11_xs_C_InitToken(Crypt__PKCS11__XS* object, CK_SLOT_ID slotID, 
     if (!pPin) {
         return CKR_ARGUMENTS_BAD;
     }
+    if (!SvOK(pPin)) {
+        return CKR_ARGUMENTS_BAD;
+    }
     if (!pLabel) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!SvOK(pLabel)) {
         return CKR_ARGUMENTS_BAD;
     }
 
@@ -1085,6 +1091,9 @@ CK_RV crypt_pkcs11_xs_C_InitPIN(Crypt__PKCS11__XS* object, CK_SESSION_HANDLE hSe
     if (!pPin) {
         return CKR_ARGUMENTS_BAD;
     }
+    if (!SvOK(pPin)) {
+        return CKR_ARGUMENTS_BAD;
+    }
 
     SvGETMAGIC(pPin);
     if (!(_pPin = newSVsv(pPin))) {
@@ -1128,7 +1137,13 @@ CK_RV crypt_pkcs11_xs_C_SetPIN(Crypt__PKCS11__XS* object, CK_SESSION_HANDLE hSes
     if (!pOldPin) {
         return CKR_ARGUMENTS_BAD;
     }
+    if (!SvOK(pOldPin)) {
+        return CKR_ARGUMENTS_BAD;
+    }
     if (!pNewPin) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!SvOK(pNewPin)) {
         return CKR_ARGUMENTS_BAD;
     }
 
@@ -1391,7 +1406,10 @@ CK_RV crypt_pkcs11_xs_C_Login(Crypt__PKCS11__XS* object, CK_SESSION_HANDLE hSess
         return CKR_SESSION_HANDLE_INVALID;
     }
     if (!pPin) {
-        return CKR_GENERAL_ERROR;
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!SvOK(pPin)) {
+        return CKR_ARGUMENTS_BAD;
     }
 
     SvGETMAGIC(pPin);
