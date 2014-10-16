@@ -35,7 +35,7 @@ extern int crypt_pkcs11_xs_SvUOK(SV* sv);
 Crypt__PKCS11__CK_VERSION* crypt_pkcs11_ck_version_new(const char* class) {
     Crypt__PKCS11__CK_VERSION* object = calloc(1, sizeof(Crypt__PKCS11__CK_VERSION));
     if (!object) {
-        croak("Memory allocation error");
+        croak("memory allocation error");
     }
     return object;
 }
@@ -55,7 +55,7 @@ CK_RV crypt_pkcs11_ck_version_get_major(Crypt__PKCS11__CK_VERSION* object, SV* s
     }
 
     SvGETMAGIC(sv);
-    sv_setuv(sv, object->major);
+    sv_setuv(sv, object->private.major);
     SvSETMAGIC(sv);
 
     return CKR_OK;
@@ -70,11 +70,11 @@ CK_RV crypt_pkcs11_ck_version_set_major(Crypt__PKCS11__CK_VERSION* object, SV* s
     }
 
     SvGETMAGIC(sv);
-    if (!crypt_pkcs11_SvUOK(sv)) {
+    if (!crypt_pkcs11_xs_SvUOK(sv)) {
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->major = SvUV(sv);
+    object->private.major = SvUV(sv);
 
     return CKR_OK;
 }
@@ -88,7 +88,7 @@ CK_RV crypt_pkcs11_ck_version_get_minor(Crypt__PKCS11__CK_VERSION* object, SV* s
     }
 
     SvGETMAGIC(sv);
-    sv_setuv(sv, object->minor);
+    sv_setuv(sv, object->private.minor);
     SvSETMAGIC(sv);
 
     return CKR_OK;
@@ -103,11 +103,11 @@ CK_RV crypt_pkcs11_ck_version_set_minor(Crypt__PKCS11__CK_VERSION* object, SV* s
     }
 
     SvGETMAGIC(sv);
-    if (!crypt_pkcs11_SvUOK(sv)) {
+    if (!crypt_pkcs11_xs_SvUOK(sv)) {
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->minor = SvUV(sv);
+    object->private.minor = SvUV(sv);
 
     return CKR_OK;
 }
@@ -115,13 +115,16 @@ CK_RV crypt_pkcs11_ck_version_set_minor(Crypt__PKCS11__CK_VERSION* object, SV* s
 Crypt__PKCS11__CK_MECHANISM* crypt_pkcs11_ck_mechanism_new(const char* class) {
     Crypt__PKCS11__CK_MECHANISM* object = calloc(1, sizeof(Crypt__PKCS11__CK_MECHANISM));
     if (!object) {
-        croak("Memory allocation error");
+        croak("memory allocation error");
     }
     return object;
 }
 
 void crypt_pkcs11_ck_mechanism_DESTROY(Crypt__PKCS11__CK_MECHANISM* object) {
     if (object) {
+        if (object->private.pParameter) {
+            free(object->private.pParameter);
+        }
         free(object);
     }
 }
@@ -135,7 +138,7 @@ CK_RV crypt_pkcs11_ck_mechanism_get_mechanism(Crypt__PKCS11__CK_MECHANISM* objec
     }
 
     SvGETMAGIC(sv);
-    sv_setuv(sv, object->mechanism);
+    sv_setuv(sv, object->private.mechanism);
     SvSETMAGIC(sv);
 
     return CKR_OK;
@@ -150,11 +153,11 @@ CK_RV crypt_pkcs11_ck_mechanism_set_mechanism(Crypt__PKCS11__CK_MECHANISM* objec
     }
 
     SvGETMAGIC(sv);
-    if (!crypt_pkcs11_SvUOK(sv)) {
+    if (!crypt_pkcs11_xs_SvUOK(sv)) {
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->mechanism = SvUV(sv);
+    object->private.mechanism = SvUV(sv);
 
     return CKR_OK;
 }
@@ -168,13 +171,14 @@ CK_RV crypt_pkcs11_ck_mechanism_get_pParameter(Crypt__PKCS11__CK_MECHANISM* obje
     }
 
     SvGETMAGIC(sv);
-    sv_setpvn(sv, object->pParameter, object->ulParameterLen);
+    sv_setpvn(sv, object->private.pParameter, object->private.ulParameterLen);
     SvSETMAGIC(sv);
 
     return CKR_OK;
 }
 
 CK_RV crypt_pkcs11_ck_mechanism_set_pParameter(Crypt__PKCS11__CK_MECHANISM* object, SV* sv) {
+    CK_BYTE_PTR n;
     CK_BYTE_PTR p;
     STRLEN l;
 
@@ -186,6 +190,16 @@ CK_RV crypt_pkcs11_ck_mechanism_set_pParameter(Crypt__PKCS11__CK_MECHANISM* obje
     }
 
     SvGETMAGIC(sv);
+
+    if (!SvOK(sv)) {
+        if (object->private.pParameter) {
+            free(object->private.pParameter);
+            object->private.pParameter = 0;
+            object->private.ulParameterLen = 0;
+        }
+        return CKR_OK;
+    }
+
     if (!SvPOK(sv)
         || !(p = SvPVbyte(sv, l))
         || l < 0)
@@ -193,8 +207,16 @@ CK_RV crypt_pkcs11_ck_mechanism_set_pParameter(Crypt__PKCS11__CK_MECHANISM* obje
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->pParameter = p;
-    object->ulParameterLen = l;
+    if (!(n = calloc(1, l + 1))) {
+        return CKR_HOST_MEMORY;
+    }
+
+    memcpy(n, p, l);
+    if (object->private.pParameter) {
+        free(object->private.pParameter);
+    }
+    object->private.pParameter = n;
+    object->private.ulParameterLen = l;
 
     return CKR_OK;
 }
@@ -202,13 +224,16 @@ CK_RV crypt_pkcs11_ck_mechanism_set_pParameter(Crypt__PKCS11__CK_MECHANISM* obje
 Crypt__PKCS11__CK_RSA_PKCS_OAEP_PARAMS* crypt_pkcs11_ck_rsa_pkcs_oaep_params_new(const char* class) {
     Crypt__PKCS11__CK_RSA_PKCS_OAEP_PARAMS* object = calloc(1, sizeof(Crypt__PKCS11__CK_RSA_PKCS_OAEP_PARAMS));
     if (!object) {
-        croak("Memory allocation error");
+        croak("memory allocation error");
     }
     return object;
 }
 
 void crypt_pkcs11_ck_rsa_pkcs_oaep_params_DESTROY(Crypt__PKCS11__CK_RSA_PKCS_OAEP_PARAMS* object) {
     if (object) {
+        if (object->private.pSourceData) {
+            free(object->private.pSourceData);
+        }
         free(object);
     }
 }
@@ -222,7 +247,7 @@ CK_RV crypt_pkcs11_ck_rsa_pkcs_oaep_params_get_hashAlg(Crypt__PKCS11__CK_RSA_PKC
     }
 
     SvGETMAGIC(sv);
-    sv_setuv(sv, object->hashAlg);
+    sv_setuv(sv, object->private.hashAlg);
     SvSETMAGIC(sv);
 
     return CKR_OK;
@@ -237,11 +262,11 @@ CK_RV crypt_pkcs11_ck_rsa_pkcs_oaep_params_set_hashAlg(Crypt__PKCS11__CK_RSA_PKC
     }
 
     SvGETMAGIC(sv);
-    if (!crypt_pkcs11_SvUOK(sv)) {
+    if (!crypt_pkcs11_xs_SvUOK(sv)) {
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->hashAlg = SvUV(sv);
+    object->private.hashAlg = SvUV(sv);
 
     return CKR_OK;
 }
@@ -255,7 +280,7 @@ CK_RV crypt_pkcs11_ck_rsa_pkcs_oaep_params_get_mgf(Crypt__PKCS11__CK_RSA_PKCS_OA
     }
 
     SvGETMAGIC(sv);
-    sv_setuv(sv, object->mgf);
+    sv_setuv(sv, object->private.mgf);
     SvSETMAGIC(sv);
 
     return CKR_OK;
@@ -270,11 +295,11 @@ CK_RV crypt_pkcs11_ck_rsa_pkcs_oaep_params_set_mgf(Crypt__PKCS11__CK_RSA_PKCS_OA
     }
 
     SvGETMAGIC(sv);
-    if (!crypt_pkcs11_SvUOK(sv)) {
+    if (!crypt_pkcs11_xs_SvUOK(sv)) {
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->mgf = SvUV(sv);
+    object->private.mgf = SvUV(sv);
 
     return CKR_OK;
 }
@@ -288,7 +313,7 @@ CK_RV crypt_pkcs11_ck_rsa_pkcs_oaep_params_get_source(Crypt__PKCS11__CK_RSA_PKCS
     }
 
     SvGETMAGIC(sv);
-    sv_setuv(sv, object->source);
+    sv_setuv(sv, object->private.source);
     SvSETMAGIC(sv);
 
     return CKR_OK;
@@ -303,11 +328,11 @@ CK_RV crypt_pkcs11_ck_rsa_pkcs_oaep_params_set_source(Crypt__PKCS11__CK_RSA_PKCS
     }
 
     SvGETMAGIC(sv);
-    if (!crypt_pkcs11_SvUOK(sv)) {
+    if (!crypt_pkcs11_xs_SvUOK(sv)) {
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->source = SvUV(sv);
+    object->private.source = SvUV(sv);
 
     return CKR_OK;
 }
@@ -321,13 +346,14 @@ CK_RV crypt_pkcs11_ck_rsa_pkcs_oaep_params_get_pSourceData(Crypt__PKCS11__CK_RSA
     }
 
     SvGETMAGIC(sv);
-    sv_setpvn(sv, object->pSourceData, object->ulSourceDataLen);
+    sv_setpvn(sv, object->private.pSourceData, object->private.ulSourceDataLen);
     SvSETMAGIC(sv);
 
     return CKR_OK;
 }
 
 CK_RV crypt_pkcs11_ck_rsa_pkcs_oaep_params_set_pSourceData(Crypt__PKCS11__CK_RSA_PKCS_OAEP_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR n;
     CK_BYTE_PTR p;
     STRLEN l;
 
@@ -339,6 +365,16 @@ CK_RV crypt_pkcs11_ck_rsa_pkcs_oaep_params_set_pSourceData(Crypt__PKCS11__CK_RSA
     }
 
     SvGETMAGIC(sv);
+
+    if (!SvOK(sv)) {
+        if (object->private.pSourceData) {
+            free(object->private.pSourceData);
+            object->private.pSourceData = 0;
+            object->private.ulSourceDataLen = 0;
+        }
+        return CKR_OK;
+    }
+
     if (!SvPOK(sv)
         || !(p = SvPVbyte(sv, l))
         || l < 0)
@@ -346,8 +382,16 @@ CK_RV crypt_pkcs11_ck_rsa_pkcs_oaep_params_set_pSourceData(Crypt__PKCS11__CK_RSA
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->pSourceData = p;
-    object->ulSourceDataLen = l;
+    if (!(n = calloc(1, l + 1))) {
+        return CKR_HOST_MEMORY;
+    }
+
+    memcpy(n, p, l);
+    if (object->private.pSourceData) {
+        free(object->private.pSourceData);
+    }
+    object->private.pSourceData = n;
+    object->private.ulSourceDataLen = l;
 
     return CKR_OK;
 }
@@ -355,7 +399,7 @@ CK_RV crypt_pkcs11_ck_rsa_pkcs_oaep_params_set_pSourceData(Crypt__PKCS11__CK_RSA
 Crypt__PKCS11__CK_RSA_PKCS_PSS_PARAMS* crypt_pkcs11_ck_rsa_pkcs_pss_params_new(const char* class) {
     Crypt__PKCS11__CK_RSA_PKCS_PSS_PARAMS* object = calloc(1, sizeof(Crypt__PKCS11__CK_RSA_PKCS_PSS_PARAMS));
     if (!object) {
-        croak("Memory allocation error");
+        croak("memory allocation error");
     }
     return object;
 }
@@ -375,7 +419,7 @@ CK_RV crypt_pkcs11_ck_rsa_pkcs_pss_params_get_hashAlg(Crypt__PKCS11__CK_RSA_PKCS
     }
 
     SvGETMAGIC(sv);
-    sv_setuv(sv, object->hashAlg);
+    sv_setuv(sv, object->private.hashAlg);
     SvSETMAGIC(sv);
 
     return CKR_OK;
@@ -390,11 +434,11 @@ CK_RV crypt_pkcs11_ck_rsa_pkcs_pss_params_set_hashAlg(Crypt__PKCS11__CK_RSA_PKCS
     }
 
     SvGETMAGIC(sv);
-    if (!crypt_pkcs11_SvUOK(sv)) {
+    if (!crypt_pkcs11_xs_SvUOK(sv)) {
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->hashAlg = SvUV(sv);
+    object->private.hashAlg = SvUV(sv);
 
     return CKR_OK;
 }
@@ -408,7 +452,7 @@ CK_RV crypt_pkcs11_ck_rsa_pkcs_pss_params_get_mgf(Crypt__PKCS11__CK_RSA_PKCS_PSS
     }
 
     SvGETMAGIC(sv);
-    sv_setuv(sv, object->mgf);
+    sv_setuv(sv, object->private.mgf);
     SvSETMAGIC(sv);
 
     return CKR_OK;
@@ -423,11 +467,11 @@ CK_RV crypt_pkcs11_ck_rsa_pkcs_pss_params_set_mgf(Crypt__PKCS11__CK_RSA_PKCS_PSS
     }
 
     SvGETMAGIC(sv);
-    if (!crypt_pkcs11_SvUOK(sv)) {
+    if (!crypt_pkcs11_xs_SvUOK(sv)) {
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->mgf = SvUV(sv);
+    object->private.mgf = SvUV(sv);
 
     return CKR_OK;
 }
@@ -441,7 +485,7 @@ CK_RV crypt_pkcs11_ck_rsa_pkcs_pss_params_get_sLen(Crypt__PKCS11__CK_RSA_PKCS_PS
     }
 
     SvGETMAGIC(sv);
-    sv_setuv(sv, object->sLen);
+    sv_setuv(sv, object->private.sLen);
     SvSETMAGIC(sv);
 
     return CKR_OK;
@@ -456,11 +500,11 @@ CK_RV crypt_pkcs11_ck_rsa_pkcs_pss_params_set_sLen(Crypt__PKCS11__CK_RSA_PKCS_PS
     }
 
     SvGETMAGIC(sv);
-    if (!crypt_pkcs11_SvUOK(sv)) {
+    if (!crypt_pkcs11_xs_SvUOK(sv)) {
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->sLen = SvUV(sv);
+    object->private.sLen = SvUV(sv);
 
     return CKR_OK;
 }
@@ -468,13 +512,19 @@ CK_RV crypt_pkcs11_ck_rsa_pkcs_pss_params_set_sLen(Crypt__PKCS11__CK_RSA_PKCS_PS
 Crypt__PKCS11__CK_ECDH1_DERIVE_PARAMS* crypt_pkcs11_ck_ecdh1_derive_params_new(const char* class) {
     Crypt__PKCS11__CK_ECDH1_DERIVE_PARAMS* object = calloc(1, sizeof(Crypt__PKCS11__CK_ECDH1_DERIVE_PARAMS));
     if (!object) {
-        croak("Memory allocation error");
+        croak("memory allocation error");
     }
     return object;
 }
 
 void crypt_pkcs11_ck_ecdh1_derive_params_DESTROY(Crypt__PKCS11__CK_ECDH1_DERIVE_PARAMS* object) {
     if (object) {
+        if (object->private.pSharedData) {
+            free(object->private.pSharedData);
+        }
+        if (object->private.pPublicData) {
+            free(object->private.pPublicData);
+        }
         free(object);
     }
 }
@@ -488,7 +538,7 @@ CK_RV crypt_pkcs11_ck_ecdh1_derive_params_get_kdf(Crypt__PKCS11__CK_ECDH1_DERIVE
     }
 
     SvGETMAGIC(sv);
-    sv_setuv(sv, object->kdf);
+    sv_setuv(sv, object->private.kdf);
     SvSETMAGIC(sv);
 
     return CKR_OK;
@@ -503,11 +553,11 @@ CK_RV crypt_pkcs11_ck_ecdh1_derive_params_set_kdf(Crypt__PKCS11__CK_ECDH1_DERIVE
     }
 
     SvGETMAGIC(sv);
-    if (!crypt_pkcs11_SvUOK(sv)) {
+    if (!crypt_pkcs11_xs_SvUOK(sv)) {
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->kdf = SvUV(sv);
+    object->private.kdf = SvUV(sv);
 
     return CKR_OK;
 }
@@ -521,13 +571,14 @@ CK_RV crypt_pkcs11_ck_ecdh1_derive_params_get_pSharedData(Crypt__PKCS11__CK_ECDH
     }
 
     SvGETMAGIC(sv);
-    sv_setpvn(sv, object->pSharedData, object->ulSharedDataLen);
+    sv_setpvn(sv, object->private.pSharedData, object->private.ulSharedDataLen);
     SvSETMAGIC(sv);
 
     return CKR_OK;
 }
 
 CK_RV crypt_pkcs11_ck_ecdh1_derive_params_set_pSharedData(Crypt__PKCS11__CK_ECDH1_DERIVE_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR n;
     CK_BYTE_PTR p;
     STRLEN l;
 
@@ -539,6 +590,16 @@ CK_RV crypt_pkcs11_ck_ecdh1_derive_params_set_pSharedData(Crypt__PKCS11__CK_ECDH
     }
 
     SvGETMAGIC(sv);
+
+    if (!SvOK(sv)) {
+        if (object->private.pSharedData) {
+            free(object->private.pSharedData);
+            object->private.pSharedData = 0;
+            object->private.ulSharedDataLen = 0;
+        }
+        return CKR_OK;
+    }
+
     if (!SvPOK(sv)
         || !(p = SvPVbyte(sv, l))
         || l < 0)
@@ -546,8 +607,16 @@ CK_RV crypt_pkcs11_ck_ecdh1_derive_params_set_pSharedData(Crypt__PKCS11__CK_ECDH
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->pSharedData = p;
-    object->ulSharedDataLen = l;
+    if (!(n = calloc(1, l + 1))) {
+        return CKR_HOST_MEMORY;
+    }
+
+    memcpy(n, p, l);
+    if (object->private.pSharedData) {
+        free(object->private.pSharedData);
+    }
+    object->private.pSharedData = n;
+    object->private.ulSharedDataLen = l;
 
     return CKR_OK;
 }
@@ -561,13 +630,14 @@ CK_RV crypt_pkcs11_ck_ecdh1_derive_params_get_pPublicData(Crypt__PKCS11__CK_ECDH
     }
 
     SvGETMAGIC(sv);
-    sv_setpvn(sv, object->pPublicData, object->ulPublicDataLen);
+    sv_setpvn(sv, object->private.pPublicData, object->private.ulPublicDataLen);
     SvSETMAGIC(sv);
 
     return CKR_OK;
 }
 
 CK_RV crypt_pkcs11_ck_ecdh1_derive_params_set_pPublicData(Crypt__PKCS11__CK_ECDH1_DERIVE_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR n;
     CK_BYTE_PTR p;
     STRLEN l;
 
@@ -579,6 +649,16 @@ CK_RV crypt_pkcs11_ck_ecdh1_derive_params_set_pPublicData(Crypt__PKCS11__CK_ECDH
     }
 
     SvGETMAGIC(sv);
+
+    if (!SvOK(sv)) {
+        if (object->private.pPublicData) {
+            free(object->private.pPublicData);
+            object->private.pPublicData = 0;
+            object->private.ulPublicDataLen = 0;
+        }
+        return CKR_OK;
+    }
+
     if (!SvPOK(sv)
         || !(p = SvPVbyte(sv, l))
         || l < 0)
@@ -586,8 +666,16 @@ CK_RV crypt_pkcs11_ck_ecdh1_derive_params_set_pPublicData(Crypt__PKCS11__CK_ECDH
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->pPublicData = p;
-    object->ulPublicDataLen = l;
+    if (!(n = calloc(1, l + 1))) {
+        return CKR_HOST_MEMORY;
+    }
+
+    memcpy(n, p, l);
+    if (object->private.pPublicData) {
+        free(object->private.pPublicData);
+    }
+    object->private.pPublicData = n;
+    object->private.ulPublicDataLen = l;
 
     return CKR_OK;
 }
@@ -595,13 +683,22 @@ CK_RV crypt_pkcs11_ck_ecdh1_derive_params_set_pPublicData(Crypt__PKCS11__CK_ECDH
 Crypt__PKCS11__CK_ECDH2_DERIVE_PARAMS* crypt_pkcs11_ck_ecdh2_derive_params_new(const char* class) {
     Crypt__PKCS11__CK_ECDH2_DERIVE_PARAMS* object = calloc(1, sizeof(Crypt__PKCS11__CK_ECDH2_DERIVE_PARAMS));
     if (!object) {
-        croak("Memory allocation error");
+        croak("memory allocation error");
     }
     return object;
 }
 
 void crypt_pkcs11_ck_ecdh2_derive_params_DESTROY(Crypt__PKCS11__CK_ECDH2_DERIVE_PARAMS* object) {
     if (object) {
+        if (object->private.pSharedData) {
+            free(object->private.pSharedData);
+        }
+        if (object->private.pPublicData) {
+            free(object->private.pPublicData);
+        }
+        if (object->private.pPublicData2) {
+            free(object->private.pPublicData2);
+        }
         free(object);
     }
 }
@@ -615,7 +712,7 @@ CK_RV crypt_pkcs11_ck_ecdh2_derive_params_get_kdf(Crypt__PKCS11__CK_ECDH2_DERIVE
     }
 
     SvGETMAGIC(sv);
-    sv_setuv(sv, object->kdf);
+    sv_setuv(sv, object->private.kdf);
     SvSETMAGIC(sv);
 
     return CKR_OK;
@@ -630,11 +727,11 @@ CK_RV crypt_pkcs11_ck_ecdh2_derive_params_set_kdf(Crypt__PKCS11__CK_ECDH2_DERIVE
     }
 
     SvGETMAGIC(sv);
-    if (!crypt_pkcs11_SvUOK(sv)) {
+    if (!crypt_pkcs11_xs_SvUOK(sv)) {
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->kdf = SvUV(sv);
+    object->private.kdf = SvUV(sv);
 
     return CKR_OK;
 }
@@ -648,13 +745,14 @@ CK_RV crypt_pkcs11_ck_ecdh2_derive_params_get_pSharedData(Crypt__PKCS11__CK_ECDH
     }
 
     SvGETMAGIC(sv);
-    sv_setpvn(sv, object->pSharedData, object->ulSharedDataLen);
+    sv_setpvn(sv, object->private.pSharedData, object->private.ulSharedDataLen);
     SvSETMAGIC(sv);
 
     return CKR_OK;
 }
 
 CK_RV crypt_pkcs11_ck_ecdh2_derive_params_set_pSharedData(Crypt__PKCS11__CK_ECDH2_DERIVE_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR n;
     CK_BYTE_PTR p;
     STRLEN l;
 
@@ -666,6 +764,16 @@ CK_RV crypt_pkcs11_ck_ecdh2_derive_params_set_pSharedData(Crypt__PKCS11__CK_ECDH
     }
 
     SvGETMAGIC(sv);
+
+    if (!SvOK(sv)) {
+        if (object->private.pSharedData) {
+            free(object->private.pSharedData);
+            object->private.pSharedData = 0;
+            object->private.ulSharedDataLen = 0;
+        }
+        return CKR_OK;
+    }
+
     if (!SvPOK(sv)
         || !(p = SvPVbyte(sv, l))
         || l < 0)
@@ -673,8 +781,16 @@ CK_RV crypt_pkcs11_ck_ecdh2_derive_params_set_pSharedData(Crypt__PKCS11__CK_ECDH
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->pSharedData = p;
-    object->ulSharedDataLen = l;
+    if (!(n = calloc(1, l + 1))) {
+        return CKR_HOST_MEMORY;
+    }
+
+    memcpy(n, p, l);
+    if (object->private.pSharedData) {
+        free(object->private.pSharedData);
+    }
+    object->private.pSharedData = n;
+    object->private.ulSharedDataLen = l;
 
     return CKR_OK;
 }
@@ -688,13 +804,14 @@ CK_RV crypt_pkcs11_ck_ecdh2_derive_params_get_pPublicData(Crypt__PKCS11__CK_ECDH
     }
 
     SvGETMAGIC(sv);
-    sv_setpvn(sv, object->pPublicData, object->ulPublicDataLen);
+    sv_setpvn(sv, object->private.pPublicData, object->private.ulPublicDataLen);
     SvSETMAGIC(sv);
 
     return CKR_OK;
 }
 
 CK_RV crypt_pkcs11_ck_ecdh2_derive_params_set_pPublicData(Crypt__PKCS11__CK_ECDH2_DERIVE_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR n;
     CK_BYTE_PTR p;
     STRLEN l;
 
@@ -706,6 +823,16 @@ CK_RV crypt_pkcs11_ck_ecdh2_derive_params_set_pPublicData(Crypt__PKCS11__CK_ECDH
     }
 
     SvGETMAGIC(sv);
+
+    if (!SvOK(sv)) {
+        if (object->private.pPublicData) {
+            free(object->private.pPublicData);
+            object->private.pPublicData = 0;
+            object->private.ulPublicDataLen = 0;
+        }
+        return CKR_OK;
+    }
+
     if (!SvPOK(sv)
         || !(p = SvPVbyte(sv, l))
         || l < 0)
@@ -713,8 +840,16 @@ CK_RV crypt_pkcs11_ck_ecdh2_derive_params_set_pPublicData(Crypt__PKCS11__CK_ECDH
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->pPublicData = p;
-    object->ulPublicDataLen = l;
+    if (!(n = calloc(1, l + 1))) {
+        return CKR_HOST_MEMORY;
+    }
+
+    memcpy(n, p, l);
+    if (object->private.pPublicData) {
+        free(object->private.pPublicData);
+    }
+    object->private.pPublicData = n;
+    object->private.ulPublicDataLen = l;
 
     return CKR_OK;
 }
@@ -728,7 +863,7 @@ CK_RV crypt_pkcs11_ck_ecdh2_derive_params_get_hPrivateData(Crypt__PKCS11__CK_ECD
     }
 
     SvGETMAGIC(sv);
-    sv_setuv(sv, object->hPrivateData);
+    sv_setuv(sv, object->private.hPrivateData);
     SvSETMAGIC(sv);
 
     return CKR_OK;
@@ -743,11 +878,11 @@ CK_RV crypt_pkcs11_ck_ecdh2_derive_params_set_hPrivateData(Crypt__PKCS11__CK_ECD
     }
 
     SvGETMAGIC(sv);
-    if (!crypt_pkcs11_SvUOK(sv)) {
+    if (!crypt_pkcs11_xs_SvUOK(sv)) {
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->hPrivateData = SvUV(sv);
+    object->private.hPrivateData = SvUV(sv);
 
     return CKR_OK;
 }
@@ -761,13 +896,14 @@ CK_RV crypt_pkcs11_ck_ecdh2_derive_params_get_pPublicData2(Crypt__PKCS11__CK_ECD
     }
 
     SvGETMAGIC(sv);
-    sv_setpvn(sv, object->pPublicData2, object->ulPublicDataLen2);
+    sv_setpvn(sv, object->private.pPublicData2, object->private.ulPublicDataLen2);
     SvSETMAGIC(sv);
 
     return CKR_OK;
 }
 
 CK_RV crypt_pkcs11_ck_ecdh2_derive_params_set_pPublicData2(Crypt__PKCS11__CK_ECDH2_DERIVE_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR n;
     CK_BYTE_PTR p;
     STRLEN l;
 
@@ -779,6 +915,16 @@ CK_RV crypt_pkcs11_ck_ecdh2_derive_params_set_pPublicData2(Crypt__PKCS11__CK_ECD
     }
 
     SvGETMAGIC(sv);
+
+    if (!SvOK(sv)) {
+        if (object->private.pPublicData2) {
+            free(object->private.pPublicData2);
+            object->private.pPublicData2 = 0;
+            object->private.ulPublicDataLen2 = 0;
+        }
+        return CKR_OK;
+    }
+
     if (!SvPOK(sv)
         || !(p = SvPVbyte(sv, l))
         || l < 0)
@@ -786,8 +932,16 @@ CK_RV crypt_pkcs11_ck_ecdh2_derive_params_set_pPublicData2(Crypt__PKCS11__CK_ECD
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->pPublicData2 = p;
-    object->ulPublicDataLen2 = l;
+    if (!(n = calloc(1, l + 1))) {
+        return CKR_HOST_MEMORY;
+    }
+
+    memcpy(n, p, l);
+    if (object->private.pPublicData2) {
+        free(object->private.pPublicData2);
+    }
+    object->private.pPublicData2 = n;
+    object->private.ulPublicDataLen2 = l;
 
     return CKR_OK;
 }
@@ -795,13 +949,22 @@ CK_RV crypt_pkcs11_ck_ecdh2_derive_params_set_pPublicData2(Crypt__PKCS11__CK_ECD
 Crypt__PKCS11__CK_ECMQV_DERIVE_PARAMS* crypt_pkcs11_ck_ecmqv_derive_params_new(const char* class) {
     Crypt__PKCS11__CK_ECMQV_DERIVE_PARAMS* object = calloc(1, sizeof(Crypt__PKCS11__CK_ECMQV_DERIVE_PARAMS));
     if (!object) {
-        croak("Memory allocation error");
+        croak("memory allocation error");
     }
     return object;
 }
 
 void crypt_pkcs11_ck_ecmqv_derive_params_DESTROY(Crypt__PKCS11__CK_ECMQV_DERIVE_PARAMS* object) {
     if (object) {
+        if (object->private.pSharedData) {
+            free(object->private.pSharedData);
+        }
+        if (object->private.pPublicData) {
+            free(object->private.pPublicData);
+        }
+        if (object->private.pPublicData2) {
+            free(object->private.pPublicData2);
+        }
         free(object);
     }
 }
@@ -815,7 +978,7 @@ CK_RV crypt_pkcs11_ck_ecmqv_derive_params_get_kdf(Crypt__PKCS11__CK_ECMQV_DERIVE
     }
 
     SvGETMAGIC(sv);
-    sv_setuv(sv, object->kdf);
+    sv_setuv(sv, object->private.kdf);
     SvSETMAGIC(sv);
 
     return CKR_OK;
@@ -830,11 +993,11 @@ CK_RV crypt_pkcs11_ck_ecmqv_derive_params_set_kdf(Crypt__PKCS11__CK_ECMQV_DERIVE
     }
 
     SvGETMAGIC(sv);
-    if (!crypt_pkcs11_SvUOK(sv)) {
+    if (!crypt_pkcs11_xs_SvUOK(sv)) {
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->kdf = SvUV(sv);
+    object->private.kdf = SvUV(sv);
 
     return CKR_OK;
 }
@@ -848,13 +1011,14 @@ CK_RV crypt_pkcs11_ck_ecmqv_derive_params_get_pSharedData(Crypt__PKCS11__CK_ECMQ
     }
 
     SvGETMAGIC(sv);
-    sv_setpvn(sv, object->pSharedData, object->ulSharedDataLen);
+    sv_setpvn(sv, object->private.pSharedData, object->private.ulSharedDataLen);
     SvSETMAGIC(sv);
 
     return CKR_OK;
 }
 
 CK_RV crypt_pkcs11_ck_ecmqv_derive_params_set_pSharedData(Crypt__PKCS11__CK_ECMQV_DERIVE_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR n;
     CK_BYTE_PTR p;
     STRLEN l;
 
@@ -866,6 +1030,16 @@ CK_RV crypt_pkcs11_ck_ecmqv_derive_params_set_pSharedData(Crypt__PKCS11__CK_ECMQ
     }
 
     SvGETMAGIC(sv);
+
+    if (!SvOK(sv)) {
+        if (object->private.pSharedData) {
+            free(object->private.pSharedData);
+            object->private.pSharedData = 0;
+            object->private.ulSharedDataLen = 0;
+        }
+        return CKR_OK;
+    }
+
     if (!SvPOK(sv)
         || !(p = SvPVbyte(sv, l))
         || l < 0)
@@ -873,8 +1047,16 @@ CK_RV crypt_pkcs11_ck_ecmqv_derive_params_set_pSharedData(Crypt__PKCS11__CK_ECMQ
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->pSharedData = p;
-    object->ulSharedDataLen = l;
+    if (!(n = calloc(1, l + 1))) {
+        return CKR_HOST_MEMORY;
+    }
+
+    memcpy(n, p, l);
+    if (object->private.pSharedData) {
+        free(object->private.pSharedData);
+    }
+    object->private.pSharedData = n;
+    object->private.ulSharedDataLen = l;
 
     return CKR_OK;
 }
@@ -888,13 +1070,14 @@ CK_RV crypt_pkcs11_ck_ecmqv_derive_params_get_pPublicData(Crypt__PKCS11__CK_ECMQ
     }
 
     SvGETMAGIC(sv);
-    sv_setpvn(sv, object->pPublicData, object->ulPublicDataLen);
+    sv_setpvn(sv, object->private.pPublicData, object->private.ulPublicDataLen);
     SvSETMAGIC(sv);
 
     return CKR_OK;
 }
 
 CK_RV crypt_pkcs11_ck_ecmqv_derive_params_set_pPublicData(Crypt__PKCS11__CK_ECMQV_DERIVE_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR n;
     CK_BYTE_PTR p;
     STRLEN l;
 
@@ -906,6 +1089,16 @@ CK_RV crypt_pkcs11_ck_ecmqv_derive_params_set_pPublicData(Crypt__PKCS11__CK_ECMQ
     }
 
     SvGETMAGIC(sv);
+
+    if (!SvOK(sv)) {
+        if (object->private.pPublicData) {
+            free(object->private.pPublicData);
+            object->private.pPublicData = 0;
+            object->private.ulPublicDataLen = 0;
+        }
+        return CKR_OK;
+    }
+
     if (!SvPOK(sv)
         || !(p = SvPVbyte(sv, l))
         || l < 0)
@@ -913,8 +1106,16 @@ CK_RV crypt_pkcs11_ck_ecmqv_derive_params_set_pPublicData(Crypt__PKCS11__CK_ECMQ
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->pPublicData = p;
-    object->ulPublicDataLen = l;
+    if (!(n = calloc(1, l + 1))) {
+        return CKR_HOST_MEMORY;
+    }
+
+    memcpy(n, p, l);
+    if (object->private.pPublicData) {
+        free(object->private.pPublicData);
+    }
+    object->private.pPublicData = n;
+    object->private.ulPublicDataLen = l;
 
     return CKR_OK;
 }
@@ -928,7 +1129,7 @@ CK_RV crypt_pkcs11_ck_ecmqv_derive_params_get_hPrivateData(Crypt__PKCS11__CK_ECM
     }
 
     SvGETMAGIC(sv);
-    sv_setuv(sv, object->hPrivateData);
+    sv_setuv(sv, object->private.hPrivateData);
     SvSETMAGIC(sv);
 
     return CKR_OK;
@@ -943,11 +1144,11 @@ CK_RV crypt_pkcs11_ck_ecmqv_derive_params_set_hPrivateData(Crypt__PKCS11__CK_ECM
     }
 
     SvGETMAGIC(sv);
-    if (!crypt_pkcs11_SvUOK(sv)) {
+    if (!crypt_pkcs11_xs_SvUOK(sv)) {
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->hPrivateData = SvUV(sv);
+    object->private.hPrivateData = SvUV(sv);
 
     return CKR_OK;
 }
@@ -961,13 +1162,14 @@ CK_RV crypt_pkcs11_ck_ecmqv_derive_params_get_pPublicData2(Crypt__PKCS11__CK_ECM
     }
 
     SvGETMAGIC(sv);
-    sv_setpvn(sv, object->pPublicData2, object->ulPublicDataLen2);
+    sv_setpvn(sv, object->private.pPublicData2, object->private.ulPublicDataLen2);
     SvSETMAGIC(sv);
 
     return CKR_OK;
 }
 
 CK_RV crypt_pkcs11_ck_ecmqv_derive_params_set_pPublicData2(Crypt__PKCS11__CK_ECMQV_DERIVE_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR n;
     CK_BYTE_PTR p;
     STRLEN l;
 
@@ -979,6 +1181,16 @@ CK_RV crypt_pkcs11_ck_ecmqv_derive_params_set_pPublicData2(Crypt__PKCS11__CK_ECM
     }
 
     SvGETMAGIC(sv);
+
+    if (!SvOK(sv)) {
+        if (object->private.pPublicData2) {
+            free(object->private.pPublicData2);
+            object->private.pPublicData2 = 0;
+            object->private.ulPublicDataLen2 = 0;
+        }
+        return CKR_OK;
+    }
+
     if (!SvPOK(sv)
         || !(p = SvPVbyte(sv, l))
         || l < 0)
@@ -986,8 +1198,16 @@ CK_RV crypt_pkcs11_ck_ecmqv_derive_params_set_pPublicData2(Crypt__PKCS11__CK_ECM
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->pPublicData2 = p;
-    object->ulPublicDataLen2 = l;
+    if (!(n = calloc(1, l + 1))) {
+        return CKR_HOST_MEMORY;
+    }
+
+    memcpy(n, p, l);
+    if (object->private.pPublicData2) {
+        free(object->private.pPublicData2);
+    }
+    object->private.pPublicData2 = n;
+    object->private.ulPublicDataLen2 = l;
 
     return CKR_OK;
 }
@@ -1001,7 +1221,7 @@ CK_RV crypt_pkcs11_ck_ecmqv_derive_params_get_publicKey(Crypt__PKCS11__CK_ECMQV_
     }
 
     SvGETMAGIC(sv);
-    sv_setuv(sv, object->publicKey);
+    sv_setuv(sv, object->private.publicKey);
     SvSETMAGIC(sv);
 
     return CKR_OK;
@@ -1016,11 +1236,11 @@ CK_RV crypt_pkcs11_ck_ecmqv_derive_params_set_publicKey(Crypt__PKCS11__CK_ECMQV_
     }
 
     SvGETMAGIC(sv);
-    if (!crypt_pkcs11_SvUOK(sv)) {
+    if (!crypt_pkcs11_xs_SvUOK(sv)) {
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->publicKey = SvUV(sv);
+    object->private.publicKey = SvUV(sv);
 
     return CKR_OK;
 }
@@ -1028,13 +1248,19 @@ CK_RV crypt_pkcs11_ck_ecmqv_derive_params_set_publicKey(Crypt__PKCS11__CK_ECMQV_
 Crypt__PKCS11__CK_X9_42_DH1_DERIVE_PARAMS* crypt_pkcs11_ck_x9_42_dh1_derive_params_new(const char* class) {
     Crypt__PKCS11__CK_X9_42_DH1_DERIVE_PARAMS* object = calloc(1, sizeof(Crypt__PKCS11__CK_X9_42_DH1_DERIVE_PARAMS));
     if (!object) {
-        croak("Memory allocation error");
+        croak("memory allocation error");
     }
     return object;
 }
 
 void crypt_pkcs11_ck_x9_42_dh1_derive_params_DESTROY(Crypt__PKCS11__CK_X9_42_DH1_DERIVE_PARAMS* object) {
     if (object) {
+        if (object->private.pOtherInfo) {
+            free(object->private.pOtherInfo);
+        }
+        if (object->private.pPublicData) {
+            free(object->private.pPublicData);
+        }
         free(object);
     }
 }
@@ -1048,7 +1274,7 @@ CK_RV crypt_pkcs11_ck_x9_42_dh1_derive_params_get_kdf(Crypt__PKCS11__CK_X9_42_DH
     }
 
     SvGETMAGIC(sv);
-    sv_setuv(sv, object->kdf);
+    sv_setuv(sv, object->private.kdf);
     SvSETMAGIC(sv);
 
     return CKR_OK;
@@ -1063,11 +1289,11 @@ CK_RV crypt_pkcs11_ck_x9_42_dh1_derive_params_set_kdf(Crypt__PKCS11__CK_X9_42_DH
     }
 
     SvGETMAGIC(sv);
-    if (!crypt_pkcs11_SvUOK(sv)) {
+    if (!crypt_pkcs11_xs_SvUOK(sv)) {
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->kdf = SvUV(sv);
+    object->private.kdf = SvUV(sv);
 
     return CKR_OK;
 }
@@ -1081,13 +1307,14 @@ CK_RV crypt_pkcs11_ck_x9_42_dh1_derive_params_get_pOtherInfo(Crypt__PKCS11__CK_X
     }
 
     SvGETMAGIC(sv);
-    sv_setpvn(sv, object->pOtherInfo, object->ulOtherInfoLen);
+    sv_setpvn(sv, object->private.pOtherInfo, object->private.ulOtherInfoLen);
     SvSETMAGIC(sv);
 
     return CKR_OK;
 }
 
 CK_RV crypt_pkcs11_ck_x9_42_dh1_derive_params_set_pOtherInfo(Crypt__PKCS11__CK_X9_42_DH1_DERIVE_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR n;
     CK_BYTE_PTR p;
     STRLEN l;
 
@@ -1099,6 +1326,16 @@ CK_RV crypt_pkcs11_ck_x9_42_dh1_derive_params_set_pOtherInfo(Crypt__PKCS11__CK_X
     }
 
     SvGETMAGIC(sv);
+
+    if (!SvOK(sv)) {
+        if (object->private.pOtherInfo) {
+            free(object->private.pOtherInfo);
+            object->private.pOtherInfo = 0;
+            object->private.ulOtherInfoLen = 0;
+        }
+        return CKR_OK;
+    }
+
     if (!SvPOK(sv)
         || !(p = SvPVbyte(sv, l))
         || l < 0)
@@ -1106,8 +1343,16 @@ CK_RV crypt_pkcs11_ck_x9_42_dh1_derive_params_set_pOtherInfo(Crypt__PKCS11__CK_X
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->pOtherInfo = p;
-    object->ulOtherInfoLen = l;
+    if (!(n = calloc(1, l + 1))) {
+        return CKR_HOST_MEMORY;
+    }
+
+    memcpy(n, p, l);
+    if (object->private.pOtherInfo) {
+        free(object->private.pOtherInfo);
+    }
+    object->private.pOtherInfo = n;
+    object->private.ulOtherInfoLen = l;
 
     return CKR_OK;
 }
@@ -1121,13 +1366,14 @@ CK_RV crypt_pkcs11_ck_x9_42_dh1_derive_params_get_pPublicData(Crypt__PKCS11__CK_
     }
 
     SvGETMAGIC(sv);
-    sv_setpvn(sv, object->pPublicData, object->ulPublicDataLen);
+    sv_setpvn(sv, object->private.pPublicData, object->private.ulPublicDataLen);
     SvSETMAGIC(sv);
 
     return CKR_OK;
 }
 
 CK_RV crypt_pkcs11_ck_x9_42_dh1_derive_params_set_pPublicData(Crypt__PKCS11__CK_X9_42_DH1_DERIVE_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR n;
     CK_BYTE_PTR p;
     STRLEN l;
 
@@ -1139,6 +1385,16 @@ CK_RV crypt_pkcs11_ck_x9_42_dh1_derive_params_set_pPublicData(Crypt__PKCS11__CK_
     }
 
     SvGETMAGIC(sv);
+
+    if (!SvOK(sv)) {
+        if (object->private.pPublicData) {
+            free(object->private.pPublicData);
+            object->private.pPublicData = 0;
+            object->private.ulPublicDataLen = 0;
+        }
+        return CKR_OK;
+    }
+
     if (!SvPOK(sv)
         || !(p = SvPVbyte(sv, l))
         || l < 0)
@@ -1146,8 +1402,16 @@ CK_RV crypt_pkcs11_ck_x9_42_dh1_derive_params_set_pPublicData(Crypt__PKCS11__CK_
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->pPublicData = p;
-    object->ulPublicDataLen = l;
+    if (!(n = calloc(1, l + 1))) {
+        return CKR_HOST_MEMORY;
+    }
+
+    memcpy(n, p, l);
+    if (object->private.pPublicData) {
+        free(object->private.pPublicData);
+    }
+    object->private.pPublicData = n;
+    object->private.ulPublicDataLen = l;
 
     return CKR_OK;
 }
@@ -1155,13 +1419,22 @@ CK_RV crypt_pkcs11_ck_x9_42_dh1_derive_params_set_pPublicData(Crypt__PKCS11__CK_
 Crypt__PKCS11__CK_X9_42_DH2_DERIVE_PARAMS* crypt_pkcs11_ck_x9_42_dh2_derive_params_new(const char* class) {
     Crypt__PKCS11__CK_X9_42_DH2_DERIVE_PARAMS* object = calloc(1, sizeof(Crypt__PKCS11__CK_X9_42_DH2_DERIVE_PARAMS));
     if (!object) {
-        croak("Memory allocation error");
+        croak("memory allocation error");
     }
     return object;
 }
 
 void crypt_pkcs11_ck_x9_42_dh2_derive_params_DESTROY(Crypt__PKCS11__CK_X9_42_DH2_DERIVE_PARAMS* object) {
     if (object) {
+        if (object->private.pOtherInfo) {
+            free(object->private.pOtherInfo);
+        }
+        if (object->private.pPublicData) {
+            free(object->private.pPublicData);
+        }
+        if (object->private.pPublicData2) {
+            free(object->private.pPublicData2);
+        }
         free(object);
     }
 }
@@ -1175,7 +1448,7 @@ CK_RV crypt_pkcs11_ck_x9_42_dh2_derive_params_get_kdf(Crypt__PKCS11__CK_X9_42_DH
     }
 
     SvGETMAGIC(sv);
-    sv_setuv(sv, object->kdf);
+    sv_setuv(sv, object->private.kdf);
     SvSETMAGIC(sv);
 
     return CKR_OK;
@@ -1190,11 +1463,11 @@ CK_RV crypt_pkcs11_ck_x9_42_dh2_derive_params_set_kdf(Crypt__PKCS11__CK_X9_42_DH
     }
 
     SvGETMAGIC(sv);
-    if (!crypt_pkcs11_SvUOK(sv)) {
+    if (!crypt_pkcs11_xs_SvUOK(sv)) {
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->kdf = SvUV(sv);
+    object->private.kdf = SvUV(sv);
 
     return CKR_OK;
 }
@@ -1208,13 +1481,14 @@ CK_RV crypt_pkcs11_ck_x9_42_dh2_derive_params_get_pOtherInfo(Crypt__PKCS11__CK_X
     }
 
     SvGETMAGIC(sv);
-    sv_setpvn(sv, object->pOtherInfo, object->ulOtherInfoLen);
+    sv_setpvn(sv, object->private.pOtherInfo, object->private.ulOtherInfoLen);
     SvSETMAGIC(sv);
 
     return CKR_OK;
 }
 
 CK_RV crypt_pkcs11_ck_x9_42_dh2_derive_params_set_pOtherInfo(Crypt__PKCS11__CK_X9_42_DH2_DERIVE_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR n;
     CK_BYTE_PTR p;
     STRLEN l;
 
@@ -1226,6 +1500,16 @@ CK_RV crypt_pkcs11_ck_x9_42_dh2_derive_params_set_pOtherInfo(Crypt__PKCS11__CK_X
     }
 
     SvGETMAGIC(sv);
+
+    if (!SvOK(sv)) {
+        if (object->private.pOtherInfo) {
+            free(object->private.pOtherInfo);
+            object->private.pOtherInfo = 0;
+            object->private.ulOtherInfoLen = 0;
+        }
+        return CKR_OK;
+    }
+
     if (!SvPOK(sv)
         || !(p = SvPVbyte(sv, l))
         || l < 0)
@@ -1233,8 +1517,16 @@ CK_RV crypt_pkcs11_ck_x9_42_dh2_derive_params_set_pOtherInfo(Crypt__PKCS11__CK_X
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->pOtherInfo = p;
-    object->ulOtherInfoLen = l;
+    if (!(n = calloc(1, l + 1))) {
+        return CKR_HOST_MEMORY;
+    }
+
+    memcpy(n, p, l);
+    if (object->private.pOtherInfo) {
+        free(object->private.pOtherInfo);
+    }
+    object->private.pOtherInfo = n;
+    object->private.ulOtherInfoLen = l;
 
     return CKR_OK;
 }
@@ -1248,13 +1540,14 @@ CK_RV crypt_pkcs11_ck_x9_42_dh2_derive_params_get_pPublicData(Crypt__PKCS11__CK_
     }
 
     SvGETMAGIC(sv);
-    sv_setpvn(sv, object->pPublicData, object->ulPublicDataLen);
+    sv_setpvn(sv, object->private.pPublicData, object->private.ulPublicDataLen);
     SvSETMAGIC(sv);
 
     return CKR_OK;
 }
 
 CK_RV crypt_pkcs11_ck_x9_42_dh2_derive_params_set_pPublicData(Crypt__PKCS11__CK_X9_42_DH2_DERIVE_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR n;
     CK_BYTE_PTR p;
     STRLEN l;
 
@@ -1266,6 +1559,16 @@ CK_RV crypt_pkcs11_ck_x9_42_dh2_derive_params_set_pPublicData(Crypt__PKCS11__CK_
     }
 
     SvGETMAGIC(sv);
+
+    if (!SvOK(sv)) {
+        if (object->private.pPublicData) {
+            free(object->private.pPublicData);
+            object->private.pPublicData = 0;
+            object->private.ulPublicDataLen = 0;
+        }
+        return CKR_OK;
+    }
+
     if (!SvPOK(sv)
         || !(p = SvPVbyte(sv, l))
         || l < 0)
@@ -1273,8 +1576,16 @@ CK_RV crypt_pkcs11_ck_x9_42_dh2_derive_params_set_pPublicData(Crypt__PKCS11__CK_
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->pPublicData = p;
-    object->ulPublicDataLen = l;
+    if (!(n = calloc(1, l + 1))) {
+        return CKR_HOST_MEMORY;
+    }
+
+    memcpy(n, p, l);
+    if (object->private.pPublicData) {
+        free(object->private.pPublicData);
+    }
+    object->private.pPublicData = n;
+    object->private.ulPublicDataLen = l;
 
     return CKR_OK;
 }
@@ -1288,7 +1599,7 @@ CK_RV crypt_pkcs11_ck_x9_42_dh2_derive_params_get_hPrivateData(Crypt__PKCS11__CK
     }
 
     SvGETMAGIC(sv);
-    sv_setuv(sv, object->hPrivateData);
+    sv_setuv(sv, object->private.hPrivateData);
     SvSETMAGIC(sv);
 
     return CKR_OK;
@@ -1303,11 +1614,11 @@ CK_RV crypt_pkcs11_ck_x9_42_dh2_derive_params_set_hPrivateData(Crypt__PKCS11__CK
     }
 
     SvGETMAGIC(sv);
-    if (!crypt_pkcs11_SvUOK(sv)) {
+    if (!crypt_pkcs11_xs_SvUOK(sv)) {
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->hPrivateData = SvUV(sv);
+    object->private.hPrivateData = SvUV(sv);
 
     return CKR_OK;
 }
@@ -1321,13 +1632,14 @@ CK_RV crypt_pkcs11_ck_x9_42_dh2_derive_params_get_pPublicData2(Crypt__PKCS11__CK
     }
 
     SvGETMAGIC(sv);
-    sv_setpvn(sv, object->pPublicData2, object->ulPublicDataLen2);
+    sv_setpvn(sv, object->private.pPublicData2, object->private.ulPublicDataLen2);
     SvSETMAGIC(sv);
 
     return CKR_OK;
 }
 
 CK_RV crypt_pkcs11_ck_x9_42_dh2_derive_params_set_pPublicData2(Crypt__PKCS11__CK_X9_42_DH2_DERIVE_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR n;
     CK_BYTE_PTR p;
     STRLEN l;
 
@@ -1339,6 +1651,16 @@ CK_RV crypt_pkcs11_ck_x9_42_dh2_derive_params_set_pPublicData2(Crypt__PKCS11__CK
     }
 
     SvGETMAGIC(sv);
+
+    if (!SvOK(sv)) {
+        if (object->private.pPublicData2) {
+            free(object->private.pPublicData2);
+            object->private.pPublicData2 = 0;
+            object->private.ulPublicDataLen2 = 0;
+        }
+        return CKR_OK;
+    }
+
     if (!SvPOK(sv)
         || !(p = SvPVbyte(sv, l))
         || l < 0)
@@ -1346,8 +1668,16 @@ CK_RV crypt_pkcs11_ck_x9_42_dh2_derive_params_set_pPublicData2(Crypt__PKCS11__CK
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->pPublicData2 = p;
-    object->ulPublicDataLen2 = l;
+    if (!(n = calloc(1, l + 1))) {
+        return CKR_HOST_MEMORY;
+    }
+
+    memcpy(n, p, l);
+    if (object->private.pPublicData2) {
+        free(object->private.pPublicData2);
+    }
+    object->private.pPublicData2 = n;
+    object->private.ulPublicDataLen2 = l;
 
     return CKR_OK;
 }
@@ -1355,13 +1685,22 @@ CK_RV crypt_pkcs11_ck_x9_42_dh2_derive_params_set_pPublicData2(Crypt__PKCS11__CK
 Crypt__PKCS11__CK_X9_42_MQV_DERIVE_PARAMS* crypt_pkcs11_ck_x9_42_mqv_derive_params_new(const char* class) {
     Crypt__PKCS11__CK_X9_42_MQV_DERIVE_PARAMS* object = calloc(1, sizeof(Crypt__PKCS11__CK_X9_42_MQV_DERIVE_PARAMS));
     if (!object) {
-        croak("Memory allocation error");
+        croak("memory allocation error");
     }
     return object;
 }
 
 void crypt_pkcs11_ck_x9_42_mqv_derive_params_DESTROY(Crypt__PKCS11__CK_X9_42_MQV_DERIVE_PARAMS* object) {
     if (object) {
+        if (object->private.pOtherInfo) {
+            free(object->private.pOtherInfo);
+        }
+        if (object->private.pPublicData) {
+            free(object->private.pPublicData);
+        }
+        if (object->private.pPublicData2) {
+            free(object->private.pPublicData2);
+        }
         free(object);
     }
 }
@@ -1375,7 +1714,7 @@ CK_RV crypt_pkcs11_ck_x9_42_mqv_derive_params_get_kdf(Crypt__PKCS11__CK_X9_42_MQ
     }
 
     SvGETMAGIC(sv);
-    sv_setuv(sv, object->kdf);
+    sv_setuv(sv, object->private.kdf);
     SvSETMAGIC(sv);
 
     return CKR_OK;
@@ -1390,11 +1729,11 @@ CK_RV crypt_pkcs11_ck_x9_42_mqv_derive_params_set_kdf(Crypt__PKCS11__CK_X9_42_MQ
     }
 
     SvGETMAGIC(sv);
-    if (!crypt_pkcs11_SvUOK(sv)) {
+    if (!crypt_pkcs11_xs_SvUOK(sv)) {
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->kdf = SvUV(sv);
+    object->private.kdf = SvUV(sv);
 
     return CKR_OK;
 }
@@ -1408,13 +1747,14 @@ CK_RV crypt_pkcs11_ck_x9_42_mqv_derive_params_get_pOtherInfo(Crypt__PKCS11__CK_X
     }
 
     SvGETMAGIC(sv);
-    sv_setpvn(sv, object->pOtherInfo, object->ulOtherInfoLen);
+    sv_setpvn(sv, object->private.pOtherInfo, object->private.ulOtherInfoLen);
     SvSETMAGIC(sv);
 
     return CKR_OK;
 }
 
 CK_RV crypt_pkcs11_ck_x9_42_mqv_derive_params_set_pOtherInfo(Crypt__PKCS11__CK_X9_42_MQV_DERIVE_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR n;
     CK_BYTE_PTR p;
     STRLEN l;
 
@@ -1426,6 +1766,16 @@ CK_RV crypt_pkcs11_ck_x9_42_mqv_derive_params_set_pOtherInfo(Crypt__PKCS11__CK_X
     }
 
     SvGETMAGIC(sv);
+
+    if (!SvOK(sv)) {
+        if (object->private.pOtherInfo) {
+            free(object->private.pOtherInfo);
+            object->private.pOtherInfo = 0;
+            object->private.ulOtherInfoLen = 0;
+        }
+        return CKR_OK;
+    }
+
     if (!SvPOK(sv)
         || !(p = SvPVbyte(sv, l))
         || l < 0)
@@ -1433,8 +1783,16 @@ CK_RV crypt_pkcs11_ck_x9_42_mqv_derive_params_set_pOtherInfo(Crypt__PKCS11__CK_X
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->pOtherInfo = p;
-    object->ulOtherInfoLen = l;
+    if (!(n = calloc(1, l + 1))) {
+        return CKR_HOST_MEMORY;
+    }
+
+    memcpy(n, p, l);
+    if (object->private.pOtherInfo) {
+        free(object->private.pOtherInfo);
+    }
+    object->private.pOtherInfo = n;
+    object->private.ulOtherInfoLen = l;
 
     return CKR_OK;
 }
@@ -1448,13 +1806,14 @@ CK_RV crypt_pkcs11_ck_x9_42_mqv_derive_params_get_pPublicData(Crypt__PKCS11__CK_
     }
 
     SvGETMAGIC(sv);
-    sv_setpvn(sv, object->pPublicData, object->ulPublicDataLen);
+    sv_setpvn(sv, object->private.pPublicData, object->private.ulPublicDataLen);
     SvSETMAGIC(sv);
 
     return CKR_OK;
 }
 
 CK_RV crypt_pkcs11_ck_x9_42_mqv_derive_params_set_pPublicData(Crypt__PKCS11__CK_X9_42_MQV_DERIVE_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR n;
     CK_BYTE_PTR p;
     STRLEN l;
 
@@ -1466,6 +1825,16 @@ CK_RV crypt_pkcs11_ck_x9_42_mqv_derive_params_set_pPublicData(Crypt__PKCS11__CK_
     }
 
     SvGETMAGIC(sv);
+
+    if (!SvOK(sv)) {
+        if (object->private.pPublicData) {
+            free(object->private.pPublicData);
+            object->private.pPublicData = 0;
+            object->private.ulPublicDataLen = 0;
+        }
+        return CKR_OK;
+    }
+
     if (!SvPOK(sv)
         || !(p = SvPVbyte(sv, l))
         || l < 0)
@@ -1473,8 +1842,16 @@ CK_RV crypt_pkcs11_ck_x9_42_mqv_derive_params_set_pPublicData(Crypt__PKCS11__CK_
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->pPublicData = p;
-    object->ulPublicDataLen = l;
+    if (!(n = calloc(1, l + 1))) {
+        return CKR_HOST_MEMORY;
+    }
+
+    memcpy(n, p, l);
+    if (object->private.pPublicData) {
+        free(object->private.pPublicData);
+    }
+    object->private.pPublicData = n;
+    object->private.ulPublicDataLen = l;
 
     return CKR_OK;
 }
@@ -1488,7 +1865,7 @@ CK_RV crypt_pkcs11_ck_x9_42_mqv_derive_params_get_hPrivateData(Crypt__PKCS11__CK
     }
 
     SvGETMAGIC(sv);
-    sv_setuv(sv, object->hPrivateData);
+    sv_setuv(sv, object->private.hPrivateData);
     SvSETMAGIC(sv);
 
     return CKR_OK;
@@ -1503,11 +1880,11 @@ CK_RV crypt_pkcs11_ck_x9_42_mqv_derive_params_set_hPrivateData(Crypt__PKCS11__CK
     }
 
     SvGETMAGIC(sv);
-    if (!crypt_pkcs11_SvUOK(sv)) {
+    if (!crypt_pkcs11_xs_SvUOK(sv)) {
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->hPrivateData = SvUV(sv);
+    object->private.hPrivateData = SvUV(sv);
 
     return CKR_OK;
 }
@@ -1521,13 +1898,14 @@ CK_RV crypt_pkcs11_ck_x9_42_mqv_derive_params_get_pPublicData2(Crypt__PKCS11__CK
     }
 
     SvGETMAGIC(sv);
-    sv_setpvn(sv, object->pPublicData2, object->ulPublicDataLen2);
+    sv_setpvn(sv, object->private.pPublicData2, object->private.ulPublicDataLen2);
     SvSETMAGIC(sv);
 
     return CKR_OK;
 }
 
 CK_RV crypt_pkcs11_ck_x9_42_mqv_derive_params_set_pPublicData2(Crypt__PKCS11__CK_X9_42_MQV_DERIVE_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR n;
     CK_BYTE_PTR p;
     STRLEN l;
 
@@ -1539,6 +1917,16 @@ CK_RV crypt_pkcs11_ck_x9_42_mqv_derive_params_set_pPublicData2(Crypt__PKCS11__CK
     }
 
     SvGETMAGIC(sv);
+
+    if (!SvOK(sv)) {
+        if (object->private.pPublicData2) {
+            free(object->private.pPublicData2);
+            object->private.pPublicData2 = 0;
+            object->private.ulPublicDataLen2 = 0;
+        }
+        return CKR_OK;
+    }
+
     if (!SvPOK(sv)
         || !(p = SvPVbyte(sv, l))
         || l < 0)
@@ -1546,8 +1934,16 @@ CK_RV crypt_pkcs11_ck_x9_42_mqv_derive_params_set_pPublicData2(Crypt__PKCS11__CK
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->pPublicData2 = p;
-    object->ulPublicDataLen2 = l;
+    if (!(n = calloc(1, l + 1))) {
+        return CKR_HOST_MEMORY;
+    }
+
+    memcpy(n, p, l);
+    if (object->private.pPublicData2) {
+        free(object->private.pPublicData2);
+    }
+    object->private.pPublicData2 = n;
+    object->private.ulPublicDataLen2 = l;
 
     return CKR_OK;
 }
@@ -1561,7 +1957,7 @@ CK_RV crypt_pkcs11_ck_x9_42_mqv_derive_params_get_publicKey(Crypt__PKCS11__CK_X9
     }
 
     SvGETMAGIC(sv);
-    sv_setuv(sv, object->publicKey);
+    sv_setuv(sv, object->private.publicKey);
     SvSETMAGIC(sv);
 
     return CKR_OK;
@@ -1576,11 +1972,11 @@ CK_RV crypt_pkcs11_ck_x9_42_mqv_derive_params_set_publicKey(Crypt__PKCS11__CK_X9
     }
 
     SvGETMAGIC(sv);
-    if (!crypt_pkcs11_SvUOK(sv)) {
+    if (!crypt_pkcs11_xs_SvUOK(sv)) {
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->publicKey = SvUV(sv);
+    object->private.publicKey = SvUV(sv);
 
     return CKR_OK;
 }
@@ -1588,13 +1984,22 @@ CK_RV crypt_pkcs11_ck_x9_42_mqv_derive_params_set_publicKey(Crypt__PKCS11__CK_X9
 Crypt__PKCS11__CK_KEA_DERIVE_PARAMS* crypt_pkcs11_ck_kea_derive_params_new(const char* class) {
     Crypt__PKCS11__CK_KEA_DERIVE_PARAMS* object = calloc(1, sizeof(Crypt__PKCS11__CK_KEA_DERIVE_PARAMS));
     if (!object) {
-        croak("Memory allocation error");
+        croak("memory allocation error");
     }
     return object;
 }
 
 void crypt_pkcs11_ck_kea_derive_params_DESTROY(Crypt__PKCS11__CK_KEA_DERIVE_PARAMS* object) {
     if (object) {
+        if (object->private.pRandomA) {
+            free(object->private.pRandomA);
+        }
+        if (object->private.pRandomB) {
+            free(object->private.pRandomB);
+        }
+        if (object->private.pPublicData) {
+            free(object->private.pPublicData);
+        }
         free(object);
     }
 }
@@ -1608,7 +2013,7 @@ CK_RV crypt_pkcs11_ck_kea_derive_params_get_isSender(Crypt__PKCS11__CK_KEA_DERIV
     }
 
     SvGETMAGIC(sv);
-    sv_setuv(sv, object->isSender);
+    sv_setuv(sv, object->private.isSender);
     SvSETMAGIC(sv);
 
     return CKR_OK;
@@ -1623,15 +2028,15 @@ CK_RV crypt_pkcs11_ck_kea_derive_params_set_isSender(Crypt__PKCS11__CK_KEA_DERIV
     }
 
     SvGETMAGIC(sv);
-    if (!crypt_pkcs11_SvUOK(sv)) {
+    if (!crypt_pkcs11_xs_SvUOK(sv)) {
         return CKR_ARGUMENTS_BAD;
     }
 
     if (SvUV(sv)) {
-        object->isSender = CK_TRUE;
+        object->private.isSender = CK_TRUE;
     }
     else {
-        object->isSender = CK_FALSE;
+        object->private.isSender = CK_FALSE;
     }
 
     return CKR_OK;
@@ -1646,13 +2051,14 @@ CK_RV crypt_pkcs11_ck_kea_derive_params_get_pRandomA(Crypt__PKCS11__CK_KEA_DERIV
     }
 
     SvGETMAGIC(sv);
-    sv_setpvn(sv, object->pRandomA, object->ulRandomLen);
+    sv_setpvn(sv, object->private.pRandomA, object->private.ulRandomLen);
     SvSETMAGIC(sv);
 
     return CKR_OK;
 }
 
 CK_RV crypt_pkcs11_ck_kea_derive_params_set_pRandomA(Crypt__PKCS11__CK_KEA_DERIVE_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR n;
     CK_BYTE_PTR p;
     STRLEN l;
 
@@ -1664,6 +2070,16 @@ CK_RV crypt_pkcs11_ck_kea_derive_params_set_pRandomA(Crypt__PKCS11__CK_KEA_DERIV
     }
 
     SvGETMAGIC(sv);
+
+    if (!SvOK(sv)) {
+        if (object->private.pRandomA) {
+            free(object->private.pRandomA);
+            object->private.pRandomA = 0;
+            object->private.ulRandomLen = 0;
+        }
+        return CKR_OK;
+    }
+
     if (!SvPOK(sv)
         || !(p = SvPVbyte(sv, l))
         || l < 0)
@@ -1671,8 +2087,16 @@ CK_RV crypt_pkcs11_ck_kea_derive_params_set_pRandomA(Crypt__PKCS11__CK_KEA_DERIV
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->pRandomA = p;
-    object->ulRandomLen = l;
+    if (!(n = calloc(1, l + 1))) {
+        return CKR_HOST_MEMORY;
+    }
+
+    memcpy(n, p, l);
+    if (object->private.pRandomA) {
+        free(object->private.pRandomA);
+    }
+    object->private.pRandomA = n;
+    object->private.ulRandomLen = l;
 
     return CKR_OK;
 }
@@ -1686,13 +2110,14 @@ CK_RV crypt_pkcs11_ck_kea_derive_params_get_pRandomB(Crypt__PKCS11__CK_KEA_DERIV
     }
 
     SvGETMAGIC(sv);
-    sv_setpvn(sv, object->pRandomB, object->ulRandomLen);
+    sv_setpvn(sv, object->private.pRandomB, object->private.ulRandomLen);
     SvSETMAGIC(sv);
 
     return CKR_OK;
 }
 
 CK_RV crypt_pkcs11_ck_kea_derive_params_set_pRandomB(Crypt__PKCS11__CK_KEA_DERIVE_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR n;
     CK_BYTE_PTR p;
     STRLEN l;
 
@@ -1704,6 +2129,16 @@ CK_RV crypt_pkcs11_ck_kea_derive_params_set_pRandomB(Crypt__PKCS11__CK_KEA_DERIV
     }
 
     SvGETMAGIC(sv);
+
+    if (!SvOK(sv)) {
+        if (object->private.pRandomB) {
+            free(object->private.pRandomB);
+            object->private.pRandomB = 0;
+            object->private.ulRandomLen = 0;
+        }
+        return CKR_OK;
+    }
+
     if (!SvPOK(sv)
         || !(p = SvPVbyte(sv, l))
         || l < 0)
@@ -1711,8 +2146,16 @@ CK_RV crypt_pkcs11_ck_kea_derive_params_set_pRandomB(Crypt__PKCS11__CK_KEA_DERIV
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->pRandomB = p;
-    object->ulRandomLen = l;
+    if (!(n = calloc(1, l + 1))) {
+        return CKR_HOST_MEMORY;
+    }
+
+    memcpy(n, p, l);
+    if (object->private.pRandomB) {
+        free(object->private.pRandomB);
+    }
+    object->private.pRandomB = n;
+    object->private.ulRandomLen = l;
 
     return CKR_OK;
 }
@@ -1726,13 +2169,14 @@ CK_RV crypt_pkcs11_ck_kea_derive_params_get_pPublicData(Crypt__PKCS11__CK_KEA_DE
     }
 
     SvGETMAGIC(sv);
-    sv_setpvn(sv, object->pPublicData, object->ulPublicDataLen);
+    sv_setpvn(sv, object->private.pPublicData, object->private.ulPublicDataLen);
     SvSETMAGIC(sv);
 
     return CKR_OK;
 }
 
 CK_RV crypt_pkcs11_ck_kea_derive_params_set_pPublicData(Crypt__PKCS11__CK_KEA_DERIVE_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR n;
     CK_BYTE_PTR p;
     STRLEN l;
 
@@ -1744,6 +2188,16 @@ CK_RV crypt_pkcs11_ck_kea_derive_params_set_pPublicData(Crypt__PKCS11__CK_KEA_DE
     }
 
     SvGETMAGIC(sv);
+
+    if (!SvOK(sv)) {
+        if (object->private.pPublicData) {
+            free(object->private.pPublicData);
+            object->private.pPublicData = 0;
+            object->private.ulPublicDataLen = 0;
+        }
+        return CKR_OK;
+    }
+
     if (!SvPOK(sv)
         || !(p = SvPVbyte(sv, l))
         || l < 0)
@@ -1751,8 +2205,16 @@ CK_RV crypt_pkcs11_ck_kea_derive_params_set_pPublicData(Crypt__PKCS11__CK_KEA_DE
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->pPublicData = p;
-    object->ulPublicDataLen = l;
+    if (!(n = calloc(1, l + 1))) {
+        return CKR_HOST_MEMORY;
+    }
+
+    memcpy(n, p, l);
+    if (object->private.pPublicData) {
+        free(object->private.pPublicData);
+    }
+    object->private.pPublicData = n;
+    object->private.ulPublicDataLen = l;
 
     return CKR_OK;
 }
@@ -1760,7 +2222,7 @@ CK_RV crypt_pkcs11_ck_kea_derive_params_set_pPublicData(Crypt__PKCS11__CK_KEA_DE
 Crypt__PKCS11__CK_RC2_CBC_PARAMS* crypt_pkcs11_ck_rc2_cbc_params_new(const char* class) {
     Crypt__PKCS11__CK_RC2_CBC_PARAMS* object = calloc(1, sizeof(Crypt__PKCS11__CK_RC2_CBC_PARAMS));
     if (!object) {
-        croak("Memory allocation error");
+        croak("memory allocation error");
     }
     return object;
 }
@@ -1780,7 +2242,7 @@ CK_RV crypt_pkcs11_ck_rc2_cbc_params_get_ulEffectiveBits(Crypt__PKCS11__CK_RC2_C
     }
 
     SvGETMAGIC(sv);
-    sv_setuv(sv, object->ulEffectiveBits);
+    sv_setuv(sv, object->private.ulEffectiveBits);
     SvSETMAGIC(sv);
 
     return CKR_OK;
@@ -1795,11 +2257,11 @@ CK_RV crypt_pkcs11_ck_rc2_cbc_params_set_ulEffectiveBits(Crypt__PKCS11__CK_RC2_C
     }
 
     SvGETMAGIC(sv);
-    if (!crypt_pkcs11_SvUOK(sv)) {
+    if (!crypt_pkcs11_xs_SvUOK(sv)) {
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->ulEffectiveBits = SvUV(sv);
+    object->private.ulEffectiveBits = SvUV(sv);
 
     return CKR_OK;
 }
@@ -1815,7 +2277,7 @@ CK_RV crypt_pkcs11_ck_rc2_cbc_params_set_iv(Crypt__PKCS11__CK_RC2_CBC_PARAMS* ob
 Crypt__PKCS11__CK_RC2_MAC_GENERAL_PARAMS* crypt_pkcs11_ck_rc2_mac_general_params_new(const char* class) {
     Crypt__PKCS11__CK_RC2_MAC_GENERAL_PARAMS* object = calloc(1, sizeof(Crypt__PKCS11__CK_RC2_MAC_GENERAL_PARAMS));
     if (!object) {
-        croak("Memory allocation error");
+        croak("memory allocation error");
     }
     return object;
 }
@@ -1835,7 +2297,7 @@ CK_RV crypt_pkcs11_ck_rc2_mac_general_params_get_ulEffectiveBits(Crypt__PKCS11__
     }
 
     SvGETMAGIC(sv);
-    sv_setuv(sv, object->ulEffectiveBits);
+    sv_setuv(sv, object->private.ulEffectiveBits);
     SvSETMAGIC(sv);
 
     return CKR_OK;
@@ -1850,11 +2312,11 @@ CK_RV crypt_pkcs11_ck_rc2_mac_general_params_set_ulEffectiveBits(Crypt__PKCS11__
     }
 
     SvGETMAGIC(sv);
-    if (!crypt_pkcs11_SvUOK(sv)) {
+    if (!crypt_pkcs11_xs_SvUOK(sv)) {
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->ulEffectiveBits = SvUV(sv);
+    object->private.ulEffectiveBits = SvUV(sv);
 
     return CKR_OK;
 }
@@ -1862,7 +2324,7 @@ CK_RV crypt_pkcs11_ck_rc2_mac_general_params_set_ulEffectiveBits(Crypt__PKCS11__
 Crypt__PKCS11__CK_RC5_PARAMS* crypt_pkcs11_ck_rc5_params_new(const char* class) {
     Crypt__PKCS11__CK_RC5_PARAMS* object = calloc(1, sizeof(Crypt__PKCS11__CK_RC5_PARAMS));
     if (!object) {
-        croak("Memory allocation error");
+        croak("memory allocation error");
     }
     return object;
 }
@@ -1882,7 +2344,7 @@ CK_RV crypt_pkcs11_ck_rc5_params_get_ulWordsize(Crypt__PKCS11__CK_RC5_PARAMS* ob
     }
 
     SvGETMAGIC(sv);
-    sv_setuv(sv, object->ulWordsize);
+    sv_setuv(sv, object->private.ulWordsize);
     SvSETMAGIC(sv);
 
     return CKR_OK;
@@ -1897,11 +2359,11 @@ CK_RV crypt_pkcs11_ck_rc5_params_set_ulWordsize(Crypt__PKCS11__CK_RC5_PARAMS* ob
     }
 
     SvGETMAGIC(sv);
-    if (!crypt_pkcs11_SvUOK(sv)) {
+    if (!crypt_pkcs11_xs_SvUOK(sv)) {
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->ulWordsize = SvUV(sv);
+    object->private.ulWordsize = SvUV(sv);
 
     return CKR_OK;
 }
@@ -1915,7 +2377,7 @@ CK_RV crypt_pkcs11_ck_rc5_params_get_ulRounds(Crypt__PKCS11__CK_RC5_PARAMS* obje
     }
 
     SvGETMAGIC(sv);
-    sv_setuv(sv, object->ulRounds);
+    sv_setuv(sv, object->private.ulRounds);
     SvSETMAGIC(sv);
 
     return CKR_OK;
@@ -1930,11 +2392,11 @@ CK_RV crypt_pkcs11_ck_rc5_params_set_ulRounds(Crypt__PKCS11__CK_RC5_PARAMS* obje
     }
 
     SvGETMAGIC(sv);
-    if (!crypt_pkcs11_SvUOK(sv)) {
+    if (!crypt_pkcs11_xs_SvUOK(sv)) {
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->ulRounds = SvUV(sv);
+    object->private.ulRounds = SvUV(sv);
 
     return CKR_OK;
 }
@@ -1942,13 +2404,16 @@ CK_RV crypt_pkcs11_ck_rc5_params_set_ulRounds(Crypt__PKCS11__CK_RC5_PARAMS* obje
 Crypt__PKCS11__CK_RC5_CBC_PARAMS* crypt_pkcs11_ck_rc5_cbc_params_new(const char* class) {
     Crypt__PKCS11__CK_RC5_CBC_PARAMS* object = calloc(1, sizeof(Crypt__PKCS11__CK_RC5_CBC_PARAMS));
     if (!object) {
-        croak("Memory allocation error");
+        croak("memory allocation error");
     }
     return object;
 }
 
 void crypt_pkcs11_ck_rc5_cbc_params_DESTROY(Crypt__PKCS11__CK_RC5_CBC_PARAMS* object) {
     if (object) {
+        if (object->private.pIv) {
+            free(object->private.pIv);
+        }
         free(object);
     }
 }
@@ -1962,7 +2427,7 @@ CK_RV crypt_pkcs11_ck_rc5_cbc_params_get_ulWordsize(Crypt__PKCS11__CK_RC5_CBC_PA
     }
 
     SvGETMAGIC(sv);
-    sv_setuv(sv, object->ulWordsize);
+    sv_setuv(sv, object->private.ulWordsize);
     SvSETMAGIC(sv);
 
     return CKR_OK;
@@ -1977,11 +2442,11 @@ CK_RV crypt_pkcs11_ck_rc5_cbc_params_set_ulWordsize(Crypt__PKCS11__CK_RC5_CBC_PA
     }
 
     SvGETMAGIC(sv);
-    if (!crypt_pkcs11_SvUOK(sv)) {
+    if (!crypt_pkcs11_xs_SvUOK(sv)) {
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->ulWordsize = SvUV(sv);
+    object->private.ulWordsize = SvUV(sv);
 
     return CKR_OK;
 }
@@ -1995,7 +2460,7 @@ CK_RV crypt_pkcs11_ck_rc5_cbc_params_get_ulRounds(Crypt__PKCS11__CK_RC5_CBC_PARA
     }
 
     SvGETMAGIC(sv);
-    sv_setuv(sv, object->ulRounds);
+    sv_setuv(sv, object->private.ulRounds);
     SvSETMAGIC(sv);
 
     return CKR_OK;
@@ -2010,11 +2475,11 @@ CK_RV crypt_pkcs11_ck_rc5_cbc_params_set_ulRounds(Crypt__PKCS11__CK_RC5_CBC_PARA
     }
 
     SvGETMAGIC(sv);
-    if (!crypt_pkcs11_SvUOK(sv)) {
+    if (!crypt_pkcs11_xs_SvUOK(sv)) {
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->ulRounds = SvUV(sv);
+    object->private.ulRounds = SvUV(sv);
 
     return CKR_OK;
 }
@@ -2028,13 +2493,14 @@ CK_RV crypt_pkcs11_ck_rc5_cbc_params_get_pIv(Crypt__PKCS11__CK_RC5_CBC_PARAMS* o
     }
 
     SvGETMAGIC(sv);
-    sv_setpvn(sv, object->pIv, object->ulIvLen);
+    sv_setpvn(sv, object->private.pIv, object->private.ulIvLen);
     SvSETMAGIC(sv);
 
     return CKR_OK;
 }
 
 CK_RV crypt_pkcs11_ck_rc5_cbc_params_set_pIv(Crypt__PKCS11__CK_RC5_CBC_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR n;
     CK_BYTE_PTR p;
     STRLEN l;
 
@@ -2046,6 +2512,16 @@ CK_RV crypt_pkcs11_ck_rc5_cbc_params_set_pIv(Crypt__PKCS11__CK_RC5_CBC_PARAMS* o
     }
 
     SvGETMAGIC(sv);
+
+    if (!SvOK(sv)) {
+        if (object->private.pIv) {
+            free(object->private.pIv);
+            object->private.pIv = 0;
+            object->private.ulIvLen = 0;
+        }
+        return CKR_OK;
+    }
+
     if (!SvPOK(sv)
         || !(p = SvPVbyte(sv, l))
         || l < 0)
@@ -2053,8 +2529,16 @@ CK_RV crypt_pkcs11_ck_rc5_cbc_params_set_pIv(Crypt__PKCS11__CK_RC5_CBC_PARAMS* o
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->pIv = p;
-    object->ulIvLen = l;
+    if (!(n = calloc(1, l + 1))) {
+        return CKR_HOST_MEMORY;
+    }
+
+    memcpy(n, p, l);
+    if (object->private.pIv) {
+        free(object->private.pIv);
+    }
+    object->private.pIv = n;
+    object->private.ulIvLen = l;
 
     return CKR_OK;
 }
@@ -2062,7 +2546,7 @@ CK_RV crypt_pkcs11_ck_rc5_cbc_params_set_pIv(Crypt__PKCS11__CK_RC5_CBC_PARAMS* o
 Crypt__PKCS11__CK_RC5_MAC_GENERAL_PARAMS* crypt_pkcs11_ck_rc5_mac_general_params_new(const char* class) {
     Crypt__PKCS11__CK_RC5_MAC_GENERAL_PARAMS* object = calloc(1, sizeof(Crypt__PKCS11__CK_RC5_MAC_GENERAL_PARAMS));
     if (!object) {
-        croak("Memory allocation error");
+        croak("memory allocation error");
     }
     return object;
 }
@@ -2082,7 +2566,7 @@ CK_RV crypt_pkcs11_ck_rc5_mac_general_params_get_ulWordsize(Crypt__PKCS11__CK_RC
     }
 
     SvGETMAGIC(sv);
-    sv_setuv(sv, object->ulWordsize);
+    sv_setuv(sv, object->private.ulWordsize);
     SvSETMAGIC(sv);
 
     return CKR_OK;
@@ -2097,11 +2581,11 @@ CK_RV crypt_pkcs11_ck_rc5_mac_general_params_set_ulWordsize(Crypt__PKCS11__CK_RC
     }
 
     SvGETMAGIC(sv);
-    if (!crypt_pkcs11_SvUOK(sv)) {
+    if (!crypt_pkcs11_xs_SvUOK(sv)) {
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->ulWordsize = SvUV(sv);
+    object->private.ulWordsize = SvUV(sv);
 
     return CKR_OK;
 }
@@ -2115,7 +2599,7 @@ CK_RV crypt_pkcs11_ck_rc5_mac_general_params_get_ulRounds(Crypt__PKCS11__CK_RC5_
     }
 
     SvGETMAGIC(sv);
-    sv_setuv(sv, object->ulRounds);
+    sv_setuv(sv, object->private.ulRounds);
     SvSETMAGIC(sv);
 
     return CKR_OK;
@@ -2130,11 +2614,11 @@ CK_RV crypt_pkcs11_ck_rc5_mac_general_params_set_ulRounds(Crypt__PKCS11__CK_RC5_
     }
 
     SvGETMAGIC(sv);
-    if (!crypt_pkcs11_SvUOK(sv)) {
+    if (!crypt_pkcs11_xs_SvUOK(sv)) {
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->ulRounds = SvUV(sv);
+    object->private.ulRounds = SvUV(sv);
 
     return CKR_OK;
 }
@@ -2142,13 +2626,16 @@ CK_RV crypt_pkcs11_ck_rc5_mac_general_params_set_ulRounds(Crypt__PKCS11__CK_RC5_
 Crypt__PKCS11__CK_DES_CBC_ENCRYPT_DATA_PARAMS* crypt_pkcs11_ck_des_cbc_encrypt_data_params_new(const char* class) {
     Crypt__PKCS11__CK_DES_CBC_ENCRYPT_DATA_PARAMS* object = calloc(1, sizeof(Crypt__PKCS11__CK_DES_CBC_ENCRYPT_DATA_PARAMS));
     if (!object) {
-        croak("Memory allocation error");
+        croak("memory allocation error");
     }
     return object;
 }
 
 void crypt_pkcs11_ck_des_cbc_encrypt_data_params_DESTROY(Crypt__PKCS11__CK_DES_CBC_ENCRYPT_DATA_PARAMS* object) {
     if (object) {
+        if (object->private.pData) {
+            free(object->private.pData);
+        }
         free(object);
     }
 }
@@ -2170,13 +2657,14 @@ CK_RV crypt_pkcs11_ck_des_cbc_encrypt_data_params_get_pData(Crypt__PKCS11__CK_DE
     }
 
     SvGETMAGIC(sv);
-    sv_setpvn(sv, object->pData, object->length);
+    sv_setpvn(sv, object->private.pData, object->private.length);
     SvSETMAGIC(sv);
 
     return CKR_OK;
 }
 
 CK_RV crypt_pkcs11_ck_des_cbc_encrypt_data_params_set_pData(Crypt__PKCS11__CK_DES_CBC_ENCRYPT_DATA_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR n;
     CK_BYTE_PTR p;
     STRLEN l;
 
@@ -2188,6 +2676,16 @@ CK_RV crypt_pkcs11_ck_des_cbc_encrypt_data_params_set_pData(Crypt__PKCS11__CK_DE
     }
 
     SvGETMAGIC(sv);
+
+    if (!SvOK(sv)) {
+        if (object->private.pData) {
+            free(object->private.pData);
+            object->private.pData = 0;
+            object->private.length = 0;
+        }
+        return CKR_OK;
+    }
+
     if (!SvPOK(sv)
         || !(p = SvPVbyte(sv, l))
         || l < 0)
@@ -2195,8 +2693,16 @@ CK_RV crypt_pkcs11_ck_des_cbc_encrypt_data_params_set_pData(Crypt__PKCS11__CK_DE
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->pData = p;
-    object->length = l;
+    if (!(n = calloc(1, l + 1))) {
+        return CKR_HOST_MEMORY;
+    }
+
+    memcpy(n, p, l);
+    if (object->private.pData) {
+        free(object->private.pData);
+    }
+    object->private.pData = n;
+    object->private.length = l;
 
     return CKR_OK;
 }
@@ -2204,13 +2710,16 @@ CK_RV crypt_pkcs11_ck_des_cbc_encrypt_data_params_set_pData(Crypt__PKCS11__CK_DE
 Crypt__PKCS11__CK_AES_CBC_ENCRYPT_DATA_PARAMS* crypt_pkcs11_ck_aes_cbc_encrypt_data_params_new(const char* class) {
     Crypt__PKCS11__CK_AES_CBC_ENCRYPT_DATA_PARAMS* object = calloc(1, sizeof(Crypt__PKCS11__CK_AES_CBC_ENCRYPT_DATA_PARAMS));
     if (!object) {
-        croak("Memory allocation error");
+        croak("memory allocation error");
     }
     return object;
 }
 
 void crypt_pkcs11_ck_aes_cbc_encrypt_data_params_DESTROY(Crypt__PKCS11__CK_AES_CBC_ENCRYPT_DATA_PARAMS* object) {
     if (object) {
+        if (object->private.pData) {
+            free(object->private.pData);
+        }
         free(object);
     }
 }
@@ -2232,13 +2741,14 @@ CK_RV crypt_pkcs11_ck_aes_cbc_encrypt_data_params_get_pData(Crypt__PKCS11__CK_AE
     }
 
     SvGETMAGIC(sv);
-    sv_setpvn(sv, object->pData, object->length);
+    sv_setpvn(sv, object->private.pData, object->private.length);
     SvSETMAGIC(sv);
 
     return CKR_OK;
 }
 
 CK_RV crypt_pkcs11_ck_aes_cbc_encrypt_data_params_set_pData(Crypt__PKCS11__CK_AES_CBC_ENCRYPT_DATA_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR n;
     CK_BYTE_PTR p;
     STRLEN l;
 
@@ -2250,6 +2760,16 @@ CK_RV crypt_pkcs11_ck_aes_cbc_encrypt_data_params_set_pData(Crypt__PKCS11__CK_AE
     }
 
     SvGETMAGIC(sv);
+
+    if (!SvOK(sv)) {
+        if (object->private.pData) {
+            free(object->private.pData);
+            object->private.pData = 0;
+            object->private.length = 0;
+        }
+        return CKR_OK;
+    }
+
     if (!SvPOK(sv)
         || !(p = SvPVbyte(sv, l))
         || l < 0)
@@ -2257,8 +2777,16 @@ CK_RV crypt_pkcs11_ck_aes_cbc_encrypt_data_params_set_pData(Crypt__PKCS11__CK_AE
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->pData = p;
-    object->length = l;
+    if (!(n = calloc(1, l + 1))) {
+        return CKR_HOST_MEMORY;
+    }
+
+    memcpy(n, p, l);
+    if (object->private.pData) {
+        free(object->private.pData);
+    }
+    object->private.pData = n;
+    object->private.length = l;
 
     return CKR_OK;
 }
@@ -2266,13 +2794,31 @@ CK_RV crypt_pkcs11_ck_aes_cbc_encrypt_data_params_set_pData(Crypt__PKCS11__CK_AE
 Crypt__PKCS11__CK_SKIPJACK_PRIVATE_WRAP_PARAMS* crypt_pkcs11_ck_skipjack_private_wrap_params_new(const char* class) {
     Crypt__PKCS11__CK_SKIPJACK_PRIVATE_WRAP_PARAMS* object = calloc(1, sizeof(Crypt__PKCS11__CK_SKIPJACK_PRIVATE_WRAP_PARAMS));
     if (!object) {
-        croak("Memory allocation error");
+        croak("memory allocation error");
     }
     return object;
 }
 
 void crypt_pkcs11_ck_skipjack_private_wrap_params_DESTROY(Crypt__PKCS11__CK_SKIPJACK_PRIVATE_WRAP_PARAMS* object) {
     if (object) {
+        if (object->private.pPassword) {
+            free(object->private.pPassword);
+        }
+        if (object->private.pPublicData) {
+            free(object->private.pPublicData);
+        }
+        if (object->private.pRandomA) {
+            free(object->private.pRandomA);
+        }
+        if (object->private.pPrimeP) {
+            free(object->private.pPrimeP);
+        }
+        if (object->private.pBaseG) {
+            free(object->private.pBaseG);
+        }
+        if (object->private.pSubprimeQ) {
+            free(object->private.pSubprimeQ);
+        }
         free(object);
     }
 }
@@ -2286,13 +2832,14 @@ CK_RV crypt_pkcs11_ck_skipjack_private_wrap_params_get_pPassword(Crypt__PKCS11__
     }
 
     SvGETMAGIC(sv);
-    sv_setpvn(sv, object->pPassword, object->ulPasswordLen);
+    sv_setpvn(sv, object->private.pPassword, object->private.ulPasswordLen);
     SvSETMAGIC(sv);
 
     return CKR_OK;
 }
 
 CK_RV crypt_pkcs11_ck_skipjack_private_wrap_params_set_pPassword(Crypt__PKCS11__CK_SKIPJACK_PRIVATE_WRAP_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR n;
     CK_BYTE_PTR p;
     STRLEN l;
 
@@ -2304,6 +2851,16 @@ CK_RV crypt_pkcs11_ck_skipjack_private_wrap_params_set_pPassword(Crypt__PKCS11__
     }
 
     SvGETMAGIC(sv);
+
+    if (!SvOK(sv)) {
+        if (object->private.pPassword) {
+            free(object->private.pPassword);
+            object->private.pPassword = 0;
+            object->private.ulPasswordLen = 0;
+        }
+        return CKR_OK;
+    }
+
     if (!SvPOK(sv)
         || !(p = SvPVbyte(sv, l))
         || l < 0)
@@ -2311,8 +2868,16 @@ CK_RV crypt_pkcs11_ck_skipjack_private_wrap_params_set_pPassword(Crypt__PKCS11__
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->pPassword = p;
-    object->ulPasswordLen = l;
+    if (!(n = calloc(1, l + 1))) {
+        return CKR_HOST_MEMORY;
+    }
+
+    memcpy(n, p, l);
+    if (object->private.pPassword) {
+        free(object->private.pPassword);
+    }
+    object->private.pPassword = n;
+    object->private.ulPasswordLen = l;
 
     return CKR_OK;
 }
@@ -2326,13 +2891,14 @@ CK_RV crypt_pkcs11_ck_skipjack_private_wrap_params_get_pPublicData(Crypt__PKCS11
     }
 
     SvGETMAGIC(sv);
-    sv_setpvn(sv, object->pPublicData, object->ulPublicDataLen);
+    sv_setpvn(sv, object->private.pPublicData, object->private.ulPublicDataLen);
     SvSETMAGIC(sv);
 
     return CKR_OK;
 }
 
 CK_RV crypt_pkcs11_ck_skipjack_private_wrap_params_set_pPublicData(Crypt__PKCS11__CK_SKIPJACK_PRIVATE_WRAP_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR n;
     CK_BYTE_PTR p;
     STRLEN l;
 
@@ -2344,6 +2910,16 @@ CK_RV crypt_pkcs11_ck_skipjack_private_wrap_params_set_pPublicData(Crypt__PKCS11
     }
 
     SvGETMAGIC(sv);
+
+    if (!SvOK(sv)) {
+        if (object->private.pPublicData) {
+            free(object->private.pPublicData);
+            object->private.pPublicData = 0;
+            object->private.ulPublicDataLen = 0;
+        }
+        return CKR_OK;
+    }
+
     if (!SvPOK(sv)
         || !(p = SvPVbyte(sv, l))
         || l < 0)
@@ -2351,8 +2927,16 @@ CK_RV crypt_pkcs11_ck_skipjack_private_wrap_params_set_pPublicData(Crypt__PKCS11
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->pPublicData = p;
-    object->ulPublicDataLen = l;
+    if (!(n = calloc(1, l + 1))) {
+        return CKR_HOST_MEMORY;
+    }
+
+    memcpy(n, p, l);
+    if (object->private.pPublicData) {
+        free(object->private.pPublicData);
+    }
+    object->private.pPublicData = n;
+    object->private.ulPublicDataLen = l;
 
     return CKR_OK;
 }
@@ -2366,13 +2950,14 @@ CK_RV crypt_pkcs11_ck_skipjack_private_wrap_params_get_pRandomA(Crypt__PKCS11__C
     }
 
     SvGETMAGIC(sv);
-    sv_setpvn(sv, object->pRandomA, object->ulRandomLen);
+    sv_setpvn(sv, object->private.pRandomA, object->private.ulRandomLen);
     SvSETMAGIC(sv);
 
     return CKR_OK;
 }
 
 CK_RV crypt_pkcs11_ck_skipjack_private_wrap_params_set_pRandomA(Crypt__PKCS11__CK_SKIPJACK_PRIVATE_WRAP_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR n;
     CK_BYTE_PTR p;
     STRLEN l;
 
@@ -2384,6 +2969,16 @@ CK_RV crypt_pkcs11_ck_skipjack_private_wrap_params_set_pRandomA(Crypt__PKCS11__C
     }
 
     SvGETMAGIC(sv);
+
+    if (!SvOK(sv)) {
+        if (object->private.pRandomA) {
+            free(object->private.pRandomA);
+            object->private.pRandomA = 0;
+            object->private.ulRandomLen = 0;
+        }
+        return CKR_OK;
+    }
+
     if (!SvPOK(sv)
         || !(p = SvPVbyte(sv, l))
         || l < 0)
@@ -2391,8 +2986,16 @@ CK_RV crypt_pkcs11_ck_skipjack_private_wrap_params_set_pRandomA(Crypt__PKCS11__C
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->pRandomA = p;
-    object->ulRandomLen = l;
+    if (!(n = calloc(1, l + 1))) {
+        return CKR_HOST_MEMORY;
+    }
+
+    memcpy(n, p, l);
+    if (object->private.pRandomA) {
+        free(object->private.pRandomA);
+    }
+    object->private.pRandomA = n;
+    object->private.ulRandomLen = l;
 
     return CKR_OK;
 }
@@ -2406,13 +3009,14 @@ CK_RV crypt_pkcs11_ck_skipjack_private_wrap_params_get_pPrimeP(Crypt__PKCS11__CK
     }
 
     SvGETMAGIC(sv);
-    sv_setpvn(sv, object->pPrimeP, object->ulPAndGLen);
+    sv_setpvn(sv, object->private.pPrimeP, object->private.ulPAndGLen);
     SvSETMAGIC(sv);
 
     return CKR_OK;
 }
 
 CK_RV crypt_pkcs11_ck_skipjack_private_wrap_params_set_pPrimeP(Crypt__PKCS11__CK_SKIPJACK_PRIVATE_WRAP_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR n;
     CK_BYTE_PTR p;
     STRLEN l;
 
@@ -2424,6 +3028,16 @@ CK_RV crypt_pkcs11_ck_skipjack_private_wrap_params_set_pPrimeP(Crypt__PKCS11__CK
     }
 
     SvGETMAGIC(sv);
+
+    if (!SvOK(sv)) {
+        if (object->private.pPrimeP) {
+            free(object->private.pPrimeP);
+            object->private.pPrimeP = 0;
+            object->private.ulPAndGLen = 0;
+        }
+        return CKR_OK;
+    }
+
     if (!SvPOK(sv)
         || !(p = SvPVbyte(sv, l))
         || l < 0)
@@ -2431,8 +3045,16 @@ CK_RV crypt_pkcs11_ck_skipjack_private_wrap_params_set_pPrimeP(Crypt__PKCS11__CK
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->pPrimeP = p;
-    object->ulPAndGLen = l;
+    if (!(n = calloc(1, l + 1))) {
+        return CKR_HOST_MEMORY;
+    }
+
+    memcpy(n, p, l);
+    if (object->private.pPrimeP) {
+        free(object->private.pPrimeP);
+    }
+    object->private.pPrimeP = n;
+    object->private.ulPAndGLen = l;
 
     return CKR_OK;
 }
@@ -2446,13 +3068,14 @@ CK_RV crypt_pkcs11_ck_skipjack_private_wrap_params_get_pBaseG(Crypt__PKCS11__CK_
     }
 
     SvGETMAGIC(sv);
-    sv_setpvn(sv, object->pBaseG, object->ulPAndGLen);
+    sv_setpvn(sv, object->private.pBaseG, object->private.ulPAndGLen);
     SvSETMAGIC(sv);
 
     return CKR_OK;
 }
 
 CK_RV crypt_pkcs11_ck_skipjack_private_wrap_params_set_pBaseG(Crypt__PKCS11__CK_SKIPJACK_PRIVATE_WRAP_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR n;
     CK_BYTE_PTR p;
     STRLEN l;
 
@@ -2464,6 +3087,16 @@ CK_RV crypt_pkcs11_ck_skipjack_private_wrap_params_set_pBaseG(Crypt__PKCS11__CK_
     }
 
     SvGETMAGIC(sv);
+
+    if (!SvOK(sv)) {
+        if (object->private.pBaseG) {
+            free(object->private.pBaseG);
+            object->private.pBaseG = 0;
+            object->private.ulPAndGLen = 0;
+        }
+        return CKR_OK;
+    }
+
     if (!SvPOK(sv)
         || !(p = SvPVbyte(sv, l))
         || l < 0)
@@ -2471,8 +3104,16 @@ CK_RV crypt_pkcs11_ck_skipjack_private_wrap_params_set_pBaseG(Crypt__PKCS11__CK_
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->pBaseG = p;
-    object->ulPAndGLen = l;
+    if (!(n = calloc(1, l + 1))) {
+        return CKR_HOST_MEMORY;
+    }
+
+    memcpy(n, p, l);
+    if (object->private.pBaseG) {
+        free(object->private.pBaseG);
+    }
+    object->private.pBaseG = n;
+    object->private.ulPAndGLen = l;
 
     return CKR_OK;
 }
@@ -2486,13 +3127,14 @@ CK_RV crypt_pkcs11_ck_skipjack_private_wrap_params_get_pSubprimeQ(Crypt__PKCS11_
     }
 
     SvGETMAGIC(sv);
-    sv_setpvn(sv, object->pSubprimeQ, object->ulQLen);
+    sv_setpvn(sv, object->private.pSubprimeQ, object->private.ulQLen);
     SvSETMAGIC(sv);
 
     return CKR_OK;
 }
 
 CK_RV crypt_pkcs11_ck_skipjack_private_wrap_params_set_pSubprimeQ(Crypt__PKCS11__CK_SKIPJACK_PRIVATE_WRAP_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR n;
     CK_BYTE_PTR p;
     STRLEN l;
 
@@ -2504,6 +3146,16 @@ CK_RV crypt_pkcs11_ck_skipjack_private_wrap_params_set_pSubprimeQ(Crypt__PKCS11_
     }
 
     SvGETMAGIC(sv);
+
+    if (!SvOK(sv)) {
+        if (object->private.pSubprimeQ) {
+            free(object->private.pSubprimeQ);
+            object->private.pSubprimeQ = 0;
+            object->private.ulQLen = 0;
+        }
+        return CKR_OK;
+    }
+
     if (!SvPOK(sv)
         || !(p = SvPVbyte(sv, l))
         || l < 0)
@@ -2511,8 +3163,16 @@ CK_RV crypt_pkcs11_ck_skipjack_private_wrap_params_set_pSubprimeQ(Crypt__PKCS11_
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->pSubprimeQ = p;
-    object->ulQLen = l;
+    if (!(n = calloc(1, l + 1))) {
+        return CKR_HOST_MEMORY;
+    }
+
+    memcpy(n, p, l);
+    if (object->private.pSubprimeQ) {
+        free(object->private.pSubprimeQ);
+    }
+    object->private.pSubprimeQ = n;
+    object->private.ulQLen = l;
 
     return CKR_OK;
 }
@@ -2520,13 +3180,34 @@ CK_RV crypt_pkcs11_ck_skipjack_private_wrap_params_set_pSubprimeQ(Crypt__PKCS11_
 Crypt__PKCS11__CK_SKIPJACK_RELAYX_PARAMS* crypt_pkcs11_ck_skipjack_relayx_params_new(const char* class) {
     Crypt__PKCS11__CK_SKIPJACK_RELAYX_PARAMS* object = calloc(1, sizeof(Crypt__PKCS11__CK_SKIPJACK_RELAYX_PARAMS));
     if (!object) {
-        croak("Memory allocation error");
+        croak("memory allocation error");
     }
     return object;
 }
 
 void crypt_pkcs11_ck_skipjack_relayx_params_DESTROY(Crypt__PKCS11__CK_SKIPJACK_RELAYX_PARAMS* object) {
     if (object) {
+        if (object->private.pOldWrappedX) {
+            free(object->private.pOldWrappedX);
+        }
+        if (object->private.pOldPassword) {
+            free(object->private.pOldPassword);
+        }
+        if (object->private.pOldPublicData) {
+            free(object->private.pOldPublicData);
+        }
+        if (object->private.pOldRandomA) {
+            free(object->private.pOldRandomA);
+        }
+        if (object->private.pNewPassword) {
+            free(object->private.pNewPassword);
+        }
+        if (object->private.pNewPublicData) {
+            free(object->private.pNewPublicData);
+        }
+        if (object->private.pNewRandomA) {
+            free(object->private.pNewRandomA);
+        }
         free(object);
     }
 }
@@ -2540,13 +3221,14 @@ CK_RV crypt_pkcs11_ck_skipjack_relayx_params_get_pOldWrappedX(Crypt__PKCS11__CK_
     }
 
     SvGETMAGIC(sv);
-    sv_setpvn(sv, object->pOldWrappedX, object->ulOldWrappedXLen);
+    sv_setpvn(sv, object->private.pOldWrappedX, object->private.ulOldWrappedXLen);
     SvSETMAGIC(sv);
 
     return CKR_OK;
 }
 
 CK_RV crypt_pkcs11_ck_skipjack_relayx_params_set_pOldWrappedX(Crypt__PKCS11__CK_SKIPJACK_RELAYX_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR n;
     CK_BYTE_PTR p;
     STRLEN l;
 
@@ -2558,6 +3240,16 @@ CK_RV crypt_pkcs11_ck_skipjack_relayx_params_set_pOldWrappedX(Crypt__PKCS11__CK_
     }
 
     SvGETMAGIC(sv);
+
+    if (!SvOK(sv)) {
+        if (object->private.pOldWrappedX) {
+            free(object->private.pOldWrappedX);
+            object->private.pOldWrappedX = 0;
+            object->private.ulOldWrappedXLen = 0;
+        }
+        return CKR_OK;
+    }
+
     if (!SvPOK(sv)
         || !(p = SvPVbyte(sv, l))
         || l < 0)
@@ -2565,8 +3257,16 @@ CK_RV crypt_pkcs11_ck_skipjack_relayx_params_set_pOldWrappedX(Crypt__PKCS11__CK_
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->pOldWrappedX = p;
-    object->ulOldWrappedXLen = l;
+    if (!(n = calloc(1, l + 1))) {
+        return CKR_HOST_MEMORY;
+    }
+
+    memcpy(n, p, l);
+    if (object->private.pOldWrappedX) {
+        free(object->private.pOldWrappedX);
+    }
+    object->private.pOldWrappedX = n;
+    object->private.ulOldWrappedXLen = l;
 
     return CKR_OK;
 }
@@ -2580,13 +3280,14 @@ CK_RV crypt_pkcs11_ck_skipjack_relayx_params_get_pOldPassword(Crypt__PKCS11__CK_
     }
 
     SvGETMAGIC(sv);
-    sv_setpvn(sv, object->pOldPassword, object->ulOldPasswordLen);
+    sv_setpvn(sv, object->private.pOldPassword, object->private.ulOldPasswordLen);
     SvSETMAGIC(sv);
 
     return CKR_OK;
 }
 
 CK_RV crypt_pkcs11_ck_skipjack_relayx_params_set_pOldPassword(Crypt__PKCS11__CK_SKIPJACK_RELAYX_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR n;
     CK_BYTE_PTR p;
     STRLEN l;
 
@@ -2598,6 +3299,16 @@ CK_RV crypt_pkcs11_ck_skipjack_relayx_params_set_pOldPassword(Crypt__PKCS11__CK_
     }
 
     SvGETMAGIC(sv);
+
+    if (!SvOK(sv)) {
+        if (object->private.pOldPassword) {
+            free(object->private.pOldPassword);
+            object->private.pOldPassword = 0;
+            object->private.ulOldPasswordLen = 0;
+        }
+        return CKR_OK;
+    }
+
     if (!SvPOK(sv)
         || !(p = SvPVbyte(sv, l))
         || l < 0)
@@ -2605,8 +3316,16 @@ CK_RV crypt_pkcs11_ck_skipjack_relayx_params_set_pOldPassword(Crypt__PKCS11__CK_
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->pOldPassword = p;
-    object->ulOldPasswordLen = l;
+    if (!(n = calloc(1, l + 1))) {
+        return CKR_HOST_MEMORY;
+    }
+
+    memcpy(n, p, l);
+    if (object->private.pOldPassword) {
+        free(object->private.pOldPassword);
+    }
+    object->private.pOldPassword = n;
+    object->private.ulOldPasswordLen = l;
 
     return CKR_OK;
 }
@@ -2620,13 +3339,14 @@ CK_RV crypt_pkcs11_ck_skipjack_relayx_params_get_pOldPublicData(Crypt__PKCS11__C
     }
 
     SvGETMAGIC(sv);
-    sv_setpvn(sv, object->pOldPublicData, object->ulOldPublicDataLen);
+    sv_setpvn(sv, object->private.pOldPublicData, object->private.ulOldPublicDataLen);
     SvSETMAGIC(sv);
 
     return CKR_OK;
 }
 
 CK_RV crypt_pkcs11_ck_skipjack_relayx_params_set_pOldPublicData(Crypt__PKCS11__CK_SKIPJACK_RELAYX_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR n;
     CK_BYTE_PTR p;
     STRLEN l;
 
@@ -2638,6 +3358,16 @@ CK_RV crypt_pkcs11_ck_skipjack_relayx_params_set_pOldPublicData(Crypt__PKCS11__C
     }
 
     SvGETMAGIC(sv);
+
+    if (!SvOK(sv)) {
+        if (object->private.pOldPublicData) {
+            free(object->private.pOldPublicData);
+            object->private.pOldPublicData = 0;
+            object->private.ulOldPublicDataLen = 0;
+        }
+        return CKR_OK;
+    }
+
     if (!SvPOK(sv)
         || !(p = SvPVbyte(sv, l))
         || l < 0)
@@ -2645,8 +3375,16 @@ CK_RV crypt_pkcs11_ck_skipjack_relayx_params_set_pOldPublicData(Crypt__PKCS11__C
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->pOldPublicData = p;
-    object->ulOldPublicDataLen = l;
+    if (!(n = calloc(1, l + 1))) {
+        return CKR_HOST_MEMORY;
+    }
+
+    memcpy(n, p, l);
+    if (object->private.pOldPublicData) {
+        free(object->private.pOldPublicData);
+    }
+    object->private.pOldPublicData = n;
+    object->private.ulOldPublicDataLen = l;
 
     return CKR_OK;
 }
@@ -2660,13 +3398,14 @@ CK_RV crypt_pkcs11_ck_skipjack_relayx_params_get_pOldRandomA(Crypt__PKCS11__CK_S
     }
 
     SvGETMAGIC(sv);
-    sv_setpvn(sv, object->pOldRandomA, object->ulOldRandomLen);
+    sv_setpvn(sv, object->private.pOldRandomA, object->private.ulOldRandomLen);
     SvSETMAGIC(sv);
 
     return CKR_OK;
 }
 
 CK_RV crypt_pkcs11_ck_skipjack_relayx_params_set_pOldRandomA(Crypt__PKCS11__CK_SKIPJACK_RELAYX_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR n;
     CK_BYTE_PTR p;
     STRLEN l;
 
@@ -2678,6 +3417,16 @@ CK_RV crypt_pkcs11_ck_skipjack_relayx_params_set_pOldRandomA(Crypt__PKCS11__CK_S
     }
 
     SvGETMAGIC(sv);
+
+    if (!SvOK(sv)) {
+        if (object->private.pOldRandomA) {
+            free(object->private.pOldRandomA);
+            object->private.pOldRandomA = 0;
+            object->private.ulOldRandomLen = 0;
+        }
+        return CKR_OK;
+    }
+
     if (!SvPOK(sv)
         || !(p = SvPVbyte(sv, l))
         || l < 0)
@@ -2685,8 +3434,16 @@ CK_RV crypt_pkcs11_ck_skipjack_relayx_params_set_pOldRandomA(Crypt__PKCS11__CK_S
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->pOldRandomA = p;
-    object->ulOldRandomLen = l;
+    if (!(n = calloc(1, l + 1))) {
+        return CKR_HOST_MEMORY;
+    }
+
+    memcpy(n, p, l);
+    if (object->private.pOldRandomA) {
+        free(object->private.pOldRandomA);
+    }
+    object->private.pOldRandomA = n;
+    object->private.ulOldRandomLen = l;
 
     return CKR_OK;
 }
@@ -2700,13 +3457,14 @@ CK_RV crypt_pkcs11_ck_skipjack_relayx_params_get_pNewPassword(Crypt__PKCS11__CK_
     }
 
     SvGETMAGIC(sv);
-    sv_setpvn(sv, object->pNewPassword, object->ulNewPasswordLen);
+    sv_setpvn(sv, object->private.pNewPassword, object->private.ulNewPasswordLen);
     SvSETMAGIC(sv);
 
     return CKR_OK;
 }
 
 CK_RV crypt_pkcs11_ck_skipjack_relayx_params_set_pNewPassword(Crypt__PKCS11__CK_SKIPJACK_RELAYX_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR n;
     CK_BYTE_PTR p;
     STRLEN l;
 
@@ -2718,6 +3476,16 @@ CK_RV crypt_pkcs11_ck_skipjack_relayx_params_set_pNewPassword(Crypt__PKCS11__CK_
     }
 
     SvGETMAGIC(sv);
+
+    if (!SvOK(sv)) {
+        if (object->private.pNewPassword) {
+            free(object->private.pNewPassword);
+            object->private.pNewPassword = 0;
+            object->private.ulNewPasswordLen = 0;
+        }
+        return CKR_OK;
+    }
+
     if (!SvPOK(sv)
         || !(p = SvPVbyte(sv, l))
         || l < 0)
@@ -2725,8 +3493,16 @@ CK_RV crypt_pkcs11_ck_skipjack_relayx_params_set_pNewPassword(Crypt__PKCS11__CK_
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->pNewPassword = p;
-    object->ulNewPasswordLen = l;
+    if (!(n = calloc(1, l + 1))) {
+        return CKR_HOST_MEMORY;
+    }
+
+    memcpy(n, p, l);
+    if (object->private.pNewPassword) {
+        free(object->private.pNewPassword);
+    }
+    object->private.pNewPassword = n;
+    object->private.ulNewPasswordLen = l;
 
     return CKR_OK;
 }
@@ -2740,13 +3516,14 @@ CK_RV crypt_pkcs11_ck_skipjack_relayx_params_get_pNewPublicData(Crypt__PKCS11__C
     }
 
     SvGETMAGIC(sv);
-    sv_setpvn(sv, object->pNewPublicData, object->ulNewPublicDataLen);
+    sv_setpvn(sv, object->private.pNewPublicData, object->private.ulNewPublicDataLen);
     SvSETMAGIC(sv);
 
     return CKR_OK;
 }
 
 CK_RV crypt_pkcs11_ck_skipjack_relayx_params_set_pNewPublicData(Crypt__PKCS11__CK_SKIPJACK_RELAYX_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR n;
     CK_BYTE_PTR p;
     STRLEN l;
 
@@ -2758,6 +3535,16 @@ CK_RV crypt_pkcs11_ck_skipjack_relayx_params_set_pNewPublicData(Crypt__PKCS11__C
     }
 
     SvGETMAGIC(sv);
+
+    if (!SvOK(sv)) {
+        if (object->private.pNewPublicData) {
+            free(object->private.pNewPublicData);
+            object->private.pNewPublicData = 0;
+            object->private.ulNewPublicDataLen = 0;
+        }
+        return CKR_OK;
+    }
+
     if (!SvPOK(sv)
         || !(p = SvPVbyte(sv, l))
         || l < 0)
@@ -2765,8 +3552,16 @@ CK_RV crypt_pkcs11_ck_skipjack_relayx_params_set_pNewPublicData(Crypt__PKCS11__C
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->pNewPublicData = p;
-    object->ulNewPublicDataLen = l;
+    if (!(n = calloc(1, l + 1))) {
+        return CKR_HOST_MEMORY;
+    }
+
+    memcpy(n, p, l);
+    if (object->private.pNewPublicData) {
+        free(object->private.pNewPublicData);
+    }
+    object->private.pNewPublicData = n;
+    object->private.ulNewPublicDataLen = l;
 
     return CKR_OK;
 }
@@ -2780,13 +3575,14 @@ CK_RV crypt_pkcs11_ck_skipjack_relayx_params_get_pNewRandomA(Crypt__PKCS11__CK_S
     }
 
     SvGETMAGIC(sv);
-    sv_setpvn(sv, object->pNewRandomA, object->ulNewRandomLen);
+    sv_setpvn(sv, object->private.pNewRandomA, object->private.ulNewRandomLen);
     SvSETMAGIC(sv);
 
     return CKR_OK;
 }
 
 CK_RV crypt_pkcs11_ck_skipjack_relayx_params_set_pNewRandomA(Crypt__PKCS11__CK_SKIPJACK_RELAYX_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR n;
     CK_BYTE_PTR p;
     STRLEN l;
 
@@ -2798,6 +3594,16 @@ CK_RV crypt_pkcs11_ck_skipjack_relayx_params_set_pNewRandomA(Crypt__PKCS11__CK_S
     }
 
     SvGETMAGIC(sv);
+
+    if (!SvOK(sv)) {
+        if (object->private.pNewRandomA) {
+            free(object->private.pNewRandomA);
+            object->private.pNewRandomA = 0;
+            object->private.ulNewRandomLen = 0;
+        }
+        return CKR_OK;
+    }
+
     if (!SvPOK(sv)
         || !(p = SvPVbyte(sv, l))
         || l < 0)
@@ -2805,8 +3611,16 @@ CK_RV crypt_pkcs11_ck_skipjack_relayx_params_set_pNewRandomA(Crypt__PKCS11__CK_S
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->pNewRandomA = p;
-    object->ulNewRandomLen = l;
+    if (!(n = calloc(1, l + 1))) {
+        return CKR_HOST_MEMORY;
+    }
+
+    memcpy(n, p, l);
+    if (object->private.pNewRandomA) {
+        free(object->private.pNewRandomA);
+    }
+    object->private.pNewRandomA = n;
+    object->private.ulNewRandomLen = l;
 
     return CKR_OK;
 }
@@ -2814,13 +3628,29 @@ CK_RV crypt_pkcs11_ck_skipjack_relayx_params_set_pNewRandomA(Crypt__PKCS11__CK_S
 Crypt__PKCS11__CK_PBE_PARAMS* crypt_pkcs11_ck_pbe_params_new(const char* class) {
     Crypt__PKCS11__CK_PBE_PARAMS* object = calloc(1, sizeof(Crypt__PKCS11__CK_PBE_PARAMS));
     if (!object) {
-        croak("Memory allocation error");
+        croak("memory allocation error");
+    }
+    else {
+        if (!(object->private.pInitVector = calloc(1, 8))) {
+            free(object);
+            croak("memory allocation error");
+            return 0;
+        }
     }
     return object;
 }
 
 void crypt_pkcs11_ck_pbe_params_DESTROY(Crypt__PKCS11__CK_PBE_PARAMS* object) {
     if (object) {
+        if (object->private.pInitVector) {
+            free(object->private.pInitVector);
+        }
+        if (object->private.pSalt) {
+            free(object->private.pSalt);
+        }
+        if (object->private.pInitVector) {
+            free(object->private.pInitVector);
+        }
         free(object);
     }
 }
@@ -2834,11 +3664,74 @@ CK_RV crypt_pkcs11_ck_pbe_params_set_pInitVector(Crypt__PKCS11__CK_PBE_PARAMS* o
 }
 
 CK_RV crypt_pkcs11_ck_pbe_params_get_pPassword(Crypt__PKCS11__CK_PBE_PARAMS* object, SV* sv) {
-    croak("Unimplemented");
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    SvGETMAGIC(sv);
+    sv_setpvn(sv, object->private.pPassword, object->private.ulPasswordLen);
+    sv_utf8_upgrade(sv);
+    SvSETMAGIC(sv);
+
+    return CKR_OK;
 }
 
 CK_RV crypt_pkcs11_ck_pbe_params_set_pPassword(Crypt__PKCS11__CK_PBE_PARAMS* object, SV* sv) {
-    croak("Unimplemented");
+    CK_CHAR_PTR n;
+    CK_CHAR_PTR p;
+    STRLEN l;
+    SV* _sv;
+
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    SvGETMAGIC(sv);
+
+    if (!SvOK(sv)) {
+        if (object->private.pPassword) {
+            free(object->private.pPassword);
+            object->private.pPassword = 0;
+            object->private.ulPasswordLen = 0;
+        }
+        return CKR_OK;
+    }
+
+    if (!SvPOK(sv)) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    if (!(_sv = newSVsv(sv))) {
+        return CKR_GENERAL_ERROR;
+    }
+
+    if (!sv_utf8_downgrade(_sv, 0)
+        || !(p = SvPV(_sv, l)))
+    {
+        SvREFCNT_dec(_sv);
+        return CKR_GENERAL_ERROR;
+    }
+
+    if (!(n = calloc(1, l + 1))) {
+        SvREFCNT_dec(_sv);
+        return CKR_HOST_MEMORY;
+    }
+
+    memcpy(n, p, l);
+    if (object->private.pPassword) {
+        free(object->private.pPassword);
+    }
+    object->private.pPassword = n;
+    object->private.ulPasswordLen = l;
+
+    SvREFCNT_dec(_sv);
+    return CKR_OK;
 }
 
 CK_RV crypt_pkcs11_ck_pbe_params_get_pSalt(Crypt__PKCS11__CK_PBE_PARAMS* object, SV* sv) {
@@ -2850,13 +3743,14 @@ CK_RV crypt_pkcs11_ck_pbe_params_get_pSalt(Crypt__PKCS11__CK_PBE_PARAMS* object,
     }
 
     SvGETMAGIC(sv);
-    sv_setpvn(sv, object->pSalt, object->ulSaltLen);
+    sv_setpvn(sv, object->private.pSalt, object->private.ulSaltLen);
     SvSETMAGIC(sv);
 
     return CKR_OK;
 }
 
 CK_RV crypt_pkcs11_ck_pbe_params_set_pSalt(Crypt__PKCS11__CK_PBE_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR n;
     CK_BYTE_PTR p;
     STRLEN l;
 
@@ -2868,6 +3762,16 @@ CK_RV crypt_pkcs11_ck_pbe_params_set_pSalt(Crypt__PKCS11__CK_PBE_PARAMS* object,
     }
 
     SvGETMAGIC(sv);
+
+    if (!SvOK(sv)) {
+        if (object->private.pSalt) {
+            free(object->private.pSalt);
+            object->private.pSalt = 0;
+            object->private.ulSaltLen = 0;
+        }
+        return CKR_OK;
+    }
+
     if (!SvPOK(sv)
         || !(p = SvPVbyte(sv, l))
         || l < 0)
@@ -2875,8 +3779,16 @@ CK_RV crypt_pkcs11_ck_pbe_params_set_pSalt(Crypt__PKCS11__CK_PBE_PARAMS* object,
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->pSalt = p;
-    object->ulSaltLen = l;
+    if (!(n = calloc(1, l + 1))) {
+        return CKR_HOST_MEMORY;
+    }
+
+    memcpy(n, p, l);
+    if (object->private.pSalt) {
+        free(object->private.pSalt);
+    }
+    object->private.pSalt = n;
+    object->private.ulSaltLen = l;
 
     return CKR_OK;
 }
@@ -2890,7 +3802,7 @@ CK_RV crypt_pkcs11_ck_pbe_params_get_ulIteration(Crypt__PKCS11__CK_PBE_PARAMS* o
     }
 
     SvGETMAGIC(sv);
-    sv_setuv(sv, object->ulIteration);
+    sv_setuv(sv, object->private.ulIteration);
     SvSETMAGIC(sv);
 
     return CKR_OK;
@@ -2905,11 +3817,11 @@ CK_RV crypt_pkcs11_ck_pbe_params_set_ulIteration(Crypt__PKCS11__CK_PBE_PARAMS* o
     }
 
     SvGETMAGIC(sv);
-    if (!crypt_pkcs11_SvUOK(sv)) {
+    if (!crypt_pkcs11_xs_SvUOK(sv)) {
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->ulIteration = SvUV(sv);
+    object->private.ulIteration = SvUV(sv);
 
     return CKR_OK;
 }
@@ -2917,13 +3829,16 @@ CK_RV crypt_pkcs11_ck_pbe_params_set_ulIteration(Crypt__PKCS11__CK_PBE_PARAMS* o
 Crypt__PKCS11__CK_KEY_WRAP_SET_OAEP_PARAMS* crypt_pkcs11_ck_key_wrap_set_oaep_params_new(const char* class) {
     Crypt__PKCS11__CK_KEY_WRAP_SET_OAEP_PARAMS* object = calloc(1, sizeof(Crypt__PKCS11__CK_KEY_WRAP_SET_OAEP_PARAMS));
     if (!object) {
-        croak("Memory allocation error");
+        croak("memory allocation error");
     }
     return object;
 }
 
 void crypt_pkcs11_ck_key_wrap_set_oaep_params_DESTROY(Crypt__PKCS11__CK_KEY_WRAP_SET_OAEP_PARAMS* object) {
     if (object) {
+        if (object->private.pX) {
+            free(object->private.pX);
+        }
         free(object);
     }
 }
@@ -2937,7 +3852,7 @@ CK_RV crypt_pkcs11_ck_key_wrap_set_oaep_params_get_bBC(Crypt__PKCS11__CK_KEY_WRA
     }
 
     SvGETMAGIC(sv);
-    sv_setuv(sv, object->bBC);
+    sv_setuv(sv, object->private.bBC);
     SvSETMAGIC(sv);
 
     return CKR_OK;
@@ -2952,11 +3867,11 @@ CK_RV crypt_pkcs11_ck_key_wrap_set_oaep_params_set_bBC(Crypt__PKCS11__CK_KEY_WRA
     }
 
     SvGETMAGIC(sv);
-    if (!crypt_pkcs11_SvUOK(sv)) {
+    if (!crypt_pkcs11_xs_SvUOK(sv)) {
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->bBC = SvUV(sv);
+    object->private.bBC = SvUV(sv);
 
     return CKR_OK;
 }
@@ -2970,13 +3885,14 @@ CK_RV crypt_pkcs11_ck_key_wrap_set_oaep_params_get_pX(Crypt__PKCS11__CK_KEY_WRAP
     }
 
     SvGETMAGIC(sv);
-    sv_setpvn(sv, object->pX, object->ulXLen);
+    sv_setpvn(sv, object->private.pX, object->private.ulXLen);
     SvSETMAGIC(sv);
 
     return CKR_OK;
 }
 
 CK_RV crypt_pkcs11_ck_key_wrap_set_oaep_params_set_pX(Crypt__PKCS11__CK_KEY_WRAP_SET_OAEP_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR n;
     CK_BYTE_PTR p;
     STRLEN l;
 
@@ -2988,6 +3904,16 @@ CK_RV crypt_pkcs11_ck_key_wrap_set_oaep_params_set_pX(Crypt__PKCS11__CK_KEY_WRAP
     }
 
     SvGETMAGIC(sv);
+
+    if (!SvOK(sv)) {
+        if (object->private.pX) {
+            free(object->private.pX);
+            object->private.pX = 0;
+            object->private.ulXLen = 0;
+        }
+        return CKR_OK;
+    }
+
     if (!SvPOK(sv)
         || !(p = SvPVbyte(sv, l))
         || l < 0)
@@ -2995,8 +3921,16 @@ CK_RV crypt_pkcs11_ck_key_wrap_set_oaep_params_set_pX(Crypt__PKCS11__CK_KEY_WRAP
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->pX = p;
-    object->ulXLen = l;
+    if (!(n = calloc(1, l + 1))) {
+        return CKR_HOST_MEMORY;
+    }
+
+    memcpy(n, p, l);
+    if (object->private.pX) {
+        free(object->private.pX);
+    }
+    object->private.pX = n;
+    object->private.ulXLen = l;
 
     return CKR_OK;
 }
@@ -3004,13 +3938,19 @@ CK_RV crypt_pkcs11_ck_key_wrap_set_oaep_params_set_pX(Crypt__PKCS11__CK_KEY_WRAP
 Crypt__PKCS11__CK_SSL3_RANDOM_DATA* crypt_pkcs11_ck_ssl3_random_data_new(const char* class) {
     Crypt__PKCS11__CK_SSL3_RANDOM_DATA* object = calloc(1, sizeof(Crypt__PKCS11__CK_SSL3_RANDOM_DATA));
     if (!object) {
-        croak("Memory allocation error");
+        croak("memory allocation error");
     }
     return object;
 }
 
 void crypt_pkcs11_ck_ssl3_random_data_DESTROY(Crypt__PKCS11__CK_SSL3_RANDOM_DATA* object) {
     if (object) {
+        if (object->private.pClientRandom) {
+            free(object->private.pClientRandom);
+        }
+        if (object->private.pServerRandom) {
+            free(object->private.pServerRandom);
+        }
         free(object);
     }
 }
@@ -3024,13 +3964,14 @@ CK_RV crypt_pkcs11_ck_ssl3_random_data_get_pClientRandom(Crypt__PKCS11__CK_SSL3_
     }
 
     SvGETMAGIC(sv);
-    sv_setpvn(sv, object->pClientRandom, object->ulClientRandomLen);
+    sv_setpvn(sv, object->private.pClientRandom, object->private.ulClientRandomLen);
     SvSETMAGIC(sv);
 
     return CKR_OK;
 }
 
 CK_RV crypt_pkcs11_ck_ssl3_random_data_set_pClientRandom(Crypt__PKCS11__CK_SSL3_RANDOM_DATA* object, SV* sv) {
+    CK_BYTE_PTR n;
     CK_BYTE_PTR p;
     STRLEN l;
 
@@ -3042,6 +3983,16 @@ CK_RV crypt_pkcs11_ck_ssl3_random_data_set_pClientRandom(Crypt__PKCS11__CK_SSL3_
     }
 
     SvGETMAGIC(sv);
+
+    if (!SvOK(sv)) {
+        if (object->private.pClientRandom) {
+            free(object->private.pClientRandom);
+            object->private.pClientRandom = 0;
+            object->private.ulClientRandomLen = 0;
+        }
+        return CKR_OK;
+    }
+
     if (!SvPOK(sv)
         || !(p = SvPVbyte(sv, l))
         || l < 0)
@@ -3049,8 +4000,16 @@ CK_RV crypt_pkcs11_ck_ssl3_random_data_set_pClientRandom(Crypt__PKCS11__CK_SSL3_
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->pClientRandom = p;
-    object->ulClientRandomLen = l;
+    if (!(n = calloc(1, l + 1))) {
+        return CKR_HOST_MEMORY;
+    }
+
+    memcpy(n, p, l);
+    if (object->private.pClientRandom) {
+        free(object->private.pClientRandom);
+    }
+    object->private.pClientRandom = n;
+    object->private.ulClientRandomLen = l;
 
     return CKR_OK;
 }
@@ -3064,13 +4023,14 @@ CK_RV crypt_pkcs11_ck_ssl3_random_data_get_pServerRandom(Crypt__PKCS11__CK_SSL3_
     }
 
     SvGETMAGIC(sv);
-    sv_setpvn(sv, object->pServerRandom, object->ulServerRandomLen);
+    sv_setpvn(sv, object->private.pServerRandom, object->private.ulServerRandomLen);
     SvSETMAGIC(sv);
 
     return CKR_OK;
 }
 
 CK_RV crypt_pkcs11_ck_ssl3_random_data_set_pServerRandom(Crypt__PKCS11__CK_SSL3_RANDOM_DATA* object, SV* sv) {
+    CK_BYTE_PTR n;
     CK_BYTE_PTR p;
     STRLEN l;
 
@@ -3082,6 +4042,16 @@ CK_RV crypt_pkcs11_ck_ssl3_random_data_set_pServerRandom(Crypt__PKCS11__CK_SSL3_
     }
 
     SvGETMAGIC(sv);
+
+    if (!SvOK(sv)) {
+        if (object->private.pServerRandom) {
+            free(object->private.pServerRandom);
+            object->private.pServerRandom = 0;
+            object->private.ulServerRandomLen = 0;
+        }
+        return CKR_OK;
+    }
+
     if (!SvPOK(sv)
         || !(p = SvPVbyte(sv, l))
         || l < 0)
@@ -3089,8 +4059,16 @@ CK_RV crypt_pkcs11_ck_ssl3_random_data_set_pServerRandom(Crypt__PKCS11__CK_SSL3_
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->pServerRandom = p;
-    object->ulServerRandomLen = l;
+    if (!(n = calloc(1, l + 1))) {
+        return CKR_HOST_MEMORY;
+    }
+
+    memcpy(n, p, l);
+    if (object->private.pServerRandom) {
+        free(object->private.pServerRandom);
+    }
+    object->private.pServerRandom = n;
+    object->private.ulServerRandomLen = l;
 
     return CKR_OK;
 }
@@ -3098,7 +4076,7 @@ CK_RV crypt_pkcs11_ck_ssl3_random_data_set_pServerRandom(Crypt__PKCS11__CK_SSL3_
 Crypt__PKCS11__CK_SSL3_MASTER_KEY_DERIVE_PARAMS* crypt_pkcs11_ck_ssl3_master_key_derive_params_new(const char* class) {
     Crypt__PKCS11__CK_SSL3_MASTER_KEY_DERIVE_PARAMS* object = calloc(1, sizeof(Crypt__PKCS11__CK_SSL3_MASTER_KEY_DERIVE_PARAMS));
     if (!object) {
-        croak("Memory allocation error");
+        croak("memory allocation error");
     }
     return object;
 }
@@ -3128,13 +4106,19 @@ CK_RV crypt_pkcs11_ck_ssl3_master_key_derive_params_set_pVersion(Crypt__PKCS11__
 Crypt__PKCS11__CK_SSL3_KEY_MAT_OUT* crypt_pkcs11_ck_ssl3_key_mat_out_new(const char* class) {
     Crypt__PKCS11__CK_SSL3_KEY_MAT_OUT* object = calloc(1, sizeof(Crypt__PKCS11__CK_SSL3_KEY_MAT_OUT));
     if (!object) {
-        croak("Memory allocation error");
+        croak("memory allocation error");
     }
     return object;
 }
 
 void crypt_pkcs11_ck_ssl3_key_mat_out_DESTROY(Crypt__PKCS11__CK_SSL3_KEY_MAT_OUT* object) {
     if (object) {
+        if (object->private.pIVClient) {
+            free(object->private.pIVClient);
+        }
+        if (object->private.pIVServer) {
+            free(object->private.pIVServer);
+        }
         free(object);
     }
 }
@@ -3148,7 +4132,7 @@ CK_RV crypt_pkcs11_ck_ssl3_key_mat_out_get_hClientMacSecret(Crypt__PKCS11__CK_SS
     }
 
     SvGETMAGIC(sv);
-    sv_setuv(sv, object->hClientMacSecret);
+    sv_setuv(sv, object->private.hClientMacSecret);
     SvSETMAGIC(sv);
 
     return CKR_OK;
@@ -3163,11 +4147,11 @@ CK_RV crypt_pkcs11_ck_ssl3_key_mat_out_set_hClientMacSecret(Crypt__PKCS11__CK_SS
     }
 
     SvGETMAGIC(sv);
-    if (!crypt_pkcs11_SvUOK(sv)) {
+    if (!crypt_pkcs11_xs_SvUOK(sv)) {
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->hClientMacSecret = SvUV(sv);
+    object->private.hClientMacSecret = SvUV(sv);
 
     return CKR_OK;
 }
@@ -3181,7 +4165,7 @@ CK_RV crypt_pkcs11_ck_ssl3_key_mat_out_get_hServerMacSecret(Crypt__PKCS11__CK_SS
     }
 
     SvGETMAGIC(sv);
-    sv_setuv(sv, object->hServerMacSecret);
+    sv_setuv(sv, object->private.hServerMacSecret);
     SvSETMAGIC(sv);
 
     return CKR_OK;
@@ -3196,11 +4180,11 @@ CK_RV crypt_pkcs11_ck_ssl3_key_mat_out_set_hServerMacSecret(Crypt__PKCS11__CK_SS
     }
 
     SvGETMAGIC(sv);
-    if (!crypt_pkcs11_SvUOK(sv)) {
+    if (!crypt_pkcs11_xs_SvUOK(sv)) {
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->hServerMacSecret = SvUV(sv);
+    object->private.hServerMacSecret = SvUV(sv);
 
     return CKR_OK;
 }
@@ -3214,7 +4198,7 @@ CK_RV crypt_pkcs11_ck_ssl3_key_mat_out_get_hClientKey(Crypt__PKCS11__CK_SSL3_KEY
     }
 
     SvGETMAGIC(sv);
-    sv_setuv(sv, object->hClientKey);
+    sv_setuv(sv, object->private.hClientKey);
     SvSETMAGIC(sv);
 
     return CKR_OK;
@@ -3229,11 +4213,11 @@ CK_RV crypt_pkcs11_ck_ssl3_key_mat_out_set_hClientKey(Crypt__PKCS11__CK_SSL3_KEY
     }
 
     SvGETMAGIC(sv);
-    if (!crypt_pkcs11_SvUOK(sv)) {
+    if (!crypt_pkcs11_xs_SvUOK(sv)) {
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->hClientKey = SvUV(sv);
+    object->private.hClientKey = SvUV(sv);
 
     return CKR_OK;
 }
@@ -3247,7 +4231,7 @@ CK_RV crypt_pkcs11_ck_ssl3_key_mat_out_get_hServerKey(Crypt__PKCS11__CK_SSL3_KEY
     }
 
     SvGETMAGIC(sv);
-    sv_setuv(sv, object->hServerKey);
+    sv_setuv(sv, object->private.hServerKey);
     SvSETMAGIC(sv);
 
     return CKR_OK;
@@ -3262,11 +4246,11 @@ CK_RV crypt_pkcs11_ck_ssl3_key_mat_out_set_hServerKey(Crypt__PKCS11__CK_SSL3_KEY
     }
 
     SvGETMAGIC(sv);
-    if (!crypt_pkcs11_SvUOK(sv)) {
+    if (!crypt_pkcs11_xs_SvUOK(sv)) {
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->hServerKey = SvUV(sv);
+    object->private.hServerKey = SvUV(sv);
 
     return CKR_OK;
 }
@@ -3290,7 +4274,7 @@ CK_RV crypt_pkcs11_ck_ssl3_key_mat_out_set_pIVServer(Crypt__PKCS11__CK_SSL3_KEY_
 Crypt__PKCS11__CK_SSL3_KEY_MAT_PARAMS* crypt_pkcs11_ck_ssl3_key_mat_params_new(const char* class) {
     Crypt__PKCS11__CK_SSL3_KEY_MAT_PARAMS* object = calloc(1, sizeof(Crypt__PKCS11__CK_SSL3_KEY_MAT_PARAMS));
     if (!object) {
-        croak("Memory allocation error");
+        croak("memory allocation error");
     }
     return object;
 }
@@ -3310,7 +4294,7 @@ CK_RV crypt_pkcs11_ck_ssl3_key_mat_params_get_ulMacSizeInBits(Crypt__PKCS11__CK_
     }
 
     SvGETMAGIC(sv);
-    sv_setuv(sv, object->ulMacSizeInBits);
+    sv_setuv(sv, object->private.ulMacSizeInBits);
     SvSETMAGIC(sv);
 
     return CKR_OK;
@@ -3325,11 +4309,11 @@ CK_RV crypt_pkcs11_ck_ssl3_key_mat_params_set_ulMacSizeInBits(Crypt__PKCS11__CK_
     }
 
     SvGETMAGIC(sv);
-    if (!crypt_pkcs11_SvUOK(sv)) {
+    if (!crypt_pkcs11_xs_SvUOK(sv)) {
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->ulMacSizeInBits = SvUV(sv);
+    object->private.ulMacSizeInBits = SvUV(sv);
 
     return CKR_OK;
 }
@@ -3343,7 +4327,7 @@ CK_RV crypt_pkcs11_ck_ssl3_key_mat_params_get_ulKeySizeInBits(Crypt__PKCS11__CK_
     }
 
     SvGETMAGIC(sv);
-    sv_setuv(sv, object->ulKeySizeInBits);
+    sv_setuv(sv, object->private.ulKeySizeInBits);
     SvSETMAGIC(sv);
 
     return CKR_OK;
@@ -3358,11 +4342,11 @@ CK_RV crypt_pkcs11_ck_ssl3_key_mat_params_set_ulKeySizeInBits(Crypt__PKCS11__CK_
     }
 
     SvGETMAGIC(sv);
-    if (!crypt_pkcs11_SvUOK(sv)) {
+    if (!crypt_pkcs11_xs_SvUOK(sv)) {
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->ulKeySizeInBits = SvUV(sv);
+    object->private.ulKeySizeInBits = SvUV(sv);
 
     return CKR_OK;
 }
@@ -3376,7 +4360,7 @@ CK_RV crypt_pkcs11_ck_ssl3_key_mat_params_get_ulIVSizeInBits(Crypt__PKCS11__CK_S
     }
 
     SvGETMAGIC(sv);
-    sv_setuv(sv, object->ulIVSizeInBits);
+    sv_setuv(sv, object->private.ulIVSizeInBits);
     SvSETMAGIC(sv);
 
     return CKR_OK;
@@ -3391,11 +4375,11 @@ CK_RV crypt_pkcs11_ck_ssl3_key_mat_params_set_ulIVSizeInBits(Crypt__PKCS11__CK_S
     }
 
     SvGETMAGIC(sv);
-    if (!crypt_pkcs11_SvUOK(sv)) {
+    if (!crypt_pkcs11_xs_SvUOK(sv)) {
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->ulIVSizeInBits = SvUV(sv);
+    object->private.ulIVSizeInBits = SvUV(sv);
 
     return CKR_OK;
 }
@@ -3409,7 +4393,7 @@ CK_RV crypt_pkcs11_ck_ssl3_key_mat_params_get_bIsExport(Crypt__PKCS11__CK_SSL3_K
     }
 
     SvGETMAGIC(sv);
-    sv_setuv(sv, object->bIsExport);
+    sv_setuv(sv, object->private.bIsExport);
     SvSETMAGIC(sv);
 
     return CKR_OK;
@@ -3424,15 +4408,15 @@ CK_RV crypt_pkcs11_ck_ssl3_key_mat_params_set_bIsExport(Crypt__PKCS11__CK_SSL3_K
     }
 
     SvGETMAGIC(sv);
-    if (!crypt_pkcs11_SvUOK(sv)) {
+    if (!crypt_pkcs11_xs_SvUOK(sv)) {
         return CKR_ARGUMENTS_BAD;
     }
 
     if (SvUV(sv)) {
-        object->bIsExport = CK_TRUE;
+        object->private.bIsExport = CK_TRUE;
     }
     else {
-        object->bIsExport = CK_FALSE;
+        object->private.bIsExport = CK_FALSE;
     }
 
     return CKR_OK;
@@ -3457,13 +4441,22 @@ CK_RV crypt_pkcs11_ck_ssl3_key_mat_params_set_pReturnedKeyMaterial(Crypt__PKCS11
 Crypt__PKCS11__CK_TLS_PRF_PARAMS* crypt_pkcs11_ck_tls_prf_params_new(const char* class) {
     Crypt__PKCS11__CK_TLS_PRF_PARAMS* object = calloc(1, sizeof(Crypt__PKCS11__CK_TLS_PRF_PARAMS));
     if (!object) {
-        croak("Memory allocation error");
+        croak("memory allocation error");
     }
     return object;
 }
 
 void crypt_pkcs11_ck_tls_prf_params_DESTROY(Crypt__PKCS11__CK_TLS_PRF_PARAMS* object) {
     if (object) {
+        if (object->private.pSeed) {
+            free(object->private.pSeed);
+        }
+        if (object->private.pLabel) {
+            free(object->private.pLabel);
+        }
+        if (object->private.pOutput) {
+            free(object->private.pOutput);
+        }
         free(object);
     }
 }
@@ -3477,13 +4470,14 @@ CK_RV crypt_pkcs11_ck_tls_prf_params_get_pSeed(Crypt__PKCS11__CK_TLS_PRF_PARAMS*
     }
 
     SvGETMAGIC(sv);
-    sv_setpvn(sv, object->pSeed, object->ulSeedLen);
+    sv_setpvn(sv, object->private.pSeed, object->private.ulSeedLen);
     SvSETMAGIC(sv);
 
     return CKR_OK;
 }
 
 CK_RV crypt_pkcs11_ck_tls_prf_params_set_pSeed(Crypt__PKCS11__CK_TLS_PRF_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR n;
     CK_BYTE_PTR p;
     STRLEN l;
 
@@ -3495,6 +4489,16 @@ CK_RV crypt_pkcs11_ck_tls_prf_params_set_pSeed(Crypt__PKCS11__CK_TLS_PRF_PARAMS*
     }
 
     SvGETMAGIC(sv);
+
+    if (!SvOK(sv)) {
+        if (object->private.pSeed) {
+            free(object->private.pSeed);
+            object->private.pSeed = 0;
+            object->private.ulSeedLen = 0;
+        }
+        return CKR_OK;
+    }
+
     if (!SvPOK(sv)
         || !(p = SvPVbyte(sv, l))
         || l < 0)
@@ -3502,8 +4506,16 @@ CK_RV crypt_pkcs11_ck_tls_prf_params_set_pSeed(Crypt__PKCS11__CK_TLS_PRF_PARAMS*
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->pSeed = p;
-    object->ulSeedLen = l;
+    if (!(n = calloc(1, l + 1))) {
+        return CKR_HOST_MEMORY;
+    }
+
+    memcpy(n, p, l);
+    if (object->private.pSeed) {
+        free(object->private.pSeed);
+    }
+    object->private.pSeed = n;
+    object->private.ulSeedLen = l;
 
     return CKR_OK;
 }
@@ -3517,13 +4529,14 @@ CK_RV crypt_pkcs11_ck_tls_prf_params_get_pLabel(Crypt__PKCS11__CK_TLS_PRF_PARAMS
     }
 
     SvGETMAGIC(sv);
-    sv_setpvn(sv, object->pLabel, object->ulLabelLen);
+    sv_setpvn(sv, object->private.pLabel, object->private.ulLabelLen);
     SvSETMAGIC(sv);
 
     return CKR_OK;
 }
 
 CK_RV crypt_pkcs11_ck_tls_prf_params_set_pLabel(Crypt__PKCS11__CK_TLS_PRF_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR n;
     CK_BYTE_PTR p;
     STRLEN l;
 
@@ -3535,6 +4548,16 @@ CK_RV crypt_pkcs11_ck_tls_prf_params_set_pLabel(Crypt__PKCS11__CK_TLS_PRF_PARAMS
     }
 
     SvGETMAGIC(sv);
+
+    if (!SvOK(sv)) {
+        if (object->private.pLabel) {
+            free(object->private.pLabel);
+            object->private.pLabel = 0;
+            object->private.ulLabelLen = 0;
+        }
+        return CKR_OK;
+    }
+
     if (!SvPOK(sv)
         || !(p = SvPVbyte(sv, l))
         || l < 0)
@@ -3542,8 +4565,16 @@ CK_RV crypt_pkcs11_ck_tls_prf_params_set_pLabel(Crypt__PKCS11__CK_TLS_PRF_PARAMS
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->pLabel = p;
-    object->ulLabelLen = l;
+    if (!(n = calloc(1, l + 1))) {
+        return CKR_HOST_MEMORY;
+    }
+
+    memcpy(n, p, l);
+    if (object->private.pLabel) {
+        free(object->private.pLabel);
+    }
+    object->private.pLabel = n;
+    object->private.ulLabelLen = l;
 
     return CKR_OK;
 }
@@ -3559,13 +4590,19 @@ CK_RV crypt_pkcs11_ck_tls_prf_params_set_pOutput(Crypt__PKCS11__CK_TLS_PRF_PARAM
 Crypt__PKCS11__CK_WTLS_RANDOM_DATA* crypt_pkcs11_ck_wtls_random_data_new(const char* class) {
     Crypt__PKCS11__CK_WTLS_RANDOM_DATA* object = calloc(1, sizeof(Crypt__PKCS11__CK_WTLS_RANDOM_DATA));
     if (!object) {
-        croak("Memory allocation error");
+        croak("memory allocation error");
     }
     return object;
 }
 
 void crypt_pkcs11_ck_wtls_random_data_DESTROY(Crypt__PKCS11__CK_WTLS_RANDOM_DATA* object) {
     if (object) {
+        if (object->private.pClientRandom) {
+            free(object->private.pClientRandom);
+        }
+        if (object->private.pServerRandom) {
+            free(object->private.pServerRandom);
+        }
         free(object);
     }
 }
@@ -3579,13 +4616,14 @@ CK_RV crypt_pkcs11_ck_wtls_random_data_get_pClientRandom(Crypt__PKCS11__CK_WTLS_
     }
 
     SvGETMAGIC(sv);
-    sv_setpvn(sv, object->pClientRandom, object->ulClientRandomLen);
+    sv_setpvn(sv, object->private.pClientRandom, object->private.ulClientRandomLen);
     SvSETMAGIC(sv);
 
     return CKR_OK;
 }
 
 CK_RV crypt_pkcs11_ck_wtls_random_data_set_pClientRandom(Crypt__PKCS11__CK_WTLS_RANDOM_DATA* object, SV* sv) {
+    CK_BYTE_PTR n;
     CK_BYTE_PTR p;
     STRLEN l;
 
@@ -3597,6 +4635,16 @@ CK_RV crypt_pkcs11_ck_wtls_random_data_set_pClientRandom(Crypt__PKCS11__CK_WTLS_
     }
 
     SvGETMAGIC(sv);
+
+    if (!SvOK(sv)) {
+        if (object->private.pClientRandom) {
+            free(object->private.pClientRandom);
+            object->private.pClientRandom = 0;
+            object->private.ulClientRandomLen = 0;
+        }
+        return CKR_OK;
+    }
+
     if (!SvPOK(sv)
         || !(p = SvPVbyte(sv, l))
         || l < 0)
@@ -3604,8 +4652,16 @@ CK_RV crypt_pkcs11_ck_wtls_random_data_set_pClientRandom(Crypt__PKCS11__CK_WTLS_
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->pClientRandom = p;
-    object->ulClientRandomLen = l;
+    if (!(n = calloc(1, l + 1))) {
+        return CKR_HOST_MEMORY;
+    }
+
+    memcpy(n, p, l);
+    if (object->private.pClientRandom) {
+        free(object->private.pClientRandom);
+    }
+    object->private.pClientRandom = n;
+    object->private.ulClientRandomLen = l;
 
     return CKR_OK;
 }
@@ -3619,13 +4675,14 @@ CK_RV crypt_pkcs11_ck_wtls_random_data_get_pServerRandom(Crypt__PKCS11__CK_WTLS_
     }
 
     SvGETMAGIC(sv);
-    sv_setpvn(sv, object->pServerRandom, object->ulServerRandomLen);
+    sv_setpvn(sv, object->private.pServerRandom, object->private.ulServerRandomLen);
     SvSETMAGIC(sv);
 
     return CKR_OK;
 }
 
 CK_RV crypt_pkcs11_ck_wtls_random_data_set_pServerRandom(Crypt__PKCS11__CK_WTLS_RANDOM_DATA* object, SV* sv) {
+    CK_BYTE_PTR n;
     CK_BYTE_PTR p;
     STRLEN l;
 
@@ -3637,6 +4694,16 @@ CK_RV crypt_pkcs11_ck_wtls_random_data_set_pServerRandom(Crypt__PKCS11__CK_WTLS_
     }
 
     SvGETMAGIC(sv);
+
+    if (!SvOK(sv)) {
+        if (object->private.pServerRandom) {
+            free(object->private.pServerRandom);
+            object->private.pServerRandom = 0;
+            object->private.ulServerRandomLen = 0;
+        }
+        return CKR_OK;
+    }
+
     if (!SvPOK(sv)
         || !(p = SvPVbyte(sv, l))
         || l < 0)
@@ -3644,8 +4711,16 @@ CK_RV crypt_pkcs11_ck_wtls_random_data_set_pServerRandom(Crypt__PKCS11__CK_WTLS_
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->pServerRandom = p;
-    object->ulServerRandomLen = l;
+    if (!(n = calloc(1, l + 1))) {
+        return CKR_HOST_MEMORY;
+    }
+
+    memcpy(n, p, l);
+    if (object->private.pServerRandom) {
+        free(object->private.pServerRandom);
+    }
+    object->private.pServerRandom = n;
+    object->private.ulServerRandomLen = l;
 
     return CKR_OK;
 }
@@ -3653,13 +4728,26 @@ CK_RV crypt_pkcs11_ck_wtls_random_data_set_pServerRandom(Crypt__PKCS11__CK_WTLS_
 Crypt__PKCS11__CK_WTLS_MASTER_KEY_DERIVE_PARAMS* crypt_pkcs11_ck_wtls_master_key_derive_params_new(const char* class) {
     Crypt__PKCS11__CK_WTLS_MASTER_KEY_DERIVE_PARAMS* object = calloc(1, sizeof(Crypt__PKCS11__CK_WTLS_MASTER_KEY_DERIVE_PARAMS));
     if (!object) {
-        croak("Memory allocation error");
+        croak("memory allocation error");
+    }
+    else {
+        if (!(object->private.pVersion = calloc(1, 1))) {
+            free(object);
+            croak("memory allocation error");
+            return 0;
+        }
     }
     return object;
 }
 
 void crypt_pkcs11_ck_wtls_master_key_derive_params_DESTROY(Crypt__PKCS11__CK_WTLS_MASTER_KEY_DERIVE_PARAMS* object) {
     if (object) {
+        if (object->private.pVersion) {
+            free(object->private.pVersion);
+        }
+        if (object->private.pVersion) {
+            free(object->private.pVersion);
+        }
         free(object);
     }
 }
@@ -3673,7 +4761,7 @@ CK_RV crypt_pkcs11_ck_wtls_master_key_derive_params_get_DigestMechanism(Crypt__P
     }
 
     SvGETMAGIC(sv);
-    sv_setuv(sv, object->DigestMechanism);
+    sv_setuv(sv, object->private.DigestMechanism);
     SvSETMAGIC(sv);
 
     return CKR_OK;
@@ -3688,11 +4776,11 @@ CK_RV crypt_pkcs11_ck_wtls_master_key_derive_params_set_DigestMechanism(Crypt__P
     }
 
     SvGETMAGIC(sv);
-    if (!crypt_pkcs11_SvUOK(sv)) {
+    if (!crypt_pkcs11_xs_SvUOK(sv)) {
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->DigestMechanism = SvUV(sv);
+    object->private.DigestMechanism = SvUV(sv);
 
     return CKR_OK;
 }
@@ -3716,13 +4804,22 @@ CK_RV crypt_pkcs11_ck_wtls_master_key_derive_params_set_pVersion(Crypt__PKCS11__
 Crypt__PKCS11__CK_WTLS_PRF_PARAMS* crypt_pkcs11_ck_wtls_prf_params_new(const char* class) {
     Crypt__PKCS11__CK_WTLS_PRF_PARAMS* object = calloc(1, sizeof(Crypt__PKCS11__CK_WTLS_PRF_PARAMS));
     if (!object) {
-        croak("Memory allocation error");
+        croak("memory allocation error");
     }
     return object;
 }
 
 void crypt_pkcs11_ck_wtls_prf_params_DESTROY(Crypt__PKCS11__CK_WTLS_PRF_PARAMS* object) {
     if (object) {
+        if (object->private.pSeed) {
+            free(object->private.pSeed);
+        }
+        if (object->private.pLabel) {
+            free(object->private.pLabel);
+        }
+        if (object->private.pOutput) {
+            free(object->private.pOutput);
+        }
         free(object);
     }
 }
@@ -3736,7 +4833,7 @@ CK_RV crypt_pkcs11_ck_wtls_prf_params_get_DigestMechanism(Crypt__PKCS11__CK_WTLS
     }
 
     SvGETMAGIC(sv);
-    sv_setuv(sv, object->DigestMechanism);
+    sv_setuv(sv, object->private.DigestMechanism);
     SvSETMAGIC(sv);
 
     return CKR_OK;
@@ -3751,11 +4848,11 @@ CK_RV crypt_pkcs11_ck_wtls_prf_params_set_DigestMechanism(Crypt__PKCS11__CK_WTLS
     }
 
     SvGETMAGIC(sv);
-    if (!crypt_pkcs11_SvUOK(sv)) {
+    if (!crypt_pkcs11_xs_SvUOK(sv)) {
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->DigestMechanism = SvUV(sv);
+    object->private.DigestMechanism = SvUV(sv);
 
     return CKR_OK;
 }
@@ -3769,13 +4866,14 @@ CK_RV crypt_pkcs11_ck_wtls_prf_params_get_pSeed(Crypt__PKCS11__CK_WTLS_PRF_PARAM
     }
 
     SvGETMAGIC(sv);
-    sv_setpvn(sv, object->pSeed, object->ulSeedLen);
+    sv_setpvn(sv, object->private.pSeed, object->private.ulSeedLen);
     SvSETMAGIC(sv);
 
     return CKR_OK;
 }
 
 CK_RV crypt_pkcs11_ck_wtls_prf_params_set_pSeed(Crypt__PKCS11__CK_WTLS_PRF_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR n;
     CK_BYTE_PTR p;
     STRLEN l;
 
@@ -3787,6 +4885,16 @@ CK_RV crypt_pkcs11_ck_wtls_prf_params_set_pSeed(Crypt__PKCS11__CK_WTLS_PRF_PARAM
     }
 
     SvGETMAGIC(sv);
+
+    if (!SvOK(sv)) {
+        if (object->private.pSeed) {
+            free(object->private.pSeed);
+            object->private.pSeed = 0;
+            object->private.ulSeedLen = 0;
+        }
+        return CKR_OK;
+    }
+
     if (!SvPOK(sv)
         || !(p = SvPVbyte(sv, l))
         || l < 0)
@@ -3794,8 +4902,16 @@ CK_RV crypt_pkcs11_ck_wtls_prf_params_set_pSeed(Crypt__PKCS11__CK_WTLS_PRF_PARAM
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->pSeed = p;
-    object->ulSeedLen = l;
+    if (!(n = calloc(1, l + 1))) {
+        return CKR_HOST_MEMORY;
+    }
+
+    memcpy(n, p, l);
+    if (object->private.pSeed) {
+        free(object->private.pSeed);
+    }
+    object->private.pSeed = n;
+    object->private.ulSeedLen = l;
 
     return CKR_OK;
 }
@@ -3809,13 +4925,14 @@ CK_RV crypt_pkcs11_ck_wtls_prf_params_get_pLabel(Crypt__PKCS11__CK_WTLS_PRF_PARA
     }
 
     SvGETMAGIC(sv);
-    sv_setpvn(sv, object->pLabel, object->ulLabelLen);
+    sv_setpvn(sv, object->private.pLabel, object->private.ulLabelLen);
     SvSETMAGIC(sv);
 
     return CKR_OK;
 }
 
 CK_RV crypt_pkcs11_ck_wtls_prf_params_set_pLabel(Crypt__PKCS11__CK_WTLS_PRF_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR n;
     CK_BYTE_PTR p;
     STRLEN l;
 
@@ -3827,6 +4944,16 @@ CK_RV crypt_pkcs11_ck_wtls_prf_params_set_pLabel(Crypt__PKCS11__CK_WTLS_PRF_PARA
     }
 
     SvGETMAGIC(sv);
+
+    if (!SvOK(sv)) {
+        if (object->private.pLabel) {
+            free(object->private.pLabel);
+            object->private.pLabel = 0;
+            object->private.ulLabelLen = 0;
+        }
+        return CKR_OK;
+    }
+
     if (!SvPOK(sv)
         || !(p = SvPVbyte(sv, l))
         || l < 0)
@@ -3834,8 +4961,16 @@ CK_RV crypt_pkcs11_ck_wtls_prf_params_set_pLabel(Crypt__PKCS11__CK_WTLS_PRF_PARA
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->pLabel = p;
-    object->ulLabelLen = l;
+    if (!(n = calloc(1, l + 1))) {
+        return CKR_HOST_MEMORY;
+    }
+
+    memcpy(n, p, l);
+    if (object->private.pLabel) {
+        free(object->private.pLabel);
+    }
+    object->private.pLabel = n;
+    object->private.ulLabelLen = l;
 
     return CKR_OK;
 }
@@ -3851,13 +4986,16 @@ CK_RV crypt_pkcs11_ck_wtls_prf_params_set_pOutput(Crypt__PKCS11__CK_WTLS_PRF_PAR
 Crypt__PKCS11__CK_WTLS_KEY_MAT_OUT* crypt_pkcs11_ck_wtls_key_mat_out_new(const char* class) {
     Crypt__PKCS11__CK_WTLS_KEY_MAT_OUT* object = calloc(1, sizeof(Crypt__PKCS11__CK_WTLS_KEY_MAT_OUT));
     if (!object) {
-        croak("Memory allocation error");
+        croak("memory allocation error");
     }
     return object;
 }
 
 void crypt_pkcs11_ck_wtls_key_mat_out_DESTROY(Crypt__PKCS11__CK_WTLS_KEY_MAT_OUT* object) {
     if (object) {
+        if (object->private.pIV) {
+            free(object->private.pIV);
+        }
         free(object);
     }
 }
@@ -3871,7 +5009,7 @@ CK_RV crypt_pkcs11_ck_wtls_key_mat_out_get_hMacSecret(Crypt__PKCS11__CK_WTLS_KEY
     }
 
     SvGETMAGIC(sv);
-    sv_setuv(sv, object->hMacSecret);
+    sv_setuv(sv, object->private.hMacSecret);
     SvSETMAGIC(sv);
 
     return CKR_OK;
@@ -3886,11 +5024,11 @@ CK_RV crypt_pkcs11_ck_wtls_key_mat_out_set_hMacSecret(Crypt__PKCS11__CK_WTLS_KEY
     }
 
     SvGETMAGIC(sv);
-    if (!crypt_pkcs11_SvUOK(sv)) {
+    if (!crypt_pkcs11_xs_SvUOK(sv)) {
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->hMacSecret = SvUV(sv);
+    object->private.hMacSecret = SvUV(sv);
 
     return CKR_OK;
 }
@@ -3904,7 +5042,7 @@ CK_RV crypt_pkcs11_ck_wtls_key_mat_out_get_hKey(Crypt__PKCS11__CK_WTLS_KEY_MAT_O
     }
 
     SvGETMAGIC(sv);
-    sv_setuv(sv, object->hKey);
+    sv_setuv(sv, object->private.hKey);
     SvSETMAGIC(sv);
 
     return CKR_OK;
@@ -3919,11 +5057,11 @@ CK_RV crypt_pkcs11_ck_wtls_key_mat_out_set_hKey(Crypt__PKCS11__CK_WTLS_KEY_MAT_O
     }
 
     SvGETMAGIC(sv);
-    if (!crypt_pkcs11_SvUOK(sv)) {
+    if (!crypt_pkcs11_xs_SvUOK(sv)) {
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->hKey = SvUV(sv);
+    object->private.hKey = SvUV(sv);
 
     return CKR_OK;
 }
@@ -3939,7 +5077,7 @@ CK_RV crypt_pkcs11_ck_wtls_key_mat_out_set_pIV(Crypt__PKCS11__CK_WTLS_KEY_MAT_OU
 Crypt__PKCS11__CK_WTLS_KEY_MAT_PARAMS* crypt_pkcs11_ck_wtls_key_mat_params_new(const char* class) {
     Crypt__PKCS11__CK_WTLS_KEY_MAT_PARAMS* object = calloc(1, sizeof(Crypt__PKCS11__CK_WTLS_KEY_MAT_PARAMS));
     if (!object) {
-        croak("Memory allocation error");
+        croak("memory allocation error");
     }
     return object;
 }
@@ -3959,7 +5097,7 @@ CK_RV crypt_pkcs11_ck_wtls_key_mat_params_get_DigestMechanism(Crypt__PKCS11__CK_
     }
 
     SvGETMAGIC(sv);
-    sv_setuv(sv, object->DigestMechanism);
+    sv_setuv(sv, object->private.DigestMechanism);
     SvSETMAGIC(sv);
 
     return CKR_OK;
@@ -3974,11 +5112,11 @@ CK_RV crypt_pkcs11_ck_wtls_key_mat_params_set_DigestMechanism(Crypt__PKCS11__CK_
     }
 
     SvGETMAGIC(sv);
-    if (!crypt_pkcs11_SvUOK(sv)) {
+    if (!crypt_pkcs11_xs_SvUOK(sv)) {
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->DigestMechanism = SvUV(sv);
+    object->private.DigestMechanism = SvUV(sv);
 
     return CKR_OK;
 }
@@ -3992,7 +5130,7 @@ CK_RV crypt_pkcs11_ck_wtls_key_mat_params_get_ulMacSizeInBits(Crypt__PKCS11__CK_
     }
 
     SvGETMAGIC(sv);
-    sv_setuv(sv, object->ulMacSizeInBits);
+    sv_setuv(sv, object->private.ulMacSizeInBits);
     SvSETMAGIC(sv);
 
     return CKR_OK;
@@ -4007,11 +5145,11 @@ CK_RV crypt_pkcs11_ck_wtls_key_mat_params_set_ulMacSizeInBits(Crypt__PKCS11__CK_
     }
 
     SvGETMAGIC(sv);
-    if (!crypt_pkcs11_SvUOK(sv)) {
+    if (!crypt_pkcs11_xs_SvUOK(sv)) {
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->ulMacSizeInBits = SvUV(sv);
+    object->private.ulMacSizeInBits = SvUV(sv);
 
     return CKR_OK;
 }
@@ -4025,7 +5163,7 @@ CK_RV crypt_pkcs11_ck_wtls_key_mat_params_get_ulKeySizeInBits(Crypt__PKCS11__CK_
     }
 
     SvGETMAGIC(sv);
-    sv_setuv(sv, object->ulKeySizeInBits);
+    sv_setuv(sv, object->private.ulKeySizeInBits);
     SvSETMAGIC(sv);
 
     return CKR_OK;
@@ -4040,11 +5178,11 @@ CK_RV crypt_pkcs11_ck_wtls_key_mat_params_set_ulKeySizeInBits(Crypt__PKCS11__CK_
     }
 
     SvGETMAGIC(sv);
-    if (!crypt_pkcs11_SvUOK(sv)) {
+    if (!crypt_pkcs11_xs_SvUOK(sv)) {
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->ulKeySizeInBits = SvUV(sv);
+    object->private.ulKeySizeInBits = SvUV(sv);
 
     return CKR_OK;
 }
@@ -4058,7 +5196,7 @@ CK_RV crypt_pkcs11_ck_wtls_key_mat_params_get_ulIVSizeInBits(Crypt__PKCS11__CK_W
     }
 
     SvGETMAGIC(sv);
-    sv_setuv(sv, object->ulIVSizeInBits);
+    sv_setuv(sv, object->private.ulIVSizeInBits);
     SvSETMAGIC(sv);
 
     return CKR_OK;
@@ -4073,11 +5211,11 @@ CK_RV crypt_pkcs11_ck_wtls_key_mat_params_set_ulIVSizeInBits(Crypt__PKCS11__CK_W
     }
 
     SvGETMAGIC(sv);
-    if (!crypt_pkcs11_SvUOK(sv)) {
+    if (!crypt_pkcs11_xs_SvUOK(sv)) {
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->ulIVSizeInBits = SvUV(sv);
+    object->private.ulIVSizeInBits = SvUV(sv);
 
     return CKR_OK;
 }
@@ -4091,7 +5229,7 @@ CK_RV crypt_pkcs11_ck_wtls_key_mat_params_get_ulSequenceNumber(Crypt__PKCS11__CK
     }
 
     SvGETMAGIC(sv);
-    sv_setuv(sv, object->ulSequenceNumber);
+    sv_setuv(sv, object->private.ulSequenceNumber);
     SvSETMAGIC(sv);
 
     return CKR_OK;
@@ -4106,11 +5244,11 @@ CK_RV crypt_pkcs11_ck_wtls_key_mat_params_set_ulSequenceNumber(Crypt__PKCS11__CK
     }
 
     SvGETMAGIC(sv);
-    if (!crypt_pkcs11_SvUOK(sv)) {
+    if (!crypt_pkcs11_xs_SvUOK(sv)) {
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->ulSequenceNumber = SvUV(sv);
+    object->private.ulSequenceNumber = SvUV(sv);
 
     return CKR_OK;
 }
@@ -4124,7 +5262,7 @@ CK_RV crypt_pkcs11_ck_wtls_key_mat_params_get_bIsExport(Crypt__PKCS11__CK_WTLS_K
     }
 
     SvGETMAGIC(sv);
-    sv_setuv(sv, object->bIsExport);
+    sv_setuv(sv, object->private.bIsExport);
     SvSETMAGIC(sv);
 
     return CKR_OK;
@@ -4139,15 +5277,15 @@ CK_RV crypt_pkcs11_ck_wtls_key_mat_params_set_bIsExport(Crypt__PKCS11__CK_WTLS_K
     }
 
     SvGETMAGIC(sv);
-    if (!crypt_pkcs11_SvUOK(sv)) {
+    if (!crypt_pkcs11_xs_SvUOK(sv)) {
         return CKR_ARGUMENTS_BAD;
     }
 
     if (SvUV(sv)) {
-        object->bIsExport = CK_TRUE;
+        object->private.bIsExport = CK_TRUE;
     }
     else {
-        object->bIsExport = CK_FALSE;
+        object->private.bIsExport = CK_FALSE;
     }
 
     return CKR_OK;
@@ -4172,13 +5310,19 @@ CK_RV crypt_pkcs11_ck_wtls_key_mat_params_set_pReturnedKeyMaterial(Crypt__PKCS11
 Crypt__PKCS11__CK_CMS_SIG_PARAMS* crypt_pkcs11_ck_cms_sig_params_new(const char* class) {
     Crypt__PKCS11__CK_CMS_SIG_PARAMS* object = calloc(1, sizeof(Crypt__PKCS11__CK_CMS_SIG_PARAMS));
     if (!object) {
-        croak("Memory allocation error");
+        croak("memory allocation error");
     }
     return object;
 }
 
 void crypt_pkcs11_ck_cms_sig_params_DESTROY(Crypt__PKCS11__CK_CMS_SIG_PARAMS* object) {
     if (object) {
+        if (object->private.pRequestedAttributes) {
+            free(object->private.pRequestedAttributes);
+        }
+        if (object->private.pRequiredAttributes) {
+            free(object->private.pRequiredAttributes);
+        }
         free(object);
     }
 }
@@ -4192,7 +5336,7 @@ CK_RV crypt_pkcs11_ck_cms_sig_params_get_certificateHandle(Crypt__PKCS11__CK_CMS
     }
 
     SvGETMAGIC(sv);
-    sv_setuv(sv, object->certificateHandle);
+    sv_setuv(sv, object->private.certificateHandle);
     SvSETMAGIC(sv);
 
     return CKR_OK;
@@ -4207,11 +5351,11 @@ CK_RV crypt_pkcs11_ck_cms_sig_params_set_certificateHandle(Crypt__PKCS11__CK_CMS
     }
 
     SvGETMAGIC(sv);
-    if (!crypt_pkcs11_SvUOK(sv)) {
+    if (!crypt_pkcs11_xs_SvUOK(sv)) {
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->certificateHandle = SvUV(sv);
+    object->private.certificateHandle = SvUV(sv);
 
     return CKR_OK;
 }
@@ -4249,13 +5393,14 @@ CK_RV crypt_pkcs11_ck_cms_sig_params_get_pRequestedAttributes(Crypt__PKCS11__CK_
     }
 
     SvGETMAGIC(sv);
-    sv_setpvn(sv, object->pRequestedAttributes, object->ulRequestedAttributesLen);
+    sv_setpvn(sv, object->private.pRequestedAttributes, object->private.ulRequestedAttributesLen);
     SvSETMAGIC(sv);
 
     return CKR_OK;
 }
 
 CK_RV crypt_pkcs11_ck_cms_sig_params_set_pRequestedAttributes(Crypt__PKCS11__CK_CMS_SIG_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR n;
     CK_BYTE_PTR p;
     STRLEN l;
 
@@ -4267,6 +5412,16 @@ CK_RV crypt_pkcs11_ck_cms_sig_params_set_pRequestedAttributes(Crypt__PKCS11__CK_
     }
 
     SvGETMAGIC(sv);
+
+    if (!SvOK(sv)) {
+        if (object->private.pRequestedAttributes) {
+            free(object->private.pRequestedAttributes);
+            object->private.pRequestedAttributes = 0;
+            object->private.ulRequestedAttributesLen = 0;
+        }
+        return CKR_OK;
+    }
+
     if (!SvPOK(sv)
         || !(p = SvPVbyte(sv, l))
         || l < 0)
@@ -4274,8 +5429,16 @@ CK_RV crypt_pkcs11_ck_cms_sig_params_set_pRequestedAttributes(Crypt__PKCS11__CK_
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->pRequestedAttributes = p;
-    object->ulRequestedAttributesLen = l;
+    if (!(n = calloc(1, l + 1))) {
+        return CKR_HOST_MEMORY;
+    }
+
+    memcpy(n, p, l);
+    if (object->private.pRequestedAttributes) {
+        free(object->private.pRequestedAttributes);
+    }
+    object->private.pRequestedAttributes = n;
+    object->private.ulRequestedAttributesLen = l;
 
     return CKR_OK;
 }
@@ -4289,13 +5452,14 @@ CK_RV crypt_pkcs11_ck_cms_sig_params_get_pRequiredAttributes(Crypt__PKCS11__CK_C
     }
 
     SvGETMAGIC(sv);
-    sv_setpvn(sv, object->pRequiredAttributes, object->ulRequiredAttributesLen);
+    sv_setpvn(sv, object->private.pRequiredAttributes, object->private.ulRequiredAttributesLen);
     SvSETMAGIC(sv);
 
     return CKR_OK;
 }
 
 CK_RV crypt_pkcs11_ck_cms_sig_params_set_pRequiredAttributes(Crypt__PKCS11__CK_CMS_SIG_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR n;
     CK_BYTE_PTR p;
     STRLEN l;
 
@@ -4307,6 +5471,16 @@ CK_RV crypt_pkcs11_ck_cms_sig_params_set_pRequiredAttributes(Crypt__PKCS11__CK_C
     }
 
     SvGETMAGIC(sv);
+
+    if (!SvOK(sv)) {
+        if (object->private.pRequiredAttributes) {
+            free(object->private.pRequiredAttributes);
+            object->private.pRequiredAttributes = 0;
+            object->private.ulRequiredAttributesLen = 0;
+        }
+        return CKR_OK;
+    }
+
     if (!SvPOK(sv)
         || !(p = SvPVbyte(sv, l))
         || l < 0)
@@ -4314,8 +5488,16 @@ CK_RV crypt_pkcs11_ck_cms_sig_params_set_pRequiredAttributes(Crypt__PKCS11__CK_C
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->pRequiredAttributes = p;
-    object->ulRequiredAttributesLen = l;
+    if (!(n = calloc(1, l + 1))) {
+        return CKR_HOST_MEMORY;
+    }
+
+    memcpy(n, p, l);
+    if (object->private.pRequiredAttributes) {
+        free(object->private.pRequiredAttributes);
+    }
+    object->private.pRequiredAttributes = n;
+    object->private.ulRequiredAttributesLen = l;
 
     return CKR_OK;
 }
@@ -4323,13 +5505,16 @@ CK_RV crypt_pkcs11_ck_cms_sig_params_set_pRequiredAttributes(Crypt__PKCS11__CK_C
 Crypt__PKCS11__CK_KEY_DERIVATION_STRING_DATA* crypt_pkcs11_ck_key_derivation_string_data_new(const char* class) {
     Crypt__PKCS11__CK_KEY_DERIVATION_STRING_DATA* object = calloc(1, sizeof(Crypt__PKCS11__CK_KEY_DERIVATION_STRING_DATA));
     if (!object) {
-        croak("Memory allocation error");
+        croak("memory allocation error");
     }
     return object;
 }
 
 void crypt_pkcs11_ck_key_derivation_string_data_DESTROY(Crypt__PKCS11__CK_KEY_DERIVATION_STRING_DATA* object) {
     if (object) {
+        if (object->private.pData) {
+            free(object->private.pData);
+        }
         free(object);
     }
 }
@@ -4343,13 +5528,14 @@ CK_RV crypt_pkcs11_ck_key_derivation_string_data_get_pData(Crypt__PKCS11__CK_KEY
     }
 
     SvGETMAGIC(sv);
-    sv_setpvn(sv, object->pData, object->ulLen);
+    sv_setpvn(sv, object->private.pData, object->private.ulLen);
     SvSETMAGIC(sv);
 
     return CKR_OK;
 }
 
 CK_RV crypt_pkcs11_ck_key_derivation_string_data_set_pData(Crypt__PKCS11__CK_KEY_DERIVATION_STRING_DATA* object, SV* sv) {
+    CK_BYTE_PTR n;
     CK_BYTE_PTR p;
     STRLEN l;
 
@@ -4361,6 +5547,16 @@ CK_RV crypt_pkcs11_ck_key_derivation_string_data_set_pData(Crypt__PKCS11__CK_KEY
     }
 
     SvGETMAGIC(sv);
+
+    if (!SvOK(sv)) {
+        if (object->private.pData) {
+            free(object->private.pData);
+            object->private.pData = 0;
+            object->private.ulLen = 0;
+        }
+        return CKR_OK;
+    }
+
     if (!SvPOK(sv)
         || !(p = SvPVbyte(sv, l))
         || l < 0)
@@ -4368,8 +5564,16 @@ CK_RV crypt_pkcs11_ck_key_derivation_string_data_set_pData(Crypt__PKCS11__CK_KEY
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->pData = p;
-    object->ulLen = l;
+    if (!(n = calloc(1, l + 1))) {
+        return CKR_HOST_MEMORY;
+    }
+
+    memcpy(n, p, l);
+    if (object->private.pData) {
+        free(object->private.pData);
+    }
+    object->private.pData = n;
+    object->private.ulLen = l;
 
     return CKR_OK;
 }
@@ -4377,13 +5581,19 @@ CK_RV crypt_pkcs11_ck_key_derivation_string_data_set_pData(Crypt__PKCS11__CK_KEY
 Crypt__PKCS11__CK_PKCS5_PBKD2_PARAMS* crypt_pkcs11_ck_pkcs5_pbkd2_params_new(const char* class) {
     Crypt__PKCS11__CK_PKCS5_PBKD2_PARAMS* object = calloc(1, sizeof(Crypt__PKCS11__CK_PKCS5_PBKD2_PARAMS));
     if (!object) {
-        croak("Memory allocation error");
+        croak("memory allocation error");
     }
     return object;
 }
 
 void crypt_pkcs11_ck_pkcs5_pbkd2_params_DESTROY(Crypt__PKCS11__CK_PKCS5_PBKD2_PARAMS* object) {
     if (object) {
+        if (object->private.pSaltSourceData) {
+            free(object->private.pSaltSourceData);
+        }
+        if (object->private.pPrfData) {
+            free(object->private.pPrfData);
+        }
         free(object);
     }
 }
@@ -4397,7 +5607,7 @@ CK_RV crypt_pkcs11_ck_pkcs5_pbkd2_params_get_saltSource(Crypt__PKCS11__CK_PKCS5_
     }
 
     SvGETMAGIC(sv);
-    sv_setuv(sv, object->saltSource);
+    sv_setuv(sv, object->private.saltSource);
     SvSETMAGIC(sv);
 
     return CKR_OK;
@@ -4412,11 +5622,11 @@ CK_RV crypt_pkcs11_ck_pkcs5_pbkd2_params_set_saltSource(Crypt__PKCS11__CK_PKCS5_
     }
 
     SvGETMAGIC(sv);
-    if (!crypt_pkcs11_SvUOK(sv)) {
+    if (!crypt_pkcs11_xs_SvUOK(sv)) {
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->saltSource = SvUV(sv);
+    object->private.saltSource = SvUV(sv);
 
     return CKR_OK;
 }
@@ -4430,13 +5640,14 @@ CK_RV crypt_pkcs11_ck_pkcs5_pbkd2_params_get_pSaltSourceData(Crypt__PKCS11__CK_P
     }
 
     SvGETMAGIC(sv);
-    sv_setpvn(sv, object->pSaltSourceData, object->ulSaltSourceDataLen);
+    sv_setpvn(sv, object->private.pSaltSourceData, object->private.ulSaltSourceDataLen);
     SvSETMAGIC(sv);
 
     return CKR_OK;
 }
 
 CK_RV crypt_pkcs11_ck_pkcs5_pbkd2_params_set_pSaltSourceData(Crypt__PKCS11__CK_PKCS5_PBKD2_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR n;
     CK_BYTE_PTR p;
     STRLEN l;
 
@@ -4448,6 +5659,16 @@ CK_RV crypt_pkcs11_ck_pkcs5_pbkd2_params_set_pSaltSourceData(Crypt__PKCS11__CK_P
     }
 
     SvGETMAGIC(sv);
+
+    if (!SvOK(sv)) {
+        if (object->private.pSaltSourceData) {
+            free(object->private.pSaltSourceData);
+            object->private.pSaltSourceData = 0;
+            object->private.ulSaltSourceDataLen = 0;
+        }
+        return CKR_OK;
+    }
+
     if (!SvPOK(sv)
         || !(p = SvPVbyte(sv, l))
         || l < 0)
@@ -4455,8 +5676,16 @@ CK_RV crypt_pkcs11_ck_pkcs5_pbkd2_params_set_pSaltSourceData(Crypt__PKCS11__CK_P
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->pSaltSourceData = p;
-    object->ulSaltSourceDataLen = l;
+    if (!(n = calloc(1, l + 1))) {
+        return CKR_HOST_MEMORY;
+    }
+
+    memcpy(n, p, l);
+    if (object->private.pSaltSourceData) {
+        free(object->private.pSaltSourceData);
+    }
+    object->private.pSaltSourceData = n;
+    object->private.ulSaltSourceDataLen = l;
 
     return CKR_OK;
 }
@@ -4470,7 +5699,7 @@ CK_RV crypt_pkcs11_ck_pkcs5_pbkd2_params_get_iterations(Crypt__PKCS11__CK_PKCS5_
     }
 
     SvGETMAGIC(sv);
-    sv_setuv(sv, object->iterations);
+    sv_setuv(sv, object->private.iterations);
     SvSETMAGIC(sv);
 
     return CKR_OK;
@@ -4485,11 +5714,11 @@ CK_RV crypt_pkcs11_ck_pkcs5_pbkd2_params_set_iterations(Crypt__PKCS11__CK_PKCS5_
     }
 
     SvGETMAGIC(sv);
-    if (!crypt_pkcs11_SvUOK(sv)) {
+    if (!crypt_pkcs11_xs_SvUOK(sv)) {
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->iterations = SvUV(sv);
+    object->private.iterations = SvUV(sv);
 
     return CKR_OK;
 }
@@ -4503,7 +5732,7 @@ CK_RV crypt_pkcs11_ck_pkcs5_pbkd2_params_get_prf(Crypt__PKCS11__CK_PKCS5_PBKD2_P
     }
 
     SvGETMAGIC(sv);
-    sv_setuv(sv, object->prf);
+    sv_setuv(sv, object->private.prf);
     SvSETMAGIC(sv);
 
     return CKR_OK;
@@ -4518,11 +5747,11 @@ CK_RV crypt_pkcs11_ck_pkcs5_pbkd2_params_set_prf(Crypt__PKCS11__CK_PKCS5_PBKD2_P
     }
 
     SvGETMAGIC(sv);
-    if (!crypt_pkcs11_SvUOK(sv)) {
+    if (!crypt_pkcs11_xs_SvUOK(sv)) {
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->prf = SvUV(sv);
+    object->private.prf = SvUV(sv);
 
     return CKR_OK;
 }
@@ -4536,13 +5765,14 @@ CK_RV crypt_pkcs11_ck_pkcs5_pbkd2_params_get_pPrfData(Crypt__PKCS11__CK_PKCS5_PB
     }
 
     SvGETMAGIC(sv);
-    sv_setpvn(sv, object->pPrfData, object->ulPrfDataLen);
+    sv_setpvn(sv, object->private.pPrfData, object->private.ulPrfDataLen);
     SvSETMAGIC(sv);
 
     return CKR_OK;
 }
 
 CK_RV crypt_pkcs11_ck_pkcs5_pbkd2_params_set_pPrfData(Crypt__PKCS11__CK_PKCS5_PBKD2_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR n;
     CK_BYTE_PTR p;
     STRLEN l;
 
@@ -4554,6 +5784,16 @@ CK_RV crypt_pkcs11_ck_pkcs5_pbkd2_params_set_pPrfData(Crypt__PKCS11__CK_PKCS5_PB
     }
 
     SvGETMAGIC(sv);
+
+    if (!SvOK(sv)) {
+        if (object->private.pPrfData) {
+            free(object->private.pPrfData);
+            object->private.pPrfData = 0;
+            object->private.ulPrfDataLen = 0;
+        }
+        return CKR_OK;
+    }
+
     if (!SvPOK(sv)
         || !(p = SvPVbyte(sv, l))
         || l < 0)
@@ -4561,8 +5801,16 @@ CK_RV crypt_pkcs11_ck_pkcs5_pbkd2_params_set_pPrfData(Crypt__PKCS11__CK_PKCS5_PB
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->pPrfData = p;
-    object->ulPrfDataLen = l;
+    if (!(n = calloc(1, l + 1))) {
+        return CKR_HOST_MEMORY;
+    }
+
+    memcpy(n, p, l);
+    if (object->private.pPrfData) {
+        free(object->private.pPrfData);
+    }
+    object->private.pPrfData = n;
+    object->private.ulPrfDataLen = l;
 
     return CKR_OK;
 }
@@ -4578,13 +5826,16 @@ CK_RV crypt_pkcs11_ck_pkcs5_pbkd2_params_set_pPassword(Crypt__PKCS11__CK_PKCS5_P
 Crypt__PKCS11__CK_OTP_PARAM* crypt_pkcs11_ck_otp_param_new(const char* class) {
     Crypt__PKCS11__CK_OTP_PARAM* object = calloc(1, sizeof(Crypt__PKCS11__CK_OTP_PARAM));
     if (!object) {
-        croak("Memory allocation error");
+        croak("memory allocation error");
     }
     return object;
 }
 
 void crypt_pkcs11_ck_otp_param_DESTROY(Crypt__PKCS11__CK_OTP_PARAM* object) {
     if (object) {
+        if (object->private.pValue) {
+            free(object->private.pValue);
+        }
         free(object);
     }
 }
@@ -4598,7 +5849,7 @@ CK_RV crypt_pkcs11_ck_otp_param_get_type(Crypt__PKCS11__CK_OTP_PARAM* object, SV
     }
 
     SvGETMAGIC(sv);
-    sv_setuv(sv, object->type);
+    sv_setuv(sv, object->private.type);
     SvSETMAGIC(sv);
 
     return CKR_OK;
@@ -4613,11 +5864,11 @@ CK_RV crypt_pkcs11_ck_otp_param_set_type(Crypt__PKCS11__CK_OTP_PARAM* object, SV
     }
 
     SvGETMAGIC(sv);
-    if (!crypt_pkcs11_SvUOK(sv)) {
+    if (!crypt_pkcs11_xs_SvUOK(sv)) {
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->type = SvUV(sv);
+    object->private.type = SvUV(sv);
 
     return CKR_OK;
 }
@@ -4631,13 +5882,14 @@ CK_RV crypt_pkcs11_ck_otp_param_get_pValue(Crypt__PKCS11__CK_OTP_PARAM* object, 
     }
 
     SvGETMAGIC(sv);
-    sv_setpvn(sv, object->pValue, object->ulValueLen);
+    sv_setpvn(sv, object->private.pValue, object->private.ulValueLen);
     SvSETMAGIC(sv);
 
     return CKR_OK;
 }
 
 CK_RV crypt_pkcs11_ck_otp_param_set_pValue(Crypt__PKCS11__CK_OTP_PARAM* object, SV* sv) {
+    CK_BYTE_PTR n;
     CK_BYTE_PTR p;
     STRLEN l;
 
@@ -4649,6 +5901,16 @@ CK_RV crypt_pkcs11_ck_otp_param_set_pValue(Crypt__PKCS11__CK_OTP_PARAM* object, 
     }
 
     SvGETMAGIC(sv);
+
+    if (!SvOK(sv)) {
+        if (object->private.pValue) {
+            free(object->private.pValue);
+            object->private.pValue = 0;
+            object->private.ulValueLen = 0;
+        }
+        return CKR_OK;
+    }
+
     if (!SvPOK(sv)
         || !(p = SvPVbyte(sv, l))
         || l < 0)
@@ -4656,8 +5918,16 @@ CK_RV crypt_pkcs11_ck_otp_param_set_pValue(Crypt__PKCS11__CK_OTP_PARAM* object, 
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->pValue = p;
-    object->ulValueLen = l;
+    if (!(n = calloc(1, l + 1))) {
+        return CKR_HOST_MEMORY;
+    }
+
+    memcpy(n, p, l);
+    if (object->private.pValue) {
+        free(object->private.pValue);
+    }
+    object->private.pValue = n;
+    object->private.ulValueLen = l;
 
     return CKR_OK;
 }
@@ -4665,7 +5935,7 @@ CK_RV crypt_pkcs11_ck_otp_param_set_pValue(Crypt__PKCS11__CK_OTP_PARAM* object, 
 Crypt__PKCS11__CK_OTP_PARAMS* crypt_pkcs11_ck_otp_params_new(const char* class) {
     Crypt__PKCS11__CK_OTP_PARAMS* object = calloc(1, sizeof(Crypt__PKCS11__CK_OTP_PARAMS));
     if (!object) {
-        croak("Memory allocation error");
+        croak("memory allocation error");
     }
     return object;
 }
@@ -4693,7 +5963,7 @@ CK_RV crypt_pkcs11_ck_otp_params_get_ulCount(Crypt__PKCS11__CK_OTP_PARAMS* objec
     }
 
     SvGETMAGIC(sv);
-    sv_setuv(sv, object->ulCount);
+    sv_setuv(sv, object->private.ulCount);
     SvSETMAGIC(sv);
 
     return CKR_OK;
@@ -4708,11 +5978,11 @@ CK_RV crypt_pkcs11_ck_otp_params_set_ulCount(Crypt__PKCS11__CK_OTP_PARAMS* objec
     }
 
     SvGETMAGIC(sv);
-    if (!crypt_pkcs11_SvUOK(sv)) {
+    if (!crypt_pkcs11_xs_SvUOK(sv)) {
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->ulCount = SvUV(sv);
+    object->private.ulCount = SvUV(sv);
 
     return CKR_OK;
 }
@@ -4720,7 +5990,7 @@ CK_RV crypt_pkcs11_ck_otp_params_set_ulCount(Crypt__PKCS11__CK_OTP_PARAMS* objec
 Crypt__PKCS11__CK_OTP_SIGNATURE_INFO* crypt_pkcs11_ck_otp_signature_info_new(const char* class) {
     Crypt__PKCS11__CK_OTP_SIGNATURE_INFO* object = calloc(1, sizeof(Crypt__PKCS11__CK_OTP_SIGNATURE_INFO));
     if (!object) {
-        croak("Memory allocation error");
+        croak("memory allocation error");
     }
     return object;
 }
@@ -4748,7 +6018,7 @@ CK_RV crypt_pkcs11_ck_otp_signature_info_get_ulCount(Crypt__PKCS11__CK_OTP_SIGNA
     }
 
     SvGETMAGIC(sv);
-    sv_setuv(sv, object->ulCount);
+    sv_setuv(sv, object->private.ulCount);
     SvSETMAGIC(sv);
 
     return CKR_OK;
@@ -4763,11 +6033,11 @@ CK_RV crypt_pkcs11_ck_otp_signature_info_set_ulCount(Crypt__PKCS11__CK_OTP_SIGNA
     }
 
     SvGETMAGIC(sv);
-    if (!crypt_pkcs11_SvUOK(sv)) {
+    if (!crypt_pkcs11_xs_SvUOK(sv)) {
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->ulCount = SvUV(sv);
+    object->private.ulCount = SvUV(sv);
 
     return CKR_OK;
 }
@@ -4775,13 +6045,16 @@ CK_RV crypt_pkcs11_ck_otp_signature_info_set_ulCount(Crypt__PKCS11__CK_OTP_SIGNA
 Crypt__PKCS11__CK_KIP_PARAMS* crypt_pkcs11_ck_kip_params_new(const char* class) {
     Crypt__PKCS11__CK_KIP_PARAMS* object = calloc(1, sizeof(Crypt__PKCS11__CK_KIP_PARAMS));
     if (!object) {
-        croak("Memory allocation error");
+        croak("memory allocation error");
     }
     return object;
 }
 
 void crypt_pkcs11_ck_kip_params_DESTROY(Crypt__PKCS11__CK_KIP_PARAMS* object) {
     if (object) {
+        if (object->private.pSeed) {
+            free(object->private.pSeed);
+        }
         free(object);
     }
 }
@@ -4803,7 +6076,7 @@ CK_RV crypt_pkcs11_ck_kip_params_get_hKey(Crypt__PKCS11__CK_KIP_PARAMS* object, 
     }
 
     SvGETMAGIC(sv);
-    sv_setuv(sv, object->hKey);
+    sv_setuv(sv, object->private.hKey);
     SvSETMAGIC(sv);
 
     return CKR_OK;
@@ -4818,11 +6091,11 @@ CK_RV crypt_pkcs11_ck_kip_params_set_hKey(Crypt__PKCS11__CK_KIP_PARAMS* object, 
     }
 
     SvGETMAGIC(sv);
-    if (!crypt_pkcs11_SvUOK(sv)) {
+    if (!crypt_pkcs11_xs_SvUOK(sv)) {
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->hKey = SvUV(sv);
+    object->private.hKey = SvUV(sv);
 
     return CKR_OK;
 }
@@ -4836,13 +6109,14 @@ CK_RV crypt_pkcs11_ck_kip_params_get_pSeed(Crypt__PKCS11__CK_KIP_PARAMS* object,
     }
 
     SvGETMAGIC(sv);
-    sv_setpvn(sv, object->pSeed, object->ulSeedLen);
+    sv_setpvn(sv, object->private.pSeed, object->private.ulSeedLen);
     SvSETMAGIC(sv);
 
     return CKR_OK;
 }
 
 CK_RV crypt_pkcs11_ck_kip_params_set_pSeed(Crypt__PKCS11__CK_KIP_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR n;
     CK_BYTE_PTR p;
     STRLEN l;
 
@@ -4854,6 +6128,16 @@ CK_RV crypt_pkcs11_ck_kip_params_set_pSeed(Crypt__PKCS11__CK_KIP_PARAMS* object,
     }
 
     SvGETMAGIC(sv);
+
+    if (!SvOK(sv)) {
+        if (object->private.pSeed) {
+            free(object->private.pSeed);
+            object->private.pSeed = 0;
+            object->private.ulSeedLen = 0;
+        }
+        return CKR_OK;
+    }
+
     if (!SvPOK(sv)
         || !(p = SvPVbyte(sv, l))
         || l < 0)
@@ -4861,8 +6145,16 @@ CK_RV crypt_pkcs11_ck_kip_params_set_pSeed(Crypt__PKCS11__CK_KIP_PARAMS* object,
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->pSeed = p;
-    object->ulSeedLen = l;
+    if (!(n = calloc(1, l + 1))) {
+        return CKR_HOST_MEMORY;
+    }
+
+    memcpy(n, p, l);
+    if (object->private.pSeed) {
+        free(object->private.pSeed);
+    }
+    object->private.pSeed = n;
+    object->private.ulSeedLen = l;
 
     return CKR_OK;
 }
@@ -4870,7 +6162,7 @@ CK_RV crypt_pkcs11_ck_kip_params_set_pSeed(Crypt__PKCS11__CK_KIP_PARAMS* object,
 Crypt__PKCS11__CK_AES_CTR_PARAMS* crypt_pkcs11_ck_aes_ctr_params_new(const char* class) {
     Crypt__PKCS11__CK_AES_CTR_PARAMS* object = calloc(1, sizeof(Crypt__PKCS11__CK_AES_CTR_PARAMS));
     if (!object) {
-        croak("Memory allocation error");
+        croak("memory allocation error");
     }
     return object;
 }
@@ -4890,7 +6182,7 @@ CK_RV crypt_pkcs11_ck_aes_ctr_params_get_ulCounterBits(Crypt__PKCS11__CK_AES_CTR
     }
 
     SvGETMAGIC(sv);
-    sv_setuv(sv, object->ulCounterBits);
+    sv_setuv(sv, object->private.ulCounterBits);
     SvSETMAGIC(sv);
 
     return CKR_OK;
@@ -4905,11 +6197,11 @@ CK_RV crypt_pkcs11_ck_aes_ctr_params_set_ulCounterBits(Crypt__PKCS11__CK_AES_CTR
     }
 
     SvGETMAGIC(sv);
-    if (!crypt_pkcs11_SvUOK(sv)) {
+    if (!crypt_pkcs11_xs_SvUOK(sv)) {
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->ulCounterBits = SvUV(sv);
+    object->private.ulCounterBits = SvUV(sv);
 
     return CKR_OK;
 }
@@ -4925,13 +6217,19 @@ CK_RV crypt_pkcs11_ck_aes_ctr_params_set_cb(Crypt__PKCS11__CK_AES_CTR_PARAMS* ob
 Crypt__PKCS11__CK_AES_GCM_PARAMS* crypt_pkcs11_ck_aes_gcm_params_new(const char* class) {
     Crypt__PKCS11__CK_AES_GCM_PARAMS* object = calloc(1, sizeof(Crypt__PKCS11__CK_AES_GCM_PARAMS));
     if (!object) {
-        croak("Memory allocation error");
+        croak("memory allocation error");
     }
     return object;
 }
 
 void crypt_pkcs11_ck_aes_gcm_params_DESTROY(Crypt__PKCS11__CK_AES_GCM_PARAMS* object) {
     if (object) {
+        if (object->private.pIv) {
+            free(object->private.pIv);
+        }
+        if (object->private.pAAD) {
+            free(object->private.pAAD);
+        }
         free(object);
     }
 }
@@ -4945,13 +6243,14 @@ CK_RV crypt_pkcs11_ck_aes_gcm_params_get_pIv(Crypt__PKCS11__CK_AES_GCM_PARAMS* o
     }
 
     SvGETMAGIC(sv);
-    sv_setpvn(sv, object->pIv, object->ulIvLen);
+    sv_setpvn(sv, object->private.pIv, object->private.ulIvLen);
     SvSETMAGIC(sv);
 
     return CKR_OK;
 }
 
 CK_RV crypt_pkcs11_ck_aes_gcm_params_set_pIv(Crypt__PKCS11__CK_AES_GCM_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR n;
     CK_BYTE_PTR p;
     STRLEN l;
 
@@ -4963,6 +6262,16 @@ CK_RV crypt_pkcs11_ck_aes_gcm_params_set_pIv(Crypt__PKCS11__CK_AES_GCM_PARAMS* o
     }
 
     SvGETMAGIC(sv);
+
+    if (!SvOK(sv)) {
+        if (object->private.pIv) {
+            free(object->private.pIv);
+            object->private.pIv = 0;
+            object->private.ulIvLen = 0;
+        }
+        return CKR_OK;
+    }
+
     if (!SvPOK(sv)
         || !(p = SvPVbyte(sv, l))
         || l < 0)
@@ -4970,8 +6279,16 @@ CK_RV crypt_pkcs11_ck_aes_gcm_params_set_pIv(Crypt__PKCS11__CK_AES_GCM_PARAMS* o
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->pIv = p;
-    object->ulIvLen = l;
+    if (!(n = calloc(1, l + 1))) {
+        return CKR_HOST_MEMORY;
+    }
+
+    memcpy(n, p, l);
+    if (object->private.pIv) {
+        free(object->private.pIv);
+    }
+    object->private.pIv = n;
+    object->private.ulIvLen = l;
 
     return CKR_OK;
 }
@@ -4985,7 +6302,7 @@ CK_RV crypt_pkcs11_ck_aes_gcm_params_get_ulIvBits(Crypt__PKCS11__CK_AES_GCM_PARA
     }
 
     SvGETMAGIC(sv);
-    sv_setuv(sv, object->ulIvBits);
+    sv_setuv(sv, object->private.ulIvBits);
     SvSETMAGIC(sv);
 
     return CKR_OK;
@@ -5000,11 +6317,11 @@ CK_RV crypt_pkcs11_ck_aes_gcm_params_set_ulIvBits(Crypt__PKCS11__CK_AES_GCM_PARA
     }
 
     SvGETMAGIC(sv);
-    if (!crypt_pkcs11_SvUOK(sv)) {
+    if (!crypt_pkcs11_xs_SvUOK(sv)) {
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->ulIvBits = SvUV(sv);
+    object->private.ulIvBits = SvUV(sv);
 
     return CKR_OK;
 }
@@ -5018,13 +6335,14 @@ CK_RV crypt_pkcs11_ck_aes_gcm_params_get_pAAD(Crypt__PKCS11__CK_AES_GCM_PARAMS* 
     }
 
     SvGETMAGIC(sv);
-    sv_setpvn(sv, object->pAAD, object->ulAADLen);
+    sv_setpvn(sv, object->private.pAAD, object->private.ulAADLen);
     SvSETMAGIC(sv);
 
     return CKR_OK;
 }
 
 CK_RV crypt_pkcs11_ck_aes_gcm_params_set_pAAD(Crypt__PKCS11__CK_AES_GCM_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR n;
     CK_BYTE_PTR p;
     STRLEN l;
 
@@ -5036,6 +6354,16 @@ CK_RV crypt_pkcs11_ck_aes_gcm_params_set_pAAD(Crypt__PKCS11__CK_AES_GCM_PARAMS* 
     }
 
     SvGETMAGIC(sv);
+
+    if (!SvOK(sv)) {
+        if (object->private.pAAD) {
+            free(object->private.pAAD);
+            object->private.pAAD = 0;
+            object->private.ulAADLen = 0;
+        }
+        return CKR_OK;
+    }
+
     if (!SvPOK(sv)
         || !(p = SvPVbyte(sv, l))
         || l < 0)
@@ -5043,8 +6371,16 @@ CK_RV crypt_pkcs11_ck_aes_gcm_params_set_pAAD(Crypt__PKCS11__CK_AES_GCM_PARAMS* 
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->pAAD = p;
-    object->ulAADLen = l;
+    if (!(n = calloc(1, l + 1))) {
+        return CKR_HOST_MEMORY;
+    }
+
+    memcpy(n, p, l);
+    if (object->private.pAAD) {
+        free(object->private.pAAD);
+    }
+    object->private.pAAD = n;
+    object->private.ulAADLen = l;
 
     return CKR_OK;
 }
@@ -5058,7 +6394,7 @@ CK_RV crypt_pkcs11_ck_aes_gcm_params_get_ulTagBits(Crypt__PKCS11__CK_AES_GCM_PAR
     }
 
     SvGETMAGIC(sv);
-    sv_setuv(sv, object->ulTagBits);
+    sv_setuv(sv, object->private.ulTagBits);
     SvSETMAGIC(sv);
 
     return CKR_OK;
@@ -5073,11 +6409,11 @@ CK_RV crypt_pkcs11_ck_aes_gcm_params_set_ulTagBits(Crypt__PKCS11__CK_AES_GCM_PAR
     }
 
     SvGETMAGIC(sv);
-    if (!crypt_pkcs11_SvUOK(sv)) {
+    if (!crypt_pkcs11_xs_SvUOK(sv)) {
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->ulTagBits = SvUV(sv);
+    object->private.ulTagBits = SvUV(sv);
 
     return CKR_OK;
 }
@@ -5085,13 +6421,19 @@ CK_RV crypt_pkcs11_ck_aes_gcm_params_set_ulTagBits(Crypt__PKCS11__CK_AES_GCM_PAR
 Crypt__PKCS11__CK_AES_CCM_PARAMS* crypt_pkcs11_ck_aes_ccm_params_new(const char* class) {
     Crypt__PKCS11__CK_AES_CCM_PARAMS* object = calloc(1, sizeof(Crypt__PKCS11__CK_AES_CCM_PARAMS));
     if (!object) {
-        croak("Memory allocation error");
+        croak("memory allocation error");
     }
     return object;
 }
 
 void crypt_pkcs11_ck_aes_ccm_params_DESTROY(Crypt__PKCS11__CK_AES_CCM_PARAMS* object) {
     if (object) {
+        if (object->private.pNonce) {
+            free(object->private.pNonce);
+        }
+        if (object->private.pAAD) {
+            free(object->private.pAAD);
+        }
         free(object);
     }
 }
@@ -5105,13 +6447,14 @@ CK_RV crypt_pkcs11_ck_aes_ccm_params_get_pNonce(Crypt__PKCS11__CK_AES_CCM_PARAMS
     }
 
     SvGETMAGIC(sv);
-    sv_setpvn(sv, object->pNonce, object->ulNonceLen);
+    sv_setpvn(sv, object->private.pNonce, object->private.ulNonceLen);
     SvSETMAGIC(sv);
 
     return CKR_OK;
 }
 
 CK_RV crypt_pkcs11_ck_aes_ccm_params_set_pNonce(Crypt__PKCS11__CK_AES_CCM_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR n;
     CK_BYTE_PTR p;
     STRLEN l;
 
@@ -5123,6 +6466,16 @@ CK_RV crypt_pkcs11_ck_aes_ccm_params_set_pNonce(Crypt__PKCS11__CK_AES_CCM_PARAMS
     }
 
     SvGETMAGIC(sv);
+
+    if (!SvOK(sv)) {
+        if (object->private.pNonce) {
+            free(object->private.pNonce);
+            object->private.pNonce = 0;
+            object->private.ulNonceLen = 0;
+        }
+        return CKR_OK;
+    }
+
     if (!SvPOK(sv)
         || !(p = SvPVbyte(sv, l))
         || l < 0)
@@ -5130,8 +6483,16 @@ CK_RV crypt_pkcs11_ck_aes_ccm_params_set_pNonce(Crypt__PKCS11__CK_AES_CCM_PARAMS
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->pNonce = p;
-    object->ulNonceLen = l;
+    if (!(n = calloc(1, l + 1))) {
+        return CKR_HOST_MEMORY;
+    }
+
+    memcpy(n, p, l);
+    if (object->private.pNonce) {
+        free(object->private.pNonce);
+    }
+    object->private.pNonce = n;
+    object->private.ulNonceLen = l;
 
     return CKR_OK;
 }
@@ -5145,13 +6506,14 @@ CK_RV crypt_pkcs11_ck_aes_ccm_params_get_pAAD(Crypt__PKCS11__CK_AES_CCM_PARAMS* 
     }
 
     SvGETMAGIC(sv);
-    sv_setpvn(sv, object->pAAD, object->ulAADLen);
+    sv_setpvn(sv, object->private.pAAD, object->private.ulAADLen);
     SvSETMAGIC(sv);
 
     return CKR_OK;
 }
 
 CK_RV crypt_pkcs11_ck_aes_ccm_params_set_pAAD(Crypt__PKCS11__CK_AES_CCM_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR n;
     CK_BYTE_PTR p;
     STRLEN l;
 
@@ -5163,6 +6525,16 @@ CK_RV crypt_pkcs11_ck_aes_ccm_params_set_pAAD(Crypt__PKCS11__CK_AES_CCM_PARAMS* 
     }
 
     SvGETMAGIC(sv);
+
+    if (!SvOK(sv)) {
+        if (object->private.pAAD) {
+            free(object->private.pAAD);
+            object->private.pAAD = 0;
+            object->private.ulAADLen = 0;
+        }
+        return CKR_OK;
+    }
+
     if (!SvPOK(sv)
         || !(p = SvPVbyte(sv, l))
         || l < 0)
@@ -5170,8 +6542,16 @@ CK_RV crypt_pkcs11_ck_aes_ccm_params_set_pAAD(Crypt__PKCS11__CK_AES_CCM_PARAMS* 
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->pAAD = p;
-    object->ulAADLen = l;
+    if (!(n = calloc(1, l + 1))) {
+        return CKR_HOST_MEMORY;
+    }
+
+    memcpy(n, p, l);
+    if (object->private.pAAD) {
+        free(object->private.pAAD);
+    }
+    object->private.pAAD = n;
+    object->private.ulAADLen = l;
 
     return CKR_OK;
 }
@@ -5179,7 +6559,7 @@ CK_RV crypt_pkcs11_ck_aes_ccm_params_set_pAAD(Crypt__PKCS11__CK_AES_CCM_PARAMS* 
 Crypt__PKCS11__CK_CAMELLIA_CTR_PARAMS* crypt_pkcs11_ck_camellia_ctr_params_new(const char* class) {
     Crypt__PKCS11__CK_CAMELLIA_CTR_PARAMS* object = calloc(1, sizeof(Crypt__PKCS11__CK_CAMELLIA_CTR_PARAMS));
     if (!object) {
-        croak("Memory allocation error");
+        croak("memory allocation error");
     }
     return object;
 }
@@ -5199,7 +6579,7 @@ CK_RV crypt_pkcs11_ck_camellia_ctr_params_get_ulCounterBits(Crypt__PKCS11__CK_CA
     }
 
     SvGETMAGIC(sv);
-    sv_setuv(sv, object->ulCounterBits);
+    sv_setuv(sv, object->private.ulCounterBits);
     SvSETMAGIC(sv);
 
     return CKR_OK;
@@ -5214,11 +6594,11 @@ CK_RV crypt_pkcs11_ck_camellia_ctr_params_set_ulCounterBits(Crypt__PKCS11__CK_CA
     }
 
     SvGETMAGIC(sv);
-    if (!crypt_pkcs11_SvUOK(sv)) {
+    if (!crypt_pkcs11_xs_SvUOK(sv)) {
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->ulCounterBits = SvUV(sv);
+    object->private.ulCounterBits = SvUV(sv);
 
     return CKR_OK;
 }
@@ -5234,13 +6614,16 @@ CK_RV crypt_pkcs11_ck_camellia_ctr_params_set_cb(Crypt__PKCS11__CK_CAMELLIA_CTR_
 Crypt__PKCS11__CK_CAMELLIA_CBC_ENCRYPT_DATA_PARAMS* crypt_pkcs11_ck_camellia_cbc_encrypt_data_params_new(const char* class) {
     Crypt__PKCS11__CK_CAMELLIA_CBC_ENCRYPT_DATA_PARAMS* object = calloc(1, sizeof(Crypt__PKCS11__CK_CAMELLIA_CBC_ENCRYPT_DATA_PARAMS));
     if (!object) {
-        croak("Memory allocation error");
+        croak("memory allocation error");
     }
     return object;
 }
 
 void crypt_pkcs11_ck_camellia_cbc_encrypt_data_params_DESTROY(Crypt__PKCS11__CK_CAMELLIA_CBC_ENCRYPT_DATA_PARAMS* object) {
     if (object) {
+        if (object->private.pData) {
+            free(object->private.pData);
+        }
         free(object);
     }
 }
@@ -5262,13 +6645,14 @@ CK_RV crypt_pkcs11_ck_camellia_cbc_encrypt_data_params_get_pData(Crypt__PKCS11__
     }
 
     SvGETMAGIC(sv);
-    sv_setpvn(sv, object->pData, object->length);
+    sv_setpvn(sv, object->private.pData, object->private.length);
     SvSETMAGIC(sv);
 
     return CKR_OK;
 }
 
 CK_RV crypt_pkcs11_ck_camellia_cbc_encrypt_data_params_set_pData(Crypt__PKCS11__CK_CAMELLIA_CBC_ENCRYPT_DATA_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR n;
     CK_BYTE_PTR p;
     STRLEN l;
 
@@ -5280,6 +6664,16 @@ CK_RV crypt_pkcs11_ck_camellia_cbc_encrypt_data_params_set_pData(Crypt__PKCS11__
     }
 
     SvGETMAGIC(sv);
+
+    if (!SvOK(sv)) {
+        if (object->private.pData) {
+            free(object->private.pData);
+            object->private.pData = 0;
+            object->private.length = 0;
+        }
+        return CKR_OK;
+    }
+
     if (!SvPOK(sv)
         || !(p = SvPVbyte(sv, l))
         || l < 0)
@@ -5287,8 +6681,16 @@ CK_RV crypt_pkcs11_ck_camellia_cbc_encrypt_data_params_set_pData(Crypt__PKCS11__
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->pData = p;
-    object->length = l;
+    if (!(n = calloc(1, l + 1))) {
+        return CKR_HOST_MEMORY;
+    }
+
+    memcpy(n, p, l);
+    if (object->private.pData) {
+        free(object->private.pData);
+    }
+    object->private.pData = n;
+    object->private.length = l;
 
     return CKR_OK;
 }
@@ -5296,13 +6698,16 @@ CK_RV crypt_pkcs11_ck_camellia_cbc_encrypt_data_params_set_pData(Crypt__PKCS11__
 Crypt__PKCS11__CK_ARIA_CBC_ENCRYPT_DATA_PARAMS* crypt_pkcs11_ck_aria_cbc_encrypt_data_params_new(const char* class) {
     Crypt__PKCS11__CK_ARIA_CBC_ENCRYPT_DATA_PARAMS* object = calloc(1, sizeof(Crypt__PKCS11__CK_ARIA_CBC_ENCRYPT_DATA_PARAMS));
     if (!object) {
-        croak("Memory allocation error");
+        croak("memory allocation error");
     }
     return object;
 }
 
 void crypt_pkcs11_ck_aria_cbc_encrypt_data_params_DESTROY(Crypt__PKCS11__CK_ARIA_CBC_ENCRYPT_DATA_PARAMS* object) {
     if (object) {
+        if (object->private.pData) {
+            free(object->private.pData);
+        }
         free(object);
     }
 }
@@ -5324,13 +6729,14 @@ CK_RV crypt_pkcs11_ck_aria_cbc_encrypt_data_params_get_pData(Crypt__PKCS11__CK_A
     }
 
     SvGETMAGIC(sv);
-    sv_setpvn(sv, object->pData, object->length);
+    sv_setpvn(sv, object->private.pData, object->private.length);
     SvSETMAGIC(sv);
 
     return CKR_OK;
 }
 
 CK_RV crypt_pkcs11_ck_aria_cbc_encrypt_data_params_set_pData(Crypt__PKCS11__CK_ARIA_CBC_ENCRYPT_DATA_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR n;
     CK_BYTE_PTR p;
     STRLEN l;
 
@@ -5342,6 +6748,16 @@ CK_RV crypt_pkcs11_ck_aria_cbc_encrypt_data_params_set_pData(Crypt__PKCS11__CK_A
     }
 
     SvGETMAGIC(sv);
+
+    if (!SvOK(sv)) {
+        if (object->private.pData) {
+            free(object->private.pData);
+            object->private.pData = 0;
+            object->private.length = 0;
+        }
+        return CKR_OK;
+    }
+
     if (!SvPOK(sv)
         || !(p = SvPVbyte(sv, l))
         || l < 0)
@@ -5349,8 +6765,16 @@ CK_RV crypt_pkcs11_ck_aria_cbc_encrypt_data_params_set_pData(Crypt__PKCS11__CK_A
         return CKR_ARGUMENTS_BAD;
     }
 
-    object->pData = p;
-    object->length = l;
+    if (!(n = calloc(1, l + 1))) {
+        return CKR_HOST_MEMORY;
+    }
+
+    memcpy(n, p, l);
+    if (object->private.pData) {
+        free(object->private.pData);
+    }
+    object->private.pData = n;
+    object->private.length = l;
 
     return CKR_OK;
 }

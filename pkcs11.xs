@@ -796,4 +796,5 @@ BOOT:
 {
     HV* stash = gv_stashpv("Crypt::PKCS11", TRUE);
     newCONSTSUB(stash, "CK_ULONG_SIZE", newSVuv(sizeof(CK_ULONG)));
+    boot_Crypt__PKCS11__structs(aTHX_ cv);
 }

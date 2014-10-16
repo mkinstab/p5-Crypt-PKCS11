@@ -3344,3 +3344,5 @@ PROTOTYPE: $
 OUTPUT:
     RETVAL
 
+MODULE = Crypt::PKCS11::structs  PACKAGE = Crypt::PKCS11::structs
+
