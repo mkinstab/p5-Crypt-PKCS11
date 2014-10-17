@@ -388,6 +388,16 @@ PROTOTYPE: $
 OUTPUT:
     RETVAL
 
+SV*
+crypt_pkcs11_'.$lc_struct.'_'.$_->{name}.'(object)
+    Crypt::PKCS11::'.$struct.'* object
+PROTOTYPE: $
+CODE:
+    RETVAL = newSV(0);
+    crypt_pkcs11_'.$lc_struct.'_get_'.$_->{name}.'(object, RETVAL);
+OUTPUT:
+    RETVAL
+
 CK_RV
 crypt_pkcs11_'.$lc_struct.'_set_'.$_->{name}.'(object, sv)
     Crypt::PKCS11::'.$struct.'* object
