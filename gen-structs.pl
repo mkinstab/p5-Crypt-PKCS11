@@ -95,8 +95,8 @@ my %D = (
     CK_BYTE_PTR => \&ck_byte_ptr_DESTROY,
     CK_ULONG => undef,
     CK_BBOOL => undef,
-    CK_CHAR_PTR => undef,
-    CK_UTF8CHAR_PTR => undef,
+    CK_CHAR_PTR => \&ck_char_ptr_DESTROY,
+    CK_UTF8CHAR_PTR => \&ck_char_ptr_DESTROY,
     CK_VOID_PTR => \&ck_byte_ptr_DESTROY,
     CK_VERSION_PTR => undef,
     CK_MECHANISM_PTR => undef,
@@ -647,58 +647,89 @@ sub ck_byte_ptr {
         #     This will reset the internal structure and allocate memory for the
         #     output variable based on the integer value given.
         # 3. Use $obj in a call, continue with 4 if 2a was done otherwise 6
-        # 4. $obj->get(undef);
+        # 4. $obj->get_outval(undef);
         #    This will now allocate memory based on what the call returned
         # 5. Do the call again
-        # 6. $obj->get($val);
+        # 6. $obj->get_outval($val);
         #    Retreive the value
 
-        # TODO
-        unimplemented(@_);
+        print C 'CK_RV crypt_pkcs11_'.$lc_struct.'_get_'.$type->{name}.'('.$c_struct.'* object, SV* sv) {
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
 
-#        print C 'CK_RV crypt_pkcs11_'.$lc_struct.'_get_'.$type->{name}.'('.$c_struct.'* object, SV* sv) {
-#    if (!object) {
-#        return CKR_ARGUMENTS_BAD;
-#    }
-#    if (!sv) {
-#        return CKR_ARGUMENTS_BAD;
-#    }
-#
-#    SvGETMAGIC(sv);
-#    sv_setpvn(sv, object->private.'.$type->{name}.', object->'.$type->{outLen}.');
-#    SvSETMAGIC(sv);
-#
-#    return CKR_OK;
-#}
-#
-#CK_RV crypt_pkcs11_'.$lc_struct.'_set_'.$type->{name}.'('.$c_struct.'* object, SV* sv) {
-#    CK_BYTE_PTR n;
-#    CK_BYTE_PTR p;
-#    STRLEN l;
-#
-#    if (!object) {
-#        return CKR_ARGUMENTS_BAD;
-#    }
-#    if (!sv) {
-#        return CKR_ARGUMENTS_BAD;
-#    }
-#
-#    SvGETMAGIC(sv);
-#
-#    if (!SvOK(sv)) {
-#        if (object->private.'.$type->{name}.') {
-#            free(object->private.'.$type->{name}.');
-#            object->private.'.$type->{name}.' = 0;
-#            object->private.'.$type->{outLen}.' = &(object->'.$type->{outLen}.');
-#            object->'.$type->{outLen}.' = 0;
-#        }
-#        return CKR_OK;
-#    }
-#
-#    return CKR_FUNCTION_FAILED;
-#}
-#
-#';
+    SvGETMAGIC(sv);
+    if (!SvOK(sv)) {
+        if (!object->'.$type->{outLen}.') {
+            return CKR_FUNCTION_FAILED;
+        }
+
+        if (object->private.'.$type->{name}.') {
+            free(object->private.'.$type->{name}.');
+        }
+
+        if (!(object->private.'.$type->{name}.' = calloc(1, object->'.$type->{outLen}.'))) {
+            return CKR_HOST_MEMORY;
+        }
+        return CKR_OK;
+    }
+
+    if (object->private.'.$type->{name}.' && object->'.$type->{outLen}.') {
+        sv_setpvn(sv, object->private.'.$type->{name}.', object->'.$type->{outLen}.');
+    }
+    else {
+        sv_setsv(sv, &PL_sv_undef);
+    }
+    SvSETMAGIC(sv);
+
+    return CKR_OK;
+}
+
+CK_RV crypt_pkcs11_'.$lc_struct.'_set_'.$type->{name}.'('.$c_struct.'* object, SV* sv) {
+    UV l;
+
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    SvGETMAGIC(sv);
+
+    if (!SvOK(sv)) {
+        if (object->private.'.$type->{name}.') {
+            free(object->private.'.$type->{name}.');
+            object->private.'.$type->{name}.' = 0;
+        }
+        object->private.'.$type->{outLen}.' = &(object->'.$type->{outLen}.');
+        object->'.$type->{outLen}.' = 0;
+        return CKR_OK;
+    }
+
+    if (!crypt_pkcs11_xs_SvUOK(sv)
+        || !(l = SvUV(sv)))
+    {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    if (object->private.'.$type->{name}.') {
+        free(object->private.'.$type->{name}.');
+    }
+
+    if (!(object->private.'.$type->{name}.' = calloc(1, l))) {
+        return CKR_HOST_MEMORY;
+    }
+    object->private.'.$type->{outLen}.' = &(object->'.$type->{outLen}.');
+    object->'.$type->{outLen}.' = l;
+
+    return CKR_OK;
+}
+
+';
         return;
     }
 
@@ -781,8 +812,84 @@ sub ck_char_ptr {
     my ($struct, $c_struct, $lc_struct, $type) = @_;
 
     if (exists $type->{outLen}) {
-        # TODO
-        unimplemented(@_);
+        print C 'CK_RV crypt_pkcs11_'.$lc_struct.'_get_'.$type->{name}.'('.$c_struct.'* object, SV* sv) {
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    SvGETMAGIC(sv);
+    if (!SvOK(sv)) {
+        if (!object->'.$type->{outLen}.') {
+            return CKR_FUNCTION_FAILED;
+        }
+
+        if (object->private.'.$type->{name}.') {
+            free(object->private.'.$type->{name}.');
+        }
+
+        if (!(object->private.'.$type->{name}.' = calloc(1, object->'.$type->{outLen}.'))) {
+            return CKR_HOST_MEMORY;
+        }
+        return CKR_OK;
+    }
+
+    if (object->private.'.$type->{name}.' && object->'.$type->{outLen}.') {
+        sv_setpvn(sv, object->private.'.$type->{name}.', object->'.$type->{outLen}.');
+        sv_utf8_upgrade(sv);
+    }
+    else {
+        sv_setsv(sv, &PL_sv_undef);
+    }
+    SvSETMAGIC(sv);
+
+    return CKR_OK;
+}
+
+CK_RV crypt_pkcs11_'.$lc_struct.'_set_'.$type->{name}.'('.$c_struct.'* object, SV* sv) {
+    UV l;
+
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    SvGETMAGIC(sv);
+
+    if (!SvOK(sv)) {
+        if (object->private.'.$type->{name}.') {
+            free(object->private.'.$type->{name}.');
+            object->private.'.$type->{name}.' = 0;
+        }
+        object->private.'.$type->{outLen}.' = &(object->'.$type->{outLen}.');
+        object->'.$type->{outLen}.' = 0;
+        return CKR_OK;
+    }
+
+    if (!crypt_pkcs11_xs_SvUOK(sv)
+        || !(l = SvUV(sv)))
+    {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    if (object->private.'.$type->{name}.') {
+        free(object->private.'.$type->{name}.');
+    }
+
+    if (!(object->private.'.$type->{name}.' = calloc(1, l))) {
+        return CKR_HOST_MEMORY;
+    }
+    object->private.'.$type->{outLen}.' = &(object->'.$type->{outLen}.');
+    object->'.$type->{outLen}.' = l;
+
+    return CKR_OK;
+}
+
+';
         return;
     }
 
@@ -864,6 +971,15 @@ CK_RV crypt_pkcs11_'.$lc_struct.'_set_'.$type->{name}.'('.$c_struct.'* object, S
 ';
 }
 
+sub ck_char_ptr_DESTROY {
+    my ($struct, $c_struct, $lc_struct, $type) = @_;
+
+    print C '        if (object->private.'.$type->{name}.') {
+            free(object->private.'.$type->{name}.');
+        }
+';
+}
+
 sub ck_out_ptr_len {
     my ($struct, $c_struct, $lc_struct, $type) = @_;
 
@@ -933,6 +1049,76 @@ sub CK_WTLS_KEY_MAT_OUT_pIV {
 }
 
 sub CK_CMS_SIG_PARAMS_pContentType {
-    # TODO
-    unimplemented(@_);
+    my ($struct, $c_struct, $lc_struct, $type) = @_;
+
+    print C 'CK_RV crypt_pkcs11_'.$lc_struct.'_get_'.$type->{name}.'('.$c_struct.'* object, SV* sv) {
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    SvGETMAGIC(sv);
+    sv_setpv(sv, object->private.'.$type->{name}.');
+    sv_utf8_upgrade(sv);
+    SvSETMAGIC(sv);
+
+    return CKR_OK;
+}
+
+CK_RV crypt_pkcs11_'.$lc_struct.'_set_'.$type->{name}.'('.$c_struct.'* object, SV* sv) {
+    CK_CHAR_PTR n;
+    CK_CHAR_PTR p;
+    STRLEN l;
+    SV* _sv;
+
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    SvGETMAGIC(sv);
+
+    if (!SvOK(sv)) {
+        if (object->private.'.$type->{name}.') {
+            free(object->private.'.$type->{name}.');
+            object->private.'.$type->{name}.' = 0;
+        }
+        return CKR_OK;
+    }
+
+    if (!SvPOK(sv)) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    if (!(_sv = newSVsv(sv))) {
+        return CKR_GENERAL_ERROR;
+    }
+
+    if (!sv_utf8_downgrade(_sv, 0)
+        || !(p = SvPV(_sv, l)))
+    {
+        SvREFCNT_dec(_sv);
+        return CKR_GENERAL_ERROR;
+    }
+
+    if (!(n = calloc(1, l + 1))) {
+        SvREFCNT_dec(_sv);
+        return CKR_HOST_MEMORY;
+    }
+
+    memcpy(n, p, l);
+    if (object->private.'.$type->{name}.') {
+        free(object->private.'.$type->{name}.');
+    }
+    object->private.'.$type->{name}.' = n;
+
+    SvREFCNT_dec(_sv);
+    return CKR_OK;
+}
+
+';
 }
