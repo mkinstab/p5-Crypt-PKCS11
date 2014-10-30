@@ -49,6 +49,8 @@ my %LEN = (
 my %HEADER_ALLOC_DESTORY = (
     CK_PBE_PARAMS => \&CK_PBE_PARAMS,
     CK_WTLS_MASTER_KEY_DERIVE_PARAMS => \&CK_WTLS_MASTER_KEY_DERIVE_PARAMS,
+    CK_SSL3_KEY_MAT_OUT => \&CK_SSL3_KEY_MAT_OUT,
+    CK_WTLS_KEY_MAT_OUT => \&CK_WTLS_KEY_MAT_OUT,
 );
 
 my $struct;
@@ -64,13 +66,19 @@ my %T = (
     CK_CHAR_PTR => \&ck_char_ptr,
     CK_UTF8CHAR_PTR => \&ck_char_ptr,
     CK_VOID_PTR => \&ck_byte_ptr,
-    CK_VERSION_PTR => \&unimplemented,
-    CK_MECHANISM_PTR => \&unimplemented,
-    CK_SSL3_RANDOM_DATA => \&unimplemented,
-    CK_SSL3_KEY_MAT_OUT_PTR => \&unimplemented,
-    CK_WTLS_RANDOM_DATA => \&unimplemented,
-    CK_WTLS_KEY_MAT_OUT_PTR => \&unimplemented,
+    CK_VERSION_PTR => \&ck_version_ptr,
+    CK_MECHANISM_PTR => \&ck_mechanism_ptr,
+    CK_SSL3_RANDOM_DATA => \&ck_ssl3_random_data,
+    CK_SSL3_KEY_MAT_OUT_PTR => \&ck_ssl3_key_mat_out_ptr,
+    CK_WTLS_RANDOM_DATA => \&ck_wtls_random_data,
+    CK_WTLS_KEY_MAT_OUT_PTR => \&ck_wtls_key_mat_out_ptr,
     CK_OTP_PARAM_PTR => \&unimplemented,
+);
+my %NEW = (
+    CK_VERSION_PTR => \&ck_type_ptr_new,
+    CK_MECHANISM_PTR => \&ck_type_ptr_new,
+    CK_SSL3_KEY_MAT_OUT_PTR => \&ck_type_ptr_new,
+    CK_WTLS_KEY_MAT_OUT_PTR => \&ck_type_ptr_new,
 );
 my %TT = (
     CK_PBE_PARAMS => {
@@ -99,11 +107,11 @@ my %D = (
     CK_UTF8CHAR_PTR => \&ck_char_ptr_DESTROY,
     CK_VOID_PTR => \&ck_byte_ptr_DESTROY,
     CK_VERSION_PTR => undef,
-    CK_MECHANISM_PTR => undef,
-    CK_SSL3_RANDOM_DATA => undef,
-    CK_SSL3_KEY_MAT_OUT_PTR => undef,
-    CK_WTLS_RANDOM_DATA => undef,
-    CK_WTLS_KEY_MAT_OUT_PTR => undef,
+    CK_MECHANISM_PTR => \&ck_mechanism_ptr_DESTROY,
+    CK_SSL3_RANDOM_DATA => \&ck_ssl3_random_data_DESTROY,
+    CK_SSL3_KEY_MAT_OUT_PTR => \&ck_ssl3_key_mat_out_ptr_DESTROY,
+    CK_WTLS_RANDOM_DATA => \&ck_wtls_random_data_DESTROY,
+    CK_WTLS_KEY_MAT_OUT_PTR => \&ck_wtls_key_mat_out_ptr_DESTROY,
     CK_OTP_PARAM_PTR => undef,
 );
 my %H = (
@@ -114,15 +122,29 @@ my %H = (
     CK_CHAR_PTR => \&ck_out_ptr_len,
     CK_UTF8CHAR_PTR => \&ck_out_ptr_len,
     CK_VOID_PTR => \&ck_out_ptr_len,
-    CK_VERSION_PTR => undef,
-    CK_MECHANISM_PTR => undef,
+    CK_VERSION_PTR => \&ck_version_ptr_h,
+    CK_MECHANISM_PTR => \&ck_mechanism_ptr_h,
     CK_SSL3_RANDOM_DATA => undef,
-    CK_SSL3_KEY_MAT_OUT_PTR => undef,
+    CK_SSL3_KEY_MAT_OUT_PTR => \&ck_ssl3_key_mat_out_ptr_h,
     CK_WTLS_RANDOM_DATA => undef,
-    CK_WTLS_KEY_MAT_OUT_PTR => undef,
+    CK_WTLS_KEY_MAT_OUT_PTR => \&ck_wtls_key_mat_out_ptr_h,
     CK_OTP_PARAM_PTR => undef,
 );
+my %HH = (
+    CK_VERSION_PTR => \&ck_version_ptr_hh,
+    CK_MECHANISM_PTR => \&ck_mechanism_ptr_hh,
+    CK_SSL3_RANDOM_DATA => \&ck_ssl3_random_data_hh,
+    CK_SSL3_KEY_MAT_OUT_PTR => \&ck_ssl3_key_mat_out_ptr_hh,
+    CK_WTLS_RANDOM_DATA => \&ck_wtls_random_data_hh,
+    CK_WTLS_KEY_MAT_OUT_PTR => \&ck_wtls_key_mat_out_ptr_hh,
+);
 my %XS = (
+    CK_VERSION_PTR => \&ck_version_ptr_xs,
+    CK_MECHANISM_PTR => \&ck_mechanism_ptr_xs,
+    CK_SSL3_RANDOM_DATA => \&ck_ssl3_random_data_xs,
+    CK_SSL3_KEY_MAT_OUT_PTR => \&ck_ssl3_key_mat_out_ptr_xs,
+    CK_WTLS_RANDOM_DATA => \&ck_wtls_random_data_xs,
+    CK_WTLS_KEY_MAT_OUT_PTR => \&ck_wtls_key_mat_out_ptr_xs,
 );
 my %XSXS = (
 );
@@ -425,11 +447,34 @@ sub gen_c {
     if (!object) {
         croak("memory allocation error");
 ';
+    my $else = 1;
     if (exists $HEADER_ALLOC_DESTORY{$struct}) {
         print C '    }
     else {
 ';
+        $else = 0;
         $HEADER_ALLOC_DESTORY{$struct}->(1);
+    }
+    foreach (@$types) {
+        my $type = $_->{type};
+        while (1) {
+            if (exists $NEW{$type}) {
+                if (defined $NEW{$type}) {
+                    if ($else) {
+        print C '    }
+    else {
+';
+        $else = 0;
+                    }
+                    $NEW{$type}->($struct, $c_struct, $lc_struct, $_);
+                }
+                last;
+            }
+            unless (exists $base{$type}) {
+                last;
+            }
+            $type = $base{$type};
+        }
     }
 print C '    }
     return object;
@@ -515,6 +560,11 @@ sub gen_h {
 void crypt_pkcs11_'.$lc_struct.'_DESTROY('.$c_struct.'* object);
 ';
     foreach (@$types) {
+        my $type = $_->{type};
+        if (exists $HH{$type}) {
+            $HH{$type}->($struct, $c_struct, $lc_struct, $_);
+            last;
+        }
         print H 'CK_RV crypt_pkcs11_'.$lc_struct.'_get_'.$_->{name}.'('.$c_struct.'* object, SV* sv);
 CK_RV crypt_pkcs11_'.$lc_struct.'_set_'.$_->{name}.'('.$c_struct.'* object, SV* sv);
 ';
@@ -548,8 +598,56 @@ sub ck_byte_or_ulong {
     my ($struct, $c_struct, $lc_struct, $type) = @_;
 
     if (exists $type->{size}) {
-        # TODO
-        unimplemented(@_);
+        print C 'CK_RV crypt_pkcs11_'.$lc_struct.'_get_'.$type->{name}.'('.$c_struct.'* object, SV* sv) {
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    SvGETMAGIC(sv);
+    sv_setpvn(sv, object->private.'.$type->{name}.', '.$type->{size}.' * sizeof('.$type->{type}.'));
+    SvSETMAGIC(sv);
+
+    return CKR_OK;
+}
+
+CK_RV crypt_pkcs11_'.$lc_struct.'_set_'.$type->{name}.'('.$c_struct.'* object, SV* sv) {
+    char* p;
+    STRLEN l;
+
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    SvGETMAGIC(sv);
+
+    if (!SvOK(sv)) {
+        memset(object->private.'.$type->{name}.', 0, '.$type->{size}.' * sizeof('.$type->{type}.'));
+        return CKR_OK;
+    }
+
+    if (!SvPOK(sv)) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    if (!(p = SvPVbyte(sv, l))) {
+        return CKR_GENERAL_ERROR;
+    }
+    if (l != ('.$type->{size}.' * sizeof('.$type->{type}.'))) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    memcpy(object->private.'.$type->{name}.', p, '.$type->{size}.' * sizeof('.$type->{type}.'));
+
+    return CKR_OK;
+}
+
+';
         return;
     }
 
@@ -989,6 +1087,216 @@ sub ck_out_ptr_len {
     }
 }
 
+sub ck_type_ptr_new {
+    my ($struct, $c_struct, $lc_struct, $type) = @_;
+    
+    print C '        object->private.'.$type->{name}.' = &(object->'.$type->{name}.');
+';
+}
+
+sub ck_version_ptr {
+    my ($struct, $c_struct, $lc_struct, $type) = @_;
+
+    print C 'CK_RV crypt_pkcs11_'.$lc_struct.'_get_'.$type->{name}.'('.$c_struct.'* object, Crypt__PKCS11__CK_VERSION* sv) {
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    sv->private.major = object->'.$type->{name}.'.major;
+    sv->private.minor = object->'.$type->{name}.'.minor;
+
+    return CKR_OK;
+}
+
+CK_RV crypt_pkcs11_'.$lc_struct.'_set_'.$type->{name}.'('.$c_struct.'* object, Crypt__PKCS11__CK_VERSION* sv) {
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    object->'.$type->{name}.'.major = sv->private.major;
+    object->'.$type->{name}.'.minor = sv->private.minor;
+
+    return CKR_OK;
+}
+
+';
+}
+
+sub ck_version_ptr_h {
+    my ($struct, $c_struct, $lc_struct, $type) = @_;
+
+    print H '    CK_VERSION '.$type->{name}.';
+';
+}
+
+sub ck_version_ptr_hh {
+    my ($struct, $c_struct, $lc_struct, $type) = @_;
+
+    print H 'CK_RV crypt_pkcs11_'.$lc_struct.'_get_'.$_->{name}.'('.$c_struct.'* object, Crypt__PKCS11__CK_VERSION* sv);
+CK_RV crypt_pkcs11_'.$lc_struct.'_set_'.$_->{name}.'('.$c_struct.'* object, Crypt__PKCS11__CK_VERSION* sv);
+';
+}
+
+sub ck_version_ptr_xs {
+    my ($struct, $c_struct, $lc_struct, $type) = @_;
+
+    print XS 'CK_RV
+crypt_pkcs11_'.$lc_struct.'_get_'.$type->{name}.'(object, sv)
+    Crypt::PKCS11::'.$struct.'* object
+    Crypt::PKCS11::CK_VERSION* sv
+PROTOTYPE: $
+OUTPUT:
+    RETVAL
+
+Crypt::PKCS11::CK_VERSION*
+crypt_pkcs11_'.$lc_struct.'_'.$type->{name}.'(object)
+    Crypt::PKCS11::'.$struct.'* object
+PROTOTYPE: $
+CODE:
+    RETVAL = crypt_pkcs11_ck_version_new("Crypt::PKCS11::CK_VERSION");
+    crypt_pkcs11_'.$lc_struct.'_get_'.$type->{name}.'(object, RETVAL);
+OUTPUT:
+    RETVAL
+
+CK_RV
+crypt_pkcs11_'.$lc_struct.'_set_'.$type->{name}.'(object, sv)
+    Crypt::PKCS11::'.$struct.'* object
+    Crypt::PKCS11::CK_VERSION* sv
+PROTOTYPE: $
+OUTPUT:
+    RETVAL
+
+';
+}
+
+sub ck_mechanism_ptr {
+    my ($struct, $c_struct, $lc_struct, $type) = @_;
+
+    print C 'CK_RV crypt_pkcs11_'.$lc_struct.'_get_'.$type->{name}.'('.$c_struct.'* object, Crypt__PKCS11__CK_MECHANISM* sv) {
+    CK_VOID_PTR pParameter = NULL_PTR;
+
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    if (object->'.$type->{name}.'.ulParameterLen
+        && !(pParameter = calloc(1, object->'.$type->{name}.'.ulParameterLen)))
+    {
+        return CKR_HOST_MEMORY;
+    }
+
+    if (pParameter) {
+        memcpy(pParameter, object->'.$type->{name}.'.pParameter, object->'.$type->{name}.'.ulParameterLen);
+    }
+
+    if (sv->private.pParameter) {
+        free(sv->private.pParameter);
+    }
+    sv->private.mechanism = object->'.$type->{name}.'.mechanism;
+    sv->private.pParameter = pParameter;
+    sv->private.ulParameterLen = object->'.$type->{name}.'.ulParameterLen;
+
+    return CKR_OK;
+}
+
+CK_RV crypt_pkcs11_'.$lc_struct.'_set_'.$type->{name}.'('.$c_struct.'* object, Crypt__PKCS11__CK_MECHANISM* sv) {
+    CK_VOID_PTR pParameter = NULL_PTR;
+
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    if (sv->private.ulParameterLen
+        && !(pParameter = calloc(1, sv->private.ulParameterLen)))
+    {
+        return CKR_HOST_MEMORY;
+    }
+
+    if (pParameter) {
+        memcpy(pParameter, sv->private.pParameter, sv->private.ulParameterLen);
+    }
+
+    if (object->'.$type->{name}.'.pParameter) {
+        free(object->'.$type->{name}.'.pParameter);
+    }
+    object->'.$type->{name}.'.mechanism = sv->private.mechanism;
+    object->'.$type->{name}.'.pParameter = pParameter;
+    object->'.$type->{name}.'.ulParameterLen = sv->private.ulParameterLen;
+
+    return CKR_OK;
+}
+
+';
+}
+
+sub ck_mechanism_ptr_DESTROY {
+    my ($struct, $c_struct, $lc_struct, $type) = @_;
+
+    print C '        if (object->'.$type->{name}.'.pParameter) {
+            free(object->'.$type->{name}.'.pParameter);
+        }
+';
+}
+
+sub ck_mechanism_ptr_h {
+    my ($struct, $c_struct, $lc_struct, $type) = @_;
+
+    print H '    CK_MECHANISM '.$type->{name}.';
+';
+}
+
+sub ck_mechanism_ptr_hh {
+    my ($struct, $c_struct, $lc_struct, $type) = @_;
+
+    print H 'CK_RV crypt_pkcs11_'.$lc_struct.'_get_'.$_->{name}.'('.$c_struct.'* object, Crypt__PKCS11__CK_MECHANISM* sv);
+CK_RV crypt_pkcs11_'.$lc_struct.'_set_'.$_->{name}.'('.$c_struct.'* object, Crypt__PKCS11__CK_MECHANISM* sv);
+';
+}
+
+sub ck_mechanism_ptr_xs {
+    my ($struct, $c_struct, $lc_struct, $type) = @_;
+
+    print XS 'CK_RV
+crypt_pkcs11_'.$lc_struct.'_get_'.$type->{name}.'(object, sv)
+    Crypt::PKCS11::'.$struct.'* object
+    Crypt::PKCS11::CK_MECHANISM* sv
+PROTOTYPE: $
+OUTPUT:
+    RETVAL
+
+Crypt::PKCS11::CK_MECHANISM*
+crypt_pkcs11_'.$lc_struct.'_'.$type->{name}.'(object)
+    Crypt::PKCS11::'.$struct.'* object
+PROTOTYPE: $
+CODE:
+    RETVAL = crypt_pkcs11_ck_mechanism_new("Crypt::PKCS11::CK_MECHANISM");
+    crypt_pkcs11_'.$lc_struct.'_get_'.$type->{name}.'(object, RETVAL);
+OUTPUT:
+    RETVAL
+
+CK_RV
+crypt_pkcs11_'.$lc_struct.'_set_'.$type->{name}.'(object, sv)
+    Crypt::PKCS11::'.$struct.'* object
+    Crypt::PKCS11::CK_MECHANISM* sv
+PROTOTYPE: $
+OUTPUT:
+    RETVAL
+
+';
+}
+
 sub CK_PBE_PARAMS {
     if ($_[0] == 1) {
         print C '        if (!(object->private.pInitVector = calloc(1, 8))) {
@@ -1007,18 +1315,387 @@ sub CK_PBE_PARAMS {
 }
 
 sub CK_PBE_PARAMS_pInitVector {
-    # TODO
-    unimplemented(@_);
+    my ($struct, $c_struct, $lc_struct, $type) = @_;
+
+    print C 'CK_RV crypt_pkcs11_'.$lc_struct.'_get_'.$type->{name}.'('.$c_struct.'* object, SV* sv) {
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    SvGETMAGIC(sv);
+    sv_setpvn(sv, object->private.'.$type->{name}.', 8);
+    SvSETMAGIC(sv);
+
+    return CKR_OK;
+}
+
+CK_RV crypt_pkcs11_'.$lc_struct.'_set_'.$type->{name}.'('.$c_struct.'* object, SV* sv) {
+    char* p;
+    STRLEN l;
+
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    SvGETMAGIC(sv);
+
+    if (!SvOK(sv)) {
+        memset(object->private.'.$type->{name}.', 0, 8);
+        return CKR_OK;
+    }
+
+    if (!SvPOK(sv)) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    if (!(p = SvPVbyte(sv, l))) {
+        return CKR_GENERAL_ERROR;
+    }
+    if (l != 8) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    memcpy(object->private.'.$type->{name}.', p, 8);
+
+    return CKR_OK;
+}
+
+';
+}
+
+sub ck_ssl3_random_data {
+    my ($struct, $c_struct, $lc_struct, $type) = @_;
+
+    print C 'CK_RV crypt_pkcs11_'.$lc_struct.'_get_'.$type->{name}.'('.$c_struct.'* object, Crypt__PKCS11__CK_SSL3_RANDOM_DATA* sv) {
+    CK_BYTE_PTR pClientRandom = NULL_PTR;
+    CK_BYTE_PTR pServerRandom = NULL_PTR;
+
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    if (object->private.'.$type->{name}.'.pClientRandom
+        && !(pClientRandom = calloc(object->private.'.$type->{name}.'.ulClientRandomLen, sizeof(CK_BYTE))))
+    {
+        return CKR_HOST_MEMORY;
+    }
+    if (object->private.'.$type->{name}.'.pServerRandom
+        && !(pServerRandom = calloc(object->private.'.$type->{name}.'.ulServerRandomLen, sizeof(CK_BYTE))))
+    {
+        free(pClientRandom);
+        return CKR_HOST_MEMORY;
+    }
+
+    if (pClientRandom) {
+        memcpy(pClientRandom, object->private.'.$type->{name}.'.pClientRandom, object->private.'.$type->{name}.'.ulClientRandomLen * sizeof(CK_BYTE));
+    }
+    if (pServerRandom) {
+        memcpy(pServerRandom, object->private.'.$type->{name}.'.pServerRandom, object->private.'.$type->{name}.'.ulServerRandomLen * sizeof(CK_BYTE));
+    }
+
+    if (sv->private.pClientRandom) {
+        free(sv->private.pClientRandom);
+    }
+    if (sv->private.pServerRandom) {
+        free(sv->private.pServerRandom);
+    }
+
+    sv->private.pClientRandom = pClientRandom;
+    sv->private.ulClientRandomLen = object->private.'.$type->{name}.'.ulClientRandomLen;
+    sv->private.pServerRandom = pServerRandom;
+    sv->private.ulServerRandomLen = object->private.'.$type->{name}.'.ulServerRandomLen;
+
+    return CKR_OK;
+}
+
+CK_RV crypt_pkcs11_'.$lc_struct.'_set_'.$type->{name}.'('.$c_struct.'* object, Crypt__PKCS11__CK_SSL3_RANDOM_DATA* sv) {
+    CK_BYTE_PTR pClientRandom = NULL_PTR;
+    CK_BYTE_PTR pServerRandom = NULL_PTR;
+
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    if (sv->private.pClientRandom
+        && !(pClientRandom = calloc(sv->private.ulClientRandomLen, sizeof(CK_BYTE))))
+    {
+        return CKR_HOST_MEMORY;
+    }
+    if (sv->private.pServerRandom
+        && !(pServerRandom = calloc(sv->private.ulServerRandomLen, sizeof(CK_BYTE))))
+    {
+        free(pClientRandom);
+        return CKR_HOST_MEMORY;
+    }
+
+    if (pClientRandom) {
+        memcpy(pClientRandom, sv->private.pClientRandom, sv->private.ulClientRandomLen * sizeof(CK_BYTE));
+    }
+    if (pServerRandom) {
+        memcpy(pServerRandom, sv->private.pServerRandom, sv->private.ulServerRandomLen * sizeof(CK_BYTE));
+    }
+
+    if (object->private.'.$type->{name}.'.pClientRandom) {
+        free(object->private.'.$type->{name}.'.pClientRandom);
+    }
+    if (object->private.'.$type->{name}.'.pServerRandom) {
+        free(object->private.'.$type->{name}.'.pServerRandom);
+    }
+
+    object->private.'.$type->{name}.'.pClientRandom = pClientRandom;
+    object->private.'.$type->{name}.'.ulClientRandomLen = sv->private.ulClientRandomLen;
+    object->private.'.$type->{name}.'.pServerRandom = pServerRandom;
+    object->private.'.$type->{name}.'.ulServerRandomLen = sv->private.ulServerRandomLen;
+
+    return CKR_OK;
+}
+
+';
+}
+
+sub ck_ssl3_random_data_DESTROY {
+    my ($struct, $c_struct, $lc_struct, $type) = @_;
+
+    print C '        if (object->private.'.$type->{name}.'.pClientRandom) {
+            free(object->private.'.$type->{name}.'.pClientRandom);
+        }
+        if (object->private.'.$type->{name}.'.pServerRandom) {
+            free(object->private.'.$type->{name}.'.pServerRandom);
+        }
+';
+}
+
+sub ck_ssl3_random_data_hh {
+    my ($struct, $c_struct, $lc_struct, $type) = @_;
+
+    print H 'CK_RV crypt_pkcs11_'.$lc_struct.'_get_'.$_->{name}.'('.$c_struct.'* object, Crypt__PKCS11__CK_SSL3_RANDOM_DATA* sv);
+CK_RV crypt_pkcs11_'.$lc_struct.'_set_'.$_->{name}.'('.$c_struct.'* object, Crypt__PKCS11__CK_SSL3_RANDOM_DATA* sv);
+';
+}
+
+sub ck_ssl3_random_data_xs {
+    my ($struct, $c_struct, $lc_struct, $type) = @_;
+
+    print XS 'CK_RV
+crypt_pkcs11_'.$lc_struct.'_get_'.$type->{name}.'(object, sv)
+    Crypt::PKCS11::'.$struct.'* object
+    Crypt::PKCS11::CK_SSL3_RANDOM_DATA* sv
+PROTOTYPE: $
+OUTPUT:
+    RETVAL
+
+Crypt::PKCS11::CK_SSL3_RANDOM_DATA*
+crypt_pkcs11_'.$lc_struct.'_'.$type->{name}.'(object)
+    Crypt::PKCS11::'.$struct.'* object
+PROTOTYPE: $
+CODE:
+    RETVAL = crypt_pkcs11_ck_ssl3_random_data_new("Crypt::PKCS11::CK_SSL3_RANDOM_DATA");
+    crypt_pkcs11_'.$lc_struct.'_get_'.$type->{name}.'(object, RETVAL);
+OUTPUT:
+    RETVAL
+
+CK_RV
+crypt_pkcs11_'.$lc_struct.'_set_'.$type->{name}.'(object, sv)
+    Crypt::PKCS11::'.$struct.'* object
+    Crypt::PKCS11::CK_SSL3_RANDOM_DATA* sv
+PROTOTYPE: $
+OUTPUT:
+    RETVAL
+
+';
+}
+
+sub CK_SSL3_KEY_MAT_OUT {
+    if ($_[0] == 2) {
+        print H '    CK_ULONG ulIVClient;
+    CK_ULONG ulIVServer;
+';
+    }
 }
 
 sub CK_SSL3_KEY_MAT_OUT_pIVClient {
-    # TODO
-    unimplemented(@_);
+    my ($struct, $c_struct, $lc_struct, $type) = @_;
+    my $ln = $type->{name};
+    $ln =~ s/^p/ul/o;
+
+    print C 'CK_RV crypt_pkcs11_'.$lc_struct.'_get_'.$type->{name}.'('.$c_struct.'* object, SV* sv) {
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    SvGETMAGIC(sv);
+    sv_setpvn(sv, object->private.'.$type->{name}.', object->'.$ln.');
+    SvSETMAGIC(sv);
+
+    return CKR_OK;
+}
+
+CK_RV crypt_pkcs11_'.$lc_struct.'_set_'.$type->{name}.'('.$c_struct.'* object, SV* sv) {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+}
+
+';
 }
 
 sub CK_SSL3_KEY_MAT_OUT_pIVServer {
-    # TODO
-    unimplemented(@_);
+    my ($struct, $c_struct, $lc_struct, $type) = @_;
+    my $ln = $type->{name};
+    $ln =~ s/^p/ul/o;
+
+    print C 'CK_RV crypt_pkcs11_'.$lc_struct.'_get_'.$type->{name}.'('.$c_struct.'* object, SV* sv) {
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    SvGETMAGIC(sv);
+    sv_setpvn(sv, object->private.'.$type->{name}.', object->'.$ln.');
+    SvSETMAGIC(sv);
+
+    return CKR_OK;
+}
+
+CK_RV crypt_pkcs11_'.$lc_struct.'_set_'.$type->{name}.'('.$c_struct.'* object, SV* sv) {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+}
+
+';
+}
+
+sub ck_ssl3_key_mat_out_ptr {
+    my ($struct, $c_struct, $lc_struct, $type) = @_;
+
+    print C 'CK_RV crypt_pkcs11_'.$lc_struct.'_get_'.$type->{name}.'('.$c_struct.'* object, Crypt__PKCS11__CK_SSL3_KEY_MAT_OUT* sv) {
+    CK_BYTE_PTR pIVClient = NULL_PTR;
+    CK_BYTE_PTR pIVServer = NULL_PTR;
+
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    if ((object->private.ulIVSizeInBits % 8)) {
+        return CKR_GENERAL_ERROR;
+    }
+
+    if (object->private.ulIVSizeInBits
+        && !(pIVClient = calloc(object->private.ulIVSizeInBits / 8, sizeof(CK_BYTE))))
+    {
+        return CKR_HOST_MEMORY;
+    }
+    if (object->private.ulIVSizeInBits
+        && !(pIVServer = calloc(object->private.ulIVSizeInBits / 8, sizeof(CK_BYTE))))
+    {
+        free(pIVClient);
+        return CKR_HOST_MEMORY;
+    }
+
+    if (pIVClient) {
+        memcpy(pIVClient, object->'.$type->{name}.'.pIVClient, (object->private.ulIVSizeInBits / 8) * sizeof(CK_BYTE));
+    }
+    if (pIVServer) {
+        memcpy(pIVServer, object->'.$type->{name}.'.pIVServer, (object->private.ulIVSizeInBits / 8) * sizeof(CK_BYTE));
+    }
+
+    if (sv->private.pIVClient) {
+        free(sv->private.pIVClient);
+    }
+    if (sv->private.pIVServer) {
+        free(sv->private.pIVServer);
+    }
+
+    sv->private.hClientMacSecret = object->'.$type->{name}.'.hClientMacSecret;
+    sv->private.hServerMacSecret = object->'.$type->{name}.'.hServerMacSecret;
+    sv->private.hClientKey = object->'.$type->{name}.'.hClientKey;
+    sv->private.hServerKey = object->'.$type->{name}.'.hServerKey;
+    sv->private.pIVClient = pIVClient;
+    if (pIVClient) {
+        sv->ulIVClient = (object->private.ulIVSizeInBits / 8) * sizeof(CK_BYTE);
+    }
+    else {
+        sv->ulIVClient = 0;
+    }
+    sv->private.pIVServer = pIVServer;
+    if (pIVServer) {
+        sv->ulIVServer = (object->private.ulIVSizeInBits / 8) * sizeof(CK_BYTE);
+    }
+    else {
+        sv->ulIVServer = 0;
+    }
+
+    return CKR_OK;
+}
+
+';
+}
+
+sub ck_ssl3_key_mat_out_ptr_DESTROY {
+    my ($struct, $c_struct, $lc_struct, $type) = @_;
+
+    print C '        if (object->'.$type->{name}.'.pIVClient) {
+            free(object->'.$type->{name}.'.pIVClient);
+        }
+        if (object->'.$type->{name}.'.pIVServer) {
+            free(object->'.$type->{name}.'.pIVServer);
+        }
+';
+}
+
+sub ck_ssl3_key_mat_out_ptr_h {
+    my ($struct, $c_struct, $lc_struct, $type) = @_;
+
+    print H '    CK_SSL3_KEY_MAT_OUT '.$type->{name}.';
+';
+}
+
+sub ck_ssl3_key_mat_out_ptr_hh {
+    my ($struct, $c_struct, $lc_struct, $type) = @_;
+
+    print H 'CK_RV crypt_pkcs11_'.$lc_struct.'_get_'.$_->{name}.'('.$c_struct.'* object, Crypt__PKCS11__CK_SSL3_KEY_MAT_OUT* sv);
+';
+}
+
+sub ck_ssl3_key_mat_out_ptr_xs {
+    my ($struct, $c_struct, $lc_struct, $type) = @_;
+
+    print XS 'CK_RV
+crypt_pkcs11_'.$lc_struct.'_get_'.$type->{name}.'(object, sv)
+    Crypt::PKCS11::'.$struct.'* object
+    Crypt::PKCS11::CK_SSL3_KEY_MAT_OUT* sv
+PROTOTYPE: $
+OUTPUT:
+    RETVAL
+
+Crypt::PKCS11::CK_SSL3_KEY_MAT_OUT*
+crypt_pkcs11_'.$lc_struct.'_'.$type->{name}.'(object)
+    Crypt::PKCS11::'.$struct.'* object
+PROTOTYPE: $
+CODE:
+    RETVAL = crypt_pkcs11_ck_ssl3_key_mat_out_new("Crypt::PKCS11::CK_SSL3_KEY_MAT_OUT");
+    crypt_pkcs11_'.$lc_struct.'_get_'.$type->{name}.'(object, RETVAL);
+OUTPUT:
+    RETVAL
+
+';
 }
 
 sub CK_WTLS_MASTER_KEY_DERIVE_PARAMS {
@@ -1039,13 +1716,304 @@ sub CK_WTLS_MASTER_KEY_DERIVE_PARAMS {
 }
 
 sub CK_WTLS_MASTER_KEY_DERIVE_PARAMS_pVersion {
-    # TODO
-    unimplemented(@_);
+    my ($struct, $c_struct, $lc_struct, $type) = @_;
+
+    print C 'CK_RV crypt_pkcs11_'.$lc_struct.'_get_'.$type->{name}.'('.$c_struct.'* object, SV* sv) {
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    SvGETMAGIC(sv);
+    sv_setuv(sv, *(object->private.'.$type->{name}.'));
+    SvSETMAGIC(sv);
+
+    return CKR_OK;
+}
+
+CK_RV crypt_pkcs11_'.$lc_struct.'_set_'.$type->{name}.'('.$c_struct.'* object, SV* sv) {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+}
+
+';
+}
+
+sub ck_wtls_random_data {
+    my ($struct, $c_struct, $lc_struct, $type) = @_;
+
+    print C 'CK_RV crypt_pkcs11_'.$lc_struct.'_get_'.$type->{name}.'('.$c_struct.'* object, Crypt__PKCS11__CK_WTLS_RANDOM_DATA* sv) {
+    CK_BYTE_PTR pClientRandom = NULL_PTR;
+    CK_BYTE_PTR pServerRandom = NULL_PTR;
+
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    if (object->private.'.$type->{name}.'.pClientRandom
+        && !(pClientRandom = calloc(object->private.'.$type->{name}.'.ulClientRandomLen, sizeof(CK_BYTE))))
+    {
+        return CKR_HOST_MEMORY;
+    }
+    if (object->private.'.$type->{name}.'.pServerRandom
+        && !(pServerRandom = calloc(object->private.'.$type->{name}.'.ulServerRandomLen, sizeof(CK_BYTE))))
+    {
+        free(pClientRandom);
+        return CKR_HOST_MEMORY;
+    }
+
+    if (pClientRandom) {
+        memcpy(pClientRandom, object->private.'.$type->{name}.'.pClientRandom, object->private.'.$type->{name}.'.ulClientRandomLen * sizeof(CK_BYTE));
+    }
+    if (pServerRandom) {
+        memcpy(pServerRandom, object->private.'.$type->{name}.'.pServerRandom, object->private.'.$type->{name}.'.ulServerRandomLen * sizeof(CK_BYTE));
+    }
+
+    if (sv->private.pClientRandom) {
+        free(sv->private.pClientRandom);
+    }
+    if (sv->private.pServerRandom) {
+        free(sv->private.pServerRandom);
+    }
+
+    sv->private.pClientRandom = pClientRandom;
+    sv->private.ulClientRandomLen = object->private.'.$type->{name}.'.ulClientRandomLen;
+    sv->private.pServerRandom = pServerRandom;
+    sv->private.ulServerRandomLen = object->private.'.$type->{name}.'.ulServerRandomLen;
+
+    return CKR_OK;
+}
+
+CK_RV crypt_pkcs11_'.$lc_struct.'_set_'.$type->{name}.'('.$c_struct.'* object, Crypt__PKCS11__CK_WTLS_RANDOM_DATA* sv) {
+    CK_BYTE_PTR pClientRandom = NULL_PTR;
+    CK_BYTE_PTR pServerRandom = NULL_PTR;
+
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    if (sv->private.pClientRandom
+        && !(pClientRandom = calloc(sv->private.ulClientRandomLen, sizeof(CK_BYTE))))
+    {
+        return CKR_HOST_MEMORY;
+    }
+    if (sv->private.pServerRandom
+        && !(pServerRandom = calloc(sv->private.ulServerRandomLen, sizeof(CK_BYTE))))
+    {
+        free(pClientRandom);
+        return CKR_HOST_MEMORY;
+    }
+
+    if (pClientRandom) {
+        memcpy(pClientRandom, sv->private.pClientRandom, sv->private.ulClientRandomLen * sizeof(CK_BYTE));
+    }
+    if (pServerRandom) {
+        memcpy(pServerRandom, sv->private.pServerRandom, sv->private.ulServerRandomLen * sizeof(CK_BYTE));
+    }
+
+    if (object->private.'.$type->{name}.'.pClientRandom) {
+        free(object->private.'.$type->{name}.'.pClientRandom);
+    }
+    if (object->private.'.$type->{name}.'.pServerRandom) {
+        free(object->private.'.$type->{name}.'.pServerRandom);
+    }
+
+    object->private.'.$type->{name}.'.pClientRandom = pClientRandom;
+    object->private.'.$type->{name}.'.ulClientRandomLen = sv->private.ulClientRandomLen;
+    object->private.'.$type->{name}.'.pServerRandom = pServerRandom;
+    object->private.'.$type->{name}.'.ulServerRandomLen = sv->private.ulServerRandomLen;
+
+    return CKR_OK;
+}
+
+';
+}
+
+sub ck_wtls_random_data_DESTROY {
+    my ($struct, $c_struct, $lc_struct, $type) = @_;
+
+    print C '        if (object->private.'.$type->{name}.'.pClientRandom) {
+            free(object->private.'.$type->{name}.'.pClientRandom);
+        }
+        if (object->private.'.$type->{name}.'.pServerRandom) {
+            free(object->private.'.$type->{name}.'.pServerRandom);
+        }
+';
+}
+
+sub ck_wtls_random_data_hh {
+    my ($struct, $c_struct, $lc_struct, $type) = @_;
+
+    print H 'CK_RV crypt_pkcs11_'.$lc_struct.'_get_'.$_->{name}.'('.$c_struct.'* object, Crypt__PKCS11__CK_WTLS_RANDOM_DATA* sv);
+CK_RV crypt_pkcs11_'.$lc_struct.'_set_'.$_->{name}.'('.$c_struct.'* object, Crypt__PKCS11__CK_WTLS_RANDOM_DATA* sv);
+';
+}
+
+sub ck_wtls_random_data_xs {
+    my ($struct, $c_struct, $lc_struct, $type) = @_;
+
+    print XS 'CK_RV
+crypt_pkcs11_'.$lc_struct.'_get_'.$type->{name}.'(object, sv)
+    Crypt::PKCS11::'.$struct.'* object
+    Crypt::PKCS11::CK_WTLS_RANDOM_DATA* sv
+PROTOTYPE: $
+OUTPUT:
+    RETVAL
+
+Crypt::PKCS11::CK_WTLS_RANDOM_DATA*
+crypt_pkcs11_'.$lc_struct.'_'.$type->{name}.'(object)
+    Crypt::PKCS11::'.$struct.'* object
+PROTOTYPE: $
+CODE:
+    RETVAL = crypt_pkcs11_ck_wtls_random_data_new("Crypt::PKCS11::CK_WTLS_RANDOM_DATA");
+    crypt_pkcs11_'.$lc_struct.'_get_'.$type->{name}.'(object, RETVAL);
+OUTPUT:
+    RETVAL
+
+CK_RV
+crypt_pkcs11_'.$lc_struct.'_set_'.$type->{name}.'(object, sv)
+    Crypt::PKCS11::'.$struct.'* object
+    Crypt::PKCS11::CK_WTLS_RANDOM_DATA* sv
+PROTOTYPE: $
+OUTPUT:
+    RETVAL
+
+';
+}
+
+sub CK_WTLS_KEY_MAT_OUT {
+    if ($_[0] == 2) {
+        print H '    CK_ULONG ulIV;
+';
+    }
 }
 
 sub CK_WTLS_KEY_MAT_OUT_pIV {
-    # TODO
-    unimplemented(@_);
+    my ($struct, $c_struct, $lc_struct, $type) = @_;
+    my $ln = $type->{name};
+    $ln =~ s/^p/ul/o;
+
+    print C 'CK_RV crypt_pkcs11_'.$lc_struct.'_get_'.$type->{name}.'('.$c_struct.'* object, SV* sv) {
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    SvGETMAGIC(sv);
+    sv_setpvn(sv, object->private.'.$type->{name}.', object->'.$ln.');
+    SvSETMAGIC(sv);
+
+    return CKR_OK;
+}
+
+CK_RV crypt_pkcs11_'.$lc_struct.'_set_'.$type->{name}.'('.$c_struct.'* object, SV* sv) {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+}
+
+';
+}
+
+sub ck_wtls_key_mat_out_ptr {
+    my ($struct, $c_struct, $lc_struct, $type) = @_;
+
+    print C 'CK_RV crypt_pkcs11_'.$lc_struct.'_get_'.$type->{name}.'('.$c_struct.'* object, Crypt__PKCS11__CK_WTLS_KEY_MAT_OUT* sv) {
+    CK_BYTE_PTR pIV = NULL_PTR;
+
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    if ((object->private.ulIVSizeInBits % 8)) {
+        return CKR_GENERAL_ERROR;
+    }
+
+    if (object->private.ulIVSizeInBits
+        && !(pIV = calloc(object->private.ulIVSizeInBits / 8, sizeof(CK_BYTE))))
+    {
+        return CKR_HOST_MEMORY;
+    }
+
+    if (pIV) {
+        memcpy(pIV, object->'.$type->{name}.'.pIV, (object->private.ulIVSizeInBits / 8) * sizeof(CK_BYTE));
+    }
+
+    if (sv->private.pIV) {
+        free(sv->private.pIV);
+    }
+
+    sv->private.hMacSecret = object->'.$type->{name}.'.hMacSecret;
+    sv->private.hKey = object->'.$type->{name}.'.hKey;
+    sv->private.pIV = pIV;
+    if (pIV) {
+        sv->ulIV = (object->private.ulIVSizeInBits / 8) * sizeof(CK_BYTE);
+    }
+    else {
+        sv->ulIV = 0;
+    }
+
+    return CKR_OK;
+}
+
+';
+}
+
+sub ck_wtls_key_mat_out_ptr_DESTROY {
+    my ($struct, $c_struct, $lc_struct, $type) = @_;
+
+    print C '        if (object->'.$type->{name}.'.pIV) {
+            free(object->'.$type->{name}.'.pIV);
+        }
+';
+}
+
+sub ck_wtls_key_mat_out_ptr_h {
+    my ($struct, $c_struct, $lc_struct, $type) = @_;
+
+    print H '    CK_WTLS_KEY_MAT_OUT '.$type->{name}.';
+';
+}
+
+sub ck_wtls_key_mat_out_ptr_hh {
+    my ($struct, $c_struct, $lc_struct, $type) = @_;
+
+    print H 'CK_RV crypt_pkcs11_'.$lc_struct.'_get_'.$_->{name}.'('.$c_struct.'* object, Crypt__PKCS11__CK_WTLS_KEY_MAT_OUT* sv);
+';
+}
+
+sub ck_wtls_key_mat_out_ptr_xs {
+    my ($struct, $c_struct, $lc_struct, $type) = @_;
+
+    print XS 'CK_RV
+crypt_pkcs11_'.$lc_struct.'_get_'.$type->{name}.'(object, sv)
+    Crypt::PKCS11::'.$struct.'* object
+    Crypt::PKCS11::CK_WTLS_KEY_MAT_OUT* sv
+PROTOTYPE: $
+OUTPUT:
+    RETVAL
+
+Crypt::PKCS11::CK_WTLS_KEY_MAT_OUT*
+crypt_pkcs11_'.$lc_struct.'_'.$type->{name}.'(object)
+    Crypt::PKCS11::'.$struct.'* object
+PROTOTYPE: $
+CODE:
+    RETVAL = crypt_pkcs11_ck_wtls_key_mat_out_new("Crypt::PKCS11::CK_WTLS_KEY_MAT_OUT");
+    crypt_pkcs11_'.$lc_struct.'_get_'.$type->{name}.'(object, RETVAL);
+OUTPUT:
+    RETVAL
+
+';
 }
 
 sub CK_CMS_SIG_PARAMS_pContentType {

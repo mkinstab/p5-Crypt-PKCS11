@@ -2539,17 +2539,17 @@ PROTOTYPE: $
 CK_RV
 crypt_pkcs11_ck_ssl3_master_key_derive_params_get_RandomInfo(object, sv)
     Crypt::PKCS11::CK_SSL3_MASTER_KEY_DERIVE_PARAMS* object
-    SV* sv
+    Crypt::PKCS11::CK_SSL3_RANDOM_DATA* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
-SV*
+Crypt::PKCS11::CK_SSL3_RANDOM_DATA*
 crypt_pkcs11_ck_ssl3_master_key_derive_params_RandomInfo(object)
     Crypt::PKCS11::CK_SSL3_MASTER_KEY_DERIVE_PARAMS* object
 PROTOTYPE: $
 CODE:
-    RETVAL = newSV(0);
+    RETVAL = crypt_pkcs11_ck_ssl3_random_data_new("Crypt::PKCS11::CK_SSL3_RANDOM_DATA");
     crypt_pkcs11_ck_ssl3_master_key_derive_params_get_RandomInfo(object, RETVAL);
 OUTPUT:
     RETVAL
@@ -2557,7 +2557,7 @@ OUTPUT:
 CK_RV
 crypt_pkcs11_ck_ssl3_master_key_derive_params_set_RandomInfo(object, sv)
     Crypt::PKCS11::CK_SSL3_MASTER_KEY_DERIVE_PARAMS* object
-    SV* sv
+    Crypt::PKCS11::CK_SSL3_RANDOM_DATA* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
@@ -2565,17 +2565,17 @@ OUTPUT:
 CK_RV
 crypt_pkcs11_ck_ssl3_master_key_derive_params_get_pVersion(object, sv)
     Crypt::PKCS11::CK_SSL3_MASTER_KEY_DERIVE_PARAMS* object
-    SV* sv
+    Crypt::PKCS11::CK_VERSION* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
-SV*
+Crypt::PKCS11::CK_VERSION*
 crypt_pkcs11_ck_ssl3_master_key_derive_params_pVersion(object)
     Crypt::PKCS11::CK_SSL3_MASTER_KEY_DERIVE_PARAMS* object
 PROTOTYPE: $
 CODE:
-    RETVAL = newSV(0);
+    RETVAL = crypt_pkcs11_ck_version_new("Crypt::PKCS11::CK_VERSION");
     crypt_pkcs11_ck_ssl3_master_key_derive_params_get_pVersion(object, RETVAL);
 OUTPUT:
     RETVAL
@@ -2583,7 +2583,7 @@ OUTPUT:
 CK_RV
 crypt_pkcs11_ck_ssl3_master_key_derive_params_set_pVersion(object, sv)
     Crypt::PKCS11::CK_SSL3_MASTER_KEY_DERIVE_PARAMS* object
-    SV* sv
+    Crypt::PKCS11::CK_VERSION* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
@@ -2891,17 +2891,17 @@ OUTPUT:
 CK_RV
 crypt_pkcs11_ck_ssl3_key_mat_params_get_RandomInfo(object, sv)
     Crypt::PKCS11::CK_SSL3_KEY_MAT_PARAMS* object
-    SV* sv
+    Crypt::PKCS11::CK_SSL3_RANDOM_DATA* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
-SV*
+Crypt::PKCS11::CK_SSL3_RANDOM_DATA*
 crypt_pkcs11_ck_ssl3_key_mat_params_RandomInfo(object)
     Crypt::PKCS11::CK_SSL3_KEY_MAT_PARAMS* object
 PROTOTYPE: $
 CODE:
-    RETVAL = newSV(0);
+    RETVAL = crypt_pkcs11_ck_ssl3_random_data_new("Crypt::PKCS11::CK_SSL3_RANDOM_DATA");
     crypt_pkcs11_ck_ssl3_key_mat_params_get_RandomInfo(object, RETVAL);
 OUTPUT:
     RETVAL
@@ -2909,7 +2909,7 @@ OUTPUT:
 CK_RV
 crypt_pkcs11_ck_ssl3_key_mat_params_set_RandomInfo(object, sv)
     Crypt::PKCS11::CK_SSL3_KEY_MAT_PARAMS* object
-    SV* sv
+    Crypt::PKCS11::CK_SSL3_RANDOM_DATA* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
@@ -2917,26 +2917,18 @@ OUTPUT:
 CK_RV
 crypt_pkcs11_ck_ssl3_key_mat_params_get_pReturnedKeyMaterial(object, sv)
     Crypt::PKCS11::CK_SSL3_KEY_MAT_PARAMS* object
-    SV* sv
+    Crypt::PKCS11::CK_SSL3_KEY_MAT_OUT* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
-SV*
+Crypt::PKCS11::CK_SSL3_KEY_MAT_OUT*
 crypt_pkcs11_ck_ssl3_key_mat_params_pReturnedKeyMaterial(object)
     Crypt::PKCS11::CK_SSL3_KEY_MAT_PARAMS* object
 PROTOTYPE: $
 CODE:
-    RETVAL = newSV(0);
+    RETVAL = crypt_pkcs11_ck_ssl3_key_mat_out_new("Crypt::PKCS11::CK_SSL3_KEY_MAT_OUT");
     crypt_pkcs11_ck_ssl3_key_mat_params_get_pReturnedKeyMaterial(object, RETVAL);
-OUTPUT:
-    RETVAL
-
-CK_RV
-crypt_pkcs11_ck_ssl3_key_mat_params_set_pReturnedKeyMaterial(object, sv)
-    Crypt::PKCS11::CK_SSL3_KEY_MAT_PARAMS* object
-    SV* sv
-PROTOTYPE: $
 OUTPUT:
     RETVAL
 
@@ -3159,17 +3151,17 @@ OUTPUT:
 CK_RV
 crypt_pkcs11_ck_wtls_master_key_derive_params_get_RandomInfo(object, sv)
     Crypt::PKCS11::CK_WTLS_MASTER_KEY_DERIVE_PARAMS* object
-    SV* sv
+    Crypt::PKCS11::CK_WTLS_RANDOM_DATA* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
-SV*
+Crypt::PKCS11::CK_WTLS_RANDOM_DATA*
 crypt_pkcs11_ck_wtls_master_key_derive_params_RandomInfo(object)
     Crypt::PKCS11::CK_WTLS_MASTER_KEY_DERIVE_PARAMS* object
 PROTOTYPE: $
 CODE:
-    RETVAL = newSV(0);
+    RETVAL = crypt_pkcs11_ck_wtls_random_data_new("Crypt::PKCS11::CK_WTLS_RANDOM_DATA");
     crypt_pkcs11_ck_wtls_master_key_derive_params_get_RandomInfo(object, RETVAL);
 OUTPUT:
     RETVAL
@@ -3177,7 +3169,7 @@ OUTPUT:
 CK_RV
 crypt_pkcs11_ck_wtls_master_key_derive_params_set_RandomInfo(object, sv)
     Crypt::PKCS11::CK_WTLS_MASTER_KEY_DERIVE_PARAMS* object
-    SV* sv
+    Crypt::PKCS11::CK_WTLS_RANDOM_DATA* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
@@ -3609,17 +3601,17 @@ OUTPUT:
 CK_RV
 crypt_pkcs11_ck_wtls_key_mat_params_get_RandomInfo(object, sv)
     Crypt::PKCS11::CK_WTLS_KEY_MAT_PARAMS* object
-    SV* sv
+    Crypt::PKCS11::CK_WTLS_RANDOM_DATA* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
-SV*
+Crypt::PKCS11::CK_WTLS_RANDOM_DATA*
 crypt_pkcs11_ck_wtls_key_mat_params_RandomInfo(object)
     Crypt::PKCS11::CK_WTLS_KEY_MAT_PARAMS* object
 PROTOTYPE: $
 CODE:
-    RETVAL = newSV(0);
+    RETVAL = crypt_pkcs11_ck_wtls_random_data_new("Crypt::PKCS11::CK_WTLS_RANDOM_DATA");
     crypt_pkcs11_ck_wtls_key_mat_params_get_RandomInfo(object, RETVAL);
 OUTPUT:
     RETVAL
@@ -3627,7 +3619,7 @@ OUTPUT:
 CK_RV
 crypt_pkcs11_ck_wtls_key_mat_params_set_RandomInfo(object, sv)
     Crypt::PKCS11::CK_WTLS_KEY_MAT_PARAMS* object
-    SV* sv
+    Crypt::PKCS11::CK_WTLS_RANDOM_DATA* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
@@ -3635,26 +3627,18 @@ OUTPUT:
 CK_RV
 crypt_pkcs11_ck_wtls_key_mat_params_get_pReturnedKeyMaterial(object, sv)
     Crypt::PKCS11::CK_WTLS_KEY_MAT_PARAMS* object
-    SV* sv
+    Crypt::PKCS11::CK_WTLS_KEY_MAT_OUT* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
-SV*
+Crypt::PKCS11::CK_WTLS_KEY_MAT_OUT*
 crypt_pkcs11_ck_wtls_key_mat_params_pReturnedKeyMaterial(object)
     Crypt::PKCS11::CK_WTLS_KEY_MAT_PARAMS* object
 PROTOTYPE: $
 CODE:
-    RETVAL = newSV(0);
+    RETVAL = crypt_pkcs11_ck_wtls_key_mat_out_new("Crypt::PKCS11::CK_WTLS_KEY_MAT_OUT");
     crypt_pkcs11_ck_wtls_key_mat_params_get_pReturnedKeyMaterial(object, RETVAL);
-OUTPUT:
-    RETVAL
-
-CK_RV
-crypt_pkcs11_ck_wtls_key_mat_params_set_pReturnedKeyMaterial(object, sv)
-    Crypt::PKCS11::CK_WTLS_KEY_MAT_PARAMS* object
-    SV* sv
-PROTOTYPE: $
 OUTPUT:
     RETVAL
 
@@ -3707,17 +3691,17 @@ OUTPUT:
 CK_RV
 crypt_pkcs11_ck_cms_sig_params_get_pSigningMechanism(object, sv)
     Crypt::PKCS11::CK_CMS_SIG_PARAMS* object
-    SV* sv
+    Crypt::PKCS11::CK_MECHANISM* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
-SV*
+Crypt::PKCS11::CK_MECHANISM*
 crypt_pkcs11_ck_cms_sig_params_pSigningMechanism(object)
     Crypt::PKCS11::CK_CMS_SIG_PARAMS* object
 PROTOTYPE: $
 CODE:
-    RETVAL = newSV(0);
+    RETVAL = crypt_pkcs11_ck_mechanism_new("Crypt::PKCS11::CK_MECHANISM");
     crypt_pkcs11_ck_cms_sig_params_get_pSigningMechanism(object, RETVAL);
 OUTPUT:
     RETVAL
@@ -3725,7 +3709,7 @@ OUTPUT:
 CK_RV
 crypt_pkcs11_ck_cms_sig_params_set_pSigningMechanism(object, sv)
     Crypt::PKCS11::CK_CMS_SIG_PARAMS* object
-    SV* sv
+    Crypt::PKCS11::CK_MECHANISM* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
@@ -3733,17 +3717,17 @@ OUTPUT:
 CK_RV
 crypt_pkcs11_ck_cms_sig_params_get_pDigestMechanism(object, sv)
     Crypt::PKCS11::CK_CMS_SIG_PARAMS* object
-    SV* sv
+    Crypt::PKCS11::CK_MECHANISM* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
-SV*
+Crypt::PKCS11::CK_MECHANISM*
 crypt_pkcs11_ck_cms_sig_params_pDigestMechanism(object)
     Crypt::PKCS11::CK_CMS_SIG_PARAMS* object
 PROTOTYPE: $
 CODE:
-    RETVAL = newSV(0);
+    RETVAL = crypt_pkcs11_ck_mechanism_new("Crypt::PKCS11::CK_MECHANISM");
     crypt_pkcs11_ck_cms_sig_params_get_pDigestMechanism(object, RETVAL);
 OUTPUT:
     RETVAL
@@ -3751,7 +3735,7 @@ OUTPUT:
 CK_RV
 crypt_pkcs11_ck_cms_sig_params_set_pDigestMechanism(object, sv)
     Crypt::PKCS11::CK_CMS_SIG_PARAMS* object
-    SV* sv
+    Crypt::PKCS11::CK_MECHANISM* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
@@ -4295,17 +4279,17 @@ PROTOTYPE: $
 CK_RV
 crypt_pkcs11_ck_kip_params_get_pMechanism(object, sv)
     Crypt::PKCS11::CK_KIP_PARAMS* object
-    SV* sv
+    Crypt::PKCS11::CK_MECHANISM* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
-SV*
+Crypt::PKCS11::CK_MECHANISM*
 crypt_pkcs11_ck_kip_params_pMechanism(object)
     Crypt::PKCS11::CK_KIP_PARAMS* object
 PROTOTYPE: $
 CODE:
-    RETVAL = newSV(0);
+    RETVAL = crypt_pkcs11_ck_mechanism_new("Crypt::PKCS11::CK_MECHANISM");
     crypt_pkcs11_ck_kip_params_get_pMechanism(object, RETVAL);
 OUTPUT:
     RETVAL
@@ -4313,7 +4297,7 @@ OUTPUT:
 CK_RV
 crypt_pkcs11_ck_kip_params_set_pMechanism(object, sv)
     Crypt::PKCS11::CK_KIP_PARAMS* object
-    SV* sv
+    Crypt::PKCS11::CK_MECHANISM* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
