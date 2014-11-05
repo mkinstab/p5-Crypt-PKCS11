@@ -397,6 +397,13 @@ crypt_pkcs11_'.$lc_struct.'_DESTROY(object)
     Crypt::PKCS11::'.$struct.'* object
 PROTOTYPE: $
 
+SV*
+crypt_pkcs11_'.$lc_struct.'_toBytes(object)
+    Crypt::PKCS11::'.$struct.'* object
+PROTOTYPE: $
+OUTPUT:
+    RETVAL
+
 ';
     foreach (@$types) {
         if (exists $XSXS{$struct} and exists $XSXS{$struct}->{$_->{name}}) {
@@ -488,6 +495,19 @@ print C '    }
     return object;
 }
 
+SV* crypt_pkcs11_'.$lc_struct.'_toBytes('.$c_struct.'* object) {
+    SV* retval = NULL_PTR;
+
+    if (object) {
+        retval = newSVpvn((const char*)&(object->private), sizeof('.$struct.'));
+    }
+    else {
+        retval = newSVsv(&PL_sv_undef);
+    }
+
+    return retval;
+}
+
 void crypt_pkcs11_'.$lc_struct.'_DESTROY('.$c_struct.'* object) {
     if (object) {
 ';
@@ -566,6 +586,7 @@ sub gen_h {
     print H '} '.$c_struct.';
 '.$c_struct.'* crypt_pkcs11_'.$lc_struct.'_new(const char* class);
 void crypt_pkcs11_'.$lc_struct.'_DESTROY('.$c_struct.'* object);
+SV* crypt_pkcs11_'.$lc_struct.'_toBytes('.$c_struct.'* object);
 ';
     foreach (@$types) {
         my $type = $_->{type};

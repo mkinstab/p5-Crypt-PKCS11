@@ -40,6 +40,19 @@ Crypt__PKCS11__CK_VERSION* crypt_pkcs11_ck_version_new(const char* class) {
     return object;
 }
 
+SV* crypt_pkcs11_ck_version_toBytes(Crypt__PKCS11__CK_VERSION* object) {
+    SV* retval = NULL_PTR;
+
+    if (object) {
+        retval = newSVpvn((const char*)&(object->private), sizeof(CK_VERSION));
+    }
+    else {
+        retval = newSVsv(&PL_sv_undef);
+    }
+
+    return retval;
+}
+
 void crypt_pkcs11_ck_version_DESTROY(Crypt__PKCS11__CK_VERSION* object) {
     if (object) {
         free(object);
@@ -118,6 +131,19 @@ Crypt__PKCS11__CK_MECHANISM* crypt_pkcs11_ck_mechanism_new(const char* class) {
         croak("memory allocation error");
     }
     return object;
+}
+
+SV* crypt_pkcs11_ck_mechanism_toBytes(Crypt__PKCS11__CK_MECHANISM* object) {
+    SV* retval = NULL_PTR;
+
+    if (object) {
+        retval = newSVpvn((const char*)&(object->private), sizeof(CK_MECHANISM));
+    }
+    else {
+        retval = newSVsv(&PL_sv_undef);
+    }
+
+    return retval;
 }
 
 void crypt_pkcs11_ck_mechanism_DESTROY(Crypt__PKCS11__CK_MECHANISM* object) {
@@ -227,6 +253,19 @@ Crypt__PKCS11__CK_RSA_PKCS_OAEP_PARAMS* crypt_pkcs11_ck_rsa_pkcs_oaep_params_new
         croak("memory allocation error");
     }
     return object;
+}
+
+SV* crypt_pkcs11_ck_rsa_pkcs_oaep_params_toBytes(Crypt__PKCS11__CK_RSA_PKCS_OAEP_PARAMS* object) {
+    SV* retval = NULL_PTR;
+
+    if (object) {
+        retval = newSVpvn((const char*)&(object->private), sizeof(CK_RSA_PKCS_OAEP_PARAMS));
+    }
+    else {
+        retval = newSVsv(&PL_sv_undef);
+    }
+
+    return retval;
 }
 
 void crypt_pkcs11_ck_rsa_pkcs_oaep_params_DESTROY(Crypt__PKCS11__CK_RSA_PKCS_OAEP_PARAMS* object) {
@@ -404,6 +443,19 @@ Crypt__PKCS11__CK_RSA_PKCS_PSS_PARAMS* crypt_pkcs11_ck_rsa_pkcs_pss_params_new(c
     return object;
 }
 
+SV* crypt_pkcs11_ck_rsa_pkcs_pss_params_toBytes(Crypt__PKCS11__CK_RSA_PKCS_PSS_PARAMS* object) {
+    SV* retval = NULL_PTR;
+
+    if (object) {
+        retval = newSVpvn((const char*)&(object->private), sizeof(CK_RSA_PKCS_PSS_PARAMS));
+    }
+    else {
+        retval = newSVsv(&PL_sv_undef);
+    }
+
+    return retval;
+}
+
 void crypt_pkcs11_ck_rsa_pkcs_pss_params_DESTROY(Crypt__PKCS11__CK_RSA_PKCS_PSS_PARAMS* object) {
     if (object) {
         free(object);
@@ -515,6 +567,19 @@ Crypt__PKCS11__CK_ECDH1_DERIVE_PARAMS* crypt_pkcs11_ck_ecdh1_derive_params_new(c
         croak("memory allocation error");
     }
     return object;
+}
+
+SV* crypt_pkcs11_ck_ecdh1_derive_params_toBytes(Crypt__PKCS11__CK_ECDH1_DERIVE_PARAMS* object) {
+    SV* retval = NULL_PTR;
+
+    if (object) {
+        retval = newSVpvn((const char*)&(object->private), sizeof(CK_ECDH1_DERIVE_PARAMS));
+    }
+    else {
+        retval = newSVsv(&PL_sv_undef);
+    }
+
+    return retval;
 }
 
 void crypt_pkcs11_ck_ecdh1_derive_params_DESTROY(Crypt__PKCS11__CK_ECDH1_DERIVE_PARAMS* object) {
@@ -686,6 +751,19 @@ Crypt__PKCS11__CK_ECDH2_DERIVE_PARAMS* crypt_pkcs11_ck_ecdh2_derive_params_new(c
         croak("memory allocation error");
     }
     return object;
+}
+
+SV* crypt_pkcs11_ck_ecdh2_derive_params_toBytes(Crypt__PKCS11__CK_ECDH2_DERIVE_PARAMS* object) {
+    SV* retval = NULL_PTR;
+
+    if (object) {
+        retval = newSVpvn((const char*)&(object->private), sizeof(CK_ECDH2_DERIVE_PARAMS));
+    }
+    else {
+        retval = newSVsv(&PL_sv_undef);
+    }
+
+    return retval;
 }
 
 void crypt_pkcs11_ck_ecdh2_derive_params_DESTROY(Crypt__PKCS11__CK_ECDH2_DERIVE_PARAMS* object) {
@@ -952,6 +1030,19 @@ Crypt__PKCS11__CK_ECMQV_DERIVE_PARAMS* crypt_pkcs11_ck_ecmqv_derive_params_new(c
         croak("memory allocation error");
     }
     return object;
+}
+
+SV* crypt_pkcs11_ck_ecmqv_derive_params_toBytes(Crypt__PKCS11__CK_ECMQV_DERIVE_PARAMS* object) {
+    SV* retval = NULL_PTR;
+
+    if (object) {
+        retval = newSVpvn((const char*)&(object->private), sizeof(CK_ECMQV_DERIVE_PARAMS));
+    }
+    else {
+        retval = newSVsv(&PL_sv_undef);
+    }
+
+    return retval;
 }
 
 void crypt_pkcs11_ck_ecmqv_derive_params_DESTROY(Crypt__PKCS11__CK_ECMQV_DERIVE_PARAMS* object) {
@@ -1253,6 +1344,19 @@ Crypt__PKCS11__CK_X9_42_DH1_DERIVE_PARAMS* crypt_pkcs11_ck_x9_42_dh1_derive_para
     return object;
 }
 
+SV* crypt_pkcs11_ck_x9_42_dh1_derive_params_toBytes(Crypt__PKCS11__CK_X9_42_DH1_DERIVE_PARAMS* object) {
+    SV* retval = NULL_PTR;
+
+    if (object) {
+        retval = newSVpvn((const char*)&(object->private), sizeof(CK_X9_42_DH1_DERIVE_PARAMS));
+    }
+    else {
+        retval = newSVsv(&PL_sv_undef);
+    }
+
+    return retval;
+}
+
 void crypt_pkcs11_ck_x9_42_dh1_derive_params_DESTROY(Crypt__PKCS11__CK_X9_42_DH1_DERIVE_PARAMS* object) {
     if (object) {
         if (object->private.pOtherInfo) {
@@ -1422,6 +1526,19 @@ Crypt__PKCS11__CK_X9_42_DH2_DERIVE_PARAMS* crypt_pkcs11_ck_x9_42_dh2_derive_para
         croak("memory allocation error");
     }
     return object;
+}
+
+SV* crypt_pkcs11_ck_x9_42_dh2_derive_params_toBytes(Crypt__PKCS11__CK_X9_42_DH2_DERIVE_PARAMS* object) {
+    SV* retval = NULL_PTR;
+
+    if (object) {
+        retval = newSVpvn((const char*)&(object->private), sizeof(CK_X9_42_DH2_DERIVE_PARAMS));
+    }
+    else {
+        retval = newSVsv(&PL_sv_undef);
+    }
+
+    return retval;
 }
 
 void crypt_pkcs11_ck_x9_42_dh2_derive_params_DESTROY(Crypt__PKCS11__CK_X9_42_DH2_DERIVE_PARAMS* object) {
@@ -1688,6 +1805,19 @@ Crypt__PKCS11__CK_X9_42_MQV_DERIVE_PARAMS* crypt_pkcs11_ck_x9_42_mqv_derive_para
         croak("memory allocation error");
     }
     return object;
+}
+
+SV* crypt_pkcs11_ck_x9_42_mqv_derive_params_toBytes(Crypt__PKCS11__CK_X9_42_MQV_DERIVE_PARAMS* object) {
+    SV* retval = NULL_PTR;
+
+    if (object) {
+        retval = newSVpvn((const char*)&(object->private), sizeof(CK_X9_42_MQV_DERIVE_PARAMS));
+    }
+    else {
+        retval = newSVsv(&PL_sv_undef);
+    }
+
+    return retval;
 }
 
 void crypt_pkcs11_ck_x9_42_mqv_derive_params_DESTROY(Crypt__PKCS11__CK_X9_42_MQV_DERIVE_PARAMS* object) {
@@ -1989,6 +2119,19 @@ Crypt__PKCS11__CK_KEA_DERIVE_PARAMS* crypt_pkcs11_ck_kea_derive_params_new(const
     return object;
 }
 
+SV* crypt_pkcs11_ck_kea_derive_params_toBytes(Crypt__PKCS11__CK_KEA_DERIVE_PARAMS* object) {
+    SV* retval = NULL_PTR;
+
+    if (object) {
+        retval = newSVpvn((const char*)&(object->private), sizeof(CK_KEA_DERIVE_PARAMS));
+    }
+    else {
+        retval = newSVsv(&PL_sv_undef);
+    }
+
+    return retval;
+}
+
 void crypt_pkcs11_ck_kea_derive_params_DESTROY(Crypt__PKCS11__CK_KEA_DERIVE_PARAMS* object) {
     if (object) {
         if (object->private.pRandomA) {
@@ -2227,6 +2370,19 @@ Crypt__PKCS11__CK_RC2_CBC_PARAMS* crypt_pkcs11_ck_rc2_cbc_params_new(const char*
     return object;
 }
 
+SV* crypt_pkcs11_ck_rc2_cbc_params_toBytes(Crypt__PKCS11__CK_RC2_CBC_PARAMS* object) {
+    SV* retval = NULL_PTR;
+
+    if (object) {
+        retval = newSVpvn((const char*)&(object->private), sizeof(CK_RC2_CBC_PARAMS));
+    }
+    else {
+        retval = newSVsv(&PL_sv_undef);
+    }
+
+    return retval;
+}
+
 void crypt_pkcs11_ck_rc2_cbc_params_DESTROY(Crypt__PKCS11__CK_RC2_CBC_PARAMS* object) {
     if (object) {
         free(object);
@@ -2323,6 +2479,19 @@ Crypt__PKCS11__CK_RC2_MAC_GENERAL_PARAMS* crypt_pkcs11_ck_rc2_mac_general_params
     return object;
 }
 
+SV* crypt_pkcs11_ck_rc2_mac_general_params_toBytes(Crypt__PKCS11__CK_RC2_MAC_GENERAL_PARAMS* object) {
+    SV* retval = NULL_PTR;
+
+    if (object) {
+        retval = newSVpvn((const char*)&(object->private), sizeof(CK_RC2_MAC_GENERAL_PARAMS));
+    }
+    else {
+        retval = newSVsv(&PL_sv_undef);
+    }
+
+    return retval;
+}
+
 void crypt_pkcs11_ck_rc2_mac_general_params_DESTROY(Crypt__PKCS11__CK_RC2_MAC_GENERAL_PARAMS* object) {
     if (object) {
         free(object);
@@ -2368,6 +2537,19 @@ Crypt__PKCS11__CK_RC5_PARAMS* crypt_pkcs11_ck_rc5_params_new(const char* class) 
         croak("memory allocation error");
     }
     return object;
+}
+
+SV* crypt_pkcs11_ck_rc5_params_toBytes(Crypt__PKCS11__CK_RC5_PARAMS* object) {
+    SV* retval = NULL_PTR;
+
+    if (object) {
+        retval = newSVpvn((const char*)&(object->private), sizeof(CK_RC5_PARAMS));
+    }
+    else {
+        retval = newSVsv(&PL_sv_undef);
+    }
+
+    return retval;
 }
 
 void crypt_pkcs11_ck_rc5_params_DESTROY(Crypt__PKCS11__CK_RC5_PARAMS* object) {
@@ -2448,6 +2630,19 @@ Crypt__PKCS11__CK_RC5_CBC_PARAMS* crypt_pkcs11_ck_rc5_cbc_params_new(const char*
         croak("memory allocation error");
     }
     return object;
+}
+
+SV* crypt_pkcs11_ck_rc5_cbc_params_toBytes(Crypt__PKCS11__CK_RC5_CBC_PARAMS* object) {
+    SV* retval = NULL_PTR;
+
+    if (object) {
+        retval = newSVpvn((const char*)&(object->private), sizeof(CK_RC5_CBC_PARAMS));
+    }
+    else {
+        retval = newSVsv(&PL_sv_undef);
+    }
+
+    return retval;
 }
 
 void crypt_pkcs11_ck_rc5_cbc_params_DESTROY(Crypt__PKCS11__CK_RC5_CBC_PARAMS* object) {
@@ -2592,6 +2787,19 @@ Crypt__PKCS11__CK_RC5_MAC_GENERAL_PARAMS* crypt_pkcs11_ck_rc5_mac_general_params
     return object;
 }
 
+SV* crypt_pkcs11_ck_rc5_mac_general_params_toBytes(Crypt__PKCS11__CK_RC5_MAC_GENERAL_PARAMS* object) {
+    SV* retval = NULL_PTR;
+
+    if (object) {
+        retval = newSVpvn((const char*)&(object->private), sizeof(CK_RC5_MAC_GENERAL_PARAMS));
+    }
+    else {
+        retval = newSVsv(&PL_sv_undef);
+    }
+
+    return retval;
+}
+
 void crypt_pkcs11_ck_rc5_mac_general_params_DESTROY(Crypt__PKCS11__CK_RC5_MAC_GENERAL_PARAMS* object) {
     if (object) {
         free(object);
@@ -2670,6 +2878,19 @@ Crypt__PKCS11__CK_DES_CBC_ENCRYPT_DATA_PARAMS* crypt_pkcs11_ck_des_cbc_encrypt_d
         croak("memory allocation error");
     }
     return object;
+}
+
+SV* crypt_pkcs11_ck_des_cbc_encrypt_data_params_toBytes(Crypt__PKCS11__CK_DES_CBC_ENCRYPT_DATA_PARAMS* object) {
+    SV* retval = NULL_PTR;
+
+    if (object) {
+        retval = newSVpvn((const char*)&(object->private), sizeof(CK_DES_CBC_ENCRYPT_DATA_PARAMS));
+    }
+    else {
+        retval = newSVsv(&PL_sv_undef);
+    }
+
+    return retval;
 }
 
 void crypt_pkcs11_ck_des_cbc_encrypt_data_params_DESTROY(Crypt__PKCS11__CK_DES_CBC_ENCRYPT_DATA_PARAMS* object) {
@@ -2797,6 +3018,19 @@ Crypt__PKCS11__CK_AES_CBC_ENCRYPT_DATA_PARAMS* crypt_pkcs11_ck_aes_cbc_encrypt_d
     return object;
 }
 
+SV* crypt_pkcs11_ck_aes_cbc_encrypt_data_params_toBytes(Crypt__PKCS11__CK_AES_CBC_ENCRYPT_DATA_PARAMS* object) {
+    SV* retval = NULL_PTR;
+
+    if (object) {
+        retval = newSVpvn((const char*)&(object->private), sizeof(CK_AES_CBC_ENCRYPT_DATA_PARAMS));
+    }
+    else {
+        retval = newSVsv(&PL_sv_undef);
+    }
+
+    return retval;
+}
+
 void crypt_pkcs11_ck_aes_cbc_encrypt_data_params_DESTROY(Crypt__PKCS11__CK_AES_CBC_ENCRYPT_DATA_PARAMS* object) {
     if (object) {
         if (object->private.pData) {
@@ -2920,6 +3154,19 @@ Crypt__PKCS11__CK_SKIPJACK_PRIVATE_WRAP_PARAMS* crypt_pkcs11_ck_skipjack_private
         croak("memory allocation error");
     }
     return object;
+}
+
+SV* crypt_pkcs11_ck_skipjack_private_wrap_params_toBytes(Crypt__PKCS11__CK_SKIPJACK_PRIVATE_WRAP_PARAMS* object) {
+    SV* retval = NULL_PTR;
+
+    if (object) {
+        retval = newSVpvn((const char*)&(object->private), sizeof(CK_SKIPJACK_PRIVATE_WRAP_PARAMS));
+    }
+    else {
+        retval = newSVsv(&PL_sv_undef);
+    }
+
+    return retval;
 }
 
 void crypt_pkcs11_ck_skipjack_private_wrap_params_DESTROY(Crypt__PKCS11__CK_SKIPJACK_PRIVATE_WRAP_PARAMS* object) {
@@ -3306,6 +3553,19 @@ Crypt__PKCS11__CK_SKIPJACK_RELAYX_PARAMS* crypt_pkcs11_ck_skipjack_relayx_params
         croak("memory allocation error");
     }
     return object;
+}
+
+SV* crypt_pkcs11_ck_skipjack_relayx_params_toBytes(Crypt__PKCS11__CK_SKIPJACK_RELAYX_PARAMS* object) {
+    SV* retval = NULL_PTR;
+
+    if (object) {
+        retval = newSVpvn((const char*)&(object->private), sizeof(CK_SKIPJACK_RELAYX_PARAMS));
+    }
+    else {
+        retval = newSVsv(&PL_sv_undef);
+    }
+
+    return retval;
 }
 
 void crypt_pkcs11_ck_skipjack_relayx_params_DESTROY(Crypt__PKCS11__CK_SKIPJACK_RELAYX_PARAMS* object) {
@@ -3763,6 +4023,19 @@ Crypt__PKCS11__CK_PBE_PARAMS* crypt_pkcs11_ck_pbe_params_new(const char* class) 
     return object;
 }
 
+SV* crypt_pkcs11_ck_pbe_params_toBytes(Crypt__PKCS11__CK_PBE_PARAMS* object) {
+    SV* retval = NULL_PTR;
+
+    if (object) {
+        retval = newSVpvn((const char*)&(object->private), sizeof(CK_PBE_PARAMS));
+    }
+    else {
+        retval = newSVsv(&PL_sv_undef);
+    }
+
+    return retval;
+}
+
 void crypt_pkcs11_ck_pbe_params_DESTROY(Crypt__PKCS11__CK_PBE_PARAMS* object) {
     if (object) {
         if (object->private.pInitVector) {
@@ -4001,6 +4274,19 @@ Crypt__PKCS11__CK_KEY_WRAP_SET_OAEP_PARAMS* crypt_pkcs11_ck_key_wrap_set_oaep_pa
     return object;
 }
 
+SV* crypt_pkcs11_ck_key_wrap_set_oaep_params_toBytes(Crypt__PKCS11__CK_KEY_WRAP_SET_OAEP_PARAMS* object) {
+    SV* retval = NULL_PTR;
+
+    if (object) {
+        retval = newSVpvn((const char*)&(object->private), sizeof(CK_KEY_WRAP_SET_OAEP_PARAMS));
+    }
+    else {
+        retval = newSVsv(&PL_sv_undef);
+    }
+
+    return retval;
+}
+
 void crypt_pkcs11_ck_key_wrap_set_oaep_params_DESTROY(Crypt__PKCS11__CK_KEY_WRAP_SET_OAEP_PARAMS* object) {
     if (object) {
         if (object->private.pX) {
@@ -4108,6 +4394,19 @@ Crypt__PKCS11__CK_SSL3_RANDOM_DATA* crypt_pkcs11_ck_ssl3_random_data_new(const c
         croak("memory allocation error");
     }
     return object;
+}
+
+SV* crypt_pkcs11_ck_ssl3_random_data_toBytes(Crypt__PKCS11__CK_SSL3_RANDOM_DATA* object) {
+    SV* retval = NULL_PTR;
+
+    if (object) {
+        retval = newSVpvn((const char*)&(object->private), sizeof(CK_SSL3_RANDOM_DATA));
+    }
+    else {
+        retval = newSVsv(&PL_sv_undef);
+    }
+
+    return retval;
 }
 
 void crypt_pkcs11_ck_ssl3_random_data_DESTROY(Crypt__PKCS11__CK_SSL3_RANDOM_DATA* object) {
@@ -4251,6 +4550,19 @@ Crypt__PKCS11__CK_SSL3_MASTER_KEY_DERIVE_PARAMS* crypt_pkcs11_ck_ssl3_master_key
     return object;
 }
 
+SV* crypt_pkcs11_ck_ssl3_master_key_derive_params_toBytes(Crypt__PKCS11__CK_SSL3_MASTER_KEY_DERIVE_PARAMS* object) {
+    SV* retval = NULL_PTR;
+
+    if (object) {
+        retval = newSVpvn((const char*)&(object->private), sizeof(CK_SSL3_MASTER_KEY_DERIVE_PARAMS));
+    }
+    else {
+        retval = newSVsv(&PL_sv_undef);
+    }
+
+    return retval;
+}
+
 void crypt_pkcs11_ck_ssl3_master_key_derive_params_DESTROY(Crypt__PKCS11__CK_SSL3_MASTER_KEY_DERIVE_PARAMS* object) {
     if (object) {
         if (object->private.RandomInfo.pClientRandom) {
@@ -4389,6 +4701,19 @@ Crypt__PKCS11__CK_SSL3_KEY_MAT_OUT* crypt_pkcs11_ck_ssl3_key_mat_out_new(const c
     else {
     }
     return object;
+}
+
+SV* crypt_pkcs11_ck_ssl3_key_mat_out_toBytes(Crypt__PKCS11__CK_SSL3_KEY_MAT_OUT* object) {
+    SV* retval = NULL_PTR;
+
+    if (object) {
+        retval = newSVpvn((const char*)&(object->private), sizeof(CK_SSL3_KEY_MAT_OUT));
+    }
+    else {
+        retval = newSVsv(&PL_sv_undef);
+    }
+
+    return retval;
 }
 
 void crypt_pkcs11_ck_ssl3_key_mat_out_DESTROY(Crypt__PKCS11__CK_SSL3_KEY_MAT_OUT* object) {
@@ -4582,6 +4907,19 @@ Crypt__PKCS11__CK_SSL3_KEY_MAT_PARAMS* crypt_pkcs11_ck_ssl3_key_mat_params_new(c
         object->private.pReturnedKeyMaterial = &(object->pReturnedKeyMaterial);
     }
     return object;
+}
+
+SV* crypt_pkcs11_ck_ssl3_key_mat_params_toBytes(Crypt__PKCS11__CK_SSL3_KEY_MAT_PARAMS* object) {
+    SV* retval = NULL_PTR;
+
+    if (object) {
+        retval = newSVpvn((const char*)&(object->private), sizeof(CK_SSL3_KEY_MAT_PARAMS));
+    }
+    else {
+        retval = newSVsv(&PL_sv_undef);
+    }
+
+    return retval;
 }
 
 void crypt_pkcs11_ck_ssl3_key_mat_params_DESTROY(Crypt__PKCS11__CK_SSL3_KEY_MAT_PARAMS* object) {
@@ -4900,6 +5238,19 @@ Crypt__PKCS11__CK_TLS_PRF_PARAMS* crypt_pkcs11_ck_tls_prf_params_new(const char*
     return object;
 }
 
+SV* crypt_pkcs11_ck_tls_prf_params_toBytes(Crypt__PKCS11__CK_TLS_PRF_PARAMS* object) {
+    SV* retval = NULL_PTR;
+
+    if (object) {
+        retval = newSVpvn((const char*)&(object->private), sizeof(CK_TLS_PRF_PARAMS));
+    }
+    else {
+        retval = newSVsv(&PL_sv_undef);
+    }
+
+    return retval;
+}
+
 void crypt_pkcs11_ck_tls_prf_params_DESTROY(Crypt__PKCS11__CK_TLS_PRF_PARAMS* object) {
     if (object) {
         if (object->private.pSeed) {
@@ -5117,6 +5468,19 @@ Crypt__PKCS11__CK_WTLS_RANDOM_DATA* crypt_pkcs11_ck_wtls_random_data_new(const c
     return object;
 }
 
+SV* crypt_pkcs11_ck_wtls_random_data_toBytes(Crypt__PKCS11__CK_WTLS_RANDOM_DATA* object) {
+    SV* retval = NULL_PTR;
+
+    if (object) {
+        retval = newSVpvn((const char*)&(object->private), sizeof(CK_WTLS_RANDOM_DATA));
+    }
+    else {
+        retval = newSVsv(&PL_sv_undef);
+    }
+
+    return retval;
+}
+
 void crypt_pkcs11_ck_wtls_random_data_DESTROY(Crypt__PKCS11__CK_WTLS_RANDOM_DATA* object) {
     if (object) {
         if (object->private.pClientRandom) {
@@ -5260,6 +5624,19 @@ Crypt__PKCS11__CK_WTLS_MASTER_KEY_DERIVE_PARAMS* crypt_pkcs11_ck_wtls_master_key
         }
     }
     return object;
+}
+
+SV* crypt_pkcs11_ck_wtls_master_key_derive_params_toBytes(Crypt__PKCS11__CK_WTLS_MASTER_KEY_DERIVE_PARAMS* object) {
+    SV* retval = NULL_PTR;
+
+    if (object) {
+        retval = newSVpvn((const char*)&(object->private), sizeof(CK_WTLS_MASTER_KEY_DERIVE_PARAMS));
+    }
+    else {
+        retval = newSVsv(&PL_sv_undef);
+    }
+
+    return retval;
 }
 
 void crypt_pkcs11_ck_wtls_master_key_derive_params_DESTROY(Crypt__PKCS11__CK_WTLS_MASTER_KEY_DERIVE_PARAMS* object) {
@@ -5428,6 +5805,19 @@ Crypt__PKCS11__CK_WTLS_PRF_PARAMS* crypt_pkcs11_ck_wtls_prf_params_new(const cha
         croak("memory allocation error");
     }
     return object;
+}
+
+SV* crypt_pkcs11_ck_wtls_prf_params_toBytes(Crypt__PKCS11__CK_WTLS_PRF_PARAMS* object) {
+    SV* retval = NULL_PTR;
+
+    if (object) {
+        retval = newSVpvn((const char*)&(object->private), sizeof(CK_WTLS_PRF_PARAMS));
+    }
+    else {
+        retval = newSVsv(&PL_sv_undef);
+    }
+
+    return retval;
 }
 
 void crypt_pkcs11_ck_wtls_prf_params_DESTROY(Crypt__PKCS11__CK_WTLS_PRF_PARAMS* object) {
@@ -5682,6 +6072,19 @@ Crypt__PKCS11__CK_WTLS_KEY_MAT_OUT* crypt_pkcs11_ck_wtls_key_mat_out_new(const c
     return object;
 }
 
+SV* crypt_pkcs11_ck_wtls_key_mat_out_toBytes(Crypt__PKCS11__CK_WTLS_KEY_MAT_OUT* object) {
+    SV* retval = NULL_PTR;
+
+    if (object) {
+        retval = newSVpvn((const char*)&(object->private), sizeof(CK_WTLS_KEY_MAT_OUT));
+    }
+    else {
+        retval = newSVsv(&PL_sv_undef);
+    }
+
+    return retval;
+}
+
 void crypt_pkcs11_ck_wtls_key_mat_out_DESTROY(Crypt__PKCS11__CK_WTLS_KEY_MAT_OUT* object) {
     if (object) {
         if (object->private.pIV) {
@@ -5785,6 +6188,19 @@ Crypt__PKCS11__CK_WTLS_KEY_MAT_PARAMS* crypt_pkcs11_ck_wtls_key_mat_params_new(c
         object->private.pReturnedKeyMaterial = &(object->pReturnedKeyMaterial);
     }
     return object;
+}
+
+SV* crypt_pkcs11_ck_wtls_key_mat_params_toBytes(Crypt__PKCS11__CK_WTLS_KEY_MAT_PARAMS* object) {
+    SV* retval = NULL_PTR;
+
+    if (object) {
+        retval = newSVpvn((const char*)&(object->private), sizeof(CK_WTLS_KEY_MAT_PARAMS));
+    }
+    else {
+        retval = newSVsv(&PL_sv_undef);
+    }
+
+    return retval;
 }
 
 void crypt_pkcs11_ck_wtls_key_mat_params_DESTROY(Crypt__PKCS11__CK_WTLS_KEY_MAT_PARAMS* object) {
@@ -6146,6 +6562,19 @@ Crypt__PKCS11__CK_CMS_SIG_PARAMS* crypt_pkcs11_ck_cms_sig_params_new(const char*
         object->private.pDigestMechanism = &(object->pDigestMechanism);
     }
     return object;
+}
+
+SV* crypt_pkcs11_ck_cms_sig_params_toBytes(Crypt__PKCS11__CK_CMS_SIG_PARAMS* object) {
+    SV* retval = NULL_PTR;
+
+    if (object) {
+        retval = newSVpvn((const char*)&(object->private), sizeof(CK_CMS_SIG_PARAMS));
+    }
+    else {
+        retval = newSVsv(&PL_sv_undef);
+    }
+
+    return retval;
 }
 
 void crypt_pkcs11_ck_cms_sig_params_DESTROY(Crypt__PKCS11__CK_CMS_SIG_PARAMS* object) {
@@ -6517,6 +6946,19 @@ Crypt__PKCS11__CK_KEY_DERIVATION_STRING_DATA* crypt_pkcs11_ck_key_derivation_str
     return object;
 }
 
+SV* crypt_pkcs11_ck_key_derivation_string_data_toBytes(Crypt__PKCS11__CK_KEY_DERIVATION_STRING_DATA* object) {
+    SV* retval = NULL_PTR;
+
+    if (object) {
+        retval = newSVpvn((const char*)&(object->private), sizeof(CK_KEY_DERIVATION_STRING_DATA));
+    }
+    else {
+        retval = newSVsv(&PL_sv_undef);
+    }
+
+    return retval;
+}
+
 void crypt_pkcs11_ck_key_derivation_string_data_DESTROY(Crypt__PKCS11__CK_KEY_DERIVATION_STRING_DATA* object) {
     if (object) {
         if (object->private.pData) {
@@ -6591,6 +7033,19 @@ Crypt__PKCS11__CK_PKCS5_PBKD2_PARAMS* crypt_pkcs11_ck_pkcs5_pbkd2_params_new(con
         croak("memory allocation error");
     }
     return object;
+}
+
+SV* crypt_pkcs11_ck_pkcs5_pbkd2_params_toBytes(Crypt__PKCS11__CK_PKCS5_PBKD2_PARAMS* object) {
+    SV* retval = NULL_PTR;
+
+    if (object) {
+        retval = newSVpvn((const char*)&(object->private), sizeof(CK_PKCS5_PBKD2_PARAMS));
+    }
+    else {
+        retval = newSVsv(&PL_sv_undef);
+    }
+
+    return retval;
 }
 
 void crypt_pkcs11_ck_pkcs5_pbkd2_params_DESTROY(Crypt__PKCS11__CK_PKCS5_PBKD2_PARAMS* object) {
@@ -6910,6 +7365,19 @@ Crypt__PKCS11__CK_OTP_PARAM* crypt_pkcs11_ck_otp_param_new(const char* class) {
     return object;
 }
 
+SV* crypt_pkcs11_ck_otp_param_toBytes(Crypt__PKCS11__CK_OTP_PARAM* object) {
+    SV* retval = NULL_PTR;
+
+    if (object) {
+        retval = newSVpvn((const char*)&(object->private), sizeof(CK_OTP_PARAM));
+    }
+    else {
+        retval = newSVsv(&PL_sv_undef);
+    }
+
+    return retval;
+}
+
 void crypt_pkcs11_ck_otp_param_DESTROY(Crypt__PKCS11__CK_OTP_PARAM* object) {
     if (object) {
         if (object->private.pValue) {
@@ -7017,6 +7485,19 @@ Crypt__PKCS11__CK_OTP_PARAMS* crypt_pkcs11_ck_otp_params_new(const char* class) 
         croak("memory allocation error");
     }
     return object;
+}
+
+SV* crypt_pkcs11_ck_otp_params_toBytes(Crypt__PKCS11__CK_OTP_PARAMS* object) {
+    SV* retval = NULL_PTR;
+
+    if (object) {
+        retval = newSVpvn((const char*)&(object->private), sizeof(CK_OTP_PARAMS));
+    }
+    else {
+        retval = newSVsv(&PL_sv_undef);
+    }
+
+    return retval;
 }
 
 void crypt_pkcs11_ck_otp_params_DESTROY(Crypt__PKCS11__CK_OTP_PARAMS* object) {
@@ -7190,6 +7671,19 @@ Crypt__PKCS11__CK_OTP_SIGNATURE_INFO* crypt_pkcs11_ck_otp_signature_info_new(con
         croak("memory allocation error");
     }
     return object;
+}
+
+SV* crypt_pkcs11_ck_otp_signature_info_toBytes(Crypt__PKCS11__CK_OTP_SIGNATURE_INFO* object) {
+    SV* retval = NULL_PTR;
+
+    if (object) {
+        retval = newSVpvn((const char*)&(object->private), sizeof(CK_OTP_SIGNATURE_INFO));
+    }
+    else {
+        retval = newSVsv(&PL_sv_undef);
+    }
+
+    return retval;
 }
 
 void crypt_pkcs11_ck_otp_signature_info_DESTROY(Crypt__PKCS11__CK_OTP_SIGNATURE_INFO* object) {
@@ -7368,6 +7862,19 @@ Crypt__PKCS11__CK_KIP_PARAMS* crypt_pkcs11_ck_kip_params_new(const char* class) 
     return object;
 }
 
+SV* crypt_pkcs11_ck_kip_params_toBytes(Crypt__PKCS11__CK_KIP_PARAMS* object) {
+    SV* retval = NULL_PTR;
+
+    if (object) {
+        retval = newSVpvn((const char*)&(object->private), sizeof(CK_KIP_PARAMS));
+    }
+    else {
+        retval = newSVsv(&PL_sv_undef);
+    }
+
+    return retval;
+}
+
 void crypt_pkcs11_ck_kip_params_DESTROY(Crypt__PKCS11__CK_KIP_PARAMS* object) {
     if (object) {
         if (object->pMechanism.pParameter) {
@@ -7540,6 +8047,19 @@ Crypt__PKCS11__CK_AES_CTR_PARAMS* crypt_pkcs11_ck_aes_ctr_params_new(const char*
     return object;
 }
 
+SV* crypt_pkcs11_ck_aes_ctr_params_toBytes(Crypt__PKCS11__CK_AES_CTR_PARAMS* object) {
+    SV* retval = NULL_PTR;
+
+    if (object) {
+        retval = newSVpvn((const char*)&(object->private), sizeof(CK_AES_CTR_PARAMS));
+    }
+    else {
+        retval = newSVsv(&PL_sv_undef);
+    }
+
+    return retval;
+}
+
 void crypt_pkcs11_ck_aes_ctr_params_DESTROY(Crypt__PKCS11__CK_AES_CTR_PARAMS* object) {
     if (object) {
         free(object);
@@ -7634,6 +8154,19 @@ Crypt__PKCS11__CK_AES_GCM_PARAMS* crypt_pkcs11_ck_aes_gcm_params_new(const char*
         croak("memory allocation error");
     }
     return object;
+}
+
+SV* crypt_pkcs11_ck_aes_gcm_params_toBytes(Crypt__PKCS11__CK_AES_GCM_PARAMS* object) {
+    SV* retval = NULL_PTR;
+
+    if (object) {
+        retval = newSVpvn((const char*)&(object->private), sizeof(CK_AES_GCM_PARAMS));
+    }
+    else {
+        retval = newSVsv(&PL_sv_undef);
+    }
+
+    return retval;
 }
 
 void crypt_pkcs11_ck_aes_gcm_params_DESTROY(Crypt__PKCS11__CK_AES_GCM_PARAMS* object) {
@@ -7840,6 +8373,19 @@ Crypt__PKCS11__CK_AES_CCM_PARAMS* crypt_pkcs11_ck_aes_ccm_params_new(const char*
     return object;
 }
 
+SV* crypt_pkcs11_ck_aes_ccm_params_toBytes(Crypt__PKCS11__CK_AES_CCM_PARAMS* object) {
+    SV* retval = NULL_PTR;
+
+    if (object) {
+        retval = newSVpvn((const char*)&(object->private), sizeof(CK_AES_CCM_PARAMS));
+    }
+    else {
+        retval = newSVsv(&PL_sv_undef);
+    }
+
+    return retval;
+}
+
 void crypt_pkcs11_ck_aes_ccm_params_DESTROY(Crypt__PKCS11__CK_AES_CCM_PARAMS* object) {
     if (object) {
         if (object->private.pNonce) {
@@ -7978,6 +8524,19 @@ Crypt__PKCS11__CK_CAMELLIA_CTR_PARAMS* crypt_pkcs11_ck_camellia_ctr_params_new(c
     return object;
 }
 
+SV* crypt_pkcs11_ck_camellia_ctr_params_toBytes(Crypt__PKCS11__CK_CAMELLIA_CTR_PARAMS* object) {
+    SV* retval = NULL_PTR;
+
+    if (object) {
+        retval = newSVpvn((const char*)&(object->private), sizeof(CK_CAMELLIA_CTR_PARAMS));
+    }
+    else {
+        retval = newSVsv(&PL_sv_undef);
+    }
+
+    return retval;
+}
+
 void crypt_pkcs11_ck_camellia_ctr_params_DESTROY(Crypt__PKCS11__CK_CAMELLIA_CTR_PARAMS* object) {
     if (object) {
         free(object);
@@ -8072,6 +8631,19 @@ Crypt__PKCS11__CK_CAMELLIA_CBC_ENCRYPT_DATA_PARAMS* crypt_pkcs11_ck_camellia_cbc
         croak("memory allocation error");
     }
     return object;
+}
+
+SV* crypt_pkcs11_ck_camellia_cbc_encrypt_data_params_toBytes(Crypt__PKCS11__CK_CAMELLIA_CBC_ENCRYPT_DATA_PARAMS* object) {
+    SV* retval = NULL_PTR;
+
+    if (object) {
+        retval = newSVpvn((const char*)&(object->private), sizeof(CK_CAMELLIA_CBC_ENCRYPT_DATA_PARAMS));
+    }
+    else {
+        retval = newSVsv(&PL_sv_undef);
+    }
+
+    return retval;
 }
 
 void crypt_pkcs11_ck_camellia_cbc_encrypt_data_params_DESTROY(Crypt__PKCS11__CK_CAMELLIA_CBC_ENCRYPT_DATA_PARAMS* object) {
@@ -8197,6 +8769,19 @@ Crypt__PKCS11__CK_ARIA_CBC_ENCRYPT_DATA_PARAMS* crypt_pkcs11_ck_aria_cbc_encrypt
         croak("memory allocation error");
     }
     return object;
+}
+
+SV* crypt_pkcs11_ck_aria_cbc_encrypt_data_params_toBytes(Crypt__PKCS11__CK_ARIA_CBC_ENCRYPT_DATA_PARAMS* object) {
+    SV* retval = NULL_PTR;
+
+    if (object) {
+        retval = newSVpvn((const char*)&(object->private), sizeof(CK_ARIA_CBC_ENCRYPT_DATA_PARAMS));
+    }
+    else {
+        retval = newSVsv(&PL_sv_undef);
+    }
+
+    return retval;
 }
 
 void crypt_pkcs11_ck_aria_cbc_encrypt_data_params_DESTROY(Crypt__PKCS11__CK_ARIA_CBC_ENCRYPT_DATA_PARAMS* object) {
