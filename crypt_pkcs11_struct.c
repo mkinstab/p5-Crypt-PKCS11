@@ -53,6 +53,43 @@ SV* crypt_pkcs11_ck_version_toBytes(Crypt__PKCS11__CK_VERSION* object) {
     return retval;
 }
 
+CK_RV crypt_pkcs11_ck_version_fromBytes(Crypt__PKCS11__CK_VERSION* object, SV* sv) {
+    CK_BYTE_PTR p;
+    STRLEN l;
+
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    SvGETMAGIC(sv);
+
+    if (!SvPOK(sv)
+        || !(p = SvPVbyte(sv, l))
+        || l != sizeof(CK_VERSION))
+    {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+/*
+
+TODO: fromBytes pre-type
+
+*/
+
+    memcpy(&(object->private), p, l);
+
+/*
+
+TODO: fromBytes post-type
+
+*/
+
+    return CKR_OK;
+}
+
 void crypt_pkcs11_ck_version_DESTROY(Crypt__PKCS11__CK_VERSION* object) {
     if (object) {
         free(object);
@@ -144,6 +181,43 @@ SV* crypt_pkcs11_ck_mechanism_toBytes(Crypt__PKCS11__CK_MECHANISM* object) {
     }
 
     return retval;
+}
+
+CK_RV crypt_pkcs11_ck_mechanism_fromBytes(Crypt__PKCS11__CK_MECHANISM* object, SV* sv) {
+    CK_BYTE_PTR p;
+    STRLEN l;
+
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    SvGETMAGIC(sv);
+
+    if (!SvPOK(sv)
+        || !(p = SvPVbyte(sv, l))
+        || l != sizeof(CK_MECHANISM))
+    {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+/*
+
+TODO: fromBytes pre-type
+
+*/
+
+    memcpy(&(object->private), p, l);
+
+/*
+
+TODO: fromBytes post-type
+
+*/
+
+    return CKR_OK;
 }
 
 void crypt_pkcs11_ck_mechanism_DESTROY(Crypt__PKCS11__CK_MECHANISM* object) {
@@ -266,6 +340,43 @@ SV* crypt_pkcs11_ck_rsa_pkcs_oaep_params_toBytes(Crypt__PKCS11__CK_RSA_PKCS_OAEP
     }
 
     return retval;
+}
+
+CK_RV crypt_pkcs11_ck_rsa_pkcs_oaep_params_fromBytes(Crypt__PKCS11__CK_RSA_PKCS_OAEP_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR p;
+    STRLEN l;
+
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    SvGETMAGIC(sv);
+
+    if (!SvPOK(sv)
+        || !(p = SvPVbyte(sv, l))
+        || l != sizeof(CK_RSA_PKCS_OAEP_PARAMS))
+    {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+/*
+
+TODO: fromBytes pre-type
+
+*/
+
+    memcpy(&(object->private), p, l);
+
+/*
+
+TODO: fromBytes post-type
+
+*/
+
+    return CKR_OK;
 }
 
 void crypt_pkcs11_ck_rsa_pkcs_oaep_params_DESTROY(Crypt__PKCS11__CK_RSA_PKCS_OAEP_PARAMS* object) {
@@ -456,6 +567,43 @@ SV* crypt_pkcs11_ck_rsa_pkcs_pss_params_toBytes(Crypt__PKCS11__CK_RSA_PKCS_PSS_P
     return retval;
 }
 
+CK_RV crypt_pkcs11_ck_rsa_pkcs_pss_params_fromBytes(Crypt__PKCS11__CK_RSA_PKCS_PSS_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR p;
+    STRLEN l;
+
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    SvGETMAGIC(sv);
+
+    if (!SvPOK(sv)
+        || !(p = SvPVbyte(sv, l))
+        || l != sizeof(CK_RSA_PKCS_PSS_PARAMS))
+    {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+/*
+
+TODO: fromBytes pre-type
+
+*/
+
+    memcpy(&(object->private), p, l);
+
+/*
+
+TODO: fromBytes post-type
+
+*/
+
+    return CKR_OK;
+}
+
 void crypt_pkcs11_ck_rsa_pkcs_pss_params_DESTROY(Crypt__PKCS11__CK_RSA_PKCS_PSS_PARAMS* object) {
     if (object) {
         free(object);
@@ -580,6 +728,43 @@ SV* crypt_pkcs11_ck_ecdh1_derive_params_toBytes(Crypt__PKCS11__CK_ECDH1_DERIVE_P
     }
 
     return retval;
+}
+
+CK_RV crypt_pkcs11_ck_ecdh1_derive_params_fromBytes(Crypt__PKCS11__CK_ECDH1_DERIVE_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR p;
+    STRLEN l;
+
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    SvGETMAGIC(sv);
+
+    if (!SvPOK(sv)
+        || !(p = SvPVbyte(sv, l))
+        || l != sizeof(CK_ECDH1_DERIVE_PARAMS))
+    {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+/*
+
+TODO: fromBytes pre-type
+
+*/
+
+    memcpy(&(object->private), p, l);
+
+/*
+
+TODO: fromBytes post-type
+
+*/
+
+    return CKR_OK;
 }
 
 void crypt_pkcs11_ck_ecdh1_derive_params_DESTROY(Crypt__PKCS11__CK_ECDH1_DERIVE_PARAMS* object) {
@@ -764,6 +949,43 @@ SV* crypt_pkcs11_ck_ecdh2_derive_params_toBytes(Crypt__PKCS11__CK_ECDH2_DERIVE_P
     }
 
     return retval;
+}
+
+CK_RV crypt_pkcs11_ck_ecdh2_derive_params_fromBytes(Crypt__PKCS11__CK_ECDH2_DERIVE_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR p;
+    STRLEN l;
+
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    SvGETMAGIC(sv);
+
+    if (!SvPOK(sv)
+        || !(p = SvPVbyte(sv, l))
+        || l != sizeof(CK_ECDH2_DERIVE_PARAMS))
+    {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+/*
+
+TODO: fromBytes pre-type
+
+*/
+
+    memcpy(&(object->private), p, l);
+
+/*
+
+TODO: fromBytes post-type
+
+*/
+
+    return CKR_OK;
 }
 
 void crypt_pkcs11_ck_ecdh2_derive_params_DESTROY(Crypt__PKCS11__CK_ECDH2_DERIVE_PARAMS* object) {
@@ -1043,6 +1265,43 @@ SV* crypt_pkcs11_ck_ecmqv_derive_params_toBytes(Crypt__PKCS11__CK_ECMQV_DERIVE_P
     }
 
     return retval;
+}
+
+CK_RV crypt_pkcs11_ck_ecmqv_derive_params_fromBytes(Crypt__PKCS11__CK_ECMQV_DERIVE_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR p;
+    STRLEN l;
+
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    SvGETMAGIC(sv);
+
+    if (!SvPOK(sv)
+        || !(p = SvPVbyte(sv, l))
+        || l != sizeof(CK_ECMQV_DERIVE_PARAMS))
+    {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+/*
+
+TODO: fromBytes pre-type
+
+*/
+
+    memcpy(&(object->private), p, l);
+
+/*
+
+TODO: fromBytes post-type
+
+*/
+
+    return CKR_OK;
 }
 
 void crypt_pkcs11_ck_ecmqv_derive_params_DESTROY(Crypt__PKCS11__CK_ECMQV_DERIVE_PARAMS* object) {
@@ -1357,6 +1616,43 @@ SV* crypt_pkcs11_ck_x9_42_dh1_derive_params_toBytes(Crypt__PKCS11__CK_X9_42_DH1_
     return retval;
 }
 
+CK_RV crypt_pkcs11_ck_x9_42_dh1_derive_params_fromBytes(Crypt__PKCS11__CK_X9_42_DH1_DERIVE_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR p;
+    STRLEN l;
+
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    SvGETMAGIC(sv);
+
+    if (!SvPOK(sv)
+        || !(p = SvPVbyte(sv, l))
+        || l != sizeof(CK_X9_42_DH1_DERIVE_PARAMS))
+    {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+/*
+
+TODO: fromBytes pre-type
+
+*/
+
+    memcpy(&(object->private), p, l);
+
+/*
+
+TODO: fromBytes post-type
+
+*/
+
+    return CKR_OK;
+}
+
 void crypt_pkcs11_ck_x9_42_dh1_derive_params_DESTROY(Crypt__PKCS11__CK_X9_42_DH1_DERIVE_PARAMS* object) {
     if (object) {
         if (object->private.pOtherInfo) {
@@ -1539,6 +1835,43 @@ SV* crypt_pkcs11_ck_x9_42_dh2_derive_params_toBytes(Crypt__PKCS11__CK_X9_42_DH2_
     }
 
     return retval;
+}
+
+CK_RV crypt_pkcs11_ck_x9_42_dh2_derive_params_fromBytes(Crypt__PKCS11__CK_X9_42_DH2_DERIVE_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR p;
+    STRLEN l;
+
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    SvGETMAGIC(sv);
+
+    if (!SvPOK(sv)
+        || !(p = SvPVbyte(sv, l))
+        || l != sizeof(CK_X9_42_DH2_DERIVE_PARAMS))
+    {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+/*
+
+TODO: fromBytes pre-type
+
+*/
+
+    memcpy(&(object->private), p, l);
+
+/*
+
+TODO: fromBytes post-type
+
+*/
+
+    return CKR_OK;
 }
 
 void crypt_pkcs11_ck_x9_42_dh2_derive_params_DESTROY(Crypt__PKCS11__CK_X9_42_DH2_DERIVE_PARAMS* object) {
@@ -1818,6 +2151,43 @@ SV* crypt_pkcs11_ck_x9_42_mqv_derive_params_toBytes(Crypt__PKCS11__CK_X9_42_MQV_
     }
 
     return retval;
+}
+
+CK_RV crypt_pkcs11_ck_x9_42_mqv_derive_params_fromBytes(Crypt__PKCS11__CK_X9_42_MQV_DERIVE_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR p;
+    STRLEN l;
+
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    SvGETMAGIC(sv);
+
+    if (!SvPOK(sv)
+        || !(p = SvPVbyte(sv, l))
+        || l != sizeof(CK_X9_42_MQV_DERIVE_PARAMS))
+    {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+/*
+
+TODO: fromBytes pre-type
+
+*/
+
+    memcpy(&(object->private), p, l);
+
+/*
+
+TODO: fromBytes post-type
+
+*/
+
+    return CKR_OK;
 }
 
 void crypt_pkcs11_ck_x9_42_mqv_derive_params_DESTROY(Crypt__PKCS11__CK_X9_42_MQV_DERIVE_PARAMS* object) {
@@ -2132,6 +2502,43 @@ SV* crypt_pkcs11_ck_kea_derive_params_toBytes(Crypt__PKCS11__CK_KEA_DERIVE_PARAM
     return retval;
 }
 
+CK_RV crypt_pkcs11_ck_kea_derive_params_fromBytes(Crypt__PKCS11__CK_KEA_DERIVE_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR p;
+    STRLEN l;
+
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    SvGETMAGIC(sv);
+
+    if (!SvPOK(sv)
+        || !(p = SvPVbyte(sv, l))
+        || l != sizeof(CK_KEA_DERIVE_PARAMS))
+    {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+/*
+
+TODO: fromBytes pre-type
+
+*/
+
+    memcpy(&(object->private), p, l);
+
+/*
+
+TODO: fromBytes post-type
+
+*/
+
+    return CKR_OK;
+}
+
 void crypt_pkcs11_ck_kea_derive_params_DESTROY(Crypt__PKCS11__CK_KEA_DERIVE_PARAMS* object) {
     if (object) {
         if (object->private.pRandomA) {
@@ -2383,6 +2790,43 @@ SV* crypt_pkcs11_ck_rc2_cbc_params_toBytes(Crypt__PKCS11__CK_RC2_CBC_PARAMS* obj
     return retval;
 }
 
+CK_RV crypt_pkcs11_ck_rc2_cbc_params_fromBytes(Crypt__PKCS11__CK_RC2_CBC_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR p;
+    STRLEN l;
+
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    SvGETMAGIC(sv);
+
+    if (!SvPOK(sv)
+        || !(p = SvPVbyte(sv, l))
+        || l != sizeof(CK_RC2_CBC_PARAMS))
+    {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+/*
+
+TODO: fromBytes pre-type
+
+*/
+
+    memcpy(&(object->private), p, l);
+
+/*
+
+TODO: fromBytes post-type
+
+*/
+
+    return CKR_OK;
+}
+
 void crypt_pkcs11_ck_rc2_cbc_params_DESTROY(Crypt__PKCS11__CK_RC2_CBC_PARAMS* object) {
     if (object) {
         free(object);
@@ -2492,6 +2936,43 @@ SV* crypt_pkcs11_ck_rc2_mac_general_params_toBytes(Crypt__PKCS11__CK_RC2_MAC_GEN
     return retval;
 }
 
+CK_RV crypt_pkcs11_ck_rc2_mac_general_params_fromBytes(Crypt__PKCS11__CK_RC2_MAC_GENERAL_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR p;
+    STRLEN l;
+
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    SvGETMAGIC(sv);
+
+    if (!SvPOK(sv)
+        || !(p = SvPVbyte(sv, l))
+        || l != sizeof(CK_RC2_MAC_GENERAL_PARAMS))
+    {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+/*
+
+TODO: fromBytes pre-type
+
+*/
+
+    memcpy(&(object->private), p, l);
+
+/*
+
+TODO: fromBytes post-type
+
+*/
+
+    return CKR_OK;
+}
+
 void crypt_pkcs11_ck_rc2_mac_general_params_DESTROY(Crypt__PKCS11__CK_RC2_MAC_GENERAL_PARAMS* object) {
     if (object) {
         free(object);
@@ -2550,6 +3031,43 @@ SV* crypt_pkcs11_ck_rc5_params_toBytes(Crypt__PKCS11__CK_RC5_PARAMS* object) {
     }
 
     return retval;
+}
+
+CK_RV crypt_pkcs11_ck_rc5_params_fromBytes(Crypt__PKCS11__CK_RC5_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR p;
+    STRLEN l;
+
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    SvGETMAGIC(sv);
+
+    if (!SvPOK(sv)
+        || !(p = SvPVbyte(sv, l))
+        || l != sizeof(CK_RC5_PARAMS))
+    {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+/*
+
+TODO: fromBytes pre-type
+
+*/
+
+    memcpy(&(object->private), p, l);
+
+/*
+
+TODO: fromBytes post-type
+
+*/
+
+    return CKR_OK;
 }
 
 void crypt_pkcs11_ck_rc5_params_DESTROY(Crypt__PKCS11__CK_RC5_PARAMS* object) {
@@ -2643,6 +3161,43 @@ SV* crypt_pkcs11_ck_rc5_cbc_params_toBytes(Crypt__PKCS11__CK_RC5_CBC_PARAMS* obj
     }
 
     return retval;
+}
+
+CK_RV crypt_pkcs11_ck_rc5_cbc_params_fromBytes(Crypt__PKCS11__CK_RC5_CBC_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR p;
+    STRLEN l;
+
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    SvGETMAGIC(sv);
+
+    if (!SvPOK(sv)
+        || !(p = SvPVbyte(sv, l))
+        || l != sizeof(CK_RC5_CBC_PARAMS))
+    {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+/*
+
+TODO: fromBytes pre-type
+
+*/
+
+    memcpy(&(object->private), p, l);
+
+/*
+
+TODO: fromBytes post-type
+
+*/
+
+    return CKR_OK;
 }
 
 void crypt_pkcs11_ck_rc5_cbc_params_DESTROY(Crypt__PKCS11__CK_RC5_CBC_PARAMS* object) {
@@ -2800,6 +3355,43 @@ SV* crypt_pkcs11_ck_rc5_mac_general_params_toBytes(Crypt__PKCS11__CK_RC5_MAC_GEN
     return retval;
 }
 
+CK_RV crypt_pkcs11_ck_rc5_mac_general_params_fromBytes(Crypt__PKCS11__CK_RC5_MAC_GENERAL_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR p;
+    STRLEN l;
+
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    SvGETMAGIC(sv);
+
+    if (!SvPOK(sv)
+        || !(p = SvPVbyte(sv, l))
+        || l != sizeof(CK_RC5_MAC_GENERAL_PARAMS))
+    {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+/*
+
+TODO: fromBytes pre-type
+
+*/
+
+    memcpy(&(object->private), p, l);
+
+/*
+
+TODO: fromBytes post-type
+
+*/
+
+    return CKR_OK;
+}
+
 void crypt_pkcs11_ck_rc5_mac_general_params_DESTROY(Crypt__PKCS11__CK_RC5_MAC_GENERAL_PARAMS* object) {
     if (object) {
         free(object);
@@ -2891,6 +3483,43 @@ SV* crypt_pkcs11_ck_des_cbc_encrypt_data_params_toBytes(Crypt__PKCS11__CK_DES_CB
     }
 
     return retval;
+}
+
+CK_RV crypt_pkcs11_ck_des_cbc_encrypt_data_params_fromBytes(Crypt__PKCS11__CK_DES_CBC_ENCRYPT_DATA_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR p;
+    STRLEN l;
+
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    SvGETMAGIC(sv);
+
+    if (!SvPOK(sv)
+        || !(p = SvPVbyte(sv, l))
+        || l != sizeof(CK_DES_CBC_ENCRYPT_DATA_PARAMS))
+    {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+/*
+
+TODO: fromBytes pre-type
+
+*/
+
+    memcpy(&(object->private), p, l);
+
+/*
+
+TODO: fromBytes post-type
+
+*/
+
+    return CKR_OK;
 }
 
 void crypt_pkcs11_ck_des_cbc_encrypt_data_params_DESTROY(Crypt__PKCS11__CK_DES_CBC_ENCRYPT_DATA_PARAMS* object) {
@@ -3031,6 +3660,43 @@ SV* crypt_pkcs11_ck_aes_cbc_encrypt_data_params_toBytes(Crypt__PKCS11__CK_AES_CB
     return retval;
 }
 
+CK_RV crypt_pkcs11_ck_aes_cbc_encrypt_data_params_fromBytes(Crypt__PKCS11__CK_AES_CBC_ENCRYPT_DATA_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR p;
+    STRLEN l;
+
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    SvGETMAGIC(sv);
+
+    if (!SvPOK(sv)
+        || !(p = SvPVbyte(sv, l))
+        || l != sizeof(CK_AES_CBC_ENCRYPT_DATA_PARAMS))
+    {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+/*
+
+TODO: fromBytes pre-type
+
+*/
+
+    memcpy(&(object->private), p, l);
+
+/*
+
+TODO: fromBytes post-type
+
+*/
+
+    return CKR_OK;
+}
+
 void crypt_pkcs11_ck_aes_cbc_encrypt_data_params_DESTROY(Crypt__PKCS11__CK_AES_CBC_ENCRYPT_DATA_PARAMS* object) {
     if (object) {
         if (object->private.pData) {
@@ -3167,6 +3833,43 @@ SV* crypt_pkcs11_ck_skipjack_private_wrap_params_toBytes(Crypt__PKCS11__CK_SKIPJ
     }
 
     return retval;
+}
+
+CK_RV crypt_pkcs11_ck_skipjack_private_wrap_params_fromBytes(Crypt__PKCS11__CK_SKIPJACK_PRIVATE_WRAP_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR p;
+    STRLEN l;
+
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    SvGETMAGIC(sv);
+
+    if (!SvPOK(sv)
+        || !(p = SvPVbyte(sv, l))
+        || l != sizeof(CK_SKIPJACK_PRIVATE_WRAP_PARAMS))
+    {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+/*
+
+TODO: fromBytes pre-type
+
+*/
+
+    memcpy(&(object->private), p, l);
+
+/*
+
+TODO: fromBytes post-type
+
+*/
+
+    return CKR_OK;
 }
 
 void crypt_pkcs11_ck_skipjack_private_wrap_params_DESTROY(Crypt__PKCS11__CK_SKIPJACK_PRIVATE_WRAP_PARAMS* object) {
@@ -3566,6 +4269,43 @@ SV* crypt_pkcs11_ck_skipjack_relayx_params_toBytes(Crypt__PKCS11__CK_SKIPJACK_RE
     }
 
     return retval;
+}
+
+CK_RV crypt_pkcs11_ck_skipjack_relayx_params_fromBytes(Crypt__PKCS11__CK_SKIPJACK_RELAYX_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR p;
+    STRLEN l;
+
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    SvGETMAGIC(sv);
+
+    if (!SvPOK(sv)
+        || !(p = SvPVbyte(sv, l))
+        || l != sizeof(CK_SKIPJACK_RELAYX_PARAMS))
+    {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+/*
+
+TODO: fromBytes pre-type
+
+*/
+
+    memcpy(&(object->private), p, l);
+
+/*
+
+TODO: fromBytes post-type
+
+*/
+
+    return CKR_OK;
 }
 
 void crypt_pkcs11_ck_skipjack_relayx_params_DESTROY(Crypt__PKCS11__CK_SKIPJACK_RELAYX_PARAMS* object) {
@@ -4036,6 +4776,43 @@ SV* crypt_pkcs11_ck_pbe_params_toBytes(Crypt__PKCS11__CK_PBE_PARAMS* object) {
     return retval;
 }
 
+CK_RV crypt_pkcs11_ck_pbe_params_fromBytes(Crypt__PKCS11__CK_PBE_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR p;
+    STRLEN l;
+
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    SvGETMAGIC(sv);
+
+    if (!SvPOK(sv)
+        || !(p = SvPVbyte(sv, l))
+        || l != sizeof(CK_PBE_PARAMS))
+    {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+/*
+
+TODO: fromBytes pre-type
+
+*/
+
+    memcpy(&(object->private), p, l);
+
+/*
+
+TODO: fromBytes post-type
+
+*/
+
+    return CKR_OK;
+}
+
 void crypt_pkcs11_ck_pbe_params_DESTROY(Crypt__PKCS11__CK_PBE_PARAMS* object) {
     if (object) {
         if (object->private.pInitVector) {
@@ -4287,6 +5064,43 @@ SV* crypt_pkcs11_ck_key_wrap_set_oaep_params_toBytes(Crypt__PKCS11__CK_KEY_WRAP_
     return retval;
 }
 
+CK_RV crypt_pkcs11_ck_key_wrap_set_oaep_params_fromBytes(Crypt__PKCS11__CK_KEY_WRAP_SET_OAEP_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR p;
+    STRLEN l;
+
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    SvGETMAGIC(sv);
+
+    if (!SvPOK(sv)
+        || !(p = SvPVbyte(sv, l))
+        || l != sizeof(CK_KEY_WRAP_SET_OAEP_PARAMS))
+    {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+/*
+
+TODO: fromBytes pre-type
+
+*/
+
+    memcpy(&(object->private), p, l);
+
+/*
+
+TODO: fromBytes post-type
+
+*/
+
+    return CKR_OK;
+}
+
 void crypt_pkcs11_ck_key_wrap_set_oaep_params_DESTROY(Crypt__PKCS11__CK_KEY_WRAP_SET_OAEP_PARAMS* object) {
     if (object) {
         if (object->private.pX) {
@@ -4407,6 +5221,43 @@ SV* crypt_pkcs11_ck_ssl3_random_data_toBytes(Crypt__PKCS11__CK_SSL3_RANDOM_DATA*
     }
 
     return retval;
+}
+
+CK_RV crypt_pkcs11_ck_ssl3_random_data_fromBytes(Crypt__PKCS11__CK_SSL3_RANDOM_DATA* object, SV* sv) {
+    CK_BYTE_PTR p;
+    STRLEN l;
+
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    SvGETMAGIC(sv);
+
+    if (!SvPOK(sv)
+        || !(p = SvPVbyte(sv, l))
+        || l != sizeof(CK_SSL3_RANDOM_DATA))
+    {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+/*
+
+TODO: fromBytes pre-type
+
+*/
+
+    memcpy(&(object->private), p, l);
+
+/*
+
+TODO: fromBytes post-type
+
+*/
+
+    return CKR_OK;
 }
 
 void crypt_pkcs11_ck_ssl3_random_data_DESTROY(Crypt__PKCS11__CK_SSL3_RANDOM_DATA* object) {
@@ -4563,6 +5414,43 @@ SV* crypt_pkcs11_ck_ssl3_master_key_derive_params_toBytes(Crypt__PKCS11__CK_SSL3
     return retval;
 }
 
+CK_RV crypt_pkcs11_ck_ssl3_master_key_derive_params_fromBytes(Crypt__PKCS11__CK_SSL3_MASTER_KEY_DERIVE_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR p;
+    STRLEN l;
+
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    SvGETMAGIC(sv);
+
+    if (!SvPOK(sv)
+        || !(p = SvPVbyte(sv, l))
+        || l != sizeof(CK_SSL3_MASTER_KEY_DERIVE_PARAMS))
+    {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+/*
+
+TODO: fromBytes pre-type
+
+*/
+
+    memcpy(&(object->private), p, l);
+
+/*
+
+TODO: fromBytes post-type
+
+*/
+
+    return CKR_OK;
+}
+
 void crypt_pkcs11_ck_ssl3_master_key_derive_params_DESTROY(Crypt__PKCS11__CK_SSL3_MASTER_KEY_DERIVE_PARAMS* object) {
     if (object) {
         if (object->private.RandomInfo.pClientRandom) {
@@ -4714,6 +5602,43 @@ SV* crypt_pkcs11_ck_ssl3_key_mat_out_toBytes(Crypt__PKCS11__CK_SSL3_KEY_MAT_OUT*
     }
 
     return retval;
+}
+
+CK_RV crypt_pkcs11_ck_ssl3_key_mat_out_fromBytes(Crypt__PKCS11__CK_SSL3_KEY_MAT_OUT* object, SV* sv) {
+    CK_BYTE_PTR p;
+    STRLEN l;
+
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    SvGETMAGIC(sv);
+
+    if (!SvPOK(sv)
+        || !(p = SvPVbyte(sv, l))
+        || l != sizeof(CK_SSL3_KEY_MAT_OUT))
+    {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+/*
+
+TODO: fromBytes pre-type
+
+*/
+
+    memcpy(&(object->private), p, l);
+
+/*
+
+TODO: fromBytes post-type
+
+*/
+
+    return CKR_OK;
 }
 
 void crypt_pkcs11_ck_ssl3_key_mat_out_DESTROY(Crypt__PKCS11__CK_SSL3_KEY_MAT_OUT* object) {
@@ -4920,6 +5845,43 @@ SV* crypt_pkcs11_ck_ssl3_key_mat_params_toBytes(Crypt__PKCS11__CK_SSL3_KEY_MAT_P
     }
 
     return retval;
+}
+
+CK_RV crypt_pkcs11_ck_ssl3_key_mat_params_fromBytes(Crypt__PKCS11__CK_SSL3_KEY_MAT_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR p;
+    STRLEN l;
+
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    SvGETMAGIC(sv);
+
+    if (!SvPOK(sv)
+        || !(p = SvPVbyte(sv, l))
+        || l != sizeof(CK_SSL3_KEY_MAT_PARAMS))
+    {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+/*
+
+TODO: fromBytes pre-type
+
+*/
+
+    memcpy(&(object->private), p, l);
+
+/*
+
+TODO: fromBytes post-type
+
+*/
+
+    return CKR_OK;
 }
 
 void crypt_pkcs11_ck_ssl3_key_mat_params_DESTROY(Crypt__PKCS11__CK_SSL3_KEY_MAT_PARAMS* object) {
@@ -5251,6 +6213,43 @@ SV* crypt_pkcs11_ck_tls_prf_params_toBytes(Crypt__PKCS11__CK_TLS_PRF_PARAMS* obj
     return retval;
 }
 
+CK_RV crypt_pkcs11_ck_tls_prf_params_fromBytes(Crypt__PKCS11__CK_TLS_PRF_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR p;
+    STRLEN l;
+
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    SvGETMAGIC(sv);
+
+    if (!SvPOK(sv)
+        || !(p = SvPVbyte(sv, l))
+        || l != sizeof(CK_TLS_PRF_PARAMS))
+    {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+/*
+
+TODO: fromBytes pre-type
+
+*/
+
+    memcpy(&(object->private), p, l);
+
+/*
+
+TODO: fromBytes post-type
+
+*/
+
+    return CKR_OK;
+}
+
 void crypt_pkcs11_ck_tls_prf_params_DESTROY(Crypt__PKCS11__CK_TLS_PRF_PARAMS* object) {
     if (object) {
         if (object->private.pSeed) {
@@ -5481,6 +6480,43 @@ SV* crypt_pkcs11_ck_wtls_random_data_toBytes(Crypt__PKCS11__CK_WTLS_RANDOM_DATA*
     return retval;
 }
 
+CK_RV crypt_pkcs11_ck_wtls_random_data_fromBytes(Crypt__PKCS11__CK_WTLS_RANDOM_DATA* object, SV* sv) {
+    CK_BYTE_PTR p;
+    STRLEN l;
+
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    SvGETMAGIC(sv);
+
+    if (!SvPOK(sv)
+        || !(p = SvPVbyte(sv, l))
+        || l != sizeof(CK_WTLS_RANDOM_DATA))
+    {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+/*
+
+TODO: fromBytes pre-type
+
+*/
+
+    memcpy(&(object->private), p, l);
+
+/*
+
+TODO: fromBytes post-type
+
+*/
+
+    return CKR_OK;
+}
+
 void crypt_pkcs11_ck_wtls_random_data_DESTROY(Crypt__PKCS11__CK_WTLS_RANDOM_DATA* object) {
     if (object) {
         if (object->private.pClientRandom) {
@@ -5637,6 +6673,43 @@ SV* crypt_pkcs11_ck_wtls_master_key_derive_params_toBytes(Crypt__PKCS11__CK_WTLS
     }
 
     return retval;
+}
+
+CK_RV crypt_pkcs11_ck_wtls_master_key_derive_params_fromBytes(Crypt__PKCS11__CK_WTLS_MASTER_KEY_DERIVE_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR p;
+    STRLEN l;
+
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    SvGETMAGIC(sv);
+
+    if (!SvPOK(sv)
+        || !(p = SvPVbyte(sv, l))
+        || l != sizeof(CK_WTLS_MASTER_KEY_DERIVE_PARAMS))
+    {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+/*
+
+TODO: fromBytes pre-type
+
+*/
+
+    memcpy(&(object->private), p, l);
+
+/*
+
+TODO: fromBytes post-type
+
+*/
+
+    return CKR_OK;
 }
 
 void crypt_pkcs11_ck_wtls_master_key_derive_params_DESTROY(Crypt__PKCS11__CK_WTLS_MASTER_KEY_DERIVE_PARAMS* object) {
@@ -5818,6 +6891,43 @@ SV* crypt_pkcs11_ck_wtls_prf_params_toBytes(Crypt__PKCS11__CK_WTLS_PRF_PARAMS* o
     }
 
     return retval;
+}
+
+CK_RV crypt_pkcs11_ck_wtls_prf_params_fromBytes(Crypt__PKCS11__CK_WTLS_PRF_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR p;
+    STRLEN l;
+
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    SvGETMAGIC(sv);
+
+    if (!SvPOK(sv)
+        || !(p = SvPVbyte(sv, l))
+        || l != sizeof(CK_WTLS_PRF_PARAMS))
+    {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+/*
+
+TODO: fromBytes pre-type
+
+*/
+
+    memcpy(&(object->private), p, l);
+
+/*
+
+TODO: fromBytes post-type
+
+*/
+
+    return CKR_OK;
 }
 
 void crypt_pkcs11_ck_wtls_prf_params_DESTROY(Crypt__PKCS11__CK_WTLS_PRF_PARAMS* object) {
@@ -6085,6 +7195,43 @@ SV* crypt_pkcs11_ck_wtls_key_mat_out_toBytes(Crypt__PKCS11__CK_WTLS_KEY_MAT_OUT*
     return retval;
 }
 
+CK_RV crypt_pkcs11_ck_wtls_key_mat_out_fromBytes(Crypt__PKCS11__CK_WTLS_KEY_MAT_OUT* object, SV* sv) {
+    CK_BYTE_PTR p;
+    STRLEN l;
+
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    SvGETMAGIC(sv);
+
+    if (!SvPOK(sv)
+        || !(p = SvPVbyte(sv, l))
+        || l != sizeof(CK_WTLS_KEY_MAT_OUT))
+    {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+/*
+
+TODO: fromBytes pre-type
+
+*/
+
+    memcpy(&(object->private), p, l);
+
+/*
+
+TODO: fromBytes post-type
+
+*/
+
+    return CKR_OK;
+}
+
 void crypt_pkcs11_ck_wtls_key_mat_out_DESTROY(Crypt__PKCS11__CK_WTLS_KEY_MAT_OUT* object) {
     if (object) {
         if (object->private.pIV) {
@@ -6201,6 +7348,43 @@ SV* crypt_pkcs11_ck_wtls_key_mat_params_toBytes(Crypt__PKCS11__CK_WTLS_KEY_MAT_P
     }
 
     return retval;
+}
+
+CK_RV crypt_pkcs11_ck_wtls_key_mat_params_fromBytes(Crypt__PKCS11__CK_WTLS_KEY_MAT_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR p;
+    STRLEN l;
+
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    SvGETMAGIC(sv);
+
+    if (!SvPOK(sv)
+        || !(p = SvPVbyte(sv, l))
+        || l != sizeof(CK_WTLS_KEY_MAT_PARAMS))
+    {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+/*
+
+TODO: fromBytes pre-type
+
+*/
+
+    memcpy(&(object->private), p, l);
+
+/*
+
+TODO: fromBytes post-type
+
+*/
+
+    return CKR_OK;
 }
 
 void crypt_pkcs11_ck_wtls_key_mat_params_DESTROY(Crypt__PKCS11__CK_WTLS_KEY_MAT_PARAMS* object) {
@@ -6575,6 +7759,43 @@ SV* crypt_pkcs11_ck_cms_sig_params_toBytes(Crypt__PKCS11__CK_CMS_SIG_PARAMS* obj
     }
 
     return retval;
+}
+
+CK_RV crypt_pkcs11_ck_cms_sig_params_fromBytes(Crypt__PKCS11__CK_CMS_SIG_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR p;
+    STRLEN l;
+
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    SvGETMAGIC(sv);
+
+    if (!SvPOK(sv)
+        || !(p = SvPVbyte(sv, l))
+        || l != sizeof(CK_CMS_SIG_PARAMS))
+    {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+/*
+
+TODO: fromBytes pre-type
+
+*/
+
+    memcpy(&(object->private), p, l);
+
+/*
+
+TODO: fromBytes post-type
+
+*/
+
+    return CKR_OK;
 }
 
 void crypt_pkcs11_ck_cms_sig_params_DESTROY(Crypt__PKCS11__CK_CMS_SIG_PARAMS* object) {
@@ -6959,6 +8180,43 @@ SV* crypt_pkcs11_ck_key_derivation_string_data_toBytes(Crypt__PKCS11__CK_KEY_DER
     return retval;
 }
 
+CK_RV crypt_pkcs11_ck_key_derivation_string_data_fromBytes(Crypt__PKCS11__CK_KEY_DERIVATION_STRING_DATA* object, SV* sv) {
+    CK_BYTE_PTR p;
+    STRLEN l;
+
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    SvGETMAGIC(sv);
+
+    if (!SvPOK(sv)
+        || !(p = SvPVbyte(sv, l))
+        || l != sizeof(CK_KEY_DERIVATION_STRING_DATA))
+    {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+/*
+
+TODO: fromBytes pre-type
+
+*/
+
+    memcpy(&(object->private), p, l);
+
+/*
+
+TODO: fromBytes post-type
+
+*/
+
+    return CKR_OK;
+}
+
 void crypt_pkcs11_ck_key_derivation_string_data_DESTROY(Crypt__PKCS11__CK_KEY_DERIVATION_STRING_DATA* object) {
     if (object) {
         if (object->private.pData) {
@@ -7046,6 +8304,43 @@ SV* crypt_pkcs11_ck_pkcs5_pbkd2_params_toBytes(Crypt__PKCS11__CK_PKCS5_PBKD2_PAR
     }
 
     return retval;
+}
+
+CK_RV crypt_pkcs11_ck_pkcs5_pbkd2_params_fromBytes(Crypt__PKCS11__CK_PKCS5_PBKD2_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR p;
+    STRLEN l;
+
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    SvGETMAGIC(sv);
+
+    if (!SvPOK(sv)
+        || !(p = SvPVbyte(sv, l))
+        || l != sizeof(CK_PKCS5_PBKD2_PARAMS))
+    {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+/*
+
+TODO: fromBytes pre-type
+
+*/
+
+    memcpy(&(object->private), p, l);
+
+/*
+
+TODO: fromBytes post-type
+
+*/
+
+    return CKR_OK;
 }
 
 void crypt_pkcs11_ck_pkcs5_pbkd2_params_DESTROY(Crypt__PKCS11__CK_PKCS5_PBKD2_PARAMS* object) {
@@ -7378,6 +8673,43 @@ SV* crypt_pkcs11_ck_otp_param_toBytes(Crypt__PKCS11__CK_OTP_PARAM* object) {
     return retval;
 }
 
+CK_RV crypt_pkcs11_ck_otp_param_fromBytes(Crypt__PKCS11__CK_OTP_PARAM* object, SV* sv) {
+    CK_BYTE_PTR p;
+    STRLEN l;
+
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    SvGETMAGIC(sv);
+
+    if (!SvPOK(sv)
+        || !(p = SvPVbyte(sv, l))
+        || l != sizeof(CK_OTP_PARAM))
+    {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+/*
+
+TODO: fromBytes pre-type
+
+*/
+
+    memcpy(&(object->private), p, l);
+
+/*
+
+TODO: fromBytes post-type
+
+*/
+
+    return CKR_OK;
+}
+
 void crypt_pkcs11_ck_otp_param_DESTROY(Crypt__PKCS11__CK_OTP_PARAM* object) {
     if (object) {
         if (object->private.pValue) {
@@ -7498,6 +8830,43 @@ SV* crypt_pkcs11_ck_otp_params_toBytes(Crypt__PKCS11__CK_OTP_PARAMS* object) {
     }
 
     return retval;
+}
+
+CK_RV crypt_pkcs11_ck_otp_params_fromBytes(Crypt__PKCS11__CK_OTP_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR p;
+    STRLEN l;
+
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    SvGETMAGIC(sv);
+
+    if (!SvPOK(sv)
+        || !(p = SvPVbyte(sv, l))
+        || l != sizeof(CK_OTP_PARAMS))
+    {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+/*
+
+TODO: fromBytes pre-type
+
+*/
+
+    memcpy(&(object->private), p, l);
+
+/*
+
+TODO: fromBytes post-type
+
+*/
+
+    return CKR_OK;
 }
 
 void crypt_pkcs11_ck_otp_params_DESTROY(Crypt__PKCS11__CK_OTP_PARAMS* object) {
@@ -7684,6 +9053,43 @@ SV* crypt_pkcs11_ck_otp_signature_info_toBytes(Crypt__PKCS11__CK_OTP_SIGNATURE_I
     }
 
     return retval;
+}
+
+CK_RV crypt_pkcs11_ck_otp_signature_info_fromBytes(Crypt__PKCS11__CK_OTP_SIGNATURE_INFO* object, SV* sv) {
+    CK_BYTE_PTR p;
+    STRLEN l;
+
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    SvGETMAGIC(sv);
+
+    if (!SvPOK(sv)
+        || !(p = SvPVbyte(sv, l))
+        || l != sizeof(CK_OTP_SIGNATURE_INFO))
+    {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+/*
+
+TODO: fromBytes pre-type
+
+*/
+
+    memcpy(&(object->private), p, l);
+
+/*
+
+TODO: fromBytes post-type
+
+*/
+
+    return CKR_OK;
 }
 
 void crypt_pkcs11_ck_otp_signature_info_DESTROY(Crypt__PKCS11__CK_OTP_SIGNATURE_INFO* object) {
@@ -7875,6 +9281,43 @@ SV* crypt_pkcs11_ck_kip_params_toBytes(Crypt__PKCS11__CK_KIP_PARAMS* object) {
     return retval;
 }
 
+CK_RV crypt_pkcs11_ck_kip_params_fromBytes(Crypt__PKCS11__CK_KIP_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR p;
+    STRLEN l;
+
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    SvGETMAGIC(sv);
+
+    if (!SvPOK(sv)
+        || !(p = SvPVbyte(sv, l))
+        || l != sizeof(CK_KIP_PARAMS))
+    {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+/*
+
+TODO: fromBytes pre-type
+
+*/
+
+    memcpy(&(object->private), p, l);
+
+/*
+
+TODO: fromBytes post-type
+
+*/
+
+    return CKR_OK;
+}
+
 void crypt_pkcs11_ck_kip_params_DESTROY(Crypt__PKCS11__CK_KIP_PARAMS* object) {
     if (object) {
         if (object->pMechanism.pParameter) {
@@ -8060,6 +9503,43 @@ SV* crypt_pkcs11_ck_aes_ctr_params_toBytes(Crypt__PKCS11__CK_AES_CTR_PARAMS* obj
     return retval;
 }
 
+CK_RV crypt_pkcs11_ck_aes_ctr_params_fromBytes(Crypt__PKCS11__CK_AES_CTR_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR p;
+    STRLEN l;
+
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    SvGETMAGIC(sv);
+
+    if (!SvPOK(sv)
+        || !(p = SvPVbyte(sv, l))
+        || l != sizeof(CK_AES_CTR_PARAMS))
+    {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+/*
+
+TODO: fromBytes pre-type
+
+*/
+
+    memcpy(&(object->private), p, l);
+
+/*
+
+TODO: fromBytes post-type
+
+*/
+
+    return CKR_OK;
+}
+
 void crypt_pkcs11_ck_aes_ctr_params_DESTROY(Crypt__PKCS11__CK_AES_CTR_PARAMS* object) {
     if (object) {
         free(object);
@@ -8167,6 +9647,43 @@ SV* crypt_pkcs11_ck_aes_gcm_params_toBytes(Crypt__PKCS11__CK_AES_GCM_PARAMS* obj
     }
 
     return retval;
+}
+
+CK_RV crypt_pkcs11_ck_aes_gcm_params_fromBytes(Crypt__PKCS11__CK_AES_GCM_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR p;
+    STRLEN l;
+
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    SvGETMAGIC(sv);
+
+    if (!SvPOK(sv)
+        || !(p = SvPVbyte(sv, l))
+        || l != sizeof(CK_AES_GCM_PARAMS))
+    {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+/*
+
+TODO: fromBytes pre-type
+
+*/
+
+    memcpy(&(object->private), p, l);
+
+/*
+
+TODO: fromBytes post-type
+
+*/
+
+    return CKR_OK;
 }
 
 void crypt_pkcs11_ck_aes_gcm_params_DESTROY(Crypt__PKCS11__CK_AES_GCM_PARAMS* object) {
@@ -8386,6 +9903,43 @@ SV* crypt_pkcs11_ck_aes_ccm_params_toBytes(Crypt__PKCS11__CK_AES_CCM_PARAMS* obj
     return retval;
 }
 
+CK_RV crypt_pkcs11_ck_aes_ccm_params_fromBytes(Crypt__PKCS11__CK_AES_CCM_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR p;
+    STRLEN l;
+
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    SvGETMAGIC(sv);
+
+    if (!SvPOK(sv)
+        || !(p = SvPVbyte(sv, l))
+        || l != sizeof(CK_AES_CCM_PARAMS))
+    {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+/*
+
+TODO: fromBytes pre-type
+
+*/
+
+    memcpy(&(object->private), p, l);
+
+/*
+
+TODO: fromBytes post-type
+
+*/
+
+    return CKR_OK;
+}
+
 void crypt_pkcs11_ck_aes_ccm_params_DESTROY(Crypt__PKCS11__CK_AES_CCM_PARAMS* object) {
     if (object) {
         if (object->private.pNonce) {
@@ -8537,6 +10091,43 @@ SV* crypt_pkcs11_ck_camellia_ctr_params_toBytes(Crypt__PKCS11__CK_CAMELLIA_CTR_P
     return retval;
 }
 
+CK_RV crypt_pkcs11_ck_camellia_ctr_params_fromBytes(Crypt__PKCS11__CK_CAMELLIA_CTR_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR p;
+    STRLEN l;
+
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    SvGETMAGIC(sv);
+
+    if (!SvPOK(sv)
+        || !(p = SvPVbyte(sv, l))
+        || l != sizeof(CK_CAMELLIA_CTR_PARAMS))
+    {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+/*
+
+TODO: fromBytes pre-type
+
+*/
+
+    memcpy(&(object->private), p, l);
+
+/*
+
+TODO: fromBytes post-type
+
+*/
+
+    return CKR_OK;
+}
+
 void crypt_pkcs11_ck_camellia_ctr_params_DESTROY(Crypt__PKCS11__CK_CAMELLIA_CTR_PARAMS* object) {
     if (object) {
         free(object);
@@ -8644,6 +10235,43 @@ SV* crypt_pkcs11_ck_camellia_cbc_encrypt_data_params_toBytes(Crypt__PKCS11__CK_C
     }
 
     return retval;
+}
+
+CK_RV crypt_pkcs11_ck_camellia_cbc_encrypt_data_params_fromBytes(Crypt__PKCS11__CK_CAMELLIA_CBC_ENCRYPT_DATA_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR p;
+    STRLEN l;
+
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    SvGETMAGIC(sv);
+
+    if (!SvPOK(sv)
+        || !(p = SvPVbyte(sv, l))
+        || l != sizeof(CK_CAMELLIA_CBC_ENCRYPT_DATA_PARAMS))
+    {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+/*
+
+TODO: fromBytes pre-type
+
+*/
+
+    memcpy(&(object->private), p, l);
+
+/*
+
+TODO: fromBytes post-type
+
+*/
+
+    return CKR_OK;
 }
 
 void crypt_pkcs11_ck_camellia_cbc_encrypt_data_params_DESTROY(Crypt__PKCS11__CK_CAMELLIA_CBC_ENCRYPT_DATA_PARAMS* object) {
@@ -8782,6 +10410,43 @@ SV* crypt_pkcs11_ck_aria_cbc_encrypt_data_params_toBytes(Crypt__PKCS11__CK_ARIA_
     }
 
     return retval;
+}
+
+CK_RV crypt_pkcs11_ck_aria_cbc_encrypt_data_params_fromBytes(Crypt__PKCS11__CK_ARIA_CBC_ENCRYPT_DATA_PARAMS* object, SV* sv) {
+    CK_BYTE_PTR p;
+    STRLEN l;
+
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    SvGETMAGIC(sv);
+
+    if (!SvPOK(sv)
+        || !(p = SvPVbyte(sv, l))
+        || l != sizeof(CK_ARIA_CBC_ENCRYPT_DATA_PARAMS))
+    {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+/*
+
+TODO: fromBytes pre-type
+
+*/
+
+    memcpy(&(object->private), p, l);
+
+/*
+
+TODO: fromBytes post-type
+
+*/
+
+    return CKR_OK;
 }
 
 void crypt_pkcs11_ck_aria_cbc_encrypt_data_params_DESTROY(Crypt__PKCS11__CK_ARIA_CBC_ENCRYPT_DATA_PARAMS* object) {

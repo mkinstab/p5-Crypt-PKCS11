@@ -181,6 +181,13 @@ my %XS = (
 );
 my %XSXS = (
 );
+my %FB = (
+    CK_SSL3_KEY_MAT_OUT => \&CK_SSL3_KEY_MAT_OUT_fromBytes,
+    CK_WTLS_KEY_MAT_OUT => \&CK_WTLS_KEY_MAT_OUT_fromBytes,
+);
+my %FB_T = (
+    # TODO: fromBytes pre/post-type
+);
 
 open(HEADER, 'pkcs11t.h') || die;
 open(XS, '>pkcs11_struct.xs') || die;
@@ -429,6 +436,14 @@ PROTOTYPE: $
 OUTPUT:
     RETVAL
 
+CK_RV
+crypt_pkcs11_'.$lc_struct.'_fromBytes(object, sv)
+    Crypt::PKCS11::'.$struct.'* object
+    SV* sv
+PROTOTYPE: $$
+OUTPUT:
+    RETVAL
+
 ';
     foreach (@$types) {
         if (exists $XSXS{$struct} and exists $XSXS{$struct}->{$_->{name}}) {
@@ -446,7 +461,7 @@ OUTPUT:
 crypt_pkcs11_'.$lc_struct.'_get_'.$_->{name}.'(object, sv)
     Crypt::PKCS11::'.$struct.'* object
     SV* sv
-PROTOTYPE: $
+PROTOTYPE: $$
 OUTPUT:
     RETVAL
 
@@ -464,7 +479,7 @@ CK_RV
 crypt_pkcs11_'.$lc_struct.'_set_'.$_->{name}.'(object, sv)
     Crypt::PKCS11::'.$struct.'* object
     SV* sv
-PROTOTYPE: $
+PROTOTYPE: $$
 OUTPUT:
     RETVAL
 
@@ -531,6 +546,43 @@ SV* crypt_pkcs11_'.$lc_struct.'_toBytes('.$c_struct.'* object) {
     }
 
     return retval;
+}
+
+CK_RV crypt_pkcs11_'.$lc_struct.'_fromBytes('.$c_struct.'* object, SV* sv) {
+    CK_BYTE_PTR p;
+    STRLEN l;
+
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    SvGETMAGIC(sv);
+
+    if (!SvPOK(sv)
+        || !(p = SvPVbyte(sv, l))
+        || l != sizeof('.$struct.'))
+    {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+/*
+
+TODO: fromBytes pre-type
+
+*/
+
+    memcpy(&(object->private), p, l);
+
+/*
+
+TODO: fromBytes post-type
+
+*/
+
+    return CKR_OK;
 }
 
 void crypt_pkcs11_'.$lc_struct.'_DESTROY('.$c_struct.'* object) {
@@ -612,6 +664,7 @@ sub gen_h {
 '.$c_struct.'* crypt_pkcs11_'.$lc_struct.'_new(const char* class);
 void crypt_pkcs11_'.$lc_struct.'_DESTROY('.$c_struct.'* object);
 SV* crypt_pkcs11_'.$lc_struct.'_toBytes('.$c_struct.'* object);
+CK_RV crypt_pkcs11_'.$lc_struct.'_fromBytes('.$c_struct.'* object, SV* sv);
 ';
     foreach (@$types) {
         my $type = $_->{type};
@@ -1204,7 +1257,7 @@ sub ck_version_ptr_xs {
 crypt_pkcs11_'.$lc_struct.'_get_'.$type->{name}.'(object, sv)
     Crypt::PKCS11::'.$struct.'* object
     Crypt::PKCS11::CK_VERSION* sv
-PROTOTYPE: $
+PROTOTYPE: $$
 OUTPUT:
     RETVAL
 
@@ -1222,7 +1275,7 @@ CK_RV
 crypt_pkcs11_'.$lc_struct.'_set_'.$type->{name}.'(object, sv)
     Crypt::PKCS11::'.$struct.'* object
     Crypt::PKCS11::CK_VERSION* sv
-PROTOTYPE: $
+PROTOTYPE: $$
 OUTPUT:
     RETVAL
 
@@ -1326,7 +1379,7 @@ sub ck_mechanism_ptr_xs {
 crypt_pkcs11_'.$lc_struct.'_get_'.$type->{name}.'(object, sv)
     Crypt::PKCS11::'.$struct.'* object
     Crypt::PKCS11::CK_MECHANISM* sv
-PROTOTYPE: $
+PROTOTYPE: $$
 OUTPUT:
     RETVAL
 
@@ -1344,7 +1397,7 @@ CK_RV
 crypt_pkcs11_'.$lc_struct.'_set_'.$type->{name}.'(object, sv)
     Crypt::PKCS11::'.$struct.'* object
     Crypt::PKCS11::CK_MECHANISM* sv
-PROTOTYPE: $
+PROTOTYPE: $$
 OUTPUT:
     RETVAL
 
@@ -1546,7 +1599,7 @@ sub ck_ssl3_random_data_xs {
 crypt_pkcs11_'.$lc_struct.'_get_'.$type->{name}.'(object, sv)
     Crypt::PKCS11::'.$struct.'* object
     Crypt::PKCS11::CK_SSL3_RANDOM_DATA* sv
-PROTOTYPE: $
+PROTOTYPE: $$
 OUTPUT:
     RETVAL
 
@@ -1564,7 +1617,7 @@ CK_RV
 crypt_pkcs11_'.$lc_struct.'_set_'.$type->{name}.'(object, sv)
     Crypt::PKCS11::'.$struct.'* object
     Crypt::PKCS11::CK_SSL3_RANDOM_DATA* sv
-PROTOTYPE: $
+PROTOTYPE: $$
 OUTPUT:
     RETVAL
 
@@ -1577,6 +1630,16 @@ sub CK_SSL3_KEY_MAT_OUT {
     CK_ULONG ulIVServer;
 ';
     }
+}
+
+sub CK_SSL3_KEY_MAT_OUT_fromBytes {
+    my ($struct, $c_struct, $lc_struct, $type) = @_;
+
+    print C 'CK_RV crypt_pkcs11_'.$lc_struct.'_fromBytes('.$c_struct.'* object, SV* sv) {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+}
+
+';
 }
 
 sub CK_SSL3_KEY_MAT_OUT_pIVClient {
@@ -1735,7 +1798,7 @@ sub ck_ssl3_key_mat_out_ptr_xs {
 crypt_pkcs11_'.$lc_struct.'_get_'.$type->{name}.'(object, sv)
     Crypt::PKCS11::'.$struct.'* object
     Crypt::PKCS11::CK_SSL3_KEY_MAT_OUT* sv
-PROTOTYPE: $
+PROTOTYPE: $$
 OUTPUT:
     RETVAL
 
@@ -1917,7 +1980,7 @@ sub ck_wtls_random_data_xs {
 crypt_pkcs11_'.$lc_struct.'_get_'.$type->{name}.'(object, sv)
     Crypt::PKCS11::'.$struct.'* object
     Crypt::PKCS11::CK_WTLS_RANDOM_DATA* sv
-PROTOTYPE: $
+PROTOTYPE: $$
 OUTPUT:
     RETVAL
 
@@ -1935,7 +1998,7 @@ CK_RV
 crypt_pkcs11_'.$lc_struct.'_set_'.$type->{name}.'(object, sv)
     Crypt::PKCS11::'.$struct.'* object
     Crypt::PKCS11::CK_WTLS_RANDOM_DATA* sv
-PROTOTYPE: $
+PROTOTYPE: $$
 OUTPUT:
     RETVAL
 
@@ -1947,6 +2010,16 @@ sub CK_WTLS_KEY_MAT_OUT {
         print H '    CK_ULONG ulIV;
 ';
     }
+}
+
+sub CK_WTLS_KEY_MAT_OUT_fromBytes {
+    my ($struct, $c_struct, $lc_struct, $type) = @_;
+
+    print C 'CK_RV crypt_pkcs11_'.$lc_struct.'_fromBytes('.$c_struct.'* object, SV* sv) {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+}
+
+';
 }
 
 sub CK_WTLS_KEY_MAT_OUT_pIV {
@@ -2053,7 +2126,7 @@ sub ck_wtls_key_mat_out_ptr_xs {
 crypt_pkcs11_'.$lc_struct.'_get_'.$type->{name}.'(object, sv)
     Crypt::PKCS11::'.$struct.'* object
     Crypt::PKCS11::CK_WTLS_KEY_MAT_OUT* sv
-PROTOTYPE: $
+PROTOTYPE: $$
 OUTPUT:
     RETVAL
 
@@ -2312,7 +2385,7 @@ sub ck_otp_param_ptr_xs {
 crypt_pkcs11_'.$lc_struct.'_get_'.$type->{name}.'(object, sv)
     Crypt::PKCS11::'.$struct.'* object
     AV* sv
-PROTOTYPE: $
+PROTOTYPE: $$
 OUTPUT:
     RETVAL
 
@@ -2330,7 +2403,7 @@ CK_RV
 crypt_pkcs11_'.$lc_struct.'_set_'.$type->{name}.'(object, sv)
     Crypt::PKCS11::'.$struct.'* object
     AV* sv
-PROTOTYPE: $
+PROTOTYPE: $$
 OUTPUT:
     RETVAL
 
