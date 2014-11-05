@@ -7021,16 +7021,148 @@ Crypt__PKCS11__CK_OTP_PARAMS* crypt_pkcs11_ck_otp_params_new(const char* class) 
 
 void crypt_pkcs11_ck_otp_params_DESTROY(Crypt__PKCS11__CK_OTP_PARAMS* object) {
     if (object) {
+        if (object->private.pParams) {
+            CK_ULONG ulCount;
+            for (ulCount = 0; ulCount < object->private.ulCount; ulCount++) {
+                if (object->private.pParams[ulCount].pValue) {
+                    free(object->private.pParams[ulCount].pValue);
+                }
+            }
+            free(object->private.pParams);
+        }
         free(object);
     }
 }
 
-CK_RV crypt_pkcs11_ck_otp_params_get_pParams(Crypt__PKCS11__CK_OTP_PARAMS* object, SV* sv) {
-    croak("Unimplemented");
+CK_RV crypt_pkcs11_ck_otp_params_get_pParams(Crypt__PKCS11__CK_OTP_PARAMS* object, AV* sv) {
+    CK_ULONG ulCount;
+    Crypt__PKCS11__CK_OTP_PARAM* param;
+    SV* paramSV;
+
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    if (!(object->private.ulCount)) {
+        return CKR_OK;
+    }
+
+    for (ulCount = 0; ulCount < object->private.ulCount; ulCount++) {
+        if (!(param = calloc(1, sizeof(Crypt__PKCS11__CK_OTP_PARAM)))) {
+            return CKR_HOST_MEMORY;
+        }
+
+        param->private.type = object->private.pParams[ulCount].type;
+        if (object->private.pParams[ulCount].pValue) {
+            if (!(param->private.pValue = calloc(1, object->private.pParams[ulCount].ulValueLen))) {
+                free(param);
+                return CKR_HOST_MEMORY;
+            }
+            memcpy(param->private.pValue, object->private.pParams[ulCount].pValue, object->private.pParams[ulCount].ulValueLen);
+            param->private.ulValueLen = object->private.pParams[ulCount].ulValueLen;
+        }
+
+        paramSV = sv_newmortal();
+        sv_setref_pv(paramSV, "Crypt::PKCS11::CK_OTP_PARAMPtr", param);
+        av_push(sv, paramSV);
+    }
+
+    return CKR_OK;
 }
 
-CK_RV crypt_pkcs11_ck_otp_params_set_pParams(Crypt__PKCS11__CK_OTP_PARAMS* object, SV* sv) {
-    croak("Unimplemented");
+CK_RV crypt_pkcs11_ck_otp_params_set_pParams(Crypt__PKCS11__CK_OTP_PARAMS* object, AV* sv) {
+    CK_ULONG ulCount;
+    I32 key;
+    SV** item;
+    SV* entry;
+    IV tmp;
+    Crypt__PKCS11__CK_OTP_PARAM* param;
+    CK_OTP_PARAM_PTR params;
+    CK_ULONG paramCount = 0;
+
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    for (key = 0; key < av_len(sv) + 1; key++) {
+        if (!(item = av_fetch(sv, key, 0))
+            || !*item
+            || !SvROK(*item)
+            || !(entry = SvRV(*item))
+            || !sv_isobject(entry)
+            || !sv_derived_from(entry, "Crypt::PKCS11::CK_OTP_PARAMPtr"))
+        {
+            return CKR_ARGUMENTS_BAD;
+        }
+        paramCount++;
+    }
+
+    if (!(params = calloc(paramCount, sizeof(CK_OTP_PARAM)))) {
+        return CKR_HOST_MEMORY;
+    }
+
+    for (key = 0; key < av_len(sv) + 1; key++) {
+        if (!(item = av_fetch(sv, key, 0))
+            || !*item
+            || !SvROK(*item)
+            || !(entry = SvRV(*item))
+            || !sv_isobject(entry)
+            || !sv_derived_from(entry, "Crypt::PKCS11::CK_OTP_PARAMPtr"))
+        {
+            for (ulCount = 0; ulCount < paramCount; ulCount++) {
+                if (params[ulCount].pValue) {
+                    free(params[ulCount].pValue);
+                }
+            }
+            free(params);
+            return CKR_ARGUMENTS_BAD;
+        }
+
+        tmp = SvIV((SV*)SvRV(entry));
+        if (!(param = INT2PTR(Crypt__PKCS11__CK_OTP_PARAM*, tmp))) {
+            for (ulCount = 0; ulCount < paramCount; ulCount++) {
+                if (params[ulCount].pValue) {
+                    free(params[ulCount].pValue);
+                }
+            }
+            free(params);
+            return CKR_GENERAL_ERROR;
+        }
+
+        if (param->private.pValue) {
+            if (!(params[key].pValue = calloc(1, param->private.ulValueLen))) {
+                for (ulCount = 0; ulCount < paramCount; ulCount++) {
+                    if (params[ulCount].pValue) {
+                        free(params[ulCount].pValue);
+                    }
+                }
+                free(params);
+                return CKR_HOST_MEMORY;
+            }
+
+            memcpy(params[key].pValue, param->private.pValue, param->private.ulValueLen);
+            params[key].ulValueLen = param->private.ulValueLen;
+        }
+    }
+
+    if (object->private.pParams) {
+        for (ulCount = 0; ulCount < object->private.ulCount; ulCount++) {
+            if (object->private.pParams[ulCount].pValue) {
+                free(object->private.pParams[ulCount].pValue);
+            }
+        }
+        free(object->private.pParams);
+    }
+    object->private.pParams = params;
+    object->private.ulCount = paramCount;
+
+    return CKR_OK;
 }
 
 CK_RV crypt_pkcs11_ck_otp_params_get_ulCount(Crypt__PKCS11__CK_OTP_PARAMS* object, SV* sv) {
@@ -7049,21 +7181,7 @@ CK_RV crypt_pkcs11_ck_otp_params_get_ulCount(Crypt__PKCS11__CK_OTP_PARAMS* objec
 }
 
 CK_RV crypt_pkcs11_ck_otp_params_set_ulCount(Crypt__PKCS11__CK_OTP_PARAMS* object, SV* sv) {
-    if (!object) {
-        return CKR_ARGUMENTS_BAD;
-    }
-    if (!sv) {
-        return CKR_ARGUMENTS_BAD;
-    }
-
-    SvGETMAGIC(sv);
-    if (!crypt_pkcs11_xs_SvUOK(sv)) {
-        return CKR_ARGUMENTS_BAD;
-    }
-
-    object->private.ulCount = SvUV(sv);
-
-    return CKR_OK;
+    return CKR_FUNCTION_NOT_SUPPORTED;
 }
 
 Crypt__PKCS11__CK_OTP_SIGNATURE_INFO* crypt_pkcs11_ck_otp_signature_info_new(const char* class) {
@@ -7076,16 +7194,148 @@ Crypt__PKCS11__CK_OTP_SIGNATURE_INFO* crypt_pkcs11_ck_otp_signature_info_new(con
 
 void crypt_pkcs11_ck_otp_signature_info_DESTROY(Crypt__PKCS11__CK_OTP_SIGNATURE_INFO* object) {
     if (object) {
+        if (object->private.pParams) {
+            CK_ULONG ulCount;
+            for (ulCount = 0; ulCount < object->private.ulCount; ulCount++) {
+                if (object->private.pParams[ulCount].pValue) {
+                    free(object->private.pParams[ulCount].pValue);
+                }
+            }
+            free(object->private.pParams);
+        }
         free(object);
     }
 }
 
-CK_RV crypt_pkcs11_ck_otp_signature_info_get_pParams(Crypt__PKCS11__CK_OTP_SIGNATURE_INFO* object, SV* sv) {
-    croak("Unimplemented");
+CK_RV crypt_pkcs11_ck_otp_signature_info_get_pParams(Crypt__PKCS11__CK_OTP_SIGNATURE_INFO* object, AV* sv) {
+    CK_ULONG ulCount;
+    Crypt__PKCS11__CK_OTP_PARAM* param;
+    SV* paramSV;
+
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    if (!(object->private.ulCount)) {
+        return CKR_OK;
+    }
+
+    for (ulCount = 0; ulCount < object->private.ulCount; ulCount++) {
+        if (!(param = calloc(1, sizeof(Crypt__PKCS11__CK_OTP_PARAM)))) {
+            return CKR_HOST_MEMORY;
+        }
+
+        param->private.type = object->private.pParams[ulCount].type;
+        if (object->private.pParams[ulCount].pValue) {
+            if (!(param->private.pValue = calloc(1, object->private.pParams[ulCount].ulValueLen))) {
+                free(param);
+                return CKR_HOST_MEMORY;
+            }
+            memcpy(param->private.pValue, object->private.pParams[ulCount].pValue, object->private.pParams[ulCount].ulValueLen);
+            param->private.ulValueLen = object->private.pParams[ulCount].ulValueLen;
+        }
+
+        paramSV = sv_newmortal();
+        sv_setref_pv(paramSV, "Crypt::PKCS11::CK_OTP_PARAMPtr", param);
+        av_push(sv, paramSV);
+    }
+
+    return CKR_OK;
 }
 
-CK_RV crypt_pkcs11_ck_otp_signature_info_set_pParams(Crypt__PKCS11__CK_OTP_SIGNATURE_INFO* object, SV* sv) {
-    croak("Unimplemented");
+CK_RV crypt_pkcs11_ck_otp_signature_info_set_pParams(Crypt__PKCS11__CK_OTP_SIGNATURE_INFO* object, AV* sv) {
+    CK_ULONG ulCount;
+    I32 key;
+    SV** item;
+    SV* entry;
+    IV tmp;
+    Crypt__PKCS11__CK_OTP_PARAM* param;
+    CK_OTP_PARAM_PTR params;
+    CK_ULONG paramCount = 0;
+
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    for (key = 0; key < av_len(sv) + 1; key++) {
+        if (!(item = av_fetch(sv, key, 0))
+            || !*item
+            || !SvROK(*item)
+            || !(entry = SvRV(*item))
+            || !sv_isobject(entry)
+            || !sv_derived_from(entry, "Crypt::PKCS11::CK_OTP_PARAMPtr"))
+        {
+            return CKR_ARGUMENTS_BAD;
+        }
+        paramCount++;
+    }
+
+    if (!(params = calloc(paramCount, sizeof(CK_OTP_PARAM)))) {
+        return CKR_HOST_MEMORY;
+    }
+
+    for (key = 0; key < av_len(sv) + 1; key++) {
+        if (!(item = av_fetch(sv, key, 0))
+            || !*item
+            || !SvROK(*item)
+            || !(entry = SvRV(*item))
+            || !sv_isobject(entry)
+            || !sv_derived_from(entry, "Crypt::PKCS11::CK_OTP_PARAMPtr"))
+        {
+            for (ulCount = 0; ulCount < paramCount; ulCount++) {
+                if (params[ulCount].pValue) {
+                    free(params[ulCount].pValue);
+                }
+            }
+            free(params);
+            return CKR_ARGUMENTS_BAD;
+        }
+
+        tmp = SvIV((SV*)SvRV(entry));
+        if (!(param = INT2PTR(Crypt__PKCS11__CK_OTP_PARAM*, tmp))) {
+            for (ulCount = 0; ulCount < paramCount; ulCount++) {
+                if (params[ulCount].pValue) {
+                    free(params[ulCount].pValue);
+                }
+            }
+            free(params);
+            return CKR_GENERAL_ERROR;
+        }
+
+        if (param->private.pValue) {
+            if (!(params[key].pValue = calloc(1, param->private.ulValueLen))) {
+                for (ulCount = 0; ulCount < paramCount; ulCount++) {
+                    if (params[ulCount].pValue) {
+                        free(params[ulCount].pValue);
+                    }
+                }
+                free(params);
+                return CKR_HOST_MEMORY;
+            }
+
+            memcpy(params[key].pValue, param->private.pValue, param->private.ulValueLen);
+            params[key].ulValueLen = param->private.ulValueLen;
+        }
+    }
+
+    if (object->private.pParams) {
+        for (ulCount = 0; ulCount < object->private.ulCount; ulCount++) {
+            if (object->private.pParams[ulCount].pValue) {
+                free(object->private.pParams[ulCount].pValue);
+            }
+        }
+        free(object->private.pParams);
+    }
+    object->private.pParams = params;
+    object->private.ulCount = paramCount;
+
+    return CKR_OK;
 }
 
 CK_RV crypt_pkcs11_ck_otp_signature_info_get_ulCount(Crypt__PKCS11__CK_OTP_SIGNATURE_INFO* object, SV* sv) {
@@ -7104,21 +7354,7 @@ CK_RV crypt_pkcs11_ck_otp_signature_info_get_ulCount(Crypt__PKCS11__CK_OTP_SIGNA
 }
 
 CK_RV crypt_pkcs11_ck_otp_signature_info_set_ulCount(Crypt__PKCS11__CK_OTP_SIGNATURE_INFO* object, SV* sv) {
-    if (!object) {
-        return CKR_ARGUMENTS_BAD;
-    }
-    if (!sv) {
-        return CKR_ARGUMENTS_BAD;
-    }
-
-    SvGETMAGIC(sv);
-    if (!crypt_pkcs11_xs_SvUOK(sv)) {
-        return CKR_ARGUMENTS_BAD;
-    }
-
-    object->private.ulCount = SvUV(sv);
-
-    return CKR_OK;
+    return CKR_FUNCTION_NOT_SUPPORTED;
 }
 
 Crypt__PKCS11__CK_KIP_PARAMS* crypt_pkcs11_ck_kip_params_new(const char* class) {

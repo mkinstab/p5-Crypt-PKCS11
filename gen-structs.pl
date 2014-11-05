@@ -72,7 +72,7 @@ my %T = (
     CK_SSL3_KEY_MAT_OUT_PTR => \&ck_ssl3_key_mat_out_ptr,
     CK_WTLS_RANDOM_DATA => \&ck_wtls_random_data,
     CK_WTLS_KEY_MAT_OUT_PTR => \&ck_wtls_key_mat_out_ptr,
-    CK_OTP_PARAM_PTR => \&unimplemented,
+    CK_OTP_PARAM_PTR => \&ck_otp_param_ptr,
 );
 my %NEW = (
     CK_VERSION_PTR => \&ck_type_ptr_new,
@@ -97,6 +97,12 @@ my %TT = (
     CK_CMS_SIG_PARAMS => {
         pContentType => \&CK_CMS_SIG_PARAMS_pContentType,
     },
+    CK_OTP_PARAMS => {
+        ulCount => \&CK_OTP_PARAMS_ulCount,
+    },
+    CK_OTP_SIGNATURE_INFO => {
+        ulCount => \&CK_OTP_SIGNATURE_INFO_ulCount,
+    },
 );
 my %D = (
     CK_BYTE => undef,
@@ -112,7 +118,7 @@ my %D = (
     CK_SSL3_KEY_MAT_OUT_PTR => \&ck_ssl3_key_mat_out_ptr_DESTROY,
     CK_WTLS_RANDOM_DATA => \&ck_wtls_random_data_DESTROY,
     CK_WTLS_KEY_MAT_OUT_PTR => \&ck_wtls_key_mat_out_ptr_DESTROY,
-    CK_OTP_PARAM_PTR => undef,
+    CK_OTP_PARAM_PTR => \&ck_otp_param_ptr_DESTROY,
 );
 my %H = (
     CK_BYTE => undef,
@@ -137,6 +143,7 @@ my %HH = (
     CK_SSL3_KEY_MAT_OUT_PTR => \&ck_ssl3_key_mat_out_ptr_hh,
     CK_WTLS_RANDOM_DATA => \&ck_wtls_random_data_hh,
     CK_WTLS_KEY_MAT_OUT_PTR => \&ck_wtls_key_mat_out_ptr_hh,
+    CK_OTP_PARAM_PTR => \&ck_otp_param_ptr_hh,
 );
 my %XS = (
     CK_VERSION_PTR => \&ck_version_ptr_xs,
@@ -145,6 +152,7 @@ my %XS = (
     CK_SSL3_KEY_MAT_OUT_PTR => \&ck_ssl3_key_mat_out_ptr_xs,
     CK_WTLS_RANDOM_DATA => \&ck_wtls_random_data_xs,
     CK_WTLS_KEY_MAT_OUT_PTR => \&ck_wtls_key_mat_out_ptr_xs,
+    CK_OTP_PARAM_PTR => \&ck_otp_param_ptr_xs,
 );
 my %XSXS = (
 );
@@ -2086,6 +2094,248 @@ CK_RV crypt_pkcs11_'.$lc_struct.'_set_'.$type->{name}.'('.$c_struct.'* object, S
 
     SvREFCNT_dec(_sv);
     return CKR_OK;
+}
+
+';
+}
+
+sub ck_otp_param_ptr {
+    my ($struct, $c_struct, $lc_struct, $type) = @_;
+
+    print C 'CK_RV crypt_pkcs11_'.$lc_struct.'_get_'.$type->{name}.'('.$c_struct.'* object, AV* sv) {
+    CK_ULONG ulCount;
+    Crypt__PKCS11__CK_OTP_PARAM* param;
+    SV* paramSV;
+
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    if (!(object->private.ulCount)) {
+        return CKR_OK;
+    }
+
+    for (ulCount = 0; ulCount < object->private.ulCount; ulCount++) {
+        if (!(param = calloc(1, sizeof(Crypt__PKCS11__CK_OTP_PARAM)))) {
+            return CKR_HOST_MEMORY;
+        }
+
+        param->private.type = object->private.'.$type->{name}.'[ulCount].type;
+        if (object->private.'.$type->{name}.'[ulCount].pValue) {
+            if (!(param->private.pValue = calloc(1, object->private.'.$type->{name}.'[ulCount].ulValueLen))) {
+                free(param);
+                return CKR_HOST_MEMORY;
+            }
+            memcpy(param->private.pValue, object->private.'.$type->{name}.'[ulCount].pValue, object->private.'.$type->{name}.'[ulCount].ulValueLen);
+            param->private.ulValueLen = object->private.'.$type->{name}.'[ulCount].ulValueLen;
+        }
+
+        paramSV = sv_newmortal();
+        sv_setref_pv(paramSV, "Crypt::PKCS11::CK_OTP_PARAMPtr", param);
+        av_push(sv, paramSV);
+    }
+
+    return CKR_OK;
+}
+
+CK_RV crypt_pkcs11_'.$lc_struct.'_set_'.$type->{name}.'('.$c_struct.'* object, AV* sv) {
+    CK_ULONG ulCount;
+    I32 key;
+    SV** item;
+    SV* entry;
+    IV tmp;
+    Crypt__PKCS11__CK_OTP_PARAM* param;
+    CK_OTP_PARAM_PTR params;
+    CK_ULONG paramCount = 0;
+
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    for (key = 0; key < av_len(sv) + 1; key++) {
+        if (!(item = av_fetch(sv, key, 0))
+            || !*item
+            || !SvROK(*item)
+            || !(entry = SvRV(*item))
+            || !sv_isobject(entry)
+            || !sv_derived_from(entry, "Crypt::PKCS11::CK_OTP_PARAMPtr"))
+        {
+            return CKR_ARGUMENTS_BAD;
+        }
+        paramCount++;
+    }
+
+    if (!(params = calloc(paramCount, sizeof(CK_OTP_PARAM)))) {
+        return CKR_HOST_MEMORY;
+    }
+
+    for (key = 0; key < av_len(sv) + 1; key++) {
+        if (!(item = av_fetch(sv, key, 0))
+            || !*item
+            || !SvROK(*item)
+            || !(entry = SvRV(*item))
+            || !sv_isobject(entry)
+            || !sv_derived_from(entry, "Crypt::PKCS11::CK_OTP_PARAMPtr"))
+        {
+            for (ulCount = 0; ulCount < paramCount; ulCount++) {
+                if (params[ulCount].pValue) {
+                    free(params[ulCount].pValue);
+                }
+            }
+            free(params);
+            return CKR_ARGUMENTS_BAD;
+        }
+
+        tmp = SvIV((SV*)SvRV(entry));
+        if (!(param = INT2PTR(Crypt__PKCS11__CK_OTP_PARAM*, tmp))) {
+            for (ulCount = 0; ulCount < paramCount; ulCount++) {
+                if (params[ulCount].pValue) {
+                    free(params[ulCount].pValue);
+                }
+            }
+            free(params);
+            return CKR_GENERAL_ERROR;
+        }
+
+        if (param->private.pValue) {
+            if (!(params[key].pValue = calloc(1, param->private.ulValueLen))) {
+                for (ulCount = 0; ulCount < paramCount; ulCount++) {
+                    if (params[ulCount].pValue) {
+                        free(params[ulCount].pValue);
+                    }
+                }
+                free(params);
+                return CKR_HOST_MEMORY;
+            }
+
+            memcpy(params[key].pValue, param->private.pValue, param->private.ulValueLen);
+            params[key].ulValueLen = param->private.ulValueLen;
+        }
+    }
+
+    if (object->private.'.$type->{name}.') {
+        for (ulCount = 0; ulCount < object->private.ulCount; ulCount++) {
+            if (object->private.'.$type->{name}.'[ulCount].pValue) {
+                free(object->private.'.$type->{name}.'[ulCount].pValue);
+            }
+        }
+        free(object->private.'.$type->{name}.');
+    }
+    object->private.'.$type->{name}.' = params;
+    object->private.ulCount = paramCount;
+
+    return CKR_OK;
+}
+
+';
+}
+
+sub ck_otp_param_ptr_DESTROY {
+    my ($struct, $c_struct, $lc_struct, $type) = @_;
+
+    print C '        if (object->private.'.$type->{name}.') {
+            CK_ULONG ulCount;
+            for (ulCount = 0; ulCount < object->private.ulCount; ulCount++) {
+                if (object->private.'.$type->{name}.'[ulCount].pValue) {
+                    free(object->private.'.$type->{name}.'[ulCount].pValue);
+                }
+            }
+            free(object->private.'.$type->{name}.');
+        }
+';
+}
+
+sub ck_otp_param_ptr_hh {
+    my ($struct, $c_struct, $lc_struct, $type) = @_;
+
+    print H 'CK_RV crypt_pkcs11_'.$lc_struct.'_get_'.$_->{name}.'('.$c_struct.'* object, AV* sv);
+CK_RV crypt_pkcs11_'.$lc_struct.'_set_'.$_->{name}.'('.$c_struct.'* object, AV* sv);
+';
+}
+
+sub ck_otp_param_ptr_xs {
+    my ($struct, $c_struct, $lc_struct, $type) = @_;
+
+    print XS 'CK_RV
+crypt_pkcs11_'.$lc_struct.'_get_'.$type->{name}.'(object, sv)
+    Crypt::PKCS11::'.$struct.'* object
+    AV* sv
+PROTOTYPE: $
+OUTPUT:
+    RETVAL
+
+AV*
+crypt_pkcs11_'.$lc_struct.'_'.$type->{name}.'(object)
+    Crypt::PKCS11::'.$struct.'* object
+PROTOTYPE: $
+CODE:
+    RETVAL = newAV();
+    crypt_pkcs11_'.$lc_struct.'_get_'.$type->{name}.'(object, RETVAL);
+OUTPUT:
+    RETVAL
+
+CK_RV
+crypt_pkcs11_'.$lc_struct.'_set_'.$type->{name}.'(object, sv)
+    Crypt::PKCS11::'.$struct.'* object
+    AV* sv
+PROTOTYPE: $
+OUTPUT:
+    RETVAL
+
+';
+}
+
+sub CK_OTP_PARAMS_ulCount {
+    my ($struct, $c_struct, $lc_struct, $type) = @_;
+
+    print C 'CK_RV crypt_pkcs11_'.$lc_struct.'_get_'.$type->{name}.'('.$c_struct.'* object, SV* sv) {
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    SvGETMAGIC(sv);
+    sv_setuv(sv, object->private.'.$type->{name}.');
+    SvSETMAGIC(sv);
+
+    return CKR_OK;
+}
+
+CK_RV crypt_pkcs11_'.$lc_struct.'_set_'.$type->{name}.'('.$c_struct.'* object, SV* sv) {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+}
+
+';
+}
+
+sub CK_OTP_SIGNATURE_INFO_ulCount {
+    my ($struct, $c_struct, $lc_struct, $type) = @_;
+
+    print C 'CK_RV crypt_pkcs11_'.$lc_struct.'_get_'.$type->{name}.'('.$c_struct.'* object, SV* sv) {
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    SvGETMAGIC(sv);
+    sv_setuv(sv, object->private.'.$type->{name}.');
+    SvSETMAGIC(sv);
+
+    return CKR_OK;
+}
+
+CK_RV crypt_pkcs11_'.$lc_struct.'_set_'.$type->{name}.'('.$c_struct.'* object, SV* sv) {
+    return CKR_FUNCTION_NOT_SUPPORTED;
 }
 
 ';

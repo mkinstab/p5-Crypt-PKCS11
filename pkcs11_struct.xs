@@ -4135,17 +4135,17 @@ PROTOTYPE: $
 CK_RV
 crypt_pkcs11_ck_otp_params_get_pParams(object, sv)
     Crypt::PKCS11::CK_OTP_PARAMS* object
-    SV* sv
+    AV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
-SV*
+AV*
 crypt_pkcs11_ck_otp_params_pParams(object)
     Crypt::PKCS11::CK_OTP_PARAMS* object
 PROTOTYPE: $
 CODE:
-    RETVAL = newSV(0);
+    RETVAL = newAV();
     crypt_pkcs11_ck_otp_params_get_pParams(object, RETVAL);
 OUTPUT:
     RETVAL
@@ -4153,7 +4153,7 @@ OUTPUT:
 CK_RV
 crypt_pkcs11_ck_otp_params_set_pParams(object, sv)
     Crypt::PKCS11::CK_OTP_PARAMS* object
-    SV* sv
+    AV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
@@ -4207,17 +4207,17 @@ PROTOTYPE: $
 CK_RV
 crypt_pkcs11_ck_otp_signature_info_get_pParams(object, sv)
     Crypt::PKCS11::CK_OTP_SIGNATURE_INFO* object
-    SV* sv
+    AV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
 
-SV*
+AV*
 crypt_pkcs11_ck_otp_signature_info_pParams(object)
     Crypt::PKCS11::CK_OTP_SIGNATURE_INFO* object
 PROTOTYPE: $
 CODE:
-    RETVAL = newSV(0);
+    RETVAL = newAV();
     crypt_pkcs11_ck_otp_signature_info_get_pParams(object, RETVAL);
 OUTPUT:
     RETVAL
@@ -4225,7 +4225,7 @@ OUTPUT:
 CK_RV
 crypt_pkcs11_ck_otp_signature_info_set_pParams(object, sv)
     Crypt::PKCS11::CK_OTP_SIGNATURE_INFO* object
-    SV* sv
+    AV* sv
 PROTOTYPE: $
 OUTPUT:
     RETVAL
