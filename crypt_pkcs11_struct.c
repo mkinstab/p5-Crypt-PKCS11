@@ -73,19 +73,7 @@ CK_RV crypt_pkcs11_ck_version_fromBytes(Crypt__PKCS11__CK_VERSION* object, SV* s
         return CKR_ARGUMENTS_BAD;
     }
 
-/*
-
-TODO: fromBytes pre-type
-
-*/
-
     memcpy(&(object->private), p, l);
-
-/*
-
-TODO: fromBytes post-type
-
-*/
 
     return CKR_OK;
 }
@@ -203,19 +191,10 @@ CK_RV crypt_pkcs11_ck_mechanism_fromBytes(Crypt__PKCS11__CK_MECHANISM* object, S
         return CKR_ARGUMENTS_BAD;
     }
 
-/*
-
-TODO: fromBytes pre-type
-
-*/
-
+    if (object->private.pParameter) {
+        free(object->private.pParameter);
+    }
     memcpy(&(object->private), p, l);
-
-/*
-
-TODO: fromBytes post-type
-
-*/
 
     return CKR_OK;
 }
@@ -362,19 +341,10 @@ CK_RV crypt_pkcs11_ck_rsa_pkcs_oaep_params_fromBytes(Crypt__PKCS11__CK_RSA_PKCS_
         return CKR_ARGUMENTS_BAD;
     }
 
-/*
-
-TODO: fromBytes pre-type
-
-*/
-
+    if (object->private.pSourceData) {
+        free(object->private.pSourceData);
+    }
     memcpy(&(object->private), p, l);
-
-/*
-
-TODO: fromBytes post-type
-
-*/
 
     return CKR_OK;
 }
@@ -587,19 +557,7 @@ CK_RV crypt_pkcs11_ck_rsa_pkcs_pss_params_fromBytes(Crypt__PKCS11__CK_RSA_PKCS_P
         return CKR_ARGUMENTS_BAD;
     }
 
-/*
-
-TODO: fromBytes pre-type
-
-*/
-
     memcpy(&(object->private), p, l);
-
-/*
-
-TODO: fromBytes post-type
-
-*/
 
     return CKR_OK;
 }
@@ -750,19 +708,13 @@ CK_RV crypt_pkcs11_ck_ecdh1_derive_params_fromBytes(Crypt__PKCS11__CK_ECDH1_DERI
         return CKR_ARGUMENTS_BAD;
     }
 
-/*
-
-TODO: fromBytes pre-type
-
-*/
-
+    if (object->private.pSharedData) {
+        free(object->private.pSharedData);
+    }
+    if (object->private.pPublicData) {
+        free(object->private.pPublicData);
+    }
     memcpy(&(object->private), p, l);
-
-/*
-
-TODO: fromBytes post-type
-
-*/
 
     return CKR_OK;
 }
@@ -971,19 +923,16 @@ CK_RV crypt_pkcs11_ck_ecdh2_derive_params_fromBytes(Crypt__PKCS11__CK_ECDH2_DERI
         return CKR_ARGUMENTS_BAD;
     }
 
-/*
-
-TODO: fromBytes pre-type
-
-*/
-
+    if (object->private.pSharedData) {
+        free(object->private.pSharedData);
+    }
+    if (object->private.pPublicData) {
+        free(object->private.pPublicData);
+    }
+    if (object->private.pPublicData2) {
+        free(object->private.pPublicData2);
+    }
     memcpy(&(object->private), p, l);
-
-/*
-
-TODO: fromBytes post-type
-
-*/
 
     return CKR_OK;
 }
@@ -1287,19 +1236,16 @@ CK_RV crypt_pkcs11_ck_ecmqv_derive_params_fromBytes(Crypt__PKCS11__CK_ECMQV_DERI
         return CKR_ARGUMENTS_BAD;
     }
 
-/*
-
-TODO: fromBytes pre-type
-
-*/
-
+    if (object->private.pSharedData) {
+        free(object->private.pSharedData);
+    }
+    if (object->private.pPublicData) {
+        free(object->private.pPublicData);
+    }
+    if (object->private.pPublicData2) {
+        free(object->private.pPublicData2);
+    }
     memcpy(&(object->private), p, l);
-
-/*
-
-TODO: fromBytes post-type
-
-*/
 
     return CKR_OK;
 }
@@ -1636,19 +1582,13 @@ CK_RV crypt_pkcs11_ck_x9_42_dh1_derive_params_fromBytes(Crypt__PKCS11__CK_X9_42_
         return CKR_ARGUMENTS_BAD;
     }
 
-/*
-
-TODO: fromBytes pre-type
-
-*/
-
+    if (object->private.pOtherInfo) {
+        free(object->private.pOtherInfo);
+    }
+    if (object->private.pPublicData) {
+        free(object->private.pPublicData);
+    }
     memcpy(&(object->private), p, l);
-
-/*
-
-TODO: fromBytes post-type
-
-*/
 
     return CKR_OK;
 }
@@ -1857,19 +1797,16 @@ CK_RV crypt_pkcs11_ck_x9_42_dh2_derive_params_fromBytes(Crypt__PKCS11__CK_X9_42_
         return CKR_ARGUMENTS_BAD;
     }
 
-/*
-
-TODO: fromBytes pre-type
-
-*/
-
+    if (object->private.pOtherInfo) {
+        free(object->private.pOtherInfo);
+    }
+    if (object->private.pPublicData) {
+        free(object->private.pPublicData);
+    }
+    if (object->private.pPublicData2) {
+        free(object->private.pPublicData2);
+    }
     memcpy(&(object->private), p, l);
-
-/*
-
-TODO: fromBytes post-type
-
-*/
 
     return CKR_OK;
 }
@@ -2173,19 +2110,16 @@ CK_RV crypt_pkcs11_ck_x9_42_mqv_derive_params_fromBytes(Crypt__PKCS11__CK_X9_42_
         return CKR_ARGUMENTS_BAD;
     }
 
-/*
-
-TODO: fromBytes pre-type
-
-*/
-
+    if (object->private.pOtherInfo) {
+        free(object->private.pOtherInfo);
+    }
+    if (object->private.pPublicData) {
+        free(object->private.pPublicData);
+    }
+    if (object->private.pPublicData2) {
+        free(object->private.pPublicData2);
+    }
     memcpy(&(object->private), p, l);
-
-/*
-
-TODO: fromBytes post-type
-
-*/
 
     return CKR_OK;
 }
@@ -2522,19 +2456,16 @@ CK_RV crypt_pkcs11_ck_kea_derive_params_fromBytes(Crypt__PKCS11__CK_KEA_DERIVE_P
         return CKR_ARGUMENTS_BAD;
     }
 
-/*
-
-TODO: fromBytes pre-type
-
-*/
-
+    if (object->private.pRandomA) {
+        free(object->private.pRandomA);
+    }
+    if (object->private.pRandomB) {
+        free(object->private.pRandomB);
+    }
+    if (object->private.pPublicData) {
+        free(object->private.pPublicData);
+    }
     memcpy(&(object->private), p, l);
-
-/*
-
-TODO: fromBytes post-type
-
-*/
 
     return CKR_OK;
 }
@@ -2810,19 +2741,7 @@ CK_RV crypt_pkcs11_ck_rc2_cbc_params_fromBytes(Crypt__PKCS11__CK_RC2_CBC_PARAMS*
         return CKR_ARGUMENTS_BAD;
     }
 
-/*
-
-TODO: fromBytes pre-type
-
-*/
-
     memcpy(&(object->private), p, l);
-
-/*
-
-TODO: fromBytes post-type
-
-*/
 
     return CKR_OK;
 }
@@ -2956,19 +2875,7 @@ CK_RV crypt_pkcs11_ck_rc2_mac_general_params_fromBytes(Crypt__PKCS11__CK_RC2_MAC
         return CKR_ARGUMENTS_BAD;
     }
 
-/*
-
-TODO: fromBytes pre-type
-
-*/
-
     memcpy(&(object->private), p, l);
-
-/*
-
-TODO: fromBytes post-type
-
-*/
 
     return CKR_OK;
 }
@@ -3053,19 +2960,7 @@ CK_RV crypt_pkcs11_ck_rc5_params_fromBytes(Crypt__PKCS11__CK_RC5_PARAMS* object,
         return CKR_ARGUMENTS_BAD;
     }
 
-/*
-
-TODO: fromBytes pre-type
-
-*/
-
     memcpy(&(object->private), p, l);
-
-/*
-
-TODO: fromBytes post-type
-
-*/
 
     return CKR_OK;
 }
@@ -3183,19 +3078,10 @@ CK_RV crypt_pkcs11_ck_rc5_cbc_params_fromBytes(Crypt__PKCS11__CK_RC5_CBC_PARAMS*
         return CKR_ARGUMENTS_BAD;
     }
 
-/*
-
-TODO: fromBytes pre-type
-
-*/
-
+    if (object->private.pIv) {
+        free(object->private.pIv);
+    }
     memcpy(&(object->private), p, l);
-
-/*
-
-TODO: fromBytes post-type
-
-*/
 
     return CKR_OK;
 }
@@ -3375,19 +3261,7 @@ CK_RV crypt_pkcs11_ck_rc5_mac_general_params_fromBytes(Crypt__PKCS11__CK_RC5_MAC
         return CKR_ARGUMENTS_BAD;
     }
 
-/*
-
-TODO: fromBytes pre-type
-
-*/
-
     memcpy(&(object->private), p, l);
-
-/*
-
-TODO: fromBytes post-type
-
-*/
 
     return CKR_OK;
 }
@@ -3505,19 +3379,10 @@ CK_RV crypt_pkcs11_ck_des_cbc_encrypt_data_params_fromBytes(Crypt__PKCS11__CK_DE
         return CKR_ARGUMENTS_BAD;
     }
 
-/*
-
-TODO: fromBytes pre-type
-
-*/
-
+    if (object->private.pData) {
+        free(object->private.pData);
+    }
     memcpy(&(object->private), p, l);
-
-/*
-
-TODO: fromBytes post-type
-
-*/
 
     return CKR_OK;
 }
@@ -3680,19 +3545,10 @@ CK_RV crypt_pkcs11_ck_aes_cbc_encrypt_data_params_fromBytes(Crypt__PKCS11__CK_AE
         return CKR_ARGUMENTS_BAD;
     }
 
-/*
-
-TODO: fromBytes pre-type
-
-*/
-
+    if (object->private.pData) {
+        free(object->private.pData);
+    }
     memcpy(&(object->private), p, l);
-
-/*
-
-TODO: fromBytes post-type
-
-*/
 
     return CKR_OK;
 }
@@ -3855,19 +3711,25 @@ CK_RV crypt_pkcs11_ck_skipjack_private_wrap_params_fromBytes(Crypt__PKCS11__CK_S
         return CKR_ARGUMENTS_BAD;
     }
 
-/*
-
-TODO: fromBytes pre-type
-
-*/
-
+    if (object->private.pPassword) {
+        free(object->private.pPassword);
+    }
+    if (object->private.pPublicData) {
+        free(object->private.pPublicData);
+    }
+    if (object->private.pRandomA) {
+        free(object->private.pRandomA);
+    }
+    if (object->private.pPrimeP) {
+        free(object->private.pPrimeP);
+    }
+    if (object->private.pBaseG) {
+        free(object->private.pBaseG);
+    }
+    if (object->private.pSubprimeQ) {
+        free(object->private.pSubprimeQ);
+    }
     memcpy(&(object->private), p, l);
-
-/*
-
-TODO: fromBytes post-type
-
-*/
 
     return CKR_OK;
 }
@@ -4291,19 +4153,28 @@ CK_RV crypt_pkcs11_ck_skipjack_relayx_params_fromBytes(Crypt__PKCS11__CK_SKIPJAC
         return CKR_ARGUMENTS_BAD;
     }
 
-/*
-
-TODO: fromBytes pre-type
-
-*/
-
+    if (object->private.pOldWrappedX) {
+        free(object->private.pOldWrappedX);
+    }
+    if (object->private.pOldPassword) {
+        free(object->private.pOldPassword);
+    }
+    if (object->private.pOldPublicData) {
+        free(object->private.pOldPublicData);
+    }
+    if (object->private.pOldRandomA) {
+        free(object->private.pOldRandomA);
+    }
+    if (object->private.pNewPassword) {
+        free(object->private.pNewPassword);
+    }
+    if (object->private.pNewPublicData) {
+        free(object->private.pNewPublicData);
+    }
+    if (object->private.pNewRandomA) {
+        free(object->private.pNewRandomA);
+    }
     memcpy(&(object->private), p, l);
-
-/*
-
-TODO: fromBytes post-type
-
-*/
 
     return CKR_OK;
 }
@@ -4796,19 +4667,16 @@ CK_RV crypt_pkcs11_ck_pbe_params_fromBytes(Crypt__PKCS11__CK_PBE_PARAMS* object,
         return CKR_ARGUMENTS_BAD;
     }
 
-/*
-
-TODO: fromBytes pre-type
-
-*/
-
+    if (object->private.pInitVector) {
+        free(object->private.pInitVector);
+    }
+    if (object->private.pPassword) {
+        free(object->private.pPassword);
+    }
+    if (object->private.pSalt) {
+        free(object->private.pSalt);
+    }
     memcpy(&(object->private), p, l);
-
-/*
-
-TODO: fromBytes post-type
-
-*/
 
     return CKR_OK;
 }
@@ -5084,19 +4952,10 @@ CK_RV crypt_pkcs11_ck_key_wrap_set_oaep_params_fromBytes(Crypt__PKCS11__CK_KEY_W
         return CKR_ARGUMENTS_BAD;
     }
 
-/*
-
-TODO: fromBytes pre-type
-
-*/
-
+    if (object->private.pX) {
+        free(object->private.pX);
+    }
     memcpy(&(object->private), p, l);
-
-/*
-
-TODO: fromBytes post-type
-
-*/
 
     return CKR_OK;
 }
@@ -5243,19 +5102,13 @@ CK_RV crypt_pkcs11_ck_ssl3_random_data_fromBytes(Crypt__PKCS11__CK_SSL3_RANDOM_D
         return CKR_ARGUMENTS_BAD;
     }
 
-/*
-
-TODO: fromBytes pre-type
-
-*/
-
+    if (object->private.pClientRandom) {
+        free(object->private.pClientRandom);
+    }
+    if (object->private.pServerRandom) {
+        free(object->private.pServerRandom);
+    }
     memcpy(&(object->private), p, l);
-
-/*
-
-TODO: fromBytes post-type
-
-*/
 
     return CKR_OK;
 }
@@ -5434,19 +5287,19 @@ CK_RV crypt_pkcs11_ck_ssl3_master_key_derive_params_fromBytes(Crypt__PKCS11__CK_
         return CKR_ARGUMENTS_BAD;
     }
 
-/*
-
-TODO: fromBytes pre-type
-
-*/
-
+    if (object->private.RandomInfo.pClientRandom) {
+        free(object->private.RandomInfo.pClientRandom);
+    }
+    if (object->private.RandomInfo.pServerRandom) {
+        free(object->private.RandomInfo.pServerRandom);
+    }
     memcpy(&(object->private), p, l);
 
-/*
-
-TODO: fromBytes post-type
-
-*/
+    if (object->private.pVersion) {
+        memcpy(&(object->pVersion), object->private.pVersion, sizeof(CK_VERSION));
+        free(object->private.pVersion);
+    }
+    object->private.pVersion = &(object->pVersion);
 
     return CKR_OK;
 }
@@ -5624,19 +5477,13 @@ CK_RV crypt_pkcs11_ck_ssl3_key_mat_out_fromBytes(Crypt__PKCS11__CK_SSL3_KEY_MAT_
         return CKR_ARGUMENTS_BAD;
     }
 
-/*
-
-TODO: fromBytes pre-type
-
-*/
-
+    if (object->private.pIVClient) {
+        free(object->private.pIVClient);
+    }
+    if (object->private.pIVServer) {
+        free(object->private.pIVServer);
+    }
     memcpy(&(object->private), p, l);
-
-/*
-
-TODO: fromBytes post-type
-
-*/
 
     return CKR_OK;
 }
@@ -5867,19 +5714,13 @@ CK_RV crypt_pkcs11_ck_ssl3_key_mat_params_fromBytes(Crypt__PKCS11__CK_SSL3_KEY_M
         return CKR_ARGUMENTS_BAD;
     }
 
-/*
-
-TODO: fromBytes pre-type
-
-*/
-
+    if (object->private.RandomInfo.pClientRandom) {
+        free(object->private.RandomInfo.pClientRandom);
+    }
+    if (object->private.RandomInfo.pServerRandom) {
+        free(object->private.RandomInfo.pServerRandom);
+    }
     memcpy(&(object->private), p, l);
-
-/*
-
-TODO: fromBytes post-type
-
-*/
 
     return CKR_OK;
 }
@@ -6233,19 +6074,16 @@ CK_RV crypt_pkcs11_ck_tls_prf_params_fromBytes(Crypt__PKCS11__CK_TLS_PRF_PARAMS*
         return CKR_ARGUMENTS_BAD;
     }
 
-/*
-
-TODO: fromBytes pre-type
-
-*/
-
+    if (object->private.pSeed) {
+        free(object->private.pSeed);
+    }
+    if (object->private.pLabel) {
+        free(object->private.pLabel);
+    }
+    if (object->private.pOutput) {
+        free(object->private.pOutput);
+    }
     memcpy(&(object->private), p, l);
-
-/*
-
-TODO: fromBytes post-type
-
-*/
 
     return CKR_OK;
 }
@@ -6500,19 +6338,13 @@ CK_RV crypt_pkcs11_ck_wtls_random_data_fromBytes(Crypt__PKCS11__CK_WTLS_RANDOM_D
         return CKR_ARGUMENTS_BAD;
     }
 
-/*
-
-TODO: fromBytes pre-type
-
-*/
-
+    if (object->private.pClientRandom) {
+        free(object->private.pClientRandom);
+    }
+    if (object->private.pServerRandom) {
+        free(object->private.pServerRandom);
+    }
     memcpy(&(object->private), p, l);
-
-/*
-
-TODO: fromBytes post-type
-
-*/
 
     return CKR_OK;
 }
@@ -6695,19 +6527,16 @@ CK_RV crypt_pkcs11_ck_wtls_master_key_derive_params_fromBytes(Crypt__PKCS11__CK_
         return CKR_ARGUMENTS_BAD;
     }
 
-/*
-
-TODO: fromBytes pre-type
-
-*/
-
+    if (object->private.RandomInfo.pClientRandom) {
+        free(object->private.RandomInfo.pClientRandom);
+    }
+    if (object->private.RandomInfo.pServerRandom) {
+        free(object->private.RandomInfo.pServerRandom);
+    }
+    if (object->private.pVersion) {
+        free(object->private.pVersion);
+    }
     memcpy(&(object->private), p, l);
-
-/*
-
-TODO: fromBytes post-type
-
-*/
 
     return CKR_OK;
 }
@@ -6913,19 +6742,16 @@ CK_RV crypt_pkcs11_ck_wtls_prf_params_fromBytes(Crypt__PKCS11__CK_WTLS_PRF_PARAM
         return CKR_ARGUMENTS_BAD;
     }
 
-/*
-
-TODO: fromBytes pre-type
-
-*/
-
+    if (object->private.pSeed) {
+        free(object->private.pSeed);
+    }
+    if (object->private.pLabel) {
+        free(object->private.pLabel);
+    }
+    if (object->private.pOutput) {
+        free(object->private.pOutput);
+    }
     memcpy(&(object->private), p, l);
-
-/*
-
-TODO: fromBytes post-type
-
-*/
 
     return CKR_OK;
 }
@@ -7215,19 +7041,10 @@ CK_RV crypt_pkcs11_ck_wtls_key_mat_out_fromBytes(Crypt__PKCS11__CK_WTLS_KEY_MAT_
         return CKR_ARGUMENTS_BAD;
     }
 
-/*
-
-TODO: fromBytes pre-type
-
-*/
-
+    if (object->private.pIV) {
+        free(object->private.pIV);
+    }
     memcpy(&(object->private), p, l);
-
-/*
-
-TODO: fromBytes post-type
-
-*/
 
     return CKR_OK;
 }
@@ -7370,19 +7187,13 @@ CK_RV crypt_pkcs11_ck_wtls_key_mat_params_fromBytes(Crypt__PKCS11__CK_WTLS_KEY_M
         return CKR_ARGUMENTS_BAD;
     }
 
-/*
-
-TODO: fromBytes pre-type
-
-*/
-
+    if (object->private.RandomInfo.pClientRandom) {
+        free(object->private.RandomInfo.pClientRandom);
+    }
+    if (object->private.RandomInfo.pServerRandom) {
+        free(object->private.RandomInfo.pServerRandom);
+    }
     memcpy(&(object->private), p, l);
-
-/*
-
-TODO: fromBytes post-type
-
-*/
 
     return CKR_OK;
 }
@@ -7781,19 +7592,34 @@ CK_RV crypt_pkcs11_ck_cms_sig_params_fromBytes(Crypt__PKCS11__CK_CMS_SIG_PARAMS*
         return CKR_ARGUMENTS_BAD;
     }
 
-/*
-
-TODO: fromBytes pre-type
-
-*/
-
+    if (object->pSigningMechanism.pParameter) {
+        free(object->pSigningMechanism.pParameter);
+    }
+    if (object->pDigestMechanism.pParameter) {
+        free(object->pDigestMechanism.pParameter);
+    }
+    if (object->private.pContentType) {
+        free(object->private.pContentType);
+    }
+    if (object->private.pRequestedAttributes) {
+        free(object->private.pRequestedAttributes);
+    }
+    if (object->private.pRequiredAttributes) {
+        free(object->private.pRequiredAttributes);
+    }
     memcpy(&(object->private), p, l);
 
-/*
+    if (object->private.pSigningMechanism) {
+        memcpy(&(object->pSigningMechanism), object->private.pSigningMechanism, sizeof(CK_MECHANISM));
+        free(object->private.pSigningMechanism);
+    }
+    object->private.pSigningMechanism = &(object->pSigningMechanism);
 
-TODO: fromBytes post-type
-
-*/
+    if (object->private.pDigestMechanism) {
+        memcpy(&(object->pDigestMechanism), object->private.pDigestMechanism, sizeof(CK_MECHANISM));
+        free(object->private.pDigestMechanism);
+    }
+    object->private.pDigestMechanism = &(object->pDigestMechanism);
 
     return CKR_OK;
 }
@@ -8200,19 +8026,10 @@ CK_RV crypt_pkcs11_ck_key_derivation_string_data_fromBytes(Crypt__PKCS11__CK_KEY
         return CKR_ARGUMENTS_BAD;
     }
 
-/*
-
-TODO: fromBytes pre-type
-
-*/
-
+    if (object->private.pData) {
+        free(object->private.pData);
+    }
     memcpy(&(object->private), p, l);
-
-/*
-
-TODO: fromBytes post-type
-
-*/
 
     return CKR_OK;
 }
@@ -8326,19 +8143,16 @@ CK_RV crypt_pkcs11_ck_pkcs5_pbkd2_params_fromBytes(Crypt__PKCS11__CK_PKCS5_PBKD2
         return CKR_ARGUMENTS_BAD;
     }
 
-/*
-
-TODO: fromBytes pre-type
-
-*/
-
+    if (object->private.pSaltSourceData) {
+        free(object->private.pSaltSourceData);
+    }
+    if (object->private.pPrfData) {
+        free(object->private.pPrfData);
+    }
+    if (object->private.pPassword) {
+        free(object->private.pPassword);
+    }
     memcpy(&(object->private), p, l);
-
-/*
-
-TODO: fromBytes post-type
-
-*/
 
     return CKR_OK;
 }
@@ -8693,19 +8507,10 @@ CK_RV crypt_pkcs11_ck_otp_param_fromBytes(Crypt__PKCS11__CK_OTP_PARAM* object, S
         return CKR_ARGUMENTS_BAD;
     }
 
-/*
-
-TODO: fromBytes pre-type
-
-*/
-
+    if (object->private.pValue) {
+        free(object->private.pValue);
+    }
     memcpy(&(object->private), p, l);
-
-/*
-
-TODO: fromBytes post-type
-
-*/
 
     return CKR_OK;
 }
@@ -8852,19 +8657,16 @@ CK_RV crypt_pkcs11_ck_otp_params_fromBytes(Crypt__PKCS11__CK_OTP_PARAMS* object,
         return CKR_ARGUMENTS_BAD;
     }
 
-/*
-
-TODO: fromBytes pre-type
-
-*/
-
+    if (object->private.pParams) {
+        CK_ULONG ulCount;
+        for (ulCount = 0; ulCount < object->private.ulCount; ulCount++) {
+            if (object->private.pParams[ulCount].pValue) {
+                free(object->private.pParams[ulCount].pValue);
+            }
+        }
+        free(object->private.pParams);
+    }
     memcpy(&(object->private), p, l);
-
-/*
-
-TODO: fromBytes post-type
-
-*/
 
     return CKR_OK;
 }
@@ -9075,19 +8877,16 @@ CK_RV crypt_pkcs11_ck_otp_signature_info_fromBytes(Crypt__PKCS11__CK_OTP_SIGNATU
         return CKR_ARGUMENTS_BAD;
     }
 
-/*
-
-TODO: fromBytes pre-type
-
-*/
-
+    if (object->private.pParams) {
+        CK_ULONG ulCount;
+        for (ulCount = 0; ulCount < object->private.ulCount; ulCount++) {
+            if (object->private.pParams[ulCount].pValue) {
+                free(object->private.pParams[ulCount].pValue);
+            }
+        }
+        free(object->private.pParams);
+    }
     memcpy(&(object->private), p, l);
-
-/*
-
-TODO: fromBytes post-type
-
-*/
 
     return CKR_OK;
 }
@@ -9301,19 +9100,19 @@ CK_RV crypt_pkcs11_ck_kip_params_fromBytes(Crypt__PKCS11__CK_KIP_PARAMS* object,
         return CKR_ARGUMENTS_BAD;
     }
 
-/*
-
-TODO: fromBytes pre-type
-
-*/
-
+    if (object->pMechanism.pParameter) {
+        free(object->pMechanism.pParameter);
+    }
+    if (object->private.pSeed) {
+        free(object->private.pSeed);
+    }
     memcpy(&(object->private), p, l);
 
-/*
-
-TODO: fromBytes post-type
-
-*/
+    if (object->private.pMechanism) {
+        memcpy(&(object->pMechanism), object->private.pMechanism, sizeof(CK_MECHANISM));
+        free(object->private.pMechanism);
+    }
+    object->private.pMechanism = &(object->pMechanism);
 
     return CKR_OK;
 }
@@ -9523,19 +9322,7 @@ CK_RV crypt_pkcs11_ck_aes_ctr_params_fromBytes(Crypt__PKCS11__CK_AES_CTR_PARAMS*
         return CKR_ARGUMENTS_BAD;
     }
 
-/*
-
-TODO: fromBytes pre-type
-
-*/
-
     memcpy(&(object->private), p, l);
-
-/*
-
-TODO: fromBytes post-type
-
-*/
 
     return CKR_OK;
 }
@@ -9669,19 +9456,13 @@ CK_RV crypt_pkcs11_ck_aes_gcm_params_fromBytes(Crypt__PKCS11__CK_AES_GCM_PARAMS*
         return CKR_ARGUMENTS_BAD;
     }
 
-/*
-
-TODO: fromBytes pre-type
-
-*/
-
+    if (object->private.pIv) {
+        free(object->private.pIv);
+    }
+    if (object->private.pAAD) {
+        free(object->private.pAAD);
+    }
     memcpy(&(object->private), p, l);
-
-/*
-
-TODO: fromBytes post-type
-
-*/
 
     return CKR_OK;
 }
@@ -9923,19 +9704,13 @@ CK_RV crypt_pkcs11_ck_aes_ccm_params_fromBytes(Crypt__PKCS11__CK_AES_CCM_PARAMS*
         return CKR_ARGUMENTS_BAD;
     }
 
-/*
-
-TODO: fromBytes pre-type
-
-*/
-
+    if (object->private.pNonce) {
+        free(object->private.pNonce);
+    }
+    if (object->private.pAAD) {
+        free(object->private.pAAD);
+    }
     memcpy(&(object->private), p, l);
-
-/*
-
-TODO: fromBytes post-type
-
-*/
 
     return CKR_OK;
 }
@@ -10111,19 +9886,7 @@ CK_RV crypt_pkcs11_ck_camellia_ctr_params_fromBytes(Crypt__PKCS11__CK_CAMELLIA_C
         return CKR_ARGUMENTS_BAD;
     }
 
-/*
-
-TODO: fromBytes pre-type
-
-*/
-
     memcpy(&(object->private), p, l);
-
-/*
-
-TODO: fromBytes post-type
-
-*/
 
     return CKR_OK;
 }
@@ -10257,19 +10020,10 @@ CK_RV crypt_pkcs11_ck_camellia_cbc_encrypt_data_params_fromBytes(Crypt__PKCS11__
         return CKR_ARGUMENTS_BAD;
     }
 
-/*
-
-TODO: fromBytes pre-type
-
-*/
-
+    if (object->private.pData) {
+        free(object->private.pData);
+    }
     memcpy(&(object->private), p, l);
-
-/*
-
-TODO: fromBytes post-type
-
-*/
 
     return CKR_OK;
 }
@@ -10432,19 +10186,10 @@ CK_RV crypt_pkcs11_ck_aria_cbc_encrypt_data_params_fromBytes(Crypt__PKCS11__CK_A
         return CKR_ARGUMENTS_BAD;
     }
 
-/*
-
-TODO: fromBytes pre-type
-
-*/
-
+    if (object->private.pData) {
+        free(object->private.pData);
+    }
     memcpy(&(object->private), p, l);
-
-/*
-
-TODO: fromBytes post-type
-
-*/
 
     return CKR_OK;
 }

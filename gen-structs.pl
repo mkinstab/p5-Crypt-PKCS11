@@ -182,11 +182,21 @@ my %XS = (
 my %XSXS = (
 );
 my %FB = (
-    CK_SSL3_KEY_MAT_OUT => \&CK_SSL3_KEY_MAT_OUT_fromBytes,
-    CK_WTLS_KEY_MAT_OUT => \&CK_WTLS_KEY_MAT_OUT_fromBytes,
+    CK_SSL3_KEY_MAT_OUT => \&not_supported_fromBytes,
+    CK_SSL3_KEY_MAT_PARAMS => \&not_supported_fromBytes,
+    CK_WTLS_KEY_MAT_OUT => \&not_supported_fromBytes,
+    CK_WTLS_KEY_MAT_PARAMS => \&not_supported_fromBytes,
 );
 my %FB_T = (
-    # TODO: fromBytes pre/post-type
+    CK_BYTE_PTR => \&ck_byte_ptr_fromBytes,
+    CK_CHAR_PTR => \&ck_char_ptr_fromBytes,
+    CK_UTF8CHAR_PTR => \&ck_char_ptr_fromBytes,
+    CK_VOID_PTR => \&ck_byte_ptr_fromBytes,
+    CK_VERSION_PTR => \&ck_version_ptr_fromBytes,
+    CK_MECHANISM_PTR => \&ck_mechanism_ptr_fromBytes,
+    CK_SSL3_RANDOM_DATA => \&ck_ssl3_random_data_fromBytes,
+    CK_WTLS_RANDOM_DATA => \&ck_wtls_random_data_fromBytes,
+    CK_OTP_PARAM_PTR => \&ck_otp_param_ptr_fromBytes,
 );
 
 open(HEADER, 'pkcs11t.h') || die;
@@ -568,21 +578,41 @@ CK_RV crypt_pkcs11_'.$lc_struct.'_fromBytes('.$c_struct.'* object, SV* sv) {
         return CKR_ARGUMENTS_BAD;
     }
 
-/*
+';
+    foreach (@$types) {
+        my $type = $_->{type};
+        while (1) {
+            if (exists $FB_T{$type}) {
+                if (defined $FB_T{$type}) {
+                    $FB_T{$type}->(0, $struct, $c_struct, $lc_struct, $_);
+                }
+                last;
+            }
+            unless (exists $base{$type}) {
+                last;
+            }
+            $type = $base{$type};
+        }
+    }
+print C '    memcpy(&(object->private), p, l);
 
-TODO: fromBytes pre-type
-
-*/
-
-    memcpy(&(object->private), p, l);
-
-/*
-
-TODO: fromBytes post-type
-
-*/
-
-    return CKR_OK;
+';
+    foreach (@$types) {
+        my $type = $_->{type};
+        while (1) {
+            if (exists $FB_T{$type}) {
+                if (defined $FB_T{$type}) {
+                    $FB_T{$type}->(1, $struct, $c_struct, $lc_struct, $_);
+                }
+                last;
+            }
+            unless (exists $base{$type}) {
+                last;
+            }
+            $type = $base{$type};
+        }
+    }
+print C '    return CKR_OK;
 }
 
 void crypt_pkcs11_'.$lc_struct.'_DESTROY('.$c_struct.'* object) {
@@ -696,6 +726,16 @@ sub unimplemented {
 
 CK_RV crypt_pkcs11_'.$lc_struct.'_set_'.$type->{name}.'('.$c_struct.'* object, SV* sv) {
     croak("Unimplemented");
+}
+
+';
+}
+
+sub not_supported_fromBytes {
+    my ($struct, $c_struct, $lc_struct, $type) = @_;
+
+    print C 'CK_RV crypt_pkcs11_'.$lc_struct.'_fromBytes('.$c_struct.'* object, SV* sv) {
+    return CKR_FUNCTION_NOT_SUPPORTED;
 }
 
 ';
@@ -1004,6 +1044,17 @@ CK_RV crypt_pkcs11_'.$lc_struct.'_set_'.$type->{name}.'('.$c_struct.'* object, S
 ';
 }
 
+sub ck_byte_ptr_fromBytes {
+    my ($what, $struct, $c_struct, $lc_struct, $type) = @_;
+
+    unless ($what) {
+    print C '    if (object->private.'.$type->{name}.') {
+        free(object->private.'.$type->{name}.');
+    }
+';
+    }
+}
+
 sub ck_byte_ptr_DESTROY {
     my ($struct, $c_struct, $lc_struct, $type) = @_;
 
@@ -1176,6 +1227,17 @@ CK_RV crypt_pkcs11_'.$lc_struct.'_set_'.$type->{name}.'('.$c_struct.'* object, S
 ';
 }
 
+sub ck_char_ptr_fromBytes {
+    my ($what, $struct, $c_struct, $lc_struct, $type) = @_;
+
+    unless ($what) {
+    print C '    if (object->private.'.$type->{name}.') {
+        free(object->private.'.$type->{name}.');
+    }
+';
+    }
+}
+
 sub ck_char_ptr_DESTROY {
     my ($struct, $c_struct, $lc_struct, $type) = @_;
 
@@ -1196,7 +1258,7 @@ sub ck_out_ptr_len {
 
 sub ck_type_ptr_new {
     my ($struct, $c_struct, $lc_struct, $type) = @_;
-    
+
     print C '        object->private.'.$type->{name}.' = &(object->'.$type->{name}.');
 ';
 }
@@ -1233,6 +1295,20 @@ CK_RV crypt_pkcs11_'.$lc_struct.'_set_'.$type->{name}.'('.$c_struct.'* object, C
 }
 
 ';
+}
+
+sub ck_version_ptr_fromBytes {
+    my ($what, $struct, $c_struct, $lc_struct, $type) = @_;
+
+    if ($what) {
+        print C '    if (object->private.'.$type->{name}.') {
+        memcpy(&(object->'.$type->{name}.'), object->private.'.$type->{name}.', sizeof(CK_VERSION));
+        free(object->private.'.$type->{name}.');
+    }
+    object->private.'.$type->{name}.' = &(object->'.$type->{name}.');
+
+';
+    }
 }
 
 sub ck_version_ptr_h {
@@ -1346,6 +1422,26 @@ CK_RV crypt_pkcs11_'.$lc_struct.'_set_'.$type->{name}.'('.$c_struct.'* object, C
 }
 
 ';
+}
+
+sub ck_mechanism_ptr_fromBytes {
+    my ($what, $struct, $c_struct, $lc_struct, $type) = @_;
+
+    unless ($what) {
+        print C '    if (object->'.$type->{name}.'.pParameter) {
+        free(object->'.$type->{name}.'.pParameter);
+    }
+';
+    }
+    else {
+        print C '    if (object->private.'.$type->{name}.') {
+        memcpy(&(object->'.$type->{name}.'), object->private.'.$type->{name}.', sizeof(CK_MECHANISM));
+        free(object->private.'.$type->{name}.');
+    }
+    object->private.'.$type->{name}.' = &(object->'.$type->{name}.');
+
+';
+    }
 }
 
 sub ck_mechanism_ptr_DESTROY {
@@ -1572,6 +1668,20 @@ CK_RV crypt_pkcs11_'.$lc_struct.'_set_'.$type->{name}.'('.$c_struct.'* object, C
 ';
 }
 
+sub ck_ssl3_random_data_fromBytes {
+    my ($what, $struct, $c_struct, $lc_struct, $type) = @_;
+
+    unless ($what) {
+    print C '    if (object->private.'.$type->{name}.'.pClientRandom) {
+        free(object->private.'.$type->{name}.'.pClientRandom);
+    }
+    if (object->private.'.$type->{name}.'.pServerRandom) {
+        free(object->private.'.$type->{name}.'.pServerRandom);
+    }
+';
+    }
+}
+
 sub ck_ssl3_random_data_DESTROY {
     my ($struct, $c_struct, $lc_struct, $type) = @_;
 
@@ -1630,16 +1740,6 @@ sub CK_SSL3_KEY_MAT_OUT {
     CK_ULONG ulIVServer;
 ';
     }
-}
-
-sub CK_SSL3_KEY_MAT_OUT_fromBytes {
-    my ($struct, $c_struct, $lc_struct, $type) = @_;
-
-    print C 'CK_RV crypt_pkcs11_'.$lc_struct.'_fromBytes('.$c_struct.'* object, SV* sv) {
-    return CKR_FUNCTION_NOT_SUPPORTED;
-}
-
-';
 }
 
 sub CK_SSL3_KEY_MAT_OUT_pIVClient {
@@ -1953,6 +2053,20 @@ CK_RV crypt_pkcs11_'.$lc_struct.'_set_'.$type->{name}.'('.$c_struct.'* object, C
 ';
 }
 
+sub ck_wtls_random_data_fromBytes {
+    my ($what, $struct, $c_struct, $lc_struct, $type) = @_;
+
+    unless ($what) {
+    print C '    if (object->private.'.$type->{name}.'.pClientRandom) {
+        free(object->private.'.$type->{name}.'.pClientRandom);
+    }
+    if (object->private.'.$type->{name}.'.pServerRandom) {
+        free(object->private.'.$type->{name}.'.pServerRandom);
+    }
+';
+    }
+}
+
 sub ck_wtls_random_data_DESTROY {
     my ($struct, $c_struct, $lc_struct, $type) = @_;
 
@@ -2010,16 +2124,6 @@ sub CK_WTLS_KEY_MAT_OUT {
         print H '    CK_ULONG ulIV;
 ';
     }
-}
-
-sub CK_WTLS_KEY_MAT_OUT_fromBytes {
-    my ($struct, $c_struct, $lc_struct, $type) = @_;
-
-    print C 'CK_RV crypt_pkcs11_'.$lc_struct.'_fromBytes('.$c_struct.'* object, SV* sv) {
-    return CKR_FUNCTION_NOT_SUPPORTED;
-}
-
-';
 }
 
 sub CK_WTLS_KEY_MAT_OUT_pIV {
@@ -2353,6 +2457,23 @@ CK_RV crypt_pkcs11_'.$lc_struct.'_set_'.$type->{name}.'('.$c_struct.'* object, A
 }
 
 ';
+}
+
+sub ck_otp_param_ptr_fromBytes {
+    my ($what, $struct, $c_struct, $lc_struct, $type) = @_;
+
+    unless ($what) {
+    print C '    if (object->private.'.$type->{name}.') {
+        CK_ULONG ulCount;
+        for (ulCount = 0; ulCount < object->private.ulCount; ulCount++) {
+            if (object->private.'.$type->{name}.'[ulCount].pValue) {
+                free(object->private.'.$type->{name}.'[ulCount].pValue);
+            }
+        }
+        free(object->private.'.$type->{name}.');
+    }
+';
+    }
 }
 
 sub ck_otp_param_ptr_DESTROY {
