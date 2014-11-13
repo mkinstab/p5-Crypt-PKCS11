@@ -33,10 +33,19 @@ sub new {
     my $this = shift;
     my $class = ref($this) || $this;
     my $self = {
+        id => undef
     };
     bless $self, $class;
 
+    unless (defined ($self->{id} = shift)) {
+        confess 'first argument is not an object id';
+    }
+
     return $self;
+}
+
+sub id {
+    return $_[0]->{id};
 }
 
 1;

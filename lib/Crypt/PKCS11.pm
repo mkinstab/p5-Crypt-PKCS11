@@ -1795,7 +1795,7 @@ sub errno {
 }
 
 sub errstr {
-    return C_rv2str($_[0]->{rv});
+    return Crypt::PKCS11::XS::rv2str($_[0]->{rv});
 }
 
 package Crypt::PKCS11::struct;
@@ -1892,6 +1892,116 @@ use base qw(Crypt::PKCS11::struct);
 package Crypt::PKCS11::CK_X9_42_DH2_DERIVE_PARAMS;
 use base qw(Crypt::PKCS11::struct);
 package Crypt::PKCS11::CK_X9_42_MQV_DERIVE_PARAMS;
+use base qw(Crypt::PKCS11::struct);
+
+package Crypt::PKCS11::CK_AES_CBC_ENCRYPT_DATA_PARAMSPtr;
+use base qw(Crypt::PKCS11::struct);
+package Crypt::PKCS11::CK_AES_CCM_PARAMSPtr;
+use base qw(Crypt::PKCS11::struct);
+package Crypt::PKCS11::CK_AES_CTR_PARAMSPtr;
+use base qw(Crypt::PKCS11::struct);
+package Crypt::PKCS11::CK_AES_GCM_PARAMSPtr;
+use base qw(Crypt::PKCS11::struct);
+package Crypt::PKCS11::CK_ARIA_CBC_ENCRYPT_DATA_PARAMSPtr;
+use base qw(Crypt::PKCS11::struct);
+package Crypt::PKCS11::CK_CAMELLIA_CBC_ENCRYPT_DATA_PARAMSPtr;
+use base qw(Crypt::PKCS11::struct);
+package Crypt::PKCS11::CK_CAMELLIA_CTR_PARAMSPtr;
+use base qw(Crypt::PKCS11::struct);
+package Crypt::PKCS11::CK_CMS_SIG_PARAMSPtr;
+use base qw(Crypt::PKCS11::struct);
+package Crypt::PKCS11::CK_DES_CBC_ENCRYPT_DATA_PARAMSPtr;
+use base qw(Crypt::PKCS11::struct);
+package Crypt::PKCS11::CK_ECDH1_DERIVE_PARAMSPtr;
+use base qw(Crypt::PKCS11::struct);
+package Crypt::PKCS11::CK_ECDH2_DERIVE_PARAMSPtr;
+use base qw(Crypt::PKCS11::struct);
+package Crypt::PKCS11::CK_ECMQV_DERIVE_PARAMSPtr;
+use base qw(Crypt::PKCS11::struct);
+package Crypt::PKCS11::CK_KEA_DERIVE_PARAMSPtr;
+use base qw(Crypt::PKCS11::struct);
+package Crypt::PKCS11::CK_KEY_DERIVATION_STRING_DATAPtr;
+use base qw(Crypt::PKCS11::struct);
+package Crypt::PKCS11::CK_KEY_WRAP_SET_OAEP_PARAMSPtr;
+use base qw(Crypt::PKCS11::struct);
+package Crypt::PKCS11::CK_KIP_PARAMSPtr;
+use base qw(Crypt::PKCS11::struct);
+package Crypt::PKCS11::CK_MECHANISMPtr;
+use base qw(Crypt::PKCS11::struct);
+use Carp;
+use Crypt::PKCS11 qw(:constant);
+
+sub toHash {
+    my ($mechanism, $pParameter);
+
+    unless ($_[0]->get_mechanism($mechanism) == CKR_OK) {
+        confess 'Unable to get mechanism';
+    }
+    unless ($_[0]->get_pParameter($pParameter) == CKR_OK) {
+        confess 'Unable to get pParameter';
+    }
+
+    return {
+        mechanism => $mechanism,
+        (defined $pParameter ? (pParameter => $pParameter) : ())
+    };
+}
+
+package Crypt::PKCS11::CK_OTP_PARAMPtr;
+use base qw(Crypt::PKCS11::struct);
+package Crypt::PKCS11::CK_OTP_PARAMSPtr;
+use base qw(Crypt::PKCS11::struct);
+package Crypt::PKCS11::CK_OTP_SIGNATURE_INFOPtr;
+use base qw(Crypt::PKCS11::struct);
+package Crypt::PKCS11::CK_PBE_PARAMSPtr;
+use base qw(Crypt::PKCS11::struct);
+package Crypt::PKCS11::CK_PKCS5_PBKD2_PARAMSPtr;
+use base qw(Crypt::PKCS11::struct);
+package Crypt::PKCS11::CK_RC2_CBC_PARAMSPtr;
+use base qw(Crypt::PKCS11::struct);
+package Crypt::PKCS11::CK_RC2_MAC_GENERAL_PARAMSPtr;
+use base qw(Crypt::PKCS11::struct);
+package Crypt::PKCS11::CK_RC5_CBC_PARAMSPtr;
+use base qw(Crypt::PKCS11::struct);
+package Crypt::PKCS11::CK_RC5_MAC_GENERAL_PARAMSPtr;
+use base qw(Crypt::PKCS11::struct);
+package Crypt::PKCS11::CK_RC5_PARAMSPtr;
+use base qw(Crypt::PKCS11::struct);
+package Crypt::PKCS11::CK_RSA_PKCS_OAEP_PARAMSPtr;
+use base qw(Crypt::PKCS11::struct);
+package Crypt::PKCS11::CK_RSA_PKCS_PSS_PARAMSPtr;
+use base qw(Crypt::PKCS11::struct);
+package Crypt::PKCS11::CK_SKIPJACK_PRIVATE_WRAP_PARAMSPtr;
+use base qw(Crypt::PKCS11::struct);
+package Crypt::PKCS11::CK_SKIPJACK_RELAYX_PARAMSPtr;
+use base qw(Crypt::PKCS11::struct);
+package Crypt::PKCS11::CK_SSL3_KEY_MAT_OUTPtr;
+use base qw(Crypt::PKCS11::struct);
+package Crypt::PKCS11::CK_SSL3_KEY_MAT_PARAMSPtr;
+use base qw(Crypt::PKCS11::struct);
+package Crypt::PKCS11::CK_SSL3_MASTER_KEY_DERIVE_PARAMSPtr;
+use base qw(Crypt::PKCS11::struct);
+package Crypt::PKCS11::CK_SSL3_RANDOM_DATAPtr;
+use base qw(Crypt::PKCS11::struct);
+package Crypt::PKCS11::CK_TLS_PRF_PARAMSPtr;
+use base qw(Crypt::PKCS11::struct);
+package Crypt::PKCS11::CK_VERSIONPtr;
+use base qw(Crypt::PKCS11::struct);
+package Crypt::PKCS11::CK_WTLS_KEY_MAT_OUTPtr;
+use base qw(Crypt::PKCS11::struct);
+package Crypt::PKCS11::CK_WTLS_KEY_MAT_PARAMSPtr;
+use base qw(Crypt::PKCS11::struct);
+package Crypt::PKCS11::CK_WTLS_MASTER_KEY_DERIVE_PARAMSPtr;
+use base qw(Crypt::PKCS11::struct);
+package Crypt::PKCS11::CK_WTLS_PRF_PARAMSPtr;
+use base qw(Crypt::PKCS11::struct);
+package Crypt::PKCS11::CK_WTLS_RANDOM_DATAPtr;
+use base qw(Crypt::PKCS11::struct);
+package Crypt::PKCS11::CK_X9_42_DH1_DERIVE_PARAMSPtr;
+use base qw(Crypt::PKCS11::struct);
+package Crypt::PKCS11::CK_X9_42_DH2_DERIVE_PARAMSPtr;
+use base qw(Crypt::PKCS11::struct);
+package Crypt::PKCS11::CK_X9_42_MQV_DERIVE_PARAMSPtr;
 use base qw(Crypt::PKCS11::struct);
 
 1;

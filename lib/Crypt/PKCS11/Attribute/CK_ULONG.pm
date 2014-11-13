@@ -42,7 +42,7 @@ sub set {
 
     $self->{pValue} = pack(CK_ULONG_SIZE < 8 ? 'L' : 'Q', $ulong);
 
-    return 1;
+    return $self;
 }
 
 sub get {

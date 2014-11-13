@@ -101,7 +101,7 @@ sub set {
 
     $self->{attributes} = [ @_ ];
 
-    return 1;
+    return $self;
 }
 
 sub pValue {

@@ -40,7 +40,7 @@ sub set {
 
     $self->{pValue} = pack('a*', $string);
 
-    return 1;
+    return $self;
 }
 
 sub get {

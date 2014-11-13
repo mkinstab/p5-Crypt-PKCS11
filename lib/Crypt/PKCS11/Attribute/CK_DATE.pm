@@ -48,7 +48,7 @@ sub set {
 
     $self->{pValue} = pack('a8', sprintf("%04d%02d%0d2", $year, $month, $day));
 
-    return 1;
+    return $self;
 }
 
 sub get {

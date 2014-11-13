@@ -40,7 +40,7 @@ sub set {
 
     $self->{pValue} = pack('C', $byte);
 
-    return 1;
+    return $self;
 }
 
 sub get {

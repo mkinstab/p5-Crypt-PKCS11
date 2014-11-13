@@ -47,7 +47,7 @@ sub set {
         $self->{pValue} = pack('C', CK_FALSE);
     }
 
-    return 1;
+    return $self;
 }
 
 sub get {
