@@ -1405,27 +1405,26 @@ CK_RV crypt_pkcs11_xs_C_Login(Crypt__PKCS11__XS* object, CK_SESSION_HANDLE hSess
     if (hSession == CK_INVALID_HANDLE) {
         return CKR_SESSION_HANDLE_INVALID;
     }
-    if (!pPin) {
-        return CKR_ARGUMENTS_BAD;
-    }
-    if (!SvOK(pPin)) {
-        return CKR_ARGUMENTS_BAD;
-    }
 
-    SvGETMAGIC(pPin);
-    if (!(_pPin = newSVsv(pPin))) {
-        return CKR_GENERAL_ERROR;
-    }
+    if (pPin && SvOK(pPin)) {
+        SvGETMAGIC(pPin);
+        if (!(_pPin = newSVsv(pPin))) {
+            return CKR_GENERAL_ERROR;
+        }
 
-    if (!sv_utf8_downgrade(_pPin, 0)
-        || !(_pPin2 = SvPV(_pPin, len)))
-    {
+        if (!sv_utf8_downgrade(_pPin, 0)
+            || !(_pPin2 = SvPV(_pPin, len)))
+        {
+            SvREFCNT_dec(_pPin);
+            return CKR_GENERAL_ERROR;
+        }
+
+        rv = object->function_list->C_Login(hSession, userType, _pPin2, len);
         SvREFCNT_dec(_pPin);
-        return CKR_GENERAL_ERROR;
     }
-
-    rv = object->function_list->C_Login(hSession, userType, _pPin2, len);
-    SvREFCNT_dec(_pPin);
+    else {
+        rv = object->function_list->C_Login(hSession, userType, NULL_PTR, 0);
+    }
 
     return rv;
 }
