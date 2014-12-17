@@ -621,15 +621,15 @@ OUTPUT:
     RETVAL
 
 CK_RV
-crypt_pkcs11_xs_C_VerifyRecover(object, hSession, pData, pSignature)
+crypt_pkcs11_xs_C_VerifyRecover(object, hSession, pSignature, pData)
     Crypt::PKCS11::XS* object
     CK_SESSION_HANDLE hSession
-    SV* pData
     SV* pSignature
+    SV* pData
 PROTOTYPE: $$$$
 OUTPUT:
     RETVAL
-    pSignature
+    pData
 
 CK_RV
 crypt_pkcs11_xs_C_DigestEncryptUpdate(object, hSession, pPart, pEncryptedPart)

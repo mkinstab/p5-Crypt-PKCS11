@@ -111,7 +111,7 @@ CK_RV crypt_pkcs11_xs_C_Verify(Crypt__PKCS11__XS* object, CK_SESSION_HANDLE hSes
 CK_RV crypt_pkcs11_xs_C_VerifyUpdate(Crypt__PKCS11__XS* object, CK_SESSION_HANDLE hSession, SV* pPart);
 CK_RV crypt_pkcs11_xs_C_VerifyFinal(Crypt__PKCS11__XS* object, CK_SESSION_HANDLE hSession, SV* pSignature);
 CK_RV crypt_pkcs11_xs_C_VerifyRecoverInit(Crypt__PKCS11__XS* object, CK_SESSION_HANDLE hSession, HV* pMechanism, CK_OBJECT_HANDLE hKey);
-CK_RV crypt_pkcs11_xs_C_VerifyRecover(Crypt__PKCS11__XS* object, CK_SESSION_HANDLE hSession, SV* pData, SV* pSignature);
+CK_RV crypt_pkcs11_xs_C_VerifyRecover(Crypt__PKCS11__XS* object, CK_SESSION_HANDLE hSession, SV* pSignature, SV* pData);
 CK_RV crypt_pkcs11_xs_C_DigestEncryptUpdate(Crypt__PKCS11__XS* object, CK_SESSION_HANDLE hSession, SV* pPart, SV* pEncryptedPart);
 CK_RV crypt_pkcs11_xs_C_DecryptDigestUpdate(Crypt__PKCS11__XS* object, CK_SESSION_HANDLE hSession, SV* pEncryptedPart, SV* pPart);
 CK_RV crypt_pkcs11_xs_C_SignEncryptUpdate(Crypt__PKCS11__XS* object, CK_SESSION_HANDLE hSession, SV* pPart, SV* pEncryptedPart);

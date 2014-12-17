@@ -1072,9 +1072,9 @@ CK_RV crypt_pkcs11_xs_C_InitToken(Crypt__PKCS11__XS* object, CK_SLOT_ID slotID, 
 
 CK_RV crypt_pkcs11_xs_C_InitPIN(Crypt__PKCS11__XS* object, CK_SESSION_HANDLE hSession, SV* pPin) {
     CK_RV rv;
-    SV* _pPin;
-    STRLEN len;
-    char* _pPin2;
+    SV* _pPin = NULL_PTR;
+    STRLEN len = 0;
+    char* _pPin2 = NULL_PTR;
 
     if (!object) {
         return CKR_ARGUMENTS_BAD;
@@ -1088,39 +1088,42 @@ CK_RV crypt_pkcs11_xs_C_InitPIN(Crypt__PKCS11__XS* object, CK_SESSION_HANDLE hSe
     if (hSession == CK_INVALID_HANDLE) {
         return CKR_SESSION_HANDLE_INVALID;
     }
+
     if (!pPin) {
-        return CKR_ARGUMENTS_BAD;
-    }
-    if (!SvOK(pPin)) {
-        return CKR_ARGUMENTS_BAD;
-    }
+        if (!SvOK(pPin)) {
+            return CKR_ARGUMENTS_BAD;
+        }
 
-    SvGETMAGIC(pPin);
-    if (!(_pPin = newSVsv(pPin))) {
-        return CKR_GENERAL_ERROR;
-    }
+        SvGETMAGIC(pPin);
+        if (!(_pPin = newSVsv(pPin))) {
+            return CKR_GENERAL_ERROR;
+        }
 
-    if (!sv_utf8_downgrade(_pPin, 0)
-        || !(_pPin2 = SvPV(_pPin, len)))
-    {
-        SvREFCNT_dec(_pPin);
-        return CKR_GENERAL_ERROR;
+        if (!sv_utf8_downgrade(_pPin, 0)
+            || !(_pPin2 = SvPV(_pPin, len)))
+        {
+            SvREFCNT_dec(_pPin);
+            return CKR_GENERAL_ERROR;
+        }
     }
 
     rv = object->function_list->C_InitPIN(hSession, _pPin2, len);
-    SvREFCNT_dec(_pPin);
+
+    if (_pPin) {
+        SvREFCNT_dec(_pPin);
+    }
 
     return rv;
 }
 
 CK_RV crypt_pkcs11_xs_C_SetPIN(Crypt__PKCS11__XS* object, CK_SESSION_HANDLE hSession, SV* pOldPin, SV* pNewPin) {
     CK_RV rv;
-    SV* _pOldPin;
-    STRLEN oldLen;
-    char* _pOldPin2;
-    SV* _pNewPin;
-    STRLEN newLen;
-    char* _pNewPin2;
+    SV* _pOldPin = NULL_PTR;
+    STRLEN oldLen = 0;
+    char* _pOldPin2 = NULL_PTR;
+    SV* _pNewPin = NULL_PTR;
+    STRLEN newLen = 0;
+    char* _pNewPin2 = NULL_PTR;
 
     if (!object) {
         return CKR_ARGUMENTS_BAD;
@@ -1134,42 +1137,60 @@ CK_RV crypt_pkcs11_xs_C_SetPIN(Crypt__PKCS11__XS* object, CK_SESSION_HANDLE hSes
     if (hSession == CK_INVALID_HANDLE) {
         return CKR_SESSION_HANDLE_INVALID;
     }
+
     if (!pOldPin) {
-        return CKR_ARGUMENTS_BAD;
+        if (!SvOK(pOldPin)) {
+            return CKR_ARGUMENTS_BAD;
+        }
+
+        SvGETMAGIC(pOldPin);
+        if (!(_pOldPin = newSVsv(pOldPin))) {
+            return CKR_GENERAL_ERROR;
+        }
+
+        if (!sv_utf8_downgrade(_pOldPin, 0)
+            || !(_pOldPin2 = SvPV(_pOldPin, oldLen)))
+        {
+            SvREFCNT_dec(_pOldPin);
+            return CKR_GENERAL_ERROR;
+        }
     }
-    if (!SvOK(pOldPin)) {
-        return CKR_ARGUMENTS_BAD;
-    }
+
     if (!pNewPin) {
-        return CKR_ARGUMENTS_BAD;
-    }
-    if (!SvOK(pNewPin)) {
-        return CKR_ARGUMENTS_BAD;
-    }
+        if (!SvOK(pNewPin)) {
+            if (_pOldPin) {
+                SvREFCNT_dec(_pOldPin);
+            }
+            return CKR_ARGUMENTS_BAD;
+        }
 
-    SvGETMAGIC(pOldPin);
-    if (!(_pOldPin = newSVsv(pOldPin))) {
-        return CKR_GENERAL_ERROR;
-    }
-    SvGETMAGIC(pNewPin);
-    if (!(_pNewPin = newSVsv(pNewPin))) {
-        SvREFCNT_dec(_pOldPin);
-        return CKR_GENERAL_ERROR;
-    }
+        SvGETMAGIC(pNewPin);
+        if (!(_pNewPin = newSVsv(pNewPin))) {
+            if (_pOldPin) {
+                SvREFCNT_dec(_pOldPin);
+            }
+            return CKR_GENERAL_ERROR;
+        }
 
-    if (!sv_utf8_downgrade(_pOldPin, 0)
-        || !sv_utf8_downgrade(_pNewPin, 0)
-        || !(_pOldPin2 = SvPV(_pOldPin, oldLen))
-        || !(_pNewPin2 = SvPV(_pNewPin, newLen)))
-    {
-        SvREFCNT_dec(_pOldPin);
-        SvREFCNT_dec(_pNewPin);
-        return CKR_GENERAL_ERROR;
+        if (!sv_utf8_downgrade(_pNewPin, 0)
+            || !(_pNewPin2 = SvPV(_pNewPin, newLen)))
+        {
+            if (_pOldPin) {
+                SvREFCNT_dec(_pOldPin);
+            }
+            SvREFCNT_dec(_pNewPin);
+            return CKR_GENERAL_ERROR;
+        }
     }
 
     rv = object->function_list->C_SetPIN(hSession, _pOldPin2, oldLen, _pNewPin2, newLen);
-    SvREFCNT_dec(_pOldPin);
-    SvREFCNT_dec(_pNewPin);
+
+    if (_pOldPin) {
+        SvREFCNT_dec(_pOldPin);
+    }
+    if (_pNewPin) {
+        SvREFCNT_dec(_pNewPin);
+    }
 
     return rv;
 }
@@ -2540,8 +2561,11 @@ CK_RV crypt_pkcs11_xs_C_DigestKey(Crypt__PKCS11__XS* object, CK_SESSION_HANDLE h
     if (!object->function_list) {
         return CKR_GENERAL_ERROR;
     }
+    if (hKey == CK_INVALID_HANDLE) {
+        return CKR_KEY_HANDLE_INVALID;
+    }
 
-    return CKR_OK;
+    return object->function_list->C_DigestKey(hSession, hKey);
 }
 
 CK_RV crypt_pkcs11_xs_C_DigestFinal(Crypt__PKCS11__XS* object, CK_SESSION_HANDLE hSession, SV* pDigest) {
@@ -2858,7 +2882,7 @@ CK_RV crypt_pkcs11_xs_C_VerifyRecoverInit(Crypt__PKCS11__XS* object, CK_SESSION_
     return object->function_list->C_VerifyRecoverInit(hSession, &_pMechanism, hKey);
 }
 
-CK_RV crypt_pkcs11_xs_C_VerifyRecover(Crypt__PKCS11__XS* object, CK_SESSION_HANDLE hSession, SV* pData, SV* pSignature) {
+CK_RV crypt_pkcs11_xs_C_VerifyRecover(Crypt__PKCS11__XS* object, CK_SESSION_HANDLE hSession, SV* pSignature, SV* pData) {
     if (!object) {
         return CKR_ARGUMENTS_BAD;
     }
@@ -2871,14 +2895,14 @@ CK_RV crypt_pkcs11_xs_C_VerifyRecover(Crypt__PKCS11__XS* object, CK_SESSION_HAND
     if (hSession == CK_INVALID_HANDLE) {
         return CKR_SESSION_HANDLE_INVALID;
     }
-    if (!pData) {
-        return CKR_ARGUMENTS_BAD;
-    }
     if (!pSignature) {
         return CKR_ARGUMENTS_BAD;
     }
+    if (!pData) {
+        return CKR_ARGUMENTS_BAD;
+    }
 
-    return __action(object->function_list->C_VerifyRecover, hSession, pData, pSignature);
+    return __action(object->function_list->C_VerifyRecover, hSession, pSignature, pData);
 }
 
 CK_RV crypt_pkcs11_xs_C_DigestEncryptUpdate(Crypt__PKCS11__XS* object, CK_SESSION_HANDLE hSession, SV* pPart, SV* pEncryptedPart) {
