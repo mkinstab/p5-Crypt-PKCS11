@@ -974,6 +974,8 @@ sub mytests {
 #        foreach (@$a) {
 #            myis( $obj->C_InitToken($_, "12345678", "ѪѫѬѪѫѬ"), Crypt::PKCS11::CKR_OK );
 
+            # TODO: C_InitPIN
+            # TODO: C_SetPIN
             # Supported by SoftHSMv2:
             # TODO: C_GetObjectSize
             # TODO: C_DigestKey
