@@ -238,6 +238,10 @@ sub fromArray {
     return $self;
 }
 
+sub all {
+    return @{$_[0]->{attributes}};
+}
+
 package Crypt::PKCS11::Attribute::Class;
 use base qw(Crypt::PKCS11::Attribute::CK_ULONG);
 use Crypt::PKCS11 qw(:constant);
