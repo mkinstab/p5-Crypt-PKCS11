@@ -60,11 +60,43 @@ sub DESTROY {
 }
 
 sub InitPIN {
-    confess 'Not implemeneted!';
+    my ($self, $pin) = @_;
+
+    unless (exists $self->{session}) {
+        confess 'session is closed';
+    }
+    if (defined $pin) {
+        $pin .= '';
+        unless (length($pin)) {
+            confess '$pin can not be empty if defined';
+        }
+    }
+
+    $self->{rv} = $self->{pkcs11xs}->C_InitPIN($self->{session}, $pin);
+    return $self->{rv} == CKR_OK ? 1 : undef;
 }
 
 sub SetPIN {
-    confess 'Not implemeneted!';
+    my ($self, $oldPin, $newPin) = @_;
+
+    unless (exists $self->{session}) {
+        confess 'session is closed';
+    }
+    if (defined $oldPin) {
+        $oldPin .= '';
+        unless (length($oldPin)) {
+            confess '$oldPin can not be empty if defined';
+        }
+    }
+    if (defined $newPin) {
+        $newPin .= '';
+        unless (length($newPin)) {
+            confess '$newPin can not be empty if defined';
+        }
+    }
+
+    $self->{rv} = $self->{pkcs11xs}->C_SetPIN($self->{session}, $oldPin, $newPin);
+    return $self->{rv} == CKR_OK ? 1 : undef;
 }
 
 sub CloseSession {
@@ -82,15 +114,46 @@ sub CloseSession {
 }
 
 sub GetSessionInfo {
-    confess 'Not implemeneted!';
+    my ($self) = @_;
+    my $info = {};
+
+    unless (exists $self->{session}) {
+        confess 'session is closed';
+    }
+
+    $self->{rv} = $self->{pkcs11xs}->C_GetSessionInfo($self->{session}, $info);
+
+    unless (ref($info) eq 'HASH') {
+        confess 'Internal Error: $info is not a hash reference';
+    }
+
+    return $self->{rv} == CKR_OK ? wantarray ? %$info : $info : undef;
 }
 
 sub GetOperationState {
-    confess 'Not implemeneted!';
+    my ($self) = @_;
+    my $operationState;
+
+    unless (exists $self->{session}) {
+        confess 'session is closed';
+    }
+
+    $self->{rv} = $self->{pkcs11xs}->C_GetOperationState($self->{session}, $operationState);
+    return $self->{rv} == CKR_OK ? $operationState : undef;
 }
 
 sub SetOperationState {
-    confess 'Not implemeneted!';
+    my ($self, $operationState) = @_;
+
+    unless (exists $self->{session}) {
+        confess 'session is closed';
+    }
+    unless (defined $operationState) {
+        confess '$operationState must be defined';
+    }
+
+    $self->{rv} = $self->{pkcs11xs}->C_SetOperationState($self->{session}, $operationState);
+    return $self->{rv} == CKR_OK ? 1 : undef;
 }
 
 sub Login {
@@ -119,155 +182,588 @@ sub Logout {
 }
 
 sub CreateObject {
-    confess 'Not implemeneted!';
+    my ($self, $template) = @_;
+    my $object;
+
+    unless (exists $self->{session}) {
+        confess 'session is closed';
+    }
+    unless (blessed($template) and $template->isa('Crypt::PKCS11::Attributes')) {
+        confess '$template is not a Crypt::PKCS11::Attributes';
+    }
+
+    $self->{rv} = $self->{pkcs11xs}->C_CreateObject($self->{session}, $template->toArray, $object);
+    return $self->{rv} == CKR_OK ? Crypt::PKCS11::Object->new($object) : undef;
 }
 
 sub CopyObject {
-    confess 'Not implemeneted!';
+    my ($self, $object, $template) = @_;
+    my $newObject;
+
+    unless (exists $self->{session}) {
+        confess 'session is closed';
+    }
+    unless (blessed($object) and $object->isa('Crypt::PKCS11::Object')) {
+        confess '$object is not a Crypt::PKCS11::Object';
+    }
+    unless (blessed($template) and $template->isa('Crypt::PKCS11::Attributes')) {
+        confess '$template is not a Crypt::PKCS11::Attributes';
+    }
+
+    $self->{rv} = $self->{pkcs11xs}->C_CopyObject($self->{session}, $object->id, $template->toArray, $newObject);
+    return $self->{rv} == CKR_OK ? Crypt::PKCS11::Object->new($newObject) : undef;
 }
 
 sub DestroyObject {
-    confess 'Not implemeneted!';
+    my ($self, $object) = @_;
+
+    unless (exists $self->{session}) {
+        confess 'session is closed';
+    }
+    unless (blessed($object) and $object->isa('Crypt::PKCS11::Object')) {
+        confess '$object is not a Crypt::PKCS11::Object';
+    }
+
+    $self->{rv} = $self->{pkcs11xs}->C_DestroyObject($self->{session}, $object->id);
+    return $self->{rv} == CKR_OK ? 1 : undef;
 }
 
 sub GetObjectSize {
-    confess 'Not implemeneted!';
+    my ($self, $object) = @_;
+    my $size;
+
+    unless (exists $self->{session}) {
+        confess 'session is closed';
+    }
+    unless (blessed($object) and $object->isa('Crypt::PKCS11::Object')) {
+        confess '$object is not a Crypt::PKCS11::Object';
+    }
+
+    $self->{rv} = $self->{pkcs11xs}->C_GetObjectSize($self->{session}, $object->id, $size);
+    return $self->{rv} == CKR_OK ? $size : undef;
 }
 
 sub GetAttributeValue {
-    confess 'Not implemeneted!';
+    my ($self, $object, $template) = @_;
+    my $templateArray;
+
+    unless (exists $self->{session}) {
+        confess 'session is closed';
+    }
+    unless (blessed($object) and $object->isa('Crypt::PKCS11::Object')) {
+        confess '$object is not a Crypt::PKCS11::Object';
+    }
+    unless (blessed($template) and $template->isa('Crypt::PKCS11::Attributes')) {
+        confess '$template is not a Crypt::PKCS11::Attributes';
+    }
+
+    $self->{rv} = $self->{pkcs11xs}->C_GetAttributeValue($self->{session}, $object->id, $templateArray = $template->toArray);
+
+    if ($self->{rv} == CKR_OK) {
+        $template->fromArray($templateArray);
+        return wantarray ? $template->all : 1;
+    }
+
+    return undef;
 }
 
 sub SetAttributeValue {
-    confess 'Not implemeneted!';
+    my ($self, $object, $template) = @_;
+
+    unless (exists $self->{session}) {
+        confess 'session is closed';
+    }
+    unless (blessed($object) and $object->isa('Crypt::PKCS11::Object')) {
+        confess '$object is not a Crypt::PKCS11::Object';
+    }
+    unless (blessed($template) and $template->isa('Crypt::PKCS11::Attributes')) {
+        confess '$template is not a Crypt::PKCS11::Attributes';
+    }
+
+    $self->{rv} = $self->{pkcs11xs}->C_SetAttributeValue($self->{session}, $object->id, $template->toArray);
+    return $self->{rv} == CKR_OK ? 1 : undef;
 }
 
 sub FindObjectsInit {
-    confess 'Not implemeneted!';
+    my ($self, $template) = @_;
+
+    unless (exists $self->{session}) {
+        confess 'session is closed';
+    }
+    unless (blessed($template) and $template->isa('Crypt::PKCS11::Attributes')) {
+        confess '$template is not a Crypt::PKCS11::Attributes';
+    }
+
+    $self->{rv} = $self->{pkcs11xs}->C_FindObjectsInit($self->{session}, $template->toArray);
+    return $self->{rv} == CKR_OK ? 1 : undef;
 }
 
 sub FindObjects {
-    confess 'Not implemeneted!';
+    my ($self, $maxObjectCount) = @_;
+    my $objects = ();
+    my @objects;
+
+    unless (exists $self->{session}) {
+        confess 'session is closed';
+    }
+    unless (defined $maxObjectCount) {
+        confess '$maxObjectCount must be defined';
+    }
+
+    $self->{rv} = $self->{pkcs11xs}->C_FindObjects($self->{session}, $objects, $maxObjectCount);
+
+    unless (ref($objects) eq 'ARRAY') {
+        confess 'Internal Error: $objects is not an array reference';
+    }
+
+    foreach my $object (@$objects) {
+        push(@objects, Crypt::PKCS11::Object->new($object));
+    }
+
+    return $self->{rv} == CKR_OK ? wantarray ? @objects : \@objects : undef;
 }
 
 sub FindObjectsFinal {
-    confess 'Not implemeneted!';
+    my ($self, $maxObjectCount) = @_;
+
+    unless (exists $self->{session}) {
+        confess 'session is closed';
+    }
+
+    $self->{rv} = $self->{pkcs11xs}->C_FindObjectsFinal($self->{session});
+    return $self->{rv} == CKR_OK ? 1 : undef;
 }
 
 sub EncryptInit {
-    confess 'Not implemeneted!';
+    my ($self, $mechanism, $key) = @_;
+
+    unless (exists $self->{session}) {
+        confess 'session is closed';
+    }
+    unless (blessed($mechanism) and $mechanism->isa('Crypt::PKCS11::CK_MECHANISMPtr')) {
+        confess '$mechanism is not a Crypt::PKCS11::CK_MECHANISMPtr';
+    }
+    unless (blessed($key) and $key->isa('Crypt::PKCS11::Object')) {
+        confess '$key is not a Crypt::PKCS11::Object';
+    }
+
+    $self->{rv} = $self->{pkcs11xs}->C_EncryptInit($self->{session}, $mechanism->toHash, $key->id);
+    return $self->{rv} == CKR_OK ? 1 : undef;
 }
 
 sub Encrypt {
-    confess 'Not implemeneted!';
+    my ($self, $data) = @_;
+    my $encryptedData;
+
+    unless (exists $self->{session}) {
+        confess 'session is closed';
+    }
+    unless (defined $data) {
+        confess '$data must be defined';
+    }
+
+    $self->{rv} = $self->{pkcs11xs}->C_Encrypt($self->{session}, $data, $encryptedData);
+    return $self->{rv} == CKR_OK ? $encryptedData : undef;
 }
 
 sub EncryptUpdate {
-    confess 'Not implemeneted!';
+    my ($self, $part) = @_;
+    my $encryptedPart;
+
+    unless (exists $self->{session}) {
+        confess 'session is closed';
+    }
+    unless (defined $part) {
+        confess '$part must be defined';
+    }
+
+    $self->{rv} = $self->{pkcs11xs}->C_EncryptUpdate($self->{session}, $part, $encryptedPart);
+    return $self->{rv} == CKR_OK ? $encryptedPart : undef;
 }
 
 sub EncryptFinal {
-    confess 'Not implemeneted!';
+    my ($self) = @_;
+    my $lastEncryptedPart;
+
+    unless (exists $self->{session}) {
+        confess 'session is closed';
+    }
+
+    $self->{rv} = $self->{pkcs11xs}->C_EncryptFinal($self->{session}, $lastEncryptedPart);
+    return $self->{rv} == CKR_OK ? $lastEncryptedPart : undef;
 }
 
 sub DecryptInit {
-    confess 'Not implemeneted!';
+    my ($self, $mechanism, $key) = @_;
+
+    unless (exists $self->{session}) {
+        confess 'session is closed';
+    }
+    unless (blessed($mechanism) and $mechanism->isa('Crypt::PKCS11::CK_MECHANISMPtr')) {
+        confess '$mechanism is not a Crypt::PKCS11::CK_MECHANISMPtr';
+    }
+    unless (blessed($key) and $key->isa('Crypt::PKCS11::Object')) {
+        confess '$key is not a Crypt::PKCS11::Object';
+    }
+
+    $self->{rv} = $self->{pkcs11xs}->C_DecryptInit($self->{session}, $mechanism->toHash, $key->id);
+    return $self->{rv} == CKR_OK ? 1 : undef;
 }
 
 sub Decrypt {
-    confess 'Not implemeneted!';
+    my ($self, $encryptedData) = @_;
+    my $data;
+
+    unless (exists $self->{session}) {
+        confess 'session is closed';
+    }
+    unless (defined $encryptedData) {
+        confess '$encryptedData must be defined';
+    }
+
+    $self->{rv} = $self->{pkcs11xs}->C_Decrypt($self->{session}, $encryptedData, $data);
+    return $self->{rv} == CKR_OK ? $data : undef;
 }
 
 sub DecryptUpdate {
-    confess 'Not implemeneted!';
+    my ($self, $encryptedPart) = @_;
+    my $part;
+
+    unless (exists $self->{session}) {
+        confess 'session is closed';
+    }
+    unless (defined $encryptedPart) {
+        confess '$encryptedPart must be defined';
+    }
+
+    $self->{rv} = $self->{pkcs11xs}->C_DecryptUpdate($self->{session}, $encryptedPart, $part);
+    return $self->{rv} == CKR_OK ? $part : undef;
 }
 
 sub DecryptFinal {
-    confess 'Not implemeneted!';
+    my ($self) = @_;
+    my $lastPart;
+
+    unless (exists $self->{session}) {
+        confess 'session is closed';
+    }
+
+    $self->{rv} = $self->{pkcs11xs}->C_DecryptFinal($self->{session}, $lastPart);
+    return $self->{rv} == CKR_OK ? $lastPart : undef;
 }
 
 sub DigestInit {
-    confess 'Not implemeneted!';
+    my ($self, $mechanism) = @_;
+
+    unless (exists $self->{session}) {
+        confess 'session is closed';
+    }
+    unless (blessed($mechanism) and $mechanism->isa('Crypt::PKCS11::CK_MECHANISMPtr')) {
+        confess '$mechanism is not a Crypt::PKCS11::CK_MECHANISMPtr';
+    }
+
+    $self->{rv} = $self->{pkcs11xs}->C_DigestInit($self->{session}, $mechanism->toHash);
+    return $self->{rv} == CKR_OK ? 1 : undef;
 }
 
 sub Digest {
-    confess 'Not implemeneted!';
+    my ($self, $data) = @_;
+    my $digest;
+
+    unless (exists $self->{session}) {
+        confess 'session is closed';
+    }
+    unless (defined $data) {
+        confess '$data must be defined';
+    }
+
+    $self->{rv} = $self->{pkcs11xs}->C_Digest($self->{session}, $data, $digest);
+    return $self->{rv} == CKR_OK ? $digest : undef;
 }
 
 sub DigestUpdate {
-    confess 'Not implemeneted!';
+    my ($self, $part) = @_;
+    my $digest;
+
+    unless (exists $self->{session}) {
+        confess 'session is closed';
+    }
+    unless (defined $part) {
+        confess '$part must be defined';
+    }
+
+    $self->{rv} = $self->{pkcs11xs}->C_DigestUpdate($self->{session}, $part, $digest);
+    return $self->{rv} == CKR_OK ? $digest : undef;
 }
 
 sub DigestKey {
-    confess 'Not implemeneted!';
+    my ($self, $key) = @_;
+
+    unless (exists $self->{session}) {
+        confess 'session is closed';
+    }
+    unless (blessed($key) and $key->isa('Crypt::PKCS11::Object')) {
+        confess '$key is not a Crypt::PKCS11::Object';
+    }
+
+    $self->{rv} = $self->{pkcs11xs}->C_DigestKey($self->{session}, $key->id);
+    return $self->{rv} == CKR_OK ? 1 : undef;
 }
 
 sub DigestFinal {
-    confess 'Not implemeneted!';
+    my ($self) = @_;
+    my $digest;
+
+    unless (exists $self->{session}) {
+        confess 'session is closed';
+    }
+
+    $self->{rv} = $self->{pkcs11xs}->C_DigestFinal($self->{session}, $digest);
+    return $self->{rv} == CKR_OK ? $digest : undef;
 }
 
 sub SignInit {
-    confess 'Not implemeneted!';
+    my ($self, $mechanism, $key) = @_;
+
+    unless (exists $self->{session}) {
+        confess 'session is closed';
+    }
+    unless (blessed($mechanism) and $mechanism->isa('Crypt::PKCS11::CK_MECHANISMPtr')) {
+        confess '$mechanism is not a Crypt::PKCS11::CK_MECHANISMPtr';
+    }
+    unless (blessed($key) and $key->isa('Crypt::PKCS11::Object')) {
+        confess '$key is not a Crypt::PKCS11::Object';
+    }
+
+    $self->{rv} = $self->{pkcs11xs}->C_SignInit($self->{session}, $mechanism->toHash, $key->id);
+    return $self->{rv} == CKR_OK ? 1 : undef;
 }
 
 sub Sign {
-    confess 'Not implemeneted!';
+    my ($self, $data) = @_;
+    my $signature;
+
+    unless (exists $self->{session}) {
+        confess 'session is closed';
+    }
+    unless (defined $data) {
+        confess '$data must be defined';
+    }
+
+    $self->{rv} = $self->{pkcs11xs}->C_Sign($self->{session}, $data, $signature);
+    return $self->{rv} == CKR_OK ? $signature : undef;
 }
 
 sub SignUpdate {
-    confess 'Not implemeneted!';
+    my ($self, $part) = @_;
+
+    unless (exists $self->{session}) {
+        confess 'session is closed';
+    }
+    unless (defined $part) {
+        confess '$part must be defined';
+    }
+
+    $self->{rv} = $self->{pkcs11xs}->C_SignUpdate($self->{session}, $part);
+    return $self->{rv} == CKR_OK ? 1 : undef;
 }
 
 sub SignFinal {
-    confess 'Not implemeneted!';
+    my ($self) = @_;
+    my $signature;
+
+    unless (exists $self->{session}) {
+        confess 'session is closed';
+    }
+
+    $self->{rv} = $self->{pkcs11xs}->C_SignFinal($self->{session}, $signature);
+    return $self->{rv} == CKR_OK ? $signature : undef;
 }
 
 sub SignRecoverInit {
-    confess 'Not implemeneted!';
+    my ($self, $mechanism, $key) = @_;
+
+    unless (exists $self->{session}) {
+        confess 'session is closed';
+    }
+    unless (blessed($mechanism) and $mechanism->isa('Crypt::PKCS11::CK_MECHANISMPtr')) {
+        confess '$mechanism is not a Crypt::PKCS11::CK_MECHANISMPtr';
+    }
+    unless (blessed($key) and $key->isa('Crypt::PKCS11::Object')) {
+        confess '$key is not a Crypt::PKCS11::Object';
+    }
+
+    $self->{rv} = $self->{pkcs11xs}->C_SignRecoverInit($self->{session}, $mechanism->toHash, $key->id);
+    return $self->{rv} == CKR_OK ? 1 : undef;
 }
 
 sub SignRecover {
-    confess 'Not implemeneted!';
+    my ($self, $data) = @_;
+    my $signature;
+
+    unless (exists $self->{session}) {
+        confess 'session is closed';
+    }
+    unless (defined $data) {
+        confess '$data must be defined';
+    }
+
+    $self->{rv} = $self->{pkcs11xs}->C_SignRecover($self->{session}, $data, $signature);
+    return $self->{rv} == CKR_OK ? $signature : undef;
 }
 
 sub VerifyInit {
-    confess 'Not implemeneted!';
+    my ($self, $mechanism, $key) = @_;
+
+    unless (exists $self->{session}) {
+        confess 'session is closed';
+    }
+    unless (blessed($mechanism) and $mechanism->isa('Crypt::PKCS11::CK_MECHANISMPtr')) {
+        confess '$mechanism is not a Crypt::PKCS11::CK_MECHANISMPtr';
+    }
+    unless (blessed($key) and $key->isa('Crypt::PKCS11::Object')) {
+        confess '$key is not a Crypt::PKCS11::Object';
+    }
+
+    $self->{rv} = $self->{pkcs11xs}->C_VerifyInit($self->{session}, $mechanism->toHash, $key->id);
+    return $self->{rv} == CKR_OK ? 1 : undef;
 }
 
 sub Verify {
-    confess 'Not implemeneted!';
+    my ($self, $data, $signature) = @_;
+
+    unless (exists $self->{session}) {
+        confess 'session is closed';
+    }
+    unless (defined $data) {
+        confess '$data must be defined';
+    }
+    unless (defined $signature) {
+        confess '$signature must be defined';
+    }
+
+    $self->{rv} = $self->{pkcs11xs}->C_Verify($self->{session}, $data, $signature);
+    return $self->{rv} == CKR_OK ? 1 : undef;
 }
 
 sub VerifyUpdate {
-    confess 'Not implemeneted!';
+    my ($self, $part) = @_;
+
+    unless (exists $self->{session}) {
+        confess 'session is closed';
+    }
+    unless (defined $part) {
+        confess '$part must be defined';
+    }
+
+    $self->{rv} = $self->{pkcs11xs}->C_VerifyUpdate($self->{session}, $part);
+    return $self->{rv} == CKR_OK ? 1 : undef;
 }
 
 sub VerifyFinal {
-    confess 'Not implemeneted!';
+    my ($self, $signature) = @_;
+
+    unless (exists $self->{session}) {
+        confess 'session is closed';
+    }
+    unless (defined $signature) {
+        confess '$signature must be defined';
+    }
+
+    $self->{rv} = $self->{pkcs11xs}->C_VerifyFinal($self->{session}, $signature);
+    return $self->{rv} == CKR_OK ? 1 : undef;
 }
 
 sub VerifyRecoverInit {
-    confess 'Not implemeneted!';
+    my ($self, $mechanism, $key) = @_;
+
+    unless (exists $self->{session}) {
+        confess 'session is closed';
+    }
+    unless (blessed($mechanism) and $mechanism->isa('Crypt::PKCS11::CK_MECHANISMPtr')) {
+        confess '$mechanism is not a Crypt::PKCS11::CK_MECHANISMPtr';
+    }
+    unless (blessed($key) and $key->isa('Crypt::PKCS11::Object')) {
+        confess '$key is not a Crypt::PKCS11::Object';
+    }
+
+    $self->{rv} = $self->{pkcs11xs}->C_VerifyRecoverInit($self->{session}, $mechanism->toHash, $key->id);
+    return $self->{rv} == CKR_OK ? 1 : undef;
 }
 
 sub VerifyRecover {
-    confess 'Not implemeneted!';
+    my ($self, $signature) = @_;
+    my $data;
+
+    unless (exists $self->{session}) {
+        confess 'session is closed';
+    }
+    unless (defined $signature) {
+        confess '$signature must be defined';
+    }
+
+    $self->{rv} = $self->{pkcs11xs}->C_VerifyRecover($self->{session}, $signature, $data);
+    return $self->{rv} == CKR_OK ? $data : undef;
 }
 
 sub DigestEncryptUpdate {
-    confess 'Not implemeneted!';
+    my ($self, $part) = @_;
+    my $encryptedPart;
+
+    unless (exists $self->{session}) {
+        confess 'session is closed';
+    }
+    unless (defined $part) {
+        confess '$part must be defined';
+    }
+
+    $self->{rv} = $self->{pkcs11xs}->C_DigestEncryptUpdate($self->{session}, $part, $encryptedPart);
+    return $self->{rv} == CKR_OK ? $encryptedPart : undef;
 }
 
 sub DecryptDigestUpdate {
-    confess 'Not implemeneted!';
+    my ($self, $encryptedPart) = @_;
+    my $part;
+
+    unless (exists $self->{session}) {
+        confess 'session is closed';
+    }
+    unless (defined $encryptedPart) {
+        confess '$encryptedPart must be defined';
+    }
+
+    $self->{rv} = $self->{pkcs11xs}->C_DecryptDigestUpdate($self->{session}, $encryptedPart, $part);
+    return $self->{rv} == CKR_OK ? $part : undef;
 }
 
 sub SignEncryptUpdate {
-    confess 'Not implemeneted!';
+    my ($self, $part) = @_;
+    my $encryptedPart;
+
+    unless (exists $self->{session}) {
+        confess 'session is closed';
+    }
+    unless (defined $part) {
+        confess '$part must be defined';
+    }
+
+    $self->{rv} = $self->{pkcs11xs}->C_SignEncryptUpdate($self->{session}, $part, $encryptedPart);
+    return $self->{rv} == CKR_OK ? $encryptedPart : undef;
 }
 
 sub DecryptVerifyUpdate {
-    confess 'Not implemeneted!';
+    my ($self, $encryptedPart) = @_;
+    my $part;
+
+    unless (exists $self->{session}) {
+        confess 'session is closed';
+    }
+    unless (defined $encryptedPart) {
+        confess '$encryptedPart must be defined';
+    }
+
+    $self->{rv} = $self->{pkcs11xs}->C_DecryptVerifyUpdate($self->{session}, $encryptedPart, $part);
+    return $self->{rv} == CKR_OK ? $part : undef;
 }
 
 sub GenerateKey {
@@ -315,31 +811,121 @@ sub GenerateKeyPair {
 }
 
 sub WrapKey {
-    confess 'Not implemeneted!';
+    my ($self, $mechanism, $wrappingKey, $key) = @_;
+    my $wrappedKey;
+
+    unless (exists $self->{session}) {
+        confess 'session is closed';
+    }
+    unless (blessed($mechanism) and $mechanism->isa('Crypt::PKCS11::CK_MECHANISMPtr')) {
+        confess '$mechanism is not a Crypt::PKCS11::CK_MECHANISMPtr';
+    }
+    unless (blessed($wrappingKey) and $wrappingKey->isa('Crypt::PKCS11::Object')) {
+        confess '$wrappingKey is not a Crypt::PKCS11::Object';
+    }
+    unless (blessed($key) and $key->isa('Crypt::PKCS11::Object')) {
+        confess '$key is not a Crypt::PKCS11::Object';
+    }
+
+    $self->{rv} = $self->{pkcs11xs}->C_WrapKey($self->{session}, $mechanism->toHash, $wrappingKey->id, $key->id, $wrappedKey);
+    return $self->{rv} == CKR_OK ? $wrappedKey : undef;
 }
 
 sub UnwrapKey {
-    confess 'Not implemeneted!';
+    my ($self, $mechanism, $unwrappingKey, $wrappedKey, $template) = @_;
+    my $key;
+
+    unless (exists $self->{session}) {
+        confess 'session is closed';
+    }
+    unless (blessed($mechanism) and $mechanism->isa('Crypt::PKCS11::CK_MECHANISMPtr')) {
+        confess '$mechanism is not a Crypt::PKCS11::CK_MECHANISMPtr';
+    }
+    unless (blessed($unwrappingKey) and $unwrappingKey->isa('Crypt::PKCS11::Object')) {
+        confess '$unwrappingKey is not a Crypt::PKCS11::Object';
+    }
+    unless (defined $wrappedKey) {
+        confess '$wrappedKey must be defined';
+    }
+    unless (blessed($template) and $template->isa('Crypt::PKCS11::Attributes')) {
+        confess '$template is not a Crypt::PKCS11::Attributes';
+    }
+
+    $self->{rv} = $self->{pkcs11xs}->C_UnwrapKey($self->{session}, $mechanism->toHash, $unwrappingKey->id, $wrappedKey, $template->toArray, $key);
+    return $self->{rv} == CKR_OK ? Crypt::PKCS11::Object->new($key) : undef;
 }
 
 sub DeriveKey {
-    confess 'Not implemeneted!';
+    my ($self, $mechanism, $baseKey, $template) = @_;
+    my $key;
+
+    unless (exists $self->{session}) {
+        confess 'session is closed';
+    }
+    unless (blessed($mechanism) and $mechanism->isa('Crypt::PKCS11::CK_MECHANISMPtr')) {
+        confess '$mechanism is not a Crypt::PKCS11::CK_MECHANISMPtr';
+    }
+    unless (blessed($baseKey) and $baseKey->isa('Crypt::PKCS11::Object')) {
+        confess '$baseKey is not a Crypt::PKCS11::Object';
+    }
+    unless (blessed($template) and $template->isa('Crypt::PKCS11::Attributes')) {
+        confess '$template is not a Crypt::PKCS11::Attributes';
+    }
+
+    $self->{rv} = $self->{pkcs11xs}->C_DeriveKey($self->{session}, $mechanism->toHash, $baseKey->id, $template->toArray, $key);
+    return $self->{rv} == CKR_OK ? Crypt::PKCS11::Object->new($key) : undef;
 }
 
 sub SeedRandom {
-    confess 'Not implemeneted!';
+    my ($self, $seed) = @_;
+    my $key;
+
+    unless (exists $self->{session}) {
+        confess 'session is closed';
+    }
+    unless (defined $seed) {
+        confess '$seed must be defined';
+    }
+
+    $self->{rv} = $self->{pkcs11xs}->C_SeedRandom($self->{session}, $seed);
+    return $self->{rv} == CKR_OK ? 1 : undef;
 }
 
 sub GenerateRandom {
-    confess 'Not implemeneted!';
+    my ($self, $randomLen) = @_;
+    my $randomData;
+
+    unless (exists $self->{session}) {
+        confess 'session is closed';
+    }
+    unless (defined $randomLen) {
+        confess '$randomLen must be defined';
+    }
+
+    $self->{rv} = $self->{pkcs11xs}->C_GenerateRandom($self->{session}, $randomData, $randomLen);
+    return $self->{rv} == CKR_OK ? $randomData : undef;
 }
 
 sub GetFunctionStatus {
-    confess 'Not implemeneted!';
+    my ($self) = @_;
+
+    unless (exists $self->{session}) {
+        confess 'session is closed';
+    }
+
+    $self->{rv} = $self->{pkcs11xs}->C_GetFunctionStatus($self->{session});
+    return $self->{rv} == CKR_OK ? 1 : undef;
 }
 
 sub CancelFunction {
-    confess 'Not implemeneted!';
+    my ($self) = @_;
+
+    unless (exists $self->{session}) {
+        confess 'session is closed';
+    }
+
+    $self->{rv} = $self->{pkcs11xs}->C_CancelFunction($self->{session});
+    return $self->{rv} == CKR_OK ? 1 : undef;
 }
 
 sub errno {
