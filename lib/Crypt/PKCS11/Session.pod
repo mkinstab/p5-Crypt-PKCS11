@@ -8,6 +8,9 @@
 
 =head1 METHODS
 
+For more extensive documentation about the methods, data structures and types
+please see http://www.cryptsoft.com/pkcs11doc/v230/ .
+
 =over 4
 
 =item $session = Crypt::PKCS11::Session->new

@@ -8,6 +8,14 @@
 
 =head1 METHODS
 
+All methods that starts with C_ are in direct relation with the PKCS #11 v2.30
+functions described in detail at http://www.cryptsoft.com/pkcs11doc/v230/ .
+
+For documentation about what each of those method does please see the
+documentation for PKCS #11 v2.30, the only thing documented here is the
+structure of the input and output arguments which uses Perl arrays and hashes
+(conversion to/from PKCS #11 specific data structures are handled by the methods).
+
 =over 4
 
 =item $pkcs11xs = Crypt::PKCS11::XS->new
