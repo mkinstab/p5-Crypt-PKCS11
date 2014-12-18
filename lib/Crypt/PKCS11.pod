@@ -2,31 +2,358 @@
 
 =head1 NAME
 
+Crypt::PKCS11 - Full-fledged PKCS #11 v2.30 interface
+
 =head1 SYNPOSIS
+
+  use Crypt::PKCS11;
+
+  # Create the main PKCS #11 object, load a PKCS #11 provider .so library and initialize the module
+  my $pkcs11 = Crypt::PKCS11->new;
+  $pkcs11->load(...);
+  $pkcs11->Initialize;
+
+  # Create a new session and Login
+  my $session = $pkcs11->OpenSession(...);
+  $session->Login(...);
+
+  # Create the public key template
+  my $publicKeyTemplate = Crypt::PKCS11::Attributes->new->push(
+      Crypt::PKCS11::Attribute::Encrypt->new->set(1),
+      Crypt::PKCS11::Attribute::Verify->new->set(1),
+      Crypt::PKCS11::Attribute::Wrap->new->set(1),
+      Crypt::PKCS11::Attribute::PublicExponent->new->set(0x01, 0x00, 0x01),
+      Crypt::PKCS11::Attribute::Token->new->set(1),
+      Crypt::PKCS11::Attribute::ModulusBits->new->set(768)
+  );
+
+  # Create the private key template
+  my $privateKeyTemplate = Crypt::PKCS11::Attributes->new->push(
+      Crypt::PKCS11::Attribute::Private->new->set(1),
+      Crypt::PKCS11::Attribute::Id->new->set(123),
+      Crypt::PKCS11::Attribute::Sensitive->new->set(1),
+      Crypt::PKCS11::Attribute::Decrypt->new->set(1),
+      Crypt::PKCS11::Attribute::Sign->new->set(1),
+      Crypt::PKCS11::Attribute::Unwrap->new->set(1),
+      Crypt::PKCS11::Attribute::Token->new->set(1)
+  );
+
+  # Create a public and private key pair
+  my ($publicKey, $privateKey) = $session->GenerateKeyPair(
+      Crypt::PKCS11::CK_MECHANISM->new->set_mechanism(...),
+      $publicKeyTemplate,
+      $privateKeyTemplate);
+
+  # Encrypt data
+  TODO
+
+  # Decrypt data
+  TODO
+
+  # Finalize the PKCS #11 module and unload the provider .so library
+  $pkcs11->Finalize;
+  $pkcs11->unload;
 
 =head1 DESCRIPTION
 
+Crypt::PKCS11 provides a full-fedged PKCS #11 v2.30 interface for Perl and
+together with a PKCS #11 proivder .so library you can use all the functionallity
+a Hardware Security Module (HSM) has to offer from within Perl.
+
+=head1 TESTING
+
+This module has been tested with the following PKCS #11 providers:
+- SoftHSM version 1
+- SoftHSM version 2
+
+This module has been tested on the following operating systems:
+- Ubuntu Server 12.04.4
+
+=head1 ERROR HANDLING
+
+This is the general error handling for all methods unless otherwise stated.
+
+On XS layer errors all functions returns false (0/undef) and the XS layer error
+can be retrieved with `$pkcs11->errno` for the number and `$pkcs11->errstr` for
+the message.
+
+For OO layer errors the methods will confess (croak) with the error message.
+
 =head1 METHODS
+
+For more extensive documentation about the methods, data structures and types
+please see http://www.cryptsoft.com/pkcs11doc/v230/ .
 
 =over 4
 
 =item $pkcs11 = Crypt::PKCS11->new
 
+Returns a new Crypt::PKCS11 object.
+
 =item $pkcs11->load ($so)
+
+Loads the PKCS #11 provider .so library specified by `$so`.
 
 =item $pkcs11->unload
 
+Unloads the PKCS #11 provider .so library, done automatically on destruction of
+the object.
+
 =item $pkcs11->Initialize
+
+Initiate the PKCS #11 library, this must be done before using the PKCS #11
+library.
 
 =item $pkcs11->Finalize
 
+Finalize the PKCS #11 library, done automatically on destruction of the object.
+
 =item $pkcs11->GetInfo
 
-=item $pkcs11->GetSlotList ($tokenPresent)
+Return information about the PKCS #11 library as a hash, if called in list
+context, or as a hash reference, if called in scalar context.
+
+Fields in hash are as follows:
+
+=over 4
+
+=item cryptokiVersion
+
+Cryptoki interface version number, for compatibility with future revisions of this interface, as a hash reference.
+
+=over 4
+
+=item major
+
+Major version part.
+
+=item minor
+
+Minor version part.
+
+=back
+
+=item manufacturerID
+
+ID of the Cryptoki library manufacturer, padded with the blank character (' ').
+
+=item flags
+
+Bit flags reserved for future versions.
+
+=item libraryDescription
+
+Character-string description of the library, padded with the blank character (' ').
+
+=item libraryVersion
+
+Cryptoki library version number as a hash reference.
+
+=over 4
+
+=item major
+
+Major version part.
+
+=item minor
+
+Minor version part.
+
+=back
+
+=back
+
+=item $pkcs11->GetSlotList ([$tokenPresent = undef])
+
+Return a list of slot IDs as an array, if called in list context, or as an array
+reference, if called in scalar context.
+
+=over 4
+
+=item $tokenPresent
+
+Optional argument which is default to false. If set to true then only the slot
+IDs which has tokens will be returned.
+
+=back
 
 =item $pkcs11->GetSlotInfo ($slotID)
 
+Return information about a slot as a hash, if called in list context, or as a
+hash reference, if called in scalar context.
+
+=over 4
+
+=item $slotID
+
+The slot ID to return information about.
+
+=back
+
+Fields in hash are as follows:
+
+=over 4
+
+=item slotDescription
+
+Character-string description of the slot, padded with the blank character (' ').
+
+=item manufacturerID
+
+ID of the slot manufacturer, padded with the blank character (' ').
+
+=item flags
+
+Bits flags that provide capabilities of the slot, see TODO.
+
+=item hardwareVersion
+
+Version number of the slot's hardware as a hash reference.
+
+=over 4
+
+=item major
+
+Major version part.
+
+=item minor
+
+Minor version part.
+
+=back
+
+=item firmwareVersion
+
+Version number of the slot's firmware as a hash reference.
+
+=over 4
+
+=item major
+
+Major version part.
+
+=item minor
+
+Minor version part.
+
+=back
+
+=back
+
 =item $pkcs11->GetTokenInfo ($slotID)
+
+Return information about tokens in a slot as a hash, if called in list context,
+or as a hash reference, if called in scalar context.
+
+=over 4
+
+=item $slotID
+
+The slot ID to return information about.
+
+=back
+
+Fields in hash are as follows:
+
+=over 4
+
+=item label
+
+Application-defined label, assigned during token initialization, padded with the blank character (' ').
+
+=item manufacturerID
+
+ID of the device manufacturer, padded with the blank character (' ').
+
+=item model
+
+Model of the device, padded with the blank character (' ').
+
+=item serialNumber
+
+Character-string serial number of the device, padded with the blank character (' ').
+
+=item flags
+
+Bit flags indicating capabilities and status of the device, see TODO.
+
+=item ulMaxSessionCount
+
+Maximum number of sessions that can be opened with the token at one time by a single application.
+
+=item ulSessionCount
+
+Number of sessions that this application currently has open with the token.
+
+=item ulMaxRwSessionCount
+
+Maximum number of read/write sessions that can be opened with the token at one time by a single application.
+
+=item ulRwSessionCount
+
+Number of read/write sessions that this application currently has open with the token.
+
+=item ulMaxPinLen
+
+Maximum length in bytes of the PIN.
+
+=item ulMinPinLen
+
+Minimum length in bytes of the PIN.
+
+=item ulTotalPublicMemory
+
+The total amount of memory on the token in bytes in which public objects may be stored.
+
+=item ulFreePublicMemory
+
+The amount of free (unused) memory on the token in bytes for public objects.
+
+=item ulTotalPrivateMemory
+
+The total amount of memory on the token in bytes in which private objects may be stored.
+
+=item ulFreePrivateMemory
+
+The amount of free (unused) memory on the token in bytes for private objects.
+
+=item hardwareVersion
+
+Version number of hardware as a hash reference.
+
+=over 4
+
+=item major
+
+Major version part.
+
+=item minor
+
+Minor version part.
+
+=back
+
+=item firmwareVersion
+
+Version number of firmware as a hash reference.
+
+=over 4
+
+=item major
+
+Major version part.
+
+=item minor
+
+Minor version part.
+
+=back
+
+=item utcTime
+
+Current time as a character-string of length 16, represented in the format YYYYMMDDhhmmssxx (4 characters for the year; 2 characters each for the month, the day, the hour, the minute, and the second; and 2 additional reserved '0' characters). The value of this field only makes sense for tokens equipped with a clock, as indicated in the token information flags.
+
+=back
 
 =item $pkcs11->GetMechanismList ($slotID)
 
@@ -45,6 +372,10 @@
 =item $pkcs11->errstr
 
 =back
+
+=head1 NOTE
+
+Derived from the RSA Security Inc. PKCS #11 Cryptographic Token Interface (Cryptoki)
 
 =head1 LICENSE
 

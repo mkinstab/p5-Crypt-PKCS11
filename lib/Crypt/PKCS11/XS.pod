@@ -170,6 +170,10 @@
 
 =back
 
+=head1 NOTE
+
+Derived from the RSA Security Inc. PKCS #11 Cryptographic Token Interface (Cryptoki)
+
 =head1 LICENSE
 
   Copyright (c) 2014 Jerry Lundström <lundstrom.jerry@gmail.com>
