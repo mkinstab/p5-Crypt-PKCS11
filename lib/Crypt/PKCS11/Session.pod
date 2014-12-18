@@ -1,0 +1,156 @@
+=encoding utf8
+
+=head1 NAME
+
+=head1 SYNPOSIS
+
+=head1 DESCRIPTION
+
+=head1 METHODS
+
+=over 4
+
+=item $session = Crypt::PKCS11::Session->new
+
+=item $session->InitPIN ($pin)
+
+=item $session->SetPIN ($oldPin, $newPin)
+
+=item $session->CloseSession
+
+=item $session->GetSessionInfo
+
+=item $session->GetOperationState
+
+=item $session->SetOperationState ($operationState)
+
+=item $session->Login ($userType, $pin)
+
+=item $session->Logout
+
+=item $session->CreateObject ($template)
+
+=item $session->CopyObject ($object, $template)
+
+=item $session->DestroyObject ($object)
+
+=item $session->GetObjectSize ($object)
+
+=item $session->GetAttributeValue ($object, $template)
+
+=item $session->SetAttributeValue ($object, $template)
+
+=item $session->FindObjectsInit ($template)
+
+=item $session->FindObjects ($maxObjectCount)
+
+=item $session->FindObjectsFinal ($maxObjectCount)
+
+=item $session->EncryptInit ($mechanism, $key)
+
+=item $session->Encrypt ($data)
+
+=item $session->EncryptUpdate ($part)
+
+=item $session->EncryptFinal
+
+=item $session->DecryptInit ($mechanism, $key)
+
+=item $session->Decrypt ($encryptedData)
+
+=item $session->DecryptUpdate ($encryptedPart)
+
+=item $session->DecryptFinal
+
+=item $session->DigestInit ($mechanism)
+
+=item $session->Digest ($data)
+
+=item $session->DigestUpdate ($part)
+
+=item $session->DigestKey ($key)
+
+=item $session->DigestFinal
+
+=item $session->SignInit ($mechanism, $key)
+
+=item $session->Sign ($data)
+
+=item $session->SignUpdate ($part)
+
+=item $session->SignFinal
+
+=item $session->SignRecoverInit ($mechanism, $key)
+
+=item $session->SignRecover ($data)
+
+=item $session->VerifyInit ($mechanism, $key)
+
+=item $session->Verify ($data, $signature)
+
+=item $session->VerifyUpdate ($part)
+
+=item $session->VerifyFinal ($signature)
+
+=item $session->VerifyRecoverInit ($mechanism, $key)
+
+=item $session->VerifyRecover ($signature)
+
+=item $session->DigestEncryptUpdate ($part)
+
+=item $session->DecryptDigestUpdate ($encryptedPart)
+
+=item $session->SignEncryptUpdate ($part)
+
+=item $session->DecryptVerifyUpdate ($encryptedPart)
+
+=item $session->GenerateKey ($mechanism, $template)
+
+=item $session->GenerateKeyPair ($mechanism, $publicKeyTemplate, $privateKeyTemplate)
+
+=item $session->WrapKey ($mechanism, $wrappingKey, $key)
+
+=item $session->UnwrapKey ($mechanism, $unwrappingKey, $wrappedKey, $template)
+
+=item $session->DeriveKey ($mechanism, $baseKey, $template)
+
+=item $session->SeedRandom ($seed)
+
+=item $session->GenerateRandom ($randomLen)
+
+=item $session->GetFunctionStatus
+
+=item $session->CancelFunction
+
+=item $session->errno
+
+=item $session->errstr
+
+=back
+
+=head1 LICENSE
+
+  Copyright (c) 2014 Jerry Lundström <lundstrom.jerry@gmail.com>
+  Copyright (c) 2014 .SE (The Internet Infrastructure Foundation)
+  All rights reserved.
+
+  Redistribution and use in source and binary forms, with or without
+  modification, are permitted provided that the following conditions
+  are met:
+  1. Redistributions of source code must retain the above copyright
+     notice, this list of conditions and the following disclaimer.
+  2. Redistributions in binary form must reproduce the above copyright
+     notice, this list of conditions and the following disclaimer in the
+     documentation and/or other materials provided with the distribution.
+
+  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+  ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
+  DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+  DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
+  GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
+  IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
+  IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.

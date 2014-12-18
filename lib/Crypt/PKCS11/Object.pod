@@ -10,39 +10,9 @@
 
 =over 4
 
-=item $pkcs11 = Crypt::PKCS11->new
+=item $object = Crypt::PKCS11::Object->new
 
-=item $pkcs11->load ($so)
-
-=item $pkcs11->unload
-
-=item $pkcs11->Initialize
-
-=item $pkcs11->Finalize
-
-=item $pkcs11->GetInfo
-
-=item $pkcs11->GetSlotList ($tokenPresent)
-
-=item $pkcs11->GetSlotInfo ($slotID)
-
-=item $pkcs11->GetTokenInfo ($slotID)
-
-=item $pkcs11->GetMechanismList ($slotID)
-
-=item $pkcs11->GetMechanismInfo ($slotID, $mechanismType)
-
-=item $pkcs11->InitToken ($slotID, $pin, $label)
-
-=item $pkcs11->OpenSession ($slotID, $flags, $notifycb)
-
-=item $pkcs11->CloseAllSessions ($slotID)
-
-=item $pkcs11->WaitForSlotEvent ($flags)
-
-=item $pkcs11->errno
-
-=item $pkcs11->errstr
+=item $object->id
 
 =back
 
