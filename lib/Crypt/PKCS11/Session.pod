@@ -2,9 +2,40 @@
 
 =head1 NAME
 
+Crypt::PKCS11::Session - PKCS #11 session handler.
+
 =head1 SYNPOSIS
 
+  use Crypt::PKCS11;
+
+  # Create the main PKCS #11 object, load a PKCS #11 provider .so library and initialize the module
+  my $pkcs11 = Crypt::PKCS11->new;
+  $pkcs11->load(...);
+  $pkcs11->Initialize;
+
+  # Create a new session, log in, use the session, log out and close the session
+  my $session = $pkcs11->OpenSession(...);
+  $session->Login(...);
+  ...
+  $session->Logout;
+  $session->CloseSession;
+
 =head1 DESCRIPTION
+
+This module encapsulates the PKCS #11 session created with `Crypt::PKCS11->OpenSession`
+and is used to manage the keys and encrypt/decrypt data using a HSM.
+
+=head1 RETURN VALUES AND ERROR HANDLING
+
+This is the general return value and error handling for all methods unless
+otherwise stated.
+
+On XS layer errors, when called from within these methods, all methods returns
+false (0/undef) and the XS layer error can be retrieved with `$pkcs11->errno`
+for the number and `$pkcs11->errstr` for the message.
+
+For errors from the methods themself, the method will confess (croak) with the
+error message.
 
 =head1 METHODS
 
@@ -13,17 +44,52 @@ please see http://www.cryptsoft.com/pkcs11doc/v230/ .
 
 =over 4
 
-=item $session = Crypt::PKCS11::Session->new
+=item $session->InitPIN ([$pin = 1234 || '...'])
 
-=item $session->InitPIN ($pin)
+Initializes the normal user's PIN.
 
-=item $session->SetPIN ($oldPin, $newPin)
+The argument is optional due to "protected authentication path", please see the
+PKCS #11 documentation for more information about that.
+
+=over 4
+
+=item $pin
+
+Optional argument that is the normal user's PIN, if given must contain a number
+or a non-empty string.
+
+=back
+
+=item $session->SetPIN ([$oldPin = 1234 || '...', $newPin = 1234 || '...'])
+
+Modifies the PIN of the user that is currently logged in, or the `CKU_USER` PIN
+if the session is not logged in.
+
+The arguments are optional due to "protected authentication path", please see
+the PKCS #11 documentation for more information about that.
+
+=over 4
+
+=item $oldPin
+
+Optional argument that is the user's old PIN, if given must contain a number or
+a non-empty string.
+
+=item $newPin
+
+Optional argument that is the user's new PIN, if given must contain a number or
+a non-empty string.
+
+=back
 
 =item $session->CloseSession
 
-=item $session->GetSessionInfo
+Close the session, any use of the object after closing the session will result
+in an error.
 
-=item $session->GetOperationState
+=item < %hash || $hash_ref > = $session->GetSessionInfo
+
+=item $operationState = $session->GetOperationState
 
 =item $session->SetOperationState ($operationState)
 
@@ -31,61 +97,61 @@ please see http://www.cryptsoft.com/pkcs11doc/v230/ .
 
 =item $session->Logout
 
-=item $session->CreateObject ($template)
+=item $object = $session->CreateObject ($template)
 
-=item $session->CopyObject ($object, $template)
+=item $newObject = $session->CopyObject ($object, $template)
 
 =item $session->DestroyObject ($object)
 
-=item $session->GetObjectSize ($object)
+=item $size = $session->GetObjectSize ($object)
 
-=item $session->GetAttributeValue ($object, $template)
+=item < @array || 1 > = $session->GetAttributeValue ($object, $template)
 
 =item $session->SetAttributeValue ($object, $template)
 
 =item $session->FindObjectsInit ($template)
 
-=item $session->FindObjects ($maxObjectCount)
+=item < @array || $array_ref > = $session->FindObjects ($maxObjectCount)
 
 =item $session->FindObjectsFinal ($maxObjectCount)
 
 =item $session->EncryptInit ($mechanism, $key)
 
-=item $session->Encrypt ($data)
+=item $encryptedData = $session->Encrypt ($data)
 
-=item $session->EncryptUpdate ($part)
+=item $encryptedPart = $session->EncryptUpdate ($part)
 
-=item $session->EncryptFinal
+=item $lastEncryptedPart = $session->EncryptFinal
 
 =item $session->DecryptInit ($mechanism, $key)
 
-=item $session->Decrypt ($encryptedData)
+=item $data = $session->Decrypt ($encryptedData)
 
-=item $session->DecryptUpdate ($encryptedPart)
+=item $part = $session->DecryptUpdate ($encryptedPart)
 
-=item $session->DecryptFinal
+=item $lastPart = $session->DecryptFinal
 
 =item $session->DigestInit ($mechanism)
 
-=item $session->Digest ($data)
+=item $digest = $session->Digest ($data)
 
-=item $session->DigestUpdate ($part)
+=item $digest = $session->DigestUpdate ($part)
 
 =item $session->DigestKey ($key)
 
-=item $session->DigestFinal
+=item $digest = $session->DigestFinal
 
 =item $session->SignInit ($mechanism, $key)
 
-=item $session->Sign ($data)
+=item $signature = $session->Sign ($data)
 
 =item $session->SignUpdate ($part)
 
-=item $session->SignFinal
+=item $signature = $session->SignFinal
 
 =item $session->SignRecoverInit ($mechanism, $key)
 
-=item $session->SignRecover ($data)
+=item $signature = $session->SignRecover ($data)
 
 =item $session->VerifyInit ($mechanism, $key)
 
@@ -97,37 +163,41 @@ please see http://www.cryptsoft.com/pkcs11doc/v230/ .
 
 =item $session->VerifyRecoverInit ($mechanism, $key)
 
-=item $session->VerifyRecover ($signature)
+=item $data = $session->VerifyRecover ($signature)
 
-=item $session->DigestEncryptUpdate ($part)
+=item $encryptedPart = $session->DigestEncryptUpdate ($part)
 
-=item $session->DecryptDigestUpdate ($encryptedPart)
+=item $part = $session->DecryptDigestUpdate ($encryptedPart)
 
-=item $session->SignEncryptUpdate ($part)
+=item $encryptedPart = $session->SignEncryptUpdate ($part)
 
-=item $session->DecryptVerifyUpdate ($encryptedPart)
+=item $part = $session->DecryptVerifyUpdate ($encryptedPart)
 
-=item $session->GenerateKey ($mechanism, $template)
+=item $key = $session->GenerateKey ($mechanism, $template)
 
-=item $session->GenerateKeyPair ($mechanism, $publicKeyTemplate, $privateKeyTemplate)
+=item ($publicKey, $privateKey) = $session->GenerateKeyPair ($mechanism, $publicKeyTemplate, $privateKeyTemplate)
 
-=item $session->WrapKey ($mechanism, $wrappingKey, $key)
+=item $wrappedKey = $session->WrapKey ($mechanism, $wrappingKey, $key)
 
-=item $session->UnwrapKey ($mechanism, $unwrappingKey, $wrappedKey, $template)
+=item $key = $session->UnwrapKey ($mechanism, $unwrappingKey, $wrappedKey, $template)
 
-=item $session->DeriveKey ($mechanism, $baseKey, $template)
+=item $key = $session->DeriveKey ($mechanism, $baseKey, $template)
 
 =item $session->SeedRandom ($seed)
 
-=item $session->GenerateRandom ($randomLen)
+=item $randomData = $session->GenerateRandom ($randomLen)
 
 =item $session->GetFunctionStatus
 
 =item $session->CancelFunction
 
-=item $session->errno
+=item $errno = $session->errno
 
-=item $session->errstr
+Return the last error number, can be used after a method returns false.
+
+=item $errstr = $session->errstr
+
+Return the last error message, can be used after a method returns false.
 
 =back
 
