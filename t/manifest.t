@@ -26,5 +26,7 @@ ok_manifest({
         qr/\/pkcs11_struct.c$/,
         qr/\/t\/token.db$/,
         qr/\/cover_db/,
+        qr/\/t\/no.token$/,
+        qr/\/t\/tokens\//,
     ]
 });
