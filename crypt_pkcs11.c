@@ -690,8 +690,7 @@ CK_RV crypt_pkcs11_xs_C_Initialize(Crypt__PKCS11__XS* object, HV* pInitArgs) {
         }
 
         if (flags) {
-            if (!*flags || !crypt_pkcs11_xs_SvUOK(*flags))
-            {
+            if (!*flags || !crypt_pkcs11_xs_SvUOK(*flags)) {
                 return CKR_ARGUMENTS_BAD;
             }
 
