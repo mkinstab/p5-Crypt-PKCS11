@@ -41,8 +41,11 @@ typemap.struct
 t/00-load.t
 t/boilerplate.t
 t/manifest.t
+t/oo.t
 t/pkcs11.t
 t/pod-coverage.t
 t/pod.t
 t/rv2str.t
+t/softhsm2.conf
 t/softhsm.conf
+t/svuok.t
