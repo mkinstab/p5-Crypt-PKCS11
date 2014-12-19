@@ -10,3 +10,7 @@ Makefile
 pkcs11.c
 pkcs11_struct.c
 pm_to_blib
+*.gcov
+*.gcda
+*.gcno
+cover_db
