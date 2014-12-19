@@ -1000,11 +1000,11 @@ CK_RV crypt_pkcs11_xs_C_GetMechanismInfo(Crypt__PKCS11__XS* object, CK_SLOT_ID s
 
 CK_RV crypt_pkcs11_xs_C_InitToken(Crypt__PKCS11__XS* object, CK_SLOT_ID slotID, SV* pPin, SV* pLabel) {
     CK_RV rv;
-    SV* _pPin;
+    SV* _pPin = NULL_PTR;
     SV* _pLabel;
-    STRLEN len;
+    STRLEN len = 0;
     STRLEN len2;
-    char* _pPin2;
+    char* _pPin2 = NULL_PTR;
     char* _pLabel2;
     char* _pLabel3 = 0;
 
@@ -1017,12 +1017,6 @@ CK_RV crypt_pkcs11_xs_C_InitToken(Crypt__PKCS11__XS* object, CK_SLOT_ID slotID, 
     if (!object->function_list->C_InitToken) {
         return CKR_GENERAL_ERROR;
     }
-    if (!pPin) {
-        return CKR_ARGUMENTS_BAD;
-    }
-    if (!SvOK(pPin)) {
-        return CKR_ARGUMENTS_BAD;
-    }
     if (!pLabel) {
         return CKR_ARGUMENTS_BAD;
     }
@@ -1030,39 +1024,59 @@ CK_RV crypt_pkcs11_xs_C_InitToken(Crypt__PKCS11__XS* object, CK_SLOT_ID slotID, 
         return CKR_ARGUMENTS_BAD;
     }
 
-    SvGETMAGIC(pPin);
-    if (!(_pPin = newSVsv(pPin))) {
-        return CKR_GENERAL_ERROR;
+    if (!pPin) {
+        if (!SvOK(pPin)) {
+            return CKR_ARGUMENTS_BAD;
+        }
+
+        SvGETMAGIC(pPin);
+        if (!(_pPin = newSVsv(pPin))) {
+            return CKR_GENERAL_ERROR;
+        }
+
+        if (!sv_utf8_downgrade(_pPin, 0)
+            || !(_pPin2 = SvPV(_pPin, len)))
+        {
+            SvREFCNT_dec(_pPin);
+            return CKR_GENERAL_ERROR;
+        }
     }
+
     SvGETMAGIC(pLabel);
     if (!(_pLabel = newSVsv(pLabel))) {
-        SvREFCNT_dec(_pPin);
+        if (_pPin) {
+            SvREFCNT_dec(_pPin);
+        }
         return CKR_GENERAL_ERROR;
     }
 
-    if (!sv_utf8_downgrade(_pPin, 0)
-        || !sv_utf8_downgrade(_pLabel, 0)
-        || !(_pPin2 = SvPV(_pPin, len))
+    if (!sv_utf8_downgrade(_pLabel, 0)
         || !(_pLabel2 = SvPV(_pLabel, len2)))
     {
-        SvREFCNT_dec(_pPin);
         SvREFCNT_dec(_pLabel);
+        if (_pPin) {
+            SvREFCNT_dec(_pPin);
+        }
         return CKR_GENERAL_ERROR;
     }
 
     if (len2 < 32) {
         if (!(_pLabel3 = calloc(1, 32))) {
-            SvREFCNT_dec(_pPin);
             SvREFCNT_dec(_pLabel);
+            if (_pPin) {
+                SvREFCNT_dec(_pPin);
+            }
             return CKR_GENERAL_ERROR;
         }
         memcpy(_pLabel3, _pLabel2, len2);
     }
 
     rv = object->function_list->C_InitToken(slotID, _pPin2, len, _pLabel3 ? _pLabel3 : _pLabel2);
-    SvREFCNT_dec(_pPin);
     SvREFCNT_dec(_pLabel);
 
+    if (_pPin) {
+        SvREFCNT_dec(_pPin);
+    }
     if (_pLabel3) {
         free(_pLabel3);
     }

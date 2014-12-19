@@ -1740,13 +1740,18 @@ sub GetMechanismInfo {
 }
 
 sub InitToken {
-    my ($self, $slotID, $pin, $label) = @_;
+    my $self = shift;
+    my ($slotID, $pin, $label);
+
+    if (scalar $@ == 2) {
+        ($slotID, $label) = @_;
+    }
+    else {
+        ($slotID, $pin, $label) = @_;
+    }
 
     unless (defined $slotID) {
         confess '$slotID must be defined';
-    }
-    unless (defined $pin) {
-        confess '$pin must be defined';
     }
     unless (defined $label) {
         confess '$label must be defined';
