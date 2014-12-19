@@ -79,6 +79,33 @@ the message.
 
 For OO layer errors the methods will confess (croak) with the error message.
 
+=head1 CONSTANTS
+
+All PKCS #11 constants (C #define's) can be imported by specifying the tag
+:constant when using the module, see TODO for a list of all constants.
+
+  use Crypt::PKCS11 qw(:constant);
+
+There are also hashes for reverse lookup available, to get the name of the
+constant in text, per constant section using the tag :constant_names, for
+example if you wish to reverse lookup a mechanism you can use the `%CKM_NAME`
+hash.
+
+  use Crypt::PKCS11 qw(:constant_names);
+  ...
+  print "Support for $CKM_NAME{$mechanism} found.\n";
+
+Beside all constants that exists in PCKS #11 v2.30 these have been added:
+
+=over 4
+
+=item CK_ULONG_SIZE
+
+Contains the size of CK_ULONG type that will be different depending on the
+operating system.
+
+=back
+
 =head1 METHODS
 
 For more extensive documentation about the methods, data structures and types
