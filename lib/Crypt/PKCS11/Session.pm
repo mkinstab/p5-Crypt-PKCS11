@@ -143,7 +143,7 @@ sub GetOperationState {
 }
 
 sub SetOperationState {
-    my ($self, $operationState) = @_;
+    my ($self, $operationState, $encryptionKey, $authenticationKey) = @_;
 
     unless (exists $self->{session}) {
         confess 'session is closed';
@@ -151,8 +151,18 @@ sub SetOperationState {
     unless (defined $operationState) {
         confess '$operationState must be defined';
     }
+    if (defined $encryptionKey) {
+        unless (blessed($encryptionKey) and $encryptionKey->isa('Crypt::PKCS11::Object')) {
+            confess '$encryptionKey is defined but is not a Crypt::PKCS11::Object';
+        }
+    }
+    if (defined $authenticationKey) {
+        unless (blessed($authenticationKey) and $authenticationKey->isa('Crypt::PKCS11::Object')) {
+            confess '$authenticationKey is defined but is not a Crypt::PKCS11::Object';
+        }
+    }
 
-    $self->{rv} = $self->{pkcs11xs}->C_SetOperationState($self->{session}, $operationState);
+    $self->{rv} = $self->{pkcs11xs}->C_SetOperationState($self->{session}, $operationState, $encryptionKey ? $encryptionKey->id : 0, $authenticationKey ? $authenticationKey->id : 0);
     return $self->{rv} == CKR_OK ? 1 : undef;
 }
 
