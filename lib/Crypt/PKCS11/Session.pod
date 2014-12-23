@@ -201,6 +201,17 @@ Return the last error message, can be used after a method returns false.
 
 =back
 
+=head1 PRIVATE METHODS
+
+These are the private methods used within the module and should not be used
+elsewhere.
+
+=over 4
+
+=item $session = Crypt::PKCS11::Session->new ($pkcs11xs, $session)
+
+=back
+
 =head1 NOTE
 
 Derived from the RSA Security Inc. PKCS #11 Cryptographic Token Interface (Cryptoki)

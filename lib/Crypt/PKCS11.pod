@@ -169,7 +169,7 @@ hash.
   ...
   print "Support for $CKM_NAME{$mechanism} found.\n";
 
-Beside all constants that exists in PCKS #11 v2.30 these have been added:
+Beside all constants that exists in PCKS #11 these have been added:
 
 =over 4
 
