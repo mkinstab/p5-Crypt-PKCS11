@@ -89,9 +89,63 @@ in an error.
 
 =item < %hash || $hash_ref > = $session->GetSessionInfo
 
+Return information about the session as a hash, if called in list context, or as
+a hash reference, if called in scalar context.
+
+Fields in hash are as follows:
+
+=over 4
+
+=item slotID
+
+ID of the slot that interfaces with the token.
+
+=item state
+
+The state of the session.
+
+=item flags
+
+Bit flags that define the type of session.
+
+=item ulDeviceError
+
+An error code defined by the cryptographic device. Used for errors not covered by Cryptoki.
+
+=back
+
 =item $operationState = $session->GetOperationState
 
-=item $session->SetOperationState ($operationState)
+Obtains a copy of the cryptographic operations state of a session, encoded as a
+string of bytes.
+
+=item $session->SetOperationState ($operationState, [$encryptionKey = undef, $authenticationKey = undef])
+
+Restores the cryptographic operations state of a session from a string of bytes
+obtained with C_GetOperationState.
+
+=over 4
+
+=item $operationState
+
+The saved state.
+
+=item $encryptionKey
+
+Optional argument with the key which will be used for an ongoing encryption or
+decryption operation in the restored session (or undef if no encryption or
+decryption key is needed, either because no such operation is ongoing in the
+stored session or because all the necessary key information is present in the
+saved state).
+
+=item $authenticationKey
+
+Optional argument with the key which will be used for an ongoing signature,
+MACing, or verification operation in the restored session (or undef if no such
+key is needed, either because no such operation is ongoing in the stored session
+or because all the necessary key information is present in the saved state).
+
+=back
 
 =item $session->Login ($userType, $pin)
 

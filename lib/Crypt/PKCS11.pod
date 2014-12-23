@@ -45,10 +45,19 @@ Crypt::PKCS11 - Full-fledged PKCS #11 v2.30 interface
       $privateKeyTemplate);
 
   # Encrypt data
-  TODO
+  my $data = ...;
+  $session->EncryptInit(
+      Crypt::PKCS11::CK_MECHANISM->new->set_mechanism(...),
+      $privateKey);
+  my $encryptedData = $session->Encrypt($data);
+  $encryptedData .= $session->EncryptFinal;
 
   # Decrypt data
-  TODO
+  $session->DecryptInit(
+      Crypt::PKCS11::CK_MECHANISM->new->set_mechanism(...),
+      $privateKey);
+  $data = $session->Decrypt($encryptedData);
+  $data .= $session->DecryptFinal;
 
   # Finalize the PKCS #11 module and unload the provider .so library
   $pkcs11->Finalize;
@@ -134,12 +143,16 @@ string.
 
 =head1 TESTING
 
-This module has been tested with the following PKCS #11 providers:
-- SoftHSM version 1
-- SoftHSM version 2
+This module has been tested with the following PKCS #11 providers and operating
+systems:
 
-This module has been tested on the following operating systems:
-- Ubuntu Server 12.04.4
+=over 4
+
+=item *
+
+Ubuntu Server 12.04 using SoftHSM version 1.3.5 and 2.0.0b1
+
+=back
 
 =head1 RETURN VALUES AND ERROR HANDLING
 
