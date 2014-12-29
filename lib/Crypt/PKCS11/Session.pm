@@ -334,7 +334,7 @@ sub FindObjects {
 }
 
 sub FindObjectsFinal {
-    my ($self, $maxObjectCount) = @_;
+    my ($self) = @_;
 
     unless (exists $self->{session}) {
         confess 'session is closed';
@@ -924,7 +924,7 @@ sub GetFunctionStatus {
     }
 
     $self->{rv} = $self->{pkcs11xs}->C_GetFunctionStatus($self->{session});
-    return $self->{rv} == CKR_OK ? 1 : undef;
+    return $self->{rv};
 }
 
 sub CancelFunction {
@@ -935,7 +935,7 @@ sub CancelFunction {
     }
 
     $self->{rv} = $self->{pkcs11xs}->C_CancelFunction($self->{session});
-    return $self->{rv} == CKR_OK ? 1 : undef;
+    return $self->{rv};
 }
 
 sub errno {
