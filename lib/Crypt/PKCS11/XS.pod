@@ -15,6 +15,14 @@ Crypt::PKCS11::XS - XS layer for PKCS #11 functions
 XS layer containing wrappers for all PKCS #11 functions that converts Perl data
 structures to/from PKCS #11 specific data structures.
 
+=head1 RETURN VALUES AND ERROR HANDLING
+
+This is the general return value and error handling for all methods unless
+otherwise stated.
+
+All functions will return a CKR value and the Perl XS intergration will croak if
+any argument are not the correct type.
+
 =head1 METHODS
 
 All methods that starts with C_ are in direct relation with the PKCS #11 v2.30
@@ -29,69 +37,140 @@ structure of the input and output arguments which uses Perl arrays and hashes
 
 =item $pkcs11xs = Crypt::PKCS11::XS->new
 
+Create a new `Crypt::PKCS11::XS` object.
+
 =item $str = Crypt::PKCS11::XS::rv2str ($rv)
+
+Return the textual name of a CKR return value.
 
 =over 4
 
 =item $rv
 
+A CKR value.
+
 =back
 
 =item $rv = Crypt::PKCS11::XS::setCreateMutex ($pCreateMutex)
+
+Set the create mutex callback, please see `MUTEX CALLBACKS`.
 
 =over 4
 
 =item $pCreateMutex
 
+A CODE reference for the create mutex callback.
+
 =back
 
 =item Crypt::PKCS11::XS::clearCreateMutex
 
+Clear the stored create mutex callback reference.
+
 =item $rv = Crypt::PKCS11::XS::setDestroyMutex ($pDestroyMutex)
+
+Set the destroy mutex callback, please see `MUTEX CALLBACKS`.
 
 =over 4
 
 =item $pDestroyMutex
 
+A CODE reference for the destroy mutex callback.
+
 =back
 
 =item Crypt::PKCS11::XS::clearDestroyMutex
 
+Clear the stored destroy mutex callback reference.
+
 =item $rv = Crypt::PKCS11::XS::setLockMutex ($pLockMutex)
+
+Set the lock mutex callback, please see `MUTEX CALLBACKS`.
 
 =over 4
 
 =item $pLockMutex
 
+A CODE reference for the lock mutex callback.
+
 =back
 
 =item Crypt::PKCS11::XS::clearLockMutex
 
+Clear the stored lock mutex callback reference.
+
 =item $rv = Crypt::PKCS11::XS::setUnlockMutex ($pUnlockMutex)
+
+Set the unlock mutex callback, please see `MUTEX CALLBACKS`.
 
 =over 4
 
 =item $pUnlockMutex
 
+A CODE reference for the unlock mutex callback.
+
 =back
 
 =item Crypt::PKCS11::XS::clearUnlockMutex
 
+Clear the stored unlock mutex callback reference.
+
 =item $rv = $pkcs11xs->load ($path)
+
+Load a PKCS #11 library.
 
 =over 4
 
 =item $path
 
+The path to a PKCS #11 dynamic loadable library.
+
 =back
 
 =item $rv = $pkcs11xs->unload
+
+Unload the PKCS #11 library.
 
 =item $rv = $pkcs11xs->C_Initialize ($pInitArgs)
 
 =over 4
 
 =item $pInitArgs
+
+A HASH reference with the fields listed below.
+
+NOTE: For all Mutex CODE references the global callback will be set, there is no
+support for individual callbacks per Crypt::PKCS11::XS object.
+
+All of the Mutex arguments needs to be set if any should be used.
+
+=over 4
+
+=item CreateMutex
+
+A CODE reference to a function to use for creating mutex objects. The global
+callback for CreateMutex will also be set.
+
+=item DestroyMutex
+
+A CODE reference to a function to use for destroying mutex objects. The global
+callback for DestroyMutex will also be set.
+
+=item LockMutex
+
+A CODE reference to a function to use for locking mutex objects. The global
+callback for LockMutex will also be set.
+
+=item UnlockMutex
+
+A CODE reference to a function to use for unlocking mutex objects. The global
+callback for UnlockMutex will also be set.
+
+=item flags
+
+A SCALAR.
+
+=back
 
 =back
 
@@ -103,6 +182,52 @@ structure of the input and output arguments which uses Perl arrays and hashes
 
 =item $pInfo
 
+A HASH reference that will get the following fields set:
+
+=item cryptokiVersion
+
+A HASH reference with the following fields:
+
+=over 4
+
+=item major
+
+A SCALAR.
+
+=item minor
+
+A SCALAR.
+
+=back
+
+=item manufacturerID
+
+A SCALAR.
+
+=item flags
+
+A SCALAR.
+
+=item libraryDescription
+
+A SCALAR.
+
+=item libraryVersion
+
+A HASH reference with the following fields:
+
+=over 4
+
+=item major
+
+A SCALAR.
+
+=item minor
+
+A SCALAR.
+
+=back
+
 =back
 
 =item $rv = $pkcs11xs->C_GetSlotList ($tokenPresent, $pSlotList)
@@ -111,7 +236,11 @@ structure of the input and output arguments which uses Perl arrays and hashes
 
 =item $tokenPresent
 
+A SCALAR.
+
 =item $pSlotList
+
+A ARRAY reference with the list of slotIDs as SCALARs.
 
 =back
 
@@ -121,7 +250,59 @@ structure of the input and output arguments which uses Perl arrays and hashes
 
 =item $slotID
 
+A SCALAR.
+
 =item $pInfo
+
+A HASH reference with the following fields:
+
+=over 4
+
+=item slotDescription
+
+A SCALAR.
+
+=item manufacturerID
+
+A SCALAR.
+
+=item flags
+
+A SCALAR.
+
+=item hardwareVersion
+
+A HASH reference with the following fields:
+
+=over 4
+
+=item major
+
+A SCALAR.
+
+=item minor
+
+A SCALAR.
+
+=back
+
+=item firmwareVersion
+
+A HASH reference with the following fields:
+
+=over 4
+
+=item major
+
+A SCALAR.
+
+=item minor
+
+A SCALAR.
+
+=back
+
+=back
 
 =back
 
@@ -131,7 +312,111 @@ structure of the input and output arguments which uses Perl arrays and hashes
 
 =item $slotID
 
+A SCALAR.
+
 =item $pInfo
+
+A HASH reference with the following fields:
+
+=over 4
+
+=item label
+
+A SCALAR.
+
+=item manufacturerID
+
+A SCALAR.
+
+=item model
+
+A SCALAR.
+
+=item serialNumber
+
+A SCALAR.
+
+=item flags
+
+A SCALAR.
+
+=item ulMaxSessionCount
+
+A SCALAR.
+
+=item ulSessionCount
+
+A SCALAR.
+
+=item ulMaxRwSessionCount
+
+A SCALAR.
+
+=item ulRwSessionCount
+
+A SCALAR.
+
+=item ulMaxPinLen
+
+A SCALAR.
+
+=item ulMinPinLen
+
+A SCALAR.
+
+=item ulTotalPublicMemory
+
+A SCALAR.
+
+=item ulFreePublicMemory
+
+A SCALAR.
+
+=item ulTotalPrivateMemory
+
+A SCALAR.
+
+=item ulFreePrivateMemory
+
+A SCALAR.
+
+=item hardwareVersion
+
+A HASH reference with the following fields:
+
+=over 4
+
+=item major
+
+A SCALAR.
+
+=item minor
+
+A SCALAR.
+
+=back
+
+=item firmwareVersion
+
+A HASH reference with the following fields:
+
+=over 4
+
+=item major
+
+A SCALAR.
+
+=item minor
+
+A SCALAR.
+
+=back
+
+=item utcTime
+
+A SCALAR.
+
+=back
 
 =back
 
@@ -853,6 +1138,14 @@ elsewhere.
 =back
 
 =back
+
+=head1 MUTEX CALLBACKS
+
+PKCS #11 supports setting callbacks for handling mutex and in the C library they
+can be set per loaded PKCS #11 library but there is no context pointer supplied
+to the C callback functions so there is no portable way to related to the
+relevant Perl callbacks and therefor all these callbacks are global. Setting
+them once will affect all loaded PKCS #11 libraries.
 
 =head1 NOTE
 
