@@ -20,6 +20,13 @@ structures to/from PKCS #11 specific data structures.
 This is the general return value and error handling for all methods unless
 otherwise stated.
 
+Return values will be given in output arguments and if the output is an ARRAY or
+HASH reference then they need to be set prior of using the call.
+
+  my $output_hash = {};
+  $pkcs11xs->C_Call($input_arg1, $input_arg2, $output_hash);
+  print $output_hash->{output_field};
+
 All functions will return a CKR value and the Perl XS intergration will croak if
 any argument are not the correct type.
 
@@ -182,7 +189,9 @@ A SCALAR.
 
 =item $pInfo
 
-A HASH reference that will get the following fields set:
+A HASH reference output argument that will get the following fields set:
+
+=over 4
 
 =item cryptokiVersion
 
@@ -230,6 +239,8 @@ A SCALAR.
 
 =back
 
+=back
+
 =item $rv = $pkcs11xs->C_GetSlotList ($tokenPresent, $pSlotList)
 
 =over 4
@@ -240,7 +251,7 @@ A SCALAR.
 
 =item $pSlotList
 
-A ARRAY reference with the list of slotIDs as SCALARs.
+An ARRAY reference output argument that will get a list of slotIDs as SCALARs.
 
 =back
 
@@ -254,7 +265,7 @@ A SCALAR.
 
 =item $pInfo
 
-A HASH reference with the following fields:
+A HASH reference output argument that will get the following fields set:
 
 =over 4
 
@@ -316,7 +327,7 @@ A SCALAR.
 
 =item $pInfo
 
-A HASH reference with the following fields:
+A HASH reference output argument that will get the following fields set:
 
 =over 4
 
@@ -426,7 +437,11 @@ A SCALAR.
 
 =item $slotID
 
+A SCALAR.
+
 =item $pMechanismList
+
+An ARRAY reference output argument that will get a list of mechanisms as SCALARs.
 
 =back
 
@@ -436,9 +451,31 @@ A SCALAR.
 
 =item $slotID
 
+A SCALAR.
+
 =item $type
 
+A SCALAR.
+
 =item $pInfo
+
+A HASH reference output argument that will get the following fields set:
+
+=over 4
+
+=item ulMinKeySize
+
+A SCALAR.
+
+=item ulMaxKeySize
+
+A SCALAR.
+
+=item flags
+
+A SCALAR.
+
+=back
 
 =back
 
@@ -448,9 +485,15 @@ A SCALAR.
 
 =item $slotID
 
+A SCALAR.
+
 =item $pPin
 
+A SCALAR.
+
 =item $pLabel
+
+A SCALAR.
 
 =back
 
@@ -460,7 +503,11 @@ A SCALAR.
 
 =item $hSession
 
+A SCALAR.
+
 =item $pPin
+
+A SCALAR.
 
 =back
 
@@ -470,9 +517,15 @@ A SCALAR.
 
 =item $hSession
 
+A SCALAR.
+
 =item $pOldPin
 
+A SCALAR.
+
 =item $pNewPin
+
+A SCALAR.
 
 =back
 
@@ -482,11 +535,19 @@ A SCALAR.
 
 =item $slotID
 
+A SCALAR.
+
 =item $flags
+
+A SCALAR.
 
 =item $Notify
 
+A CODE reference.
+
 =item $phSession
+
+A SCALAR output argument.
 
 =back
 
@@ -496,6 +557,8 @@ A SCALAR.
 
 =item $hSession
 
+A SCALAR.
+
 =back
 
 =item $rv = $pkcs11xs->C_CloseAllSessions ($slotID)
@@ -503,6 +566,8 @@ A SCALAR.
 =over 4
 
 =item $slotID
+
+A SCALAR.
 
 =back
 
@@ -512,7 +577,31 @@ A SCALAR.
 
 =item $hSession
 
+A SCALAR.
+
 =item $pInfo
+
+A HASH reference output argument that will get the following fields set:
+
+=over 4
+
+=item slotID
+
+A SCALAR.
+
+=item state
+
+A SCALAR.
+
+=item flags
+
+A SCALAR.
+
+=item ulDeviceError
+
+A SCALAR.
+
+=back
 
 =back
 
@@ -522,7 +611,11 @@ A SCALAR.
 
 =item $hSession
 
+A SCALAR.
+
 =item $pOperationState
+
+A SCALAR output argument.
 
 =back
 
@@ -532,11 +625,19 @@ A SCALAR.
 
 =item $hSession
 
+A SCALAR.
+
 =item $pOperationState
+
+A SCALAR.
 
 =item $hEncryptionKey
 
+A SCALAR.
+
 =item $hAuthenticationKey
+
+A SCALAR.
 
 =back
 
@@ -546,9 +647,15 @@ A SCALAR.
 
 =item $hSession
 
+A SCALAR.
+
 =item $userType
 
+A SCALAR.
+
 =item $pPin
+
+A SCALAR.
 
 =back
 
@@ -558,6 +665,8 @@ A SCALAR.
 
 =item $hSession
 
+A SCALAR.
+
 =back
 
 =item $rv = $pkcs11xs->C_CreateObject ($hSession, $pTemplate, $phObject)
@@ -566,9 +675,15 @@ A SCALAR.
 
 =item $hSession
 
+A SCALAR.
+
 =item $pTemplate
 
+An ARRAY reference, see `TEMPLATE ARGUMENT`.
+
 =item $phObject
+
+A SCALAR output argument.
 
 =back
 
@@ -578,11 +693,19 @@ A SCALAR.
 
 =item $hSession
 
+A SCALAR.
+
 =item $hObject
+
+A SCALAR.
 
 =item $pTemplate
 
+An ARRAY reference, see `TEMPLATE ARGUMENT`.
+
 =item $phNewObject
+
+A SCALAR output argument.
 
 =back
 
@@ -592,7 +715,11 @@ A SCALAR.
 
 =item $hSession
 
+A SCALAR.
+
 =item $hObject
+
+A SCALAR.
 
 =back
 
@@ -602,9 +729,15 @@ A SCALAR.
 
 =item $hSession
 
+A SCALAR.
+
 =item $hObject
 
+A SCALAR.
+
 =item $pulSize
+
+A SCALAR output argument.
 
 =back
 
@@ -614,9 +747,16 @@ A SCALAR.
 
 =item $hSession
 
+A SCALAR.
+
 =item $hObject
 
+A SCALAR.
+
 =item $pTemplate
+
+An ARRAY reference output argument, see `TEMPLATE ARGUMENT`. The attributes you
+wish to get must be set in the template before the call.
 
 =back
 
@@ -626,9 +766,15 @@ A SCALAR.
 
 =item $hSession
 
+A SCALAR.
+
 =item $hObject
 
+A SCALAR.
+
 =item $pTemplate
+
+An ARRAY reference, see `TEMPLATE ARGUMENT`.
 
 =back
 
@@ -638,7 +784,11 @@ A SCALAR.
 
 =item $hSession
 
+A SCALAR.
+
 =item $pTemplate
+
+An ARRAY reference, see `TEMPLATE ARGUMENT`.
 
 =back
 
@@ -648,9 +798,15 @@ A SCALAR.
 
 =item $hSession
 
+A SCALAR.
+
 =item $phObject
 
+An ARRAY reference output argument that will get a list of SCALARs.
+
 =item $ulMaxObjectCount
+
+A SCALAR.
 
 =back
 
@@ -660,6 +816,8 @@ A SCALAR.
 
 =item $hSession
 
+A SCALAR.
+
 =back
 
 =item $rv = $pkcs11xs->C_EncryptInit ($hSession, $pMechanism, $hKey)
@@ -668,9 +826,15 @@ A SCALAR.
 
 =item $hSession
 
+A SCALAR.
+
 =item $pMechanism
 
+A HASH reference, see `MECHANISM ARGUMENT`.
+
 =item $hKey
+
+A SCALAR.
 
 =back
 
@@ -680,9 +844,15 @@ A SCALAR.
 
 =item $hSession
 
+A SCALAR.
+
 =item $pData
 
+A SCALAR.
+
 =item $pEncryptedData
+
+A SCALAR output argument.
 
 =back
 
@@ -692,9 +862,15 @@ A SCALAR.
 
 =item $hSession
 
+A SCALAR.
+
 =item $pPart
 
+A SCALAR.
+
 =item $pEncryptedPart
+
+A SCALAR output argument.
 
 =back
 
@@ -704,7 +880,11 @@ A SCALAR.
 
 =item $hSession
 
+A SCALAR.
+
 =item $pLastEncryptedPart
+
+A SCALAR output argument.
 
 =back
 
@@ -714,9 +894,15 @@ A SCALAR.
 
 =item $hSession
 
+A SCALAR.
+
 =item $pMechanism
 
+A HASH reference, see `MECHANISM ARGUMENT`.
+
 =item $hKey
+
+A SCALAR.
 
 =back
 
@@ -726,9 +912,15 @@ A SCALAR.
 
 =item $hSession
 
+A SCALAR.
+
 =item $pEncryptedData
 
+A SCALAR.
+
 =item $pData
+
+A SCALAR output argument.
 
 =back
 
@@ -738,9 +930,15 @@ A SCALAR.
 
 =item $hSession
 
+A SCALAR.
+
 =item $pEncryptedPart
 
+A SCALAR.
+
 =item $pPart
+
+A SCALAR output argument.
 
 =back
 
@@ -750,7 +948,11 @@ A SCALAR.
 
 =item $hSession
 
+A SCALAR.
+
 =item $pLastPart
+
+A SCALAR output argument.
 
 =back
 
@@ -760,7 +962,11 @@ A SCALAR.
 
 =item $hSession
 
+A SCALAR.
+
 =item $pMechanism
+
+A HASH reference, see `MECHANISM ARGUMENT`.
 
 =back
 
@@ -770,9 +976,15 @@ A SCALAR.
 
 =item $hSession
 
+A SCALAR.
+
 =item $pData
 
+A SCALAR.
+
 =item $pDigest
+
+A SCALAR output argument.
 
 =back
 
@@ -782,7 +994,11 @@ A SCALAR.
 
 =item $hSession
 
+A SCALAR.
+
 =item $pPart
+
+A SCALAR.
 
 =back
 
@@ -792,7 +1008,11 @@ A SCALAR.
 
 =item $hSession
 
+A SCALAR.
+
 =item $hKey
+
+A SCALAR.
 
 =back
 
@@ -802,7 +1022,11 @@ A SCALAR.
 
 =item $hSession
 
+A SCALAR.
+
 =item $pDigest
+
+A SCALAR output argument.
 
 =back
 
@@ -812,9 +1036,15 @@ A SCALAR.
 
 =item $hSession
 
+A SCALAR.
+
 =item $pMechanism
 
+A HASH reference, see `MECHANISM ARGUMENT`.
+
 =item $hKey
+
+A SCALAR.
 
 =back
 
@@ -824,9 +1054,15 @@ A SCALAR.
 
 =item $hSession
 
+A SCALAR.
+
 =item $pData
 
+A SCALAR.
+
 =item $pSignature
+
+A SCALAR output argument.
 
 =back
 
@@ -836,7 +1072,11 @@ A SCALAR.
 
 =item $hSession
 
+A SCALAR.
+
 =item $pPart
+
+A SCALAR.
 
 =back
 
@@ -846,7 +1086,11 @@ A SCALAR.
 
 =item $hSession
 
+A SCALAR.
+
 =item $pSignature
+
+A SCALAR output argument.
 
 =back
 
@@ -856,9 +1100,15 @@ A SCALAR.
 
 =item $hSession
 
+A SCALAR.
+
 =item $pMechanism
 
+A HASH reference, see `MECHANISM ARGUMENT`.
+
 =item $hKey
+
+A SCALAR.
 
 =back
 
@@ -868,9 +1118,15 @@ A SCALAR.
 
 =item $hSession
 
+A SCALAR.
+
 =item $pData
 
+A SCALAR.
+
 =item $pSignature
+
+A SCALAR output argument.
 
 =back
 
@@ -880,9 +1136,15 @@ A SCALAR.
 
 =item $hSession
 
+A SCALAR.
+
 =item $pMechanism
 
+A HASH reference, see `MECHANISM ARGUMENT`.
+
 =item $hKey
+
+A SCALAR.
 
 =back
 
@@ -892,9 +1154,15 @@ A SCALAR.
 
 =item $hSession
 
+A SCALAR.
+
 =item $pData
 
+A SCALAR.
+
 =item $pSignature
+
+A SCALAR.
 
 =back
 
@@ -904,7 +1172,11 @@ A SCALAR.
 
 =item $hSession
 
+A SCALAR.
+
 =item $pPart
+
+A SCALAR.
 
 =back
 
@@ -914,7 +1186,11 @@ A SCALAR.
 
 =item $hSession
 
+A SCALAR.
+
 =item $pSignature
+
+A SCALAR.
 
 =back
 
@@ -924,9 +1200,15 @@ A SCALAR.
 
 =item $hSession
 
+A SCALAR.
+
 =item $pMechanism
 
+A HASH reference, see `MECHANISM ARGUMENT`.
+
 =item $hKey
+
+A SCALAR.
 
 =back
 
@@ -936,9 +1218,15 @@ A SCALAR.
 
 =item $hSession
 
+A SCALAR.
+
 =item $pSignature
 
+A SCALAR.
+
 =item $pData
+
+A SCALAR output argument.
 
 =back
 
@@ -948,9 +1236,15 @@ A SCALAR.
 
 =item $hSession
 
+A SCALAR.
+
 =item $pPart
 
+A SCALAR.
+
 =item $pEncryptedPart
+
+A SCALAR output argument.
 
 =back
 
@@ -960,9 +1254,15 @@ A SCALAR.
 
 =item $hSession
 
+A SCALAR.
+
 =item $pEncryptedPart
 
+A SCALAR.
+
 =item $pPart
+
+A SCALAR output argument.
 
 =back
 
@@ -972,9 +1272,15 @@ A SCALAR.
 
 =item $hSession
 
+A SCALAR.
+
 =item $pPart
 
+A SCALAR.
+
 =item $pEncryptedPart
+
+A SCALAR output argument.
 
 =back
 
@@ -984,9 +1290,15 @@ A SCALAR.
 
 =item $hSession
 
+A SCALAR.
+
 =item $pEncryptedPart
 
+A SCALAR.
+
 =item $pPart
+
+A SCALAR output argument.
 
 =back
 
@@ -996,11 +1308,19 @@ A SCALAR.
 
 =item $hSession
 
+A SCALAR.
+
 =item $pMechanism
+
+A HASH reference, see `MECHANISM ARGUMENT`.
 
 =item $pTemplate
 
+An ARRAY reference, see `TEMPLATE ARGUMENT`.
+
 =item $phKey
+
+A SCALAR output argument.
 
 =back
 
@@ -1010,15 +1330,27 @@ A SCALAR.
 
 =item $hSession
 
+A SCALAR.
+
 =item $pMechanism
+
+A HASH reference, see `MECHANISM ARGUMENT`.
 
 =item $pPublicKeyTemplate
 
+An ARRAY reference, see `TEMPLATE ARGUMENT`.
+
 =item $pPrivateKeyTemplate
+
+An ARRAY reference, see `TEMPLATE ARGUMENT`.
 
 =item $phPublicKey
 
+A SCALAR output argument.
+
 =item $phPrivateKey
+
+A SCALAR output argument.
 
 =back
 
@@ -1028,13 +1360,23 @@ A SCALAR.
 
 =item $hSession
 
+A SCALAR.
+
 =item $pMechanism
+
+A HASH reference, see `MECHANISM ARGUMENT`.
 
 =item $hWrappingKey
 
+A SCALAR.
+
 =item $hKey
 
+A SCALAR.
+
 =item $pWrappedKey
+
+A SCALAR output argument.
 
 =back
 
@@ -1044,15 +1386,27 @@ A SCALAR.
 
 =item $hSession
 
+A SCALAR.
+
 =item $pMechanism
+
+A HASH reference, see `MECHANISM ARGUMENT`.
 
 =item $hUnwrappingKey
 
+A SCALAR.
+
 =item $pWrappedKey
+
+A SCALAR.
 
 =item $pTemplate
 
+An ARRAY reference, see `TEMPLATE ARGUMENT`.
+
 =item $phKey
+
+A SCALAR output argument.
 
 =back
 
@@ -1062,13 +1416,23 @@ A SCALAR.
 
 =item $hSession
 
+A SCALAR.
+
 =item $pMechanism
+
+A HASH reference, see `MECHANISM ARGUMENT`.
 
 =item $hBaseKey
 
+A SCALAR.
+
 =item $pTemplate
 
+An ARRAY reference, see `TEMPLATE ARGUMENT`.
+
 =item $phKey
+
+A SCALAR output argument.
 
 =back
 
@@ -1078,7 +1442,11 @@ A SCALAR.
 
 =item $hSession
 
+A SCALAR.
+
 =item $pSeed
+
+A SCALAR.
 
 =back
 
@@ -1088,9 +1456,15 @@ A SCALAR.
 
 =item $hSession
 
+A SCALAR.
+
 =item $RandomData
 
+A SCALAR output argument.
+
 =item $ulRandomLen
+
+A SCALAR.
 
 =back
 
@@ -1100,6 +1474,8 @@ A SCALAR.
 
 =item $hSession
 
+A SCALAR.
+
 =back
 
 =item $rv = $pkcs11xs->C_CancelFunction ($hSession)
@@ -1107,6 +1483,8 @@ A SCALAR.
 =over 4
 
 =item $hSession
+
+A SCALAR.
 
 =back
 
@@ -1116,7 +1494,11 @@ A SCALAR.
 
 =item $flags
 
+A SCALAR.
+
 =item $pSlot
+
+A SCALAR output argument.
 
 =back
 
@@ -1131,11 +1513,50 @@ elsewhere.
 
 =item Crypt::PKCS11::XS::SvUOK ($sv)
 
+Returns true (1) if the given SV is considered an unsigned number by Perl
+otherwise return false (0/undef).
+
 =over 4
 
 =item $sv
 
+A SV to check.
+
 =back
+
+=back
+
+=head1 MECHANISM ARGUMENT
+
+A HASH reference that represents a CK_MECHANISM struct that has the following
+fields:
+
+=over 4
+
+=item mechanism
+
+A SCALAR.
+
+=item pParameter
+
+A SCALAR.
+
+=back
+
+=head1 TEMPLATE ARGUMENT
+
+An ARRAY reference that contains HASH references which represents CK_ATTRIBUTE
+structs and the HASH reference has the following fields:
+
+=over 4
+
+=item type
+
+A SCALAR.
+
+=item pValue
+
+A SCALAR.
 
 =back
 
