@@ -790,7 +790,7 @@ OUTPUT:
 
 #ifdef TEST_DEVEL_COVER
 
-void
+int
 crypt_pkcs11_xs_test_devel_cover(object)
     Crypt::PKCS11::XS* object
 PROTOTYPE: DISABLE

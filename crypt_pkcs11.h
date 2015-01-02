@@ -127,5 +127,5 @@ CK_RV crypt_pkcs11_xs_C_GetFunctionStatus(Crypt__PKCS11__XS* object, CK_SESSION_
 CK_RV crypt_pkcs11_xs_C_CancelFunction(Crypt__PKCS11__XS* object, CK_SESSION_HANDLE hSession);
 CK_RV crypt_pkcs11_xs_C_WaitForSlotEvent(Crypt__PKCS11__XS* object, CK_FLAGS flags, SV* pSlot);
 #ifdef TEST_DEVEL_COVER
-void crypt_pkcs11_xs_test_devel_cover(Crypt__PKCS11__XS* object);
+int crypt_pkcs11_xs_test_devel_cover(Crypt__PKCS11__XS* object);
 #endif
