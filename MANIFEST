@@ -49,6 +49,7 @@ crypt_pkcs11_struct.h
 typemap.struct
 t/00-load.t
 t/boilerplate.t
+t/cover.t
 t/manifest.t
 t/oo.t
 t/pkcs11.t

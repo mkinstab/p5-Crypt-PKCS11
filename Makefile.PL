@@ -40,6 +40,10 @@ if (have_inc('dlfcn.h')) {
     push(@DEFINES, '-DHAVE_DLFCN_H=1');
 }
 
+if ($ENV{TEST_DEVEL_COVER}) {
+    push(@DEFINES, '-DTEST_DEVEL_COVER=1');
+}
+
 WriteMakefile(
     NAME              => 'Crypt::PKCS11',
     VERSION_FROM      => 'lib/Crypt/PKCS11.pm', # finds $VERSION

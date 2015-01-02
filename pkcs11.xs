@@ -788,6 +788,15 @@ OUTPUT:
     RETVAL
     pSlot
 
+#ifdef TEST_DEVEL_COVER
+
+void
+crypt_pkcs11_xs_test_devel_cover(object)
+    Crypt::PKCS11::XS* object
+PROTOTYPE: DISABLE
+
+#endif
+
 MODULE = Crypt::PKCS11  PACKAGE = Crypt::PKCS11  PREFIX = crypt_pkcs11_
 
 PROTOTYPES: ENABLE

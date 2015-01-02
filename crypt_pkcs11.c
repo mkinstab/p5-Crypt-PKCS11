@@ -564,6 +564,10 @@ void crypt_pkcs11_xs_clearUnlockMutex(void) {
     }
 }
 
+#ifdef TEST_DEVEL_COVER
+static CK_RV __test_C_GetFunctionList(CK_FUNCTION_LIST_PTR_PTR ppFunctionList);
+#endif
+
 CK_RV crypt_pkcs11_xs_load(Crypt__PKCS11__XS* object, const char* path) {
     CK_C_GetFunctionList pGetFunctionList = NULL_PTR;
     CK_RV rv;
@@ -578,12 +582,21 @@ CK_RV crypt_pkcs11_xs_load(Crypt__PKCS11__XS* object, const char* path) {
         return CKR_GENERAL_ERROR;
     }
 
+#ifdef TEST_DEVEL_COVER
+    if (path && !strcmp(path, "TEST_DEVEL_COVER")) {
+        pGetFunctionList = &__test_C_GetFunctionList;
+    }
+    else {
+#endif
 #ifdef HAVE_DLFCN_H
     if (object->handle = dlopen(path, RTLD_NOW | RTLD_LOCAL)) {
         pGetFunctionList = (CK_C_GetFunctionList)dlsym(object->handle, "C_GetFunctionList");
     }
 #else
     return CKR_FUNCTION_FAILED;
+#endif
+#ifdef TEST_DEVEL_COVER
+    }
 #endif
 
     if (pGetFunctionList) {
@@ -3504,3 +3517,653 @@ CK_RV crypt_pkcs11_xs_C_WaitForSlotEvent(Crypt__PKCS11__XS* object, CK_FLAGS fla
 
     return CKR_OK;
 }
+
+#ifdef TEST_DEVEL_COVER
+void crypt_pkcs11_xs_test_devel_cover(Crypt__PKCS11__XS* object) {
+    struct crypt_pkcs11_xs_object object_no_function_list = {
+        0,
+        0,
+        {
+            { 0, 0 },
+            "                                ",
+            0,
+            "                                ",
+            { 0, 0 }
+        }
+    };
+    CK_FUNCTION_LIST empty_function_list = {
+        {
+            2,
+            30
+        },
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0
+    };
+    struct crypt_pkcs11_xs_object object_empty_function_list = {
+        0,
+        &empty_function_list,
+        {
+            { 0, 0 },
+            "                                ",
+            0,
+            "                                ",
+            { 0, 0 }
+        }
+    };
+    crypt_pkcs11_xs_C_Initialize(0, 0);
+    crypt_pkcs11_xs_C_Initialize(&object_no_function_list, 0);
+    crypt_pkcs11_xs_C_Initialize(&object_empty_function_list, 0);
+    crypt_pkcs11_xs_C_Initialize(object, 0);
+    crypt_pkcs11_xs_C_Finalize(0);
+    crypt_pkcs11_xs_C_Finalize(&object_no_function_list);
+    crypt_pkcs11_xs_C_Finalize(&object_empty_function_list);
+    crypt_pkcs11_xs_C_Finalize(object);
+    crypt_pkcs11_xs_C_GetInfo(0, 0);
+    crypt_pkcs11_xs_C_GetInfo(&object_no_function_list, 0);
+    crypt_pkcs11_xs_C_GetInfo(&object_empty_function_list, 0);
+    crypt_pkcs11_xs_C_GetInfo(object, 0);
+    crypt_pkcs11_xs_C_GetSlotList(0, 0, 0);
+    crypt_pkcs11_xs_C_GetSlotList(&object_no_function_list, 0, 0);
+    crypt_pkcs11_xs_C_GetSlotList(&object_empty_function_list, 0, 0);
+    crypt_pkcs11_xs_C_GetSlotList(object, 0, 0);
+    crypt_pkcs11_xs_C_GetSlotInfo(0, 0, 0);
+    crypt_pkcs11_xs_C_GetSlotInfo(&object_no_function_list, 0, 0);
+    crypt_pkcs11_xs_C_GetSlotInfo(&object_empty_function_list, 0, 0);
+    crypt_pkcs11_xs_C_GetSlotInfo(object, 0, 0);
+    crypt_pkcs11_xs_C_GetTokenInfo(0, 0, 0);
+    crypt_pkcs11_xs_C_GetTokenInfo(&object_no_function_list, 0, 0);
+    crypt_pkcs11_xs_C_GetTokenInfo(&object_empty_function_list, 0, 0);
+    crypt_pkcs11_xs_C_GetTokenInfo(object, 0, 0);
+    crypt_pkcs11_xs_C_GetMechanismList(0, 0, 0);
+    crypt_pkcs11_xs_C_GetMechanismList(&object_no_function_list, 0, 0);
+    crypt_pkcs11_xs_C_GetMechanismList(&object_empty_function_list, 0, 0);
+    crypt_pkcs11_xs_C_GetMechanismList(object, 0, 0);
+    crypt_pkcs11_xs_C_GetMechanismInfo(0, 0, 0, 0);
+    crypt_pkcs11_xs_C_GetMechanismInfo(&object_no_function_list, 0, 0, 0);
+    crypt_pkcs11_xs_C_GetMechanismInfo(&object_empty_function_list, 0, 0, 0);
+    crypt_pkcs11_xs_C_GetMechanismInfo(object, 0, 0, 0);
+    crypt_pkcs11_xs_C_InitToken(0, 0, 0, 0);
+    crypt_pkcs11_xs_C_InitToken(&object_no_function_list, 0, 0, 0);
+    crypt_pkcs11_xs_C_InitToken(&object_empty_function_list, 0, 0, 0);
+    crypt_pkcs11_xs_C_InitToken(object, 0, 0, 0);
+    crypt_pkcs11_xs_C_InitPIN(0, 0, 0);
+    crypt_pkcs11_xs_C_InitPIN(&object_no_function_list, 0, 0);
+    crypt_pkcs11_xs_C_InitPIN(&object_empty_function_list, 0, 0);
+    crypt_pkcs11_xs_C_InitPIN(object, 0, 0);
+    crypt_pkcs11_xs_C_SetPIN(0, 0, 0, 0);
+    crypt_pkcs11_xs_C_SetPIN(&object_no_function_list, 0, 0, 0);
+    crypt_pkcs11_xs_C_SetPIN(&object_empty_function_list, 0, 0, 0);
+    crypt_pkcs11_xs_C_SetPIN(object, 0, 0, 0);
+    crypt_pkcs11_xs_C_OpenSession(0, 0, 0, 0, 0);
+    crypt_pkcs11_xs_C_OpenSession(&object_no_function_list, 0, 0, 0, 0);
+    crypt_pkcs11_xs_C_OpenSession(&object_empty_function_list, 0, 0, 0, 0);
+    crypt_pkcs11_xs_C_OpenSession(object, 0, 0, 0, 0);
+    crypt_pkcs11_xs_C_CloseSession(0, 0);
+    crypt_pkcs11_xs_C_CloseSession(&object_no_function_list, 0);
+    crypt_pkcs11_xs_C_CloseSession(&object_empty_function_list, 0);
+    crypt_pkcs11_xs_C_CloseSession(object, 0);
+    crypt_pkcs11_xs_C_CloseAllSessions(0, 0);
+    crypt_pkcs11_xs_C_CloseAllSessions(&object_no_function_list, 0);
+    crypt_pkcs11_xs_C_CloseAllSessions(&object_empty_function_list, 0);
+    crypt_pkcs11_xs_C_CloseAllSessions(object, 0);
+    crypt_pkcs11_xs_C_GetSessionInfo(0, 0, 0);
+    crypt_pkcs11_xs_C_GetSessionInfo(&object_no_function_list, 0, 0);
+    crypt_pkcs11_xs_C_GetSessionInfo(&object_empty_function_list, 0, 0);
+    crypt_pkcs11_xs_C_GetSessionInfo(object, 0, 0);
+    crypt_pkcs11_xs_C_GetOperationState(0, 0, 0);
+    crypt_pkcs11_xs_C_GetOperationState(&object_no_function_list, 0, 0);
+    crypt_pkcs11_xs_C_GetOperationState(&object_empty_function_list, 0, 0);
+    crypt_pkcs11_xs_C_GetOperationState(object, 0, 0);
+    crypt_pkcs11_xs_C_SetOperationState(0, 0, 0, 0, 0);
+    crypt_pkcs11_xs_C_SetOperationState(&object_no_function_list, 0, 0, 0, 0);
+    crypt_pkcs11_xs_C_SetOperationState(&object_empty_function_list, 0, 0, 0, 0);
+    crypt_pkcs11_xs_C_SetOperationState(object, 0, 0, 0, 0);
+    crypt_pkcs11_xs_C_Login(0, 0, 0, 0);
+    crypt_pkcs11_xs_C_Login(&object_no_function_list, 0, 0, 0);
+    crypt_pkcs11_xs_C_Login(&object_empty_function_list, 0, 0, 0);
+    crypt_pkcs11_xs_C_Login(object, 0, 0, 0);
+    crypt_pkcs11_xs_C_Logout(0, 0);
+    crypt_pkcs11_xs_C_Logout(&object_no_function_list, 0);
+    crypt_pkcs11_xs_C_Logout(&object_empty_function_list, 0);
+    crypt_pkcs11_xs_C_Logout(object, 0);
+    crypt_pkcs11_xs_C_CreateObject(0, 0, 0, 0);
+    crypt_pkcs11_xs_C_CreateObject(&object_no_function_list, 0, 0, 0);
+    crypt_pkcs11_xs_C_CreateObject(&object_empty_function_list, 0, 0, 0);
+    crypt_pkcs11_xs_C_CreateObject(object, 0, 0, 0);
+    crypt_pkcs11_xs_C_CopyObject(0, 0, 0, 0, 0);
+    crypt_pkcs11_xs_C_CopyObject(&object_no_function_list, 0, 0, 0, 0);
+    crypt_pkcs11_xs_C_CopyObject(&object_empty_function_list, 0, 0, 0, 0);
+    crypt_pkcs11_xs_C_CopyObject(object, 0, 0, 0, 0);
+    crypt_pkcs11_xs_C_DestroyObject(0, 0, 0);
+    crypt_pkcs11_xs_C_DestroyObject(&object_no_function_list, 0, 0);
+    crypt_pkcs11_xs_C_DestroyObject(&object_empty_function_list, 0, 0);
+    crypt_pkcs11_xs_C_DestroyObject(object, 0, 0);
+    crypt_pkcs11_xs_C_GetObjectSize(0, 0, 0, 0);
+    crypt_pkcs11_xs_C_GetObjectSize(&object_no_function_list, 0, 0, 0);
+    crypt_pkcs11_xs_C_GetObjectSize(&object_empty_function_list, 0, 0, 0);
+    crypt_pkcs11_xs_C_GetObjectSize(object, 0, 0, 0);
+    crypt_pkcs11_xs_C_GetAttributeValue(0, 0, 0, 0);
+    crypt_pkcs11_xs_C_GetAttributeValue(&object_no_function_list, 0, 0, 0);
+    crypt_pkcs11_xs_C_GetAttributeValue(&object_empty_function_list, 0, 0, 0);
+    crypt_pkcs11_xs_C_GetAttributeValue(object, 0, 0, 0);
+    crypt_pkcs11_xs_C_SetAttributeValue(0, 0, 0, 0);
+    crypt_pkcs11_xs_C_SetAttributeValue(&object_no_function_list, 0, 0, 0);
+    crypt_pkcs11_xs_C_SetAttributeValue(&object_empty_function_list, 0, 0, 0);
+    crypt_pkcs11_xs_C_SetAttributeValue(object, 0, 0, 0);
+    crypt_pkcs11_xs_C_FindObjectsInit(0, 0, 0);
+    crypt_pkcs11_xs_C_FindObjectsInit(&object_no_function_list, 0, 0);
+    crypt_pkcs11_xs_C_FindObjectsInit(&object_empty_function_list, 0, 0);
+    crypt_pkcs11_xs_C_FindObjectsInit(object, 0, 0);
+    crypt_pkcs11_xs_C_FindObjects(0, 0, 0, 0);
+    crypt_pkcs11_xs_C_FindObjects(&object_no_function_list, 0, 0, 0);
+    crypt_pkcs11_xs_C_FindObjects(&object_empty_function_list, 0, 0, 0);
+    crypt_pkcs11_xs_C_FindObjects(object, 0, 0, 0);
+    crypt_pkcs11_xs_C_FindObjectsFinal(0, 0);
+    crypt_pkcs11_xs_C_FindObjectsFinal(&object_no_function_list, 0);
+    crypt_pkcs11_xs_C_FindObjectsFinal(&object_empty_function_list, 0);
+    crypt_pkcs11_xs_C_FindObjectsFinal(object, 0);
+    crypt_pkcs11_xs_C_EncryptInit(0, 0, 0, 0);
+    crypt_pkcs11_xs_C_EncryptInit(&object_no_function_list, 0, 0, 0);
+    crypt_pkcs11_xs_C_EncryptInit(&object_empty_function_list, 0, 0, 0);
+    crypt_pkcs11_xs_C_EncryptInit(object, 0, 0, 0);
+    crypt_pkcs11_xs_C_Encrypt(0, 0, 0, 0);
+    crypt_pkcs11_xs_C_Encrypt(&object_no_function_list, 0, 0, 0);
+    crypt_pkcs11_xs_C_Encrypt(&object_empty_function_list, 0, 0, 0);
+    crypt_pkcs11_xs_C_Encrypt(object, 0, 0, 0);
+    crypt_pkcs11_xs_C_EncryptUpdate(0, 0, 0, 0);
+    crypt_pkcs11_xs_C_EncryptUpdate(&object_no_function_list, 0, 0, 0);
+    crypt_pkcs11_xs_C_EncryptUpdate(&object_empty_function_list, 0, 0, 0);
+    crypt_pkcs11_xs_C_EncryptUpdate(object, 0, 0, 0);
+    crypt_pkcs11_xs_C_EncryptFinal(0, 0, 0);
+    crypt_pkcs11_xs_C_EncryptFinal(&object_no_function_list, 0, 0);
+    crypt_pkcs11_xs_C_EncryptFinal(&object_empty_function_list, 0, 0);
+    crypt_pkcs11_xs_C_EncryptFinal(object, 0, 0);
+    crypt_pkcs11_xs_C_DecryptInit(0, 0, 0, 0);
+    crypt_pkcs11_xs_C_DecryptInit(&object_no_function_list, 0, 0, 0);
+    crypt_pkcs11_xs_C_DecryptInit(&object_empty_function_list, 0, 0, 0);
+    crypt_pkcs11_xs_C_DecryptInit(object, 0, 0, 0);
+    crypt_pkcs11_xs_C_Decrypt(0, 0, 0, 0);
+    crypt_pkcs11_xs_C_Decrypt(&object_no_function_list, 0, 0, 0);
+    crypt_pkcs11_xs_C_Decrypt(&object_empty_function_list, 0, 0, 0);
+    crypt_pkcs11_xs_C_Decrypt(object, 0, 0, 0);
+    crypt_pkcs11_xs_C_DecryptUpdate(0, 0, 0, 0);
+    crypt_pkcs11_xs_C_DecryptUpdate(&object_no_function_list, 0, 0, 0);
+    crypt_pkcs11_xs_C_DecryptUpdate(&object_empty_function_list, 0, 0, 0);
+    crypt_pkcs11_xs_C_DecryptUpdate(object, 0, 0, 0);
+    crypt_pkcs11_xs_C_DecryptFinal(0, 0, 0);
+    crypt_pkcs11_xs_C_DecryptFinal(&object_no_function_list, 0, 0);
+    crypt_pkcs11_xs_C_DecryptFinal(&object_empty_function_list, 0, 0);
+    crypt_pkcs11_xs_C_DecryptFinal(object, 0, 0);
+    crypt_pkcs11_xs_C_DigestInit(0, 0, 0);
+    crypt_pkcs11_xs_C_DigestInit(&object_no_function_list, 0, 0);
+    crypt_pkcs11_xs_C_DigestInit(&object_empty_function_list, 0, 0);
+    crypt_pkcs11_xs_C_DigestInit(object, 0, 0);
+    crypt_pkcs11_xs_C_Digest(0, 0, 0, 0);
+    crypt_pkcs11_xs_C_Digest(&object_no_function_list, 0, 0, 0);
+    crypt_pkcs11_xs_C_Digest(&object_empty_function_list, 0, 0, 0);
+    crypt_pkcs11_xs_C_Digest(object, 0, 0, 0);
+    crypt_pkcs11_xs_C_DigestUpdate(0, 0, 0);
+    crypt_pkcs11_xs_C_DigestUpdate(&object_no_function_list, 0, 0);
+    crypt_pkcs11_xs_C_DigestUpdate(&object_empty_function_list, 0, 0);
+    crypt_pkcs11_xs_C_DigestUpdate(object, 0, 0);
+    crypt_pkcs11_xs_C_DigestKey(0, 0, 0);
+    crypt_pkcs11_xs_C_DigestKey(&object_no_function_list, 0, 0);
+    crypt_pkcs11_xs_C_DigestKey(&object_empty_function_list, 0, 0);
+    crypt_pkcs11_xs_C_DigestKey(object, 0, 0);
+    crypt_pkcs11_xs_C_DigestFinal(0, 0, 0);
+    crypt_pkcs11_xs_C_DigestFinal(&object_no_function_list, 0, 0);
+    crypt_pkcs11_xs_C_DigestFinal(&object_empty_function_list, 0, 0);
+    crypt_pkcs11_xs_C_DigestFinal(object, 0, 0);
+    crypt_pkcs11_xs_C_SignInit(0, 0, 0, 0);
+    crypt_pkcs11_xs_C_SignInit(&object_no_function_list, 0, 0, 0);
+    crypt_pkcs11_xs_C_SignInit(&object_empty_function_list, 0, 0, 0);
+    crypt_pkcs11_xs_C_SignInit(object, 0, 0, 0);
+    crypt_pkcs11_xs_C_Sign(0, 0, 0, 0);
+    crypt_pkcs11_xs_C_Sign(&object_no_function_list, 0, 0, 0);
+    crypt_pkcs11_xs_C_Sign(&object_empty_function_list, 0, 0, 0);
+    crypt_pkcs11_xs_C_Sign(object, 0, 0, 0);
+    crypt_pkcs11_xs_C_SignUpdate(0, 0, 0);
+    crypt_pkcs11_xs_C_SignUpdate(&object_no_function_list, 0, 0);
+    crypt_pkcs11_xs_C_SignUpdate(&object_empty_function_list, 0, 0);
+    crypt_pkcs11_xs_C_SignUpdate(object, 0, 0);
+    crypt_pkcs11_xs_C_SignFinal(0, 0, 0);
+    crypt_pkcs11_xs_C_SignFinal(&object_no_function_list, 0, 0);
+    crypt_pkcs11_xs_C_SignFinal(&object_empty_function_list, 0, 0);
+    crypt_pkcs11_xs_C_SignFinal(object, 0, 0);
+    crypt_pkcs11_xs_C_SignRecoverInit(0, 0, 0, 0);
+    crypt_pkcs11_xs_C_SignRecoverInit(&object_no_function_list, 0, 0, 0);
+    crypt_pkcs11_xs_C_SignRecoverInit(&object_empty_function_list, 0, 0, 0);
+    crypt_pkcs11_xs_C_SignRecoverInit(object, 0, 0, 0);
+    crypt_pkcs11_xs_C_SignRecover(0, 0, 0, 0);
+    crypt_pkcs11_xs_C_SignRecover(&object_no_function_list, 0, 0, 0);
+    crypt_pkcs11_xs_C_SignRecover(&object_empty_function_list, 0, 0, 0);
+    crypt_pkcs11_xs_C_SignRecover(object, 0, 0, 0);
+    crypt_pkcs11_xs_C_VerifyInit(0, 0, 0, 0);
+    crypt_pkcs11_xs_C_VerifyInit(&object_no_function_list, 0, 0, 0);
+    crypt_pkcs11_xs_C_VerifyInit(&object_empty_function_list, 0, 0, 0);
+    crypt_pkcs11_xs_C_VerifyInit(object, 0, 0, 0);
+    crypt_pkcs11_xs_C_Verify(0, 0, 0, 0);
+    crypt_pkcs11_xs_C_Verify(&object_no_function_list, 0, 0, 0);
+    crypt_pkcs11_xs_C_Verify(&object_empty_function_list, 0, 0, 0);
+    crypt_pkcs11_xs_C_Verify(object, 0, 0, 0);
+    crypt_pkcs11_xs_C_VerifyUpdate(0, 0, 0);
+    crypt_pkcs11_xs_C_VerifyUpdate(&object_no_function_list, 0, 0);
+    crypt_pkcs11_xs_C_VerifyUpdate(&object_empty_function_list, 0, 0);
+    crypt_pkcs11_xs_C_VerifyUpdate(object, 0, 0);
+    crypt_pkcs11_xs_C_VerifyFinal(0, 0, 0);
+    crypt_pkcs11_xs_C_VerifyFinal(&object_no_function_list, 0, 0);
+    crypt_pkcs11_xs_C_VerifyFinal(&object_empty_function_list, 0, 0);
+    crypt_pkcs11_xs_C_VerifyFinal(object, 0, 0);
+    crypt_pkcs11_xs_C_VerifyRecoverInit(0, 0, 0, 0);
+    crypt_pkcs11_xs_C_VerifyRecoverInit(&object_no_function_list, 0, 0, 0);
+    crypt_pkcs11_xs_C_VerifyRecoverInit(&object_empty_function_list, 0, 0, 0);
+    crypt_pkcs11_xs_C_VerifyRecoverInit(object, 0, 0, 0);
+    crypt_pkcs11_xs_C_VerifyRecover(0, 0, 0, 0);
+    crypt_pkcs11_xs_C_VerifyRecover(&object_no_function_list, 0, 0, 0);
+    crypt_pkcs11_xs_C_VerifyRecover(&object_empty_function_list, 0, 0, 0);
+    crypt_pkcs11_xs_C_VerifyRecover(object, 0, 0, 0);
+    crypt_pkcs11_xs_C_DigestEncryptUpdate(0, 0, 0, 0);
+    crypt_pkcs11_xs_C_DigestEncryptUpdate(&object_no_function_list, 0, 0, 0);
+    crypt_pkcs11_xs_C_DigestEncryptUpdate(&object_empty_function_list, 0, 0, 0);
+    crypt_pkcs11_xs_C_DigestEncryptUpdate(object, 0, 0, 0);
+    crypt_pkcs11_xs_C_DecryptDigestUpdate(0, 0, 0, 0);
+    crypt_pkcs11_xs_C_DecryptDigestUpdate(&object_no_function_list, 0, 0, 0);
+    crypt_pkcs11_xs_C_DecryptDigestUpdate(&object_empty_function_list, 0, 0, 0);
+    crypt_pkcs11_xs_C_DecryptDigestUpdate(object, 0, 0, 0);
+    crypt_pkcs11_xs_C_SignEncryptUpdate(0, 0, 0, 0);
+    crypt_pkcs11_xs_C_SignEncryptUpdate(&object_no_function_list, 0, 0, 0);
+    crypt_pkcs11_xs_C_SignEncryptUpdate(&object_empty_function_list, 0, 0, 0);
+    crypt_pkcs11_xs_C_SignEncryptUpdate(object, 0, 0, 0);
+    crypt_pkcs11_xs_C_DecryptVerifyUpdate(0, 0, 0, 0);
+    crypt_pkcs11_xs_C_DecryptVerifyUpdate(&object_no_function_list, 0, 0, 0);
+    crypt_pkcs11_xs_C_DecryptVerifyUpdate(&object_empty_function_list, 0, 0, 0);
+    crypt_pkcs11_xs_C_DecryptVerifyUpdate(object, 0, 0, 0);
+    crypt_pkcs11_xs_C_GenerateKey(0, 0, 0, 0, 0);
+    crypt_pkcs11_xs_C_GenerateKey(&object_no_function_list, 0, 0, 0, 0);
+    crypt_pkcs11_xs_C_GenerateKey(&object_empty_function_list, 0, 0, 0, 0);
+    crypt_pkcs11_xs_C_GenerateKey(object, 0, 0, 0, 0);
+    crypt_pkcs11_xs_C_GenerateKeyPair(0, 0, 0, 0, 0, 0, 0);
+    crypt_pkcs11_xs_C_GenerateKeyPair(&object_no_function_list, 0, 0, 0, 0, 0, 0);
+    crypt_pkcs11_xs_C_GenerateKeyPair(&object_empty_function_list, 0, 0, 0, 0, 0, 0);
+    crypt_pkcs11_xs_C_GenerateKeyPair(object, 0, 0, 0, 0, 0, 0);
+    crypt_pkcs11_xs_C_WrapKey(0, 0, 0, 0, 0, 0);
+    crypt_pkcs11_xs_C_WrapKey(&object_no_function_list, 0, 0, 0, 0, 0);
+    crypt_pkcs11_xs_C_WrapKey(&object_empty_function_list, 0, 0, 0, 0, 0);
+    crypt_pkcs11_xs_C_WrapKey(object, 0, 0, 0, 0, 0);
+    crypt_pkcs11_xs_C_UnwrapKey(0, 0, 0, 0, 0, 0, 0);
+    crypt_pkcs11_xs_C_UnwrapKey(&object_no_function_list, 0, 0, 0, 0, 0, 0);
+    crypt_pkcs11_xs_C_UnwrapKey(&object_empty_function_list, 0, 0, 0, 0, 0, 0);
+    crypt_pkcs11_xs_C_UnwrapKey(object, 0, 0, 0, 0, 0, 0);
+    crypt_pkcs11_xs_C_DeriveKey(0, 0, 0, 0, 0, 0);
+    crypt_pkcs11_xs_C_DeriveKey(&object_no_function_list, 0, 0, 0, 0, 0);
+    crypt_pkcs11_xs_C_DeriveKey(&object_empty_function_list, 0, 0, 0, 0, 0);
+    crypt_pkcs11_xs_C_DeriveKey(object, 0, 0, 0, 0, 0);
+    crypt_pkcs11_xs_C_SeedRandom(0, 0, 0);
+    crypt_pkcs11_xs_C_SeedRandom(&object_no_function_list, 0, 0);
+    crypt_pkcs11_xs_C_SeedRandom(&object_empty_function_list, 0, 0);
+    crypt_pkcs11_xs_C_SeedRandom(object, 0, 0);
+    crypt_pkcs11_xs_C_GenerateRandom(0, 0, 0, 0);
+    crypt_pkcs11_xs_C_GenerateRandom(&object_no_function_list, 0, 0, 0);
+    crypt_pkcs11_xs_C_GenerateRandom(&object_empty_function_list, 0, 0, 0);
+    crypt_pkcs11_xs_C_GenerateRandom(object, 0, 0, 0);
+    crypt_pkcs11_xs_C_GetFunctionStatus(0, 0);
+    crypt_pkcs11_xs_C_GetFunctionStatus(&object_no_function_list, 0);
+    crypt_pkcs11_xs_C_GetFunctionStatus(&object_empty_function_list, 0);
+    crypt_pkcs11_xs_C_GetFunctionStatus(object, 0);
+    crypt_pkcs11_xs_C_CancelFunction(0, 0);
+    crypt_pkcs11_xs_C_CancelFunction(&object_no_function_list, 0);
+    crypt_pkcs11_xs_C_CancelFunction(&object_empty_function_list, 0);
+    crypt_pkcs11_xs_C_CancelFunction(object, 0);
+    crypt_pkcs11_xs_C_WaitForSlotEvent(0, 0, 0);
+    crypt_pkcs11_xs_C_WaitForSlotEvent(&object_no_function_list, 0, 0);
+    crypt_pkcs11_xs_C_WaitForSlotEvent(&object_empty_function_list, 0, 0);
+    crypt_pkcs11_xs_C_WaitForSlotEvent(object, 0, 0);
+}
+
+static CK_RV __test_C_Initialize(CK_VOID_PTR pInitArgs) {
+    return CKR_OK;
+}
+
+static CK_RV __test_C_Finalize(CK_VOID_PTR pReserved) {
+    return CKR_OK;
+}
+
+static CK_RV __test_C_GetInfo(CK_INFO_PTR pInfo) {
+    return CKR_OK;
+}
+
+static CK_RV __test_C_GetSlotList(CK_BBOOL tokenPresent, CK_SLOT_ID_PTR pSlotList, CK_ULONG_PTR pulCount) {
+    return CKR_OK;
+}
+
+static CK_RV __test_C_GetSlotInfo(CK_SLOT_ID slotID, CK_SLOT_INFO_PTR pInfo) {
+    return CKR_OK;
+}
+
+static CK_RV __test_C_GetTokenInfo(CK_SLOT_ID slotID, CK_TOKEN_INFO_PTR pInfo) {
+    return CKR_OK;
+}
+
+static CK_RV __test_C_GetMechanismList(CK_SLOT_ID slotID, CK_MECHANISM_TYPE_PTR pMechanismList, CK_ULONG_PTR pulCount) {
+    return CKR_OK;
+}
+
+static CK_RV __test_C_GetMechanismInfo(CK_SLOT_ID slotID, CK_MECHANISM_TYPE type, CK_MECHANISM_INFO_PTR pInfo) {
+    return CKR_OK;
+}
+
+static CK_RV __test_C_InitToken(CK_SLOT_ID slotID, CK_UTF8CHAR_PTR pPin, CK_ULONG ulPinLen, CK_UTF8CHAR_PTR pLabel) {
+    return CKR_OK;
+}
+
+static CK_RV __test_C_InitPIN(CK_SESSION_HANDLE hSession, CK_UTF8CHAR_PTR pPin, CK_ULONG ulPinLen) {
+    return CKR_OK;
+}
+
+static CK_RV __test_C_SetPIN(CK_SESSION_HANDLE hSession, CK_UTF8CHAR_PTR pOldPin, CK_ULONG ulOldLen, CK_UTF8CHAR_PTR pNewPin, CK_ULONG ulNewLen) {
+    return CKR_OK;
+}
+
+static CK_RV __test_C_OpenSession(CK_SLOT_ID slotID, CK_FLAGS flags, CK_VOID_PTR pApplication, CK_NOTIFY Notify, CK_SESSION_HANDLE_PTR phSession) {
+    return CKR_OK;
+}
+
+static CK_RV __test_C_CloseSession(CK_SESSION_HANDLE hSession) {
+    return CKR_OK;
+}
+
+static CK_RV __test_C_CloseAllSessions(CK_SLOT_ID slotID) {
+    return CKR_OK;
+}
+
+static CK_RV __test_C_GetSessionInfo(CK_SESSION_HANDLE hSession, CK_SESSION_INFO_PTR pInfo) {
+    return CKR_OK;
+}
+
+static CK_RV __test_C_GetOperationState(CK_SESSION_HANDLE hSession, CK_BYTE_PTR pOperationState, CK_ULONG_PTR pulOperationStateLen) {
+    return CKR_OK;
+}
+
+static CK_RV __test_C_SetOperationState(CK_SESSION_HANDLE hSession, CK_BYTE_PTR pOperationState, CK_ULONG ulOperationStateLen, CK_OBJECT_HANDLE hEncryptionKey, CK_OBJECT_HANDLE hAuthenticationKey) {
+    return CKR_OK;
+}
+
+static CK_RV __test_C_Login(CK_SESSION_HANDLE hSession, CK_USER_TYPE userType, CK_UTF8CHAR_PTR pPin, CK_ULONG ulPinLen) {
+    return CKR_OK;
+}
+
+static CK_RV __test_C_Logout(CK_SESSION_HANDLE hSession) {
+    return CKR_OK;
+}
+
+static CK_RV __test_C_CreateObject(CK_SESSION_HANDLE hSession, CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount, CK_OBJECT_HANDLE_PTR phObject) {
+    return CKR_OK;
+}
+
+static CK_RV __test_C_CopyObject(CK_SESSION_HANDLE hSession, CK_OBJECT_HANDLE hObject, CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount, CK_OBJECT_HANDLE_PTR phNewObject) {
+    return CKR_OK;
+}
+
+static CK_RV __test_C_DestroyObject(CK_SESSION_HANDLE hSession, CK_OBJECT_HANDLE hObject) {
+    return CKR_OK;
+}
+
+static CK_RV __test_C_GetObjectSize(CK_SESSION_HANDLE hSession, CK_OBJECT_HANDLE hObject, CK_ULONG_PTR pulSize) {
+    return CKR_OK;
+}
+
+static CK_RV __test_C_GetAttributeValue(CK_SESSION_HANDLE hSession, CK_OBJECT_HANDLE hObject, CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount) {
+    return CKR_OK;
+}
+
+static CK_RV __test_C_SetAttributeValue(CK_SESSION_HANDLE hSession, CK_OBJECT_HANDLE hObject, CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount) {
+    return CKR_OK;
+}
+
+static CK_RV __test_C_FindObjectsInit(CK_SESSION_HANDLE hSession, CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount) {
+    return CKR_OK;
+}
+
+static CK_RV __test_C_FindObjects(CK_SESSION_HANDLE hSession, CK_OBJECT_HANDLE_PTR phObject, CK_ULONG ulMaxObjectCount, CK_ULONG_PTR pulObjectCount) {
+    return CKR_OK;
+}
+
+static CK_RV __test_C_FindObjectsFinal(CK_SESSION_HANDLE hSession) {
+    return CKR_OK;
+}
+
+static CK_RV __test_C_EncryptInit(CK_SESSION_HANDLE hSession, CK_MECHANISM_PTR pMechanism, CK_OBJECT_HANDLE hKey) {
+    return CKR_OK;
+}
+
+static CK_RV __test_C_Encrypt(CK_SESSION_HANDLE hSession, CK_BYTE_PTR pData, CK_ULONG ulDataLen, CK_BYTE_PTR pEncryptedData, CK_ULONG_PTR pulEncryptedDataLen) {
+    return CKR_OK;
+}
+
+static CK_RV __test_C_EncryptUpdate(CK_SESSION_HANDLE hSession, CK_BYTE_PTR pPart, CK_ULONG ulPartLen, CK_BYTE_PTR pEncryptedPart, CK_ULONG_PTR pulEncryptedPartLen) {
+    return CKR_OK;
+}
+
+static CK_RV __test_C_EncryptFinal(CK_SESSION_HANDLE hSession, CK_BYTE_PTR pLastEncryptedPart, CK_ULONG_PTR pulLastEncryptedPartLen) {
+    return CKR_OK;
+}
+
+static CK_RV __test_C_DecryptInit(CK_SESSION_HANDLE hSession, CK_MECHANISM_PTR pMechanism, CK_OBJECT_HANDLE hKey) {
+    return CKR_OK;
+}
+
+static CK_RV __test_C_Decrypt(CK_SESSION_HANDLE hSession, CK_BYTE_PTR pEncryptedData, CK_ULONG ulEncryptedDataLen, CK_BYTE_PTR pData, CK_ULONG_PTR pulDataLen) {
+    return CKR_OK;
+}
+
+static CK_RV __test_C_DecryptUpdate(CK_SESSION_HANDLE hSession, CK_BYTE_PTR pEncryptedPart, CK_ULONG ulEncryptedPartLen, CK_BYTE_PTR pPart, CK_ULONG_PTR pulPartLen) {
+    return CKR_OK;
+}
+
+static CK_RV __test_C_DecryptFinal(CK_SESSION_HANDLE hSession, CK_BYTE_PTR pLastPart, CK_ULONG_PTR pulLastPartLen) {
+    return CKR_OK;
+}
+
+static CK_RV __test_C_DigestInit(CK_SESSION_HANDLE hSession, CK_MECHANISM_PTR pMechanism) {
+    return CKR_OK;
+}
+
+static CK_RV __test_C_Digest(CK_SESSION_HANDLE hSession, CK_BYTE_PTR pData, CK_ULONG ulDataLen, CK_BYTE_PTR pDigest, CK_ULONG_PTR pulDigestLen) {
+    return CKR_OK;
+}
+
+static CK_RV __test_C_DigestUpdate(CK_SESSION_HANDLE hSession, CK_BYTE_PTR pPart, CK_ULONG ulPartLen) {
+    return CKR_OK;
+}
+
+static CK_RV __test_C_DigestKey(CK_SESSION_HANDLE hSession, CK_OBJECT_HANDLE hKey) {
+    return CKR_OK;
+}
+
+static CK_RV __test_C_DigestFinal(CK_SESSION_HANDLE hSession, CK_BYTE_PTR pDigest, CK_ULONG_PTR pulDigestLen) {
+    return CKR_OK;
+}
+
+static CK_RV __test_C_SignInit(CK_SESSION_HANDLE hSession, CK_MECHANISM_PTR pMechanism, CK_OBJECT_HANDLE hKey) {
+    return CKR_OK;
+}
+
+static CK_RV __test_C_Sign(CK_SESSION_HANDLE hSession, CK_BYTE_PTR pData, CK_ULONG ulDataLen, CK_BYTE_PTR pSignature, CK_ULONG_PTR pulSignatureLen) {
+    return CKR_OK;
+}
+
+static CK_RV __test_C_SignUpdate(CK_SESSION_HANDLE hSession, CK_BYTE_PTR pPart, CK_ULONG ulPartLen) {
+    return CKR_OK;
+}
+
+static CK_RV __test_C_SignFinal(CK_SESSION_HANDLE hSession, CK_BYTE_PTR pSignature, CK_ULONG_PTR pulSignatureLen) {
+    return CKR_OK;
+}
+
+static CK_RV __test_C_SignRecoverInit(CK_SESSION_HANDLE hSession, CK_MECHANISM_PTR pMechanism, CK_OBJECT_HANDLE hKey) {
+    return CKR_OK;
+}
+
+static CK_RV __test_C_SignRecover(CK_SESSION_HANDLE hSession, CK_BYTE_PTR pData, CK_ULONG ulDataLen, CK_BYTE_PTR pSignature, CK_ULONG_PTR pulSignatureLen) {
+    return CKR_OK;
+}
+
+static CK_RV __test_C_VerifyInit(CK_SESSION_HANDLE hSession, CK_MECHANISM_PTR pMechanism, CK_OBJECT_HANDLE hKey) {
+    return CKR_OK;
+}
+
+static CK_RV __test_C_Verify(CK_SESSION_HANDLE hSession, CK_BYTE_PTR pData, CK_ULONG ulDataLen, CK_BYTE_PTR pSignature, CK_ULONG ulSignatureLen) {
+    return CKR_OK;
+}
+
+static CK_RV __test_C_VerifyUpdate(CK_SESSION_HANDLE hSession, CK_BYTE_PTR pPart, CK_ULONG ulPartLen) {
+    return CKR_OK;
+}
+
+static CK_RV __test_C_VerifyFinal(CK_SESSION_HANDLE hSession, CK_BYTE_PTR pSignature, CK_ULONG ulSignatureLen) {
+    return CKR_OK;
+}
+
+static CK_RV __test_C_VerifyRecoverInit(CK_SESSION_HANDLE hSession, CK_MECHANISM_PTR pMechanism, CK_OBJECT_HANDLE hKey) {
+    return CKR_OK;
+}
+
+static CK_RV __test_C_VerifyRecover(CK_SESSION_HANDLE hSession, CK_BYTE_PTR pSignature, CK_ULONG ulSignatureLen, CK_BYTE_PTR pData, CK_ULONG_PTR pulDataLen) {
+    return CKR_OK;
+}
+
+static CK_RV __test_C_DigestEncryptUpdate(CK_SESSION_HANDLE hSession, CK_BYTE_PTR pPart, CK_ULONG ulPartLen, CK_BYTE_PTR pEncryptedPart, CK_ULONG_PTR pulEncryptedPartLen) {
+    return CKR_OK;
+}
+
+static CK_RV __test_C_DecryptDigestUpdate(CK_SESSION_HANDLE hSession, CK_BYTE_PTR pEncryptedPart, CK_ULONG ulEncryptedPartLen, CK_BYTE_PTR pPart, CK_ULONG_PTR pulPartLen) {
+    return CKR_OK;
+}
+
+static CK_RV __test_C_SignEncryptUpdate(CK_SESSION_HANDLE hSession, CK_BYTE_PTR pPart, CK_ULONG ulPartLen, CK_BYTE_PTR pEncryptedPart, CK_ULONG_PTR pulEncryptedPartLen) {
+    return CKR_OK;
+}
+
+static CK_RV __test_C_DecryptVerifyUpdate(CK_SESSION_HANDLE hSession, CK_BYTE_PTR pEncryptedPart, CK_ULONG ulEncryptedPartLen, CK_BYTE_PTR pPart, CK_ULONG_PTR pulPartLen) {
+    return CKR_OK;
+}
+
+static CK_RV __test_C_GenerateKey(CK_SESSION_HANDLE hSession, CK_MECHANISM_PTR pMechanism, CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount, CK_OBJECT_HANDLE_PTR phKey) {
+    return CKR_OK;
+}
+
+static CK_RV __test_C_GenerateKeyPair(CK_SESSION_HANDLE hSession, CK_MECHANISM_PTR pMechanism, CK_ATTRIBUTE_PTR pPublicKeyTemplate, CK_ULONG ulPublicKeyAttributeCount, CK_ATTRIBUTE_PTR pPrivateKeyTemplate, CK_ULONG ulPrivateKeyAttributeCount, CK_OBJECT_HANDLE_PTR phPublicKey, CK_OBJECT_HANDLE_PTR phPrivateKey) {
+    return CKR_OK;
+}
+
+static CK_RV __test_C_WrapKey(CK_SESSION_HANDLE hSession, CK_MECHANISM_PTR pMechanism, CK_OBJECT_HANDLE hWrappingKey, CK_OBJECT_HANDLE hKey, CK_BYTE_PTR pWrappedKey, CK_ULONG_PTR pulWrappedKeyLen) {
+    return CKR_OK;
+}
+
+static CK_RV __test_C_UnwrapKey(CK_SESSION_HANDLE hSession, CK_MECHANISM_PTR pMechanism, CK_OBJECT_HANDLE hUnwrappingKey, CK_BYTE_PTR pWrappedKey, CK_ULONG ulWrappedKeyLen, CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulAttributeCount, CK_OBJECT_HANDLE_PTR phKey) {
+    return CKR_OK;
+}
+
+static CK_RV __test_C_DeriveKey(CK_SESSION_HANDLE hSession, CK_MECHANISM_PTR pMechanism, CK_OBJECT_HANDLE hBaseKey, CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulAttributeCount, CK_OBJECT_HANDLE_PTR phKey) {
+    return CKR_OK;
+}
+
+static CK_RV __test_C_SeedRandom(CK_SESSION_HANDLE hSession, CK_BYTE_PTR pSeed, CK_ULONG ulSeedLen) {
+    return CKR_OK;
+}
+
+static CK_RV __test_C_GenerateRandom(CK_SESSION_HANDLE hSession, CK_BYTE_PTR RandomData, CK_ULONG ulRandomLen) {
+    return CKR_OK;
+}
+
+static CK_RV __test_C_GetFunctionStatus(CK_SESSION_HANDLE hSession) {
+    return CKR_OK;
+}
+
+static CK_RV __test_C_CancelFunction(CK_SESSION_HANDLE hSession) {
+    return CKR_OK;
+}
+
+static CK_RV __test_C_GetFunctionList(CK_FUNCTION_LIST_PTR_PTR ppFunctionList) {
+    static CK_FUNCTION_LIST function_list = {
+        {
+            2,
+            30
+        },
+        &__test_C_Initialize,
+        &__test_C_Finalize,
+        &__test_C_GetInfo,
+        &__test_C_GetFunctionList,
+        &__test_C_GetSlotList,
+        &__test_C_GetSlotInfo,
+        &__test_C_GetTokenInfo,
+        &__test_C_GetMechanismList,
+        &__test_C_GetMechanismInfo,
+        &__test_C_InitToken,
+        &__test_C_InitPIN,
+        &__test_C_SetPIN,
+        &__test_C_OpenSession,
+        &__test_C_CloseSession,
+        &__test_C_CloseAllSessions,
+        &__test_C_GetSessionInfo,
+        &__test_C_GetOperationState,
+        &__test_C_SetOperationState,
+        &__test_C_Login,
+        &__test_C_Logout,
+        &__test_C_CreateObject,
+        &__test_C_CopyObject,
+        &__test_C_DestroyObject,
+        &__test_C_GetObjectSize,
+        &__test_C_GetAttributeValue,
+        &__test_C_SetAttributeValue,
+        &__test_C_FindObjectsInit,
+        &__test_C_FindObjects,
+        &__test_C_FindObjectsFinal,
+        &__test_C_EncryptInit,
+        &__test_C_Encrypt,
+        &__test_C_EncryptUpdate,
+        &__test_C_EncryptFinal,
+        &__test_C_DecryptInit,
+        &__test_C_Decrypt,
+        &__test_C_DecryptUpdate,
+        &__test_C_DecryptFinal,
+        &__test_C_DigestInit,
+        &__test_C_Digest,
+        &__test_C_DigestUpdate,
+        &__test_C_DigestKey,
+        &__test_C_DigestFinal,
+        &__test_C_SignInit,
+        &__test_C_Sign,
+        &__test_C_SignUpdate,
+        &__test_C_SignFinal,
+        &__test_C_SignRecoverInit,
+        &__test_C_SignRecover,
+        &__test_C_VerifyInit,
+        &__test_C_Verify,
+        &__test_C_VerifyUpdate,
+        &__test_C_VerifyFinal,
+        &__test_C_VerifyRecoverInit,
+        &__test_C_VerifyRecover,
+        &__test_C_DigestEncryptUpdate,
+        &__test_C_DecryptDigestUpdate,
+        &__test_C_SignEncryptUpdate,
+        &__test_C_DecryptVerifyUpdate,
+        &__test_C_GenerateKey,
+        &__test_C_GenerateKeyPair,
+        &__test_C_WrapKey,
+        &__test_C_UnwrapKey,
+        &__test_C_DeriveKey,
+        &__test_C_SeedRandom,
+        &__test_C_GenerateRandom,
+        &__test_C_GetFunctionStatus,
+        &__test_C_CancelFunction
+    };
+    *ppFunctionList = &function_list;
+    return CKR_OK;
+}
+#endif
