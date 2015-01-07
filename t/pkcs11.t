@@ -60,7 +60,7 @@ sub myisnt {
 sub initCheck {
     my ($obj) = @_;
     my %initArgs = (
-        UnlockMutex => sub { },
+        UnlockMutex => sub { return CKR_OK; },
         flags => CKF_OS_LOCKING_OK
     );
 
@@ -71,6 +71,29 @@ sub initCheck {
     myis( $obj->C_Initialize(\%initArgs), CKR_OK, 'initCheck: C_Initialize' );
     myis( $obj->C_Initialize(\%initArgs), CKR_CRYPTOKI_ALREADY_INITIALIZED, 'initCheck: C_Initialize already initialized' );
     myis( $obj->C_Finalize, CKR_OK, 'initCheck: C_Finalize' );
+    myis( $obj->C_Initialize({}), CKR_OK, 'initCheck: C_Initialize #2' );
+    myis( $obj->C_Finalize, CKR_OK, 'initCheck: C_Finalize #2' );
+    foreach (qw(CreateMutex DestroyMutex LockMutex UnlockMutex flags)) {
+        $initArgs{$_} = undef;
+        myis( $obj->C_Initialize(\%initArgs), CKR_ARGUMENTS_BAD, 'initCheck: C_Initialize '.$_ );
+        delete $initArgs{$_};
+    }
+    foreach (qw(CreateMutex DestroyMutex LockMutex UnlockMutex flags)) {
+        $initArgs{$_} = undef;
+        myis( $obj->C_Initialize(\%initArgs), CKR_ARGUMENTS_BAD, 'initCheck: C_Initialize '.$_ );
+    }
+    %initArgs = (
+        CreateMutex => sub { return 9999; },
+        DestroyMutex => sub { die unless ($_[0] ==  9999); return CKR_OK; },
+        LockMutex => sub { die unless ($_[0] ==  9999); return CKR_OK; },
+        UnlockMutex => sub { die unless ($_[0] ==  9999); return CKR_OK; }
+    );
+    myis( $obj->C_Initialize(\%initArgs), CKR_OK, 'initCheck: C_Initialize #3' );
+    myis( $obj->C_Finalize, CKR_OK, 'initCheck: C_Finalize #3' );
+    Crypt::PKCS11::XS::clearCreateMutex;
+    Crypt::PKCS11::XS::clearDestroyMutex;
+    Crypt::PKCS11::XS::clearLockMutex;
+    Crypt::PKCS11::XS::clearUnlockMutex;
     myis( $obj->C_Initialize({}), CKR_OK, 'initCheck: C_Initialize #2' );
     myis( $obj->C_Finalize, CKR_OK, 'initCheck: C_Finalize #2' );
 }

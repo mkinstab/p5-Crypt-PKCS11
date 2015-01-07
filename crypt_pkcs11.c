@@ -379,35 +379,29 @@ static CK_RV __CreateMutex(CK_VOID_PTR_PTR ppMutex) {
     int args;
     CK_RV rv = CKR_OK;
 
-    ENTER;
-    SAVETMPS;
     PUSHMARK(SP);
 
     args = call_sv(__CreateMutexSV, G_SCALAR);
 
     SPAGAIN;
 
-    if (args == 1
-        && !(*ppMutex = newSVsv(POPs)))
-    {
-        rv = CKR_GENERAL_ERROR;
+    if (args != 1) {
+        croak("No return from CreateMutex");
     }
 
+    *ppMutex = (CK_VOID_PTR)POPl;
+
     PUTBACK;
-    FREETMPS;
-    LEAVE;
 
     return rv;
 }
 
 void crypt_pkcs11_xs_setCreateMutex(SV* pCreateMutex) {
+    if (__CreateMutexSV) {
+        SvREFCNT_dec(__CreateMutexSV);
+    }
     SvGETMAGIC(pCreateMutex);
-    if (__CreateMutexSV == NULL_PTR) {
-        __CreateMutexSV = newSVsv(pCreateMutex);
-    }
-    else {
-        sv_setsv(__CreateMutexSV, pCreateMutex);
-    }
+    __CreateMutexSV = newSVsv(pCreateMutex);
 }
 
 void crypt_pkcs11_xs_clearCreateMutex(void) {
@@ -424,23 +418,22 @@ static CK_RV __DestroyMutex(CK_VOID_PTR pMutex) {
     int args;
     CK_RV rv = CKR_GENERAL_ERROR;
 
-    if (!pMutex) {
-        return CKR_ARGUMENTS_BAD;
-    }
-
     ENTER;
     SAVETMPS;
+
     PUSHMARK(SP);
-    XPUSHs(sv_2mortal(newSVsv((SV*)pMutex)));
+    XPUSHs(sv_2mortal(newSViv((long)pMutex)));
     PUTBACK;
 
     args = call_sv(__DestroyMutexSV, G_SCALAR);
 
     SPAGAIN;
 
-    if (args == 1) {
-        rv = (CK_RV)POPl;
+    if (args != 1) {
+        croak("No return from DestroyMutex");
     }
+
+    rv = POPi;
 
     PUTBACK;
     FREETMPS;
@@ -450,13 +443,11 @@ static CK_RV __DestroyMutex(CK_VOID_PTR pMutex) {
 }
 
 void crypt_pkcs11_xs_setDestroyMutex(SV* pDestroyMutex) {
+    if (__DestroyMutexSV) {
+        SvREFCNT_dec(__DestroyMutexSV);
+    }
     SvGETMAGIC(pDestroyMutex);
-    if (__DestroyMutexSV == NULL_PTR) {
-        __DestroyMutexSV = newSVsv(pDestroyMutex);
-    }
-    else {
-        sv_setsv(__DestroyMutexSV, pDestroyMutex);
-    }
+    __DestroyMutexSV = newSVsv(pDestroyMutex);
 }
 
 void crypt_pkcs11_xs_clearDestroyMutex(void) {
@@ -473,23 +464,22 @@ static CK_RV __LockMutex(CK_VOID_PTR pMutex) {
     int args;
     CK_RV rv = CKR_GENERAL_ERROR;
 
-    if (!pMutex) {
-        return CKR_ARGUMENTS_BAD;
-    }
-
     ENTER;
     SAVETMPS;
+
     PUSHMARK(SP);
-    XPUSHs(sv_2mortal(newSVsv((SV*)pMutex)));
+    XPUSHs(sv_2mortal(newSViv((long)pMutex)));
     PUTBACK;
 
     args = call_sv(__LockMutexSV, G_SCALAR);
 
     SPAGAIN;
 
-    if (args == 1) {
-        rv = (CK_RV)POPl;
+    if (args != 1) {
+        croak("No return from LockMutex");
     }
+
+    rv = POPi;
 
     PUTBACK;
     FREETMPS;
@@ -499,13 +489,11 @@ static CK_RV __LockMutex(CK_VOID_PTR pMutex) {
 }
 
 void crypt_pkcs11_xs_setLockMutex(SV* pLockMutex) {
+    if (__LockMutexSV) {
+        SvREFCNT_dec(__LockMutexSV);
+    }
     SvGETMAGIC(pLockMutex);
-    if (__LockMutexSV == NULL_PTR) {
-        __LockMutexSV = newSVsv(pLockMutex);
-    }
-    else {
-        sv_setsv(__LockMutexSV, pLockMutex);
-    }
+    __LockMutexSV = newSVsv(pLockMutex);
 }
 
 void crypt_pkcs11_xs_clearLockMutex(void) {
@@ -522,23 +510,21 @@ static CK_RV __UnlockMutex(CK_VOID_PTR pMutex) {
     int args;
     CK_RV rv = CKR_GENERAL_ERROR;
 
-    if (!pMutex) {
-        return CKR_ARGUMENTS_BAD;
-    }
-
     ENTER;
     SAVETMPS;
     PUSHMARK(SP);
-    XPUSHs(sv_2mortal(newSVsv((SV*)pMutex)));
+    XPUSHs(sv_2mortal(newSViv((long)pMutex)));
     PUTBACK;
 
     args = call_sv(__UnlockMutexSV, G_SCALAR);
 
     SPAGAIN;
 
-    if (args == 1) {
-        rv = (CK_RV)POPl;
+    if (args != 1) {
+        croak("No return from UnlockMutex");
     }
+
+    rv = POPi;
 
     PUTBACK;
     FREETMPS;
@@ -548,13 +534,11 @@ static CK_RV __UnlockMutex(CK_VOID_PTR pMutex) {
 }
 
 void crypt_pkcs11_xs_setUnlockMutex(SV* pUnlockMutex) {
+    if (__UnlockMutexSV) {
+        SvREFCNT_dec(__UnlockMutexSV);
+    }
     SvGETMAGIC(pUnlockMutex);
-    if (__UnlockMutexSV == NULL_PTR) {
-        __UnlockMutexSV = newSVsv(pUnlockMutex);
-    }
-    else {
-        sv_setsv(__UnlockMutexSV, pUnlockMutex);
-    }
+    __UnlockMutexSV = newSVsv(pUnlockMutex);
 }
 
 void crypt_pkcs11_xs_clearUnlockMutex(void) {
@@ -580,6 +564,9 @@ CK_RV crypt_pkcs11_xs_load(Crypt__PKCS11__XS* object, const char* path) {
     }
     if (object->function_list) {
         return CKR_GENERAL_ERROR;
+    }
+    if (!path) {
+        return CKR_ARGUMENTS_BAD;
     }
 
 #ifdef TEST_DEVEL_COVER
@@ -3561,6 +3548,29 @@ int crypt_pkcs11_xs_test_devel_cover(Crypt__PKCS11__XS* object) {
             { 2, 30 }
         }
     };
+    SV* sv;
+    if (crypt_pkcs11_xs_SvUOK(0) != 0) { return __LINE__; }
+    sv = newSViv(1);
+    if (crypt_pkcs11_xs_SvUOK(sv) != 1) { SvREFCNT_dec(sv); return __LINE__; }
+    crypt_pkcs11_xs_setCreateMutex(sv);
+    crypt_pkcs11_xs_setDestroyMutex(sv);
+    crypt_pkcs11_xs_setLockMutex(sv);
+    crypt_pkcs11_xs_setUnlockMutex(sv);
+    crypt_pkcs11_xs_setCreateMutex(sv);
+    crypt_pkcs11_xs_setDestroyMutex(sv);
+    crypt_pkcs11_xs_setLockMutex(sv);
+    crypt_pkcs11_xs_setUnlockMutex(sv);
+    crypt_pkcs11_xs_clearCreateMutex();
+    crypt_pkcs11_xs_clearDestroyMutex();
+    crypt_pkcs11_xs_clearLockMutex();
+    crypt_pkcs11_xs_clearUnlockMutex();
+    SvREFCNT_dec(sv);
+    if (crypt_pkcs11_xs_load(0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_xs_load(object, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
+    if (crypt_pkcs11_xs_load(&object_empty_function_list, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
+    if (crypt_pkcs11_xs_load(&object_no_function_list, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_xs_unload(0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_xs_unload(&object_no_function_list) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_Initialize(0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_Initialize(&object_no_function_list, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_Initialize(&object_empty_function_list, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
