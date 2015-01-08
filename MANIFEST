@@ -27,6 +27,7 @@ lib/Crypt/PKCS11/Attribute/UlongArray.pm
 lib/Crypt/PKCS11/Attribute/UlongArray.pod
 lib/Crypt/PKCS11/Attribute/Value.pm
 lib/Crypt/PKCS11/Attribute/Value.pod
+lib/Crypt/PKCS11/MutexCallbacks.pod
 lib/Crypt/PKCS11/Object.pm
 lib/Crypt/PKCS11/Object.pod
 lib/Crypt/PKCS11.pm

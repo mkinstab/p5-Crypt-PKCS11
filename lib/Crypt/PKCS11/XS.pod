@@ -60,7 +60,8 @@ A CKR value.
 
 =item $rv = Crypt::PKCS11::XS::setCreateMutex ($pCreateMutex)
 
-Set the create mutex callback, please see `MUTEX CALLBACKS`.
+Set the global create mutex callback, for more information about mutex callbacks
+and how to use them please see `Crypt::PKCS11::MutexCallbacks`.
 
 =over 4
 
@@ -76,7 +77,8 @@ Clear the stored create mutex callback reference.
 
 =item $rv = Crypt::PKCS11::XS::setDestroyMutex ($pDestroyMutex)
 
-Set the destroy mutex callback, please see `MUTEX CALLBACKS`.
+Set the global destroy mutex callback, for more information about mutex
+callbacks and how to use them please see `Crypt::PKCS11::MutexCallbacks`.
 
 =over 4
 
@@ -92,7 +94,8 @@ Clear the stored destroy mutex callback reference.
 
 =item $rv = Crypt::PKCS11::XS::setLockMutex ($pLockMutex)
 
-Set the lock mutex callback, please see `MUTEX CALLBACKS`.
+Set the global lock mutex callback, for more information about mutex callbacks
+and how to use them please see `Crypt::PKCS11::MutexCallbacks`.
 
 =over 4
 
@@ -108,7 +111,8 @@ Clear the stored lock mutex callback reference.
 
 =item $rv = Crypt::PKCS11::XS::setUnlockMutex ($pUnlockMutex)
 
-Set the unlock mutex callback, please see `MUTEX CALLBACKS`.
+Set the global unlock mutex callback, for more information about mutex callbacks
+and how to use them please see `Crypt::PKCS11::MutexCallbacks`.
 
 =over 4
 
@@ -150,6 +154,9 @@ NOTE: For all Mutex CODE references the global callback will be set, there is no
 support for individual callbacks per Crypt::PKCS11::XS object.
 
 All of the Mutex arguments needs to be set if any should be used.
+
+For more information about mutex callbacks and how to use them please see
+`Crypt::PKCS11::MutexCallbacks`.
 
 =over 4
 
@@ -1559,14 +1566,6 @@ A SCALAR.
 A SCALAR.
 
 =back
-
-=head1 MUTEX CALLBACKS
-
-PKCS #11 supports setting callbacks for handling mutex and in the C library they
-can be set per loaded PKCS #11 library but there is no context pointer supplied
-to the C callback functions so there is no portable way to related to the
-relevant Perl callbacks and therefor all these callbacks are global. Setting
-them once will affect all loaded PKCS #11 libraries.
 
 =head1 NOTE
 

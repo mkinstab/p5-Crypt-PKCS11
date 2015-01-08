@@ -224,6 +224,9 @@ support for individual callbacks per Crypt::PKCS11 object.
 
 All of the Mutex arguments needs to be set if any should be used.
 
+For more information about mutex callbacks and how to use them please see
+`Crypt::PKCS11::MutexCallbacks`.
+
 The following initialization arguments can be used:
 
 =over 4
