@@ -2,17 +2,29 @@
 
 =head1 NAME
 
+Crypt::PKCS11::Object - A module representing a PKCS #11 object or key.
+
 =head1 SYNPOSIS
 
+  use Crypt::PKCS11::Object;
+  my $object = Crypt::PKCS11::Object->new(1);
+
 =head1 DESCRIPTION
+
+This module represents a PKCS #11 object or key within the PKCS #11 provider.
 
 =head1 METHODS
 
 =over 4
 
-=item $object = Crypt::PKCS11::Object->new
+=item $object = Crypt::PKCS11::Object->new ($id)
 
-=item $object->id
+Create a new Crypt::PKCS11::Object object, must give the ID of the object on
+creation.
+
+=item $id = $object->id
+
+Return the ID of the object which is a `CK_OBJECT_HANDLE`.
 
 =back
 
