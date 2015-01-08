@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 #
-# Copyright (c) 2014 Jerry Lundström <lundstrom.jerry@gmail.com>
-# Copyright (c) 2014 .SE (The Internet Infrastructure Foundation)
+# Copyright (c) 2015 Jerry Lundström <lundstrom.jerry@gmail.com>
+# Copyright (c) 2015 .SE (The Internet Infrastructure Foundation)
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -202,8 +202,8 @@ my %FB_T = (
 open(HEADER, 'pkcs11t.h') || die;
 open(XS, '>pkcs11_struct.xs') || die;
 print XS '/*
- * Copyright (c) 2014 Jerry Lundström <lundstrom.jerry@gmail.com>
- * Copyright (c) 2014 .SE (The Internet Infrastructure Foundation)
+ * Copyright (c) 2015 Jerry Lundström <lundstrom.jerry@gmail.com>
+ * Copyright (c) 2015 .SE (The Internet Infrastructure Foundation)
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -234,8 +234,8 @@ print XS '/*
 ';
 open(C, '>crypt_pkcs11_struct.c') || die;
 print C '/*
- * Copyright (c) 2014 Jerry Lundström <lundstrom.jerry@gmail.com>
- * Copyright (c) 2014 .SE (The Internet Infrastructure Foundation)
+ * Copyright (c) 2015 Jerry Lundström <lundstrom.jerry@gmail.com>
+ * Copyright (c) 2015 .SE (The Internet Infrastructure Foundation)
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -270,8 +270,8 @@ extern int crypt_pkcs11_xs_SvUOK(SV* sv);
 ';
 open(H, '>crypt_pkcs11_struct.h') || die;
 print H '/*
- * Copyright (c) 2014 Jerry Lundström <lundstrom.jerry@gmail.com>
- * Copyright (c) 2014 .SE (The Internet Infrastructure Foundation)
+ * Copyright (c) 2015 Jerry Lundström <lundstrom.jerry@gmail.com>
+ * Copyright (c) 2015 .SE (The Internet Infrastructure Foundation)
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without

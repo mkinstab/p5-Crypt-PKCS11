@@ -1,5 +1,5 @@
-# Copyright (c) 2014 Jerry Lundström <lundstrom.jerry@gmail.com>
-# Copyright (c) 2014 .SE (The Internet Infrastructure Foundation)
+# Copyright (c) 2015 Jerry Lundström <lundstrom.jerry@gmail.com>
+# Copyright (c) 2015 .SE (The Internet Infrastructure Foundation)
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
