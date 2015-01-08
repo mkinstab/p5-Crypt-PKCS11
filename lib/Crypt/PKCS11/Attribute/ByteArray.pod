@@ -10,8 +10,6 @@
 
 =over 4
 
-=item $byteArray = Crypt::PKCS11::Attribute::ByteArray->new
-
 =item $byteArray->set (@bytes)
 
 =item @bytes = $byteArray->get

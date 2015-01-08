@@ -10,8 +10,6 @@
 
 =over 4
 
-=item $attributeArray = Crypt::PKCS11::Attribute::AttributeArray->new
-
 =item $attributeArray->push
 
 =item $attributeArray->pop

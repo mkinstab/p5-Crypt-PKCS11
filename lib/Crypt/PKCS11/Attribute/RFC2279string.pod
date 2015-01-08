@@ -2,19 +2,39 @@
 
 =head1 NAME
 
+Crypt::PKCS11::Attribute::RFC2279string - A RFC2279 string PKCS #11 attribute.
+
 =head1 SYNPOSIS
 
+  package Crypt::PKCS11::Attribute::Label;
+  use base qw(Crypt::PKCS11::Attribute::RFC2279string);
+  use Crypt::PKCS11 qw(:constant);
+  sub type () { CKA_LABEL }
+
 =head1 DESCRIPTION
+
+A PKCS #11 attribute containing a RFC2279 string value.
 
 =head1 METHODS
 
 =over 4
 
-=item $rfc2279string = Crypt::PKCS11::Attribute::RFC2279string->new
+=item $rfc2279string = $rfc2279string->set ($string)
 
-=item $rfc2279string->set ($string)
+Sets the RFC2279 string value within the attribute. May croak on error and
+returns itself on success.
+
+=over 4
+
+=item $string
+
+A defined scalar.
+
+=back
 
 =item $string = $rfc2279string->get
+
+Return the RFC2279 string value within the attribute or undef if not set.
 
 =back
 

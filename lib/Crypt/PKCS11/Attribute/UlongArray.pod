@@ -10,8 +10,6 @@
 
 =over 4
 
-=item $ulongArray = Crypt::PKCS11::Attribute::UlongArray->new
-
 =item $ulongArray->set (@ulongs)
 
 =item @ulongs = $ulongArray->get

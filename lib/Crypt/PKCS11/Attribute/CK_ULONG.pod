@@ -2,19 +2,39 @@
 
 =head1 NAME
 
+Crypt::PKCS11::Attribute::CK_ULONG - A CK_ULONG PKCS #11 attribute.
+
 =head1 SYNPOSIS
 
+  package Crypt::PKCS11::Attribute::Class;
+  use base qw(Crypt::PKCS11::Attribute::CK_ULONG);
+  use Crypt::PKCS11 qw(:constant);
+  sub type () { CKA_CLASS }
+
 =head1 DESCRIPTION
+
+A PKCS #11 attribute containing a CK_ULONG value.
 
 =head1 METHODS
 
 =over 4
 
-=item $ck_ulong = Crypt::PKCS11::Attribute::CK_ULONG->new
+=item $ck_ulong = $ck_ulong->set ($ulong)
 
-=item $ck_ulong->set ($ulong)
+Sets the CK_ULONG value within the attribute. May croak on error and returns
+itself on success.
+
+=over 4
+
+=item $ulong
+
+Must be an unsigned integer value.
+
+=back
 
 =item $ulong = $ck_ulong->get
+
+Return the CK_ULONG value within the attribute or undef if not set.
 
 =back
 

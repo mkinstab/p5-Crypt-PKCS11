@@ -2,19 +2,39 @@
 
 =head1 NAME
 
+Crypt::PKCS11::Attribute::CK_BBOOL - A CK_BBOOL PKCS #11 attribute.
+
 =head1 SYNPOSIS
 
+  package Crypt::PKCS11::Attribute::Token;
+  use base qw(Crypt::PKCS11::Attribute::CK_BBOOL);
+  use Crypt::PKCS11 qw(:constant);
+  sub type () { CKA_TOKEN }
+
 =head1 DESCRIPTION
+
+A PKCS #11 attribute containing a CK_BBOOL value.
 
 =head1 METHODS
 
 =over 4
 
-=item $ck_bbool = Crypt::PKCS11::Attribute::CK_BBOOL->new
+=item $ck_bbool = $ck_bbool->set ($bool)
 
-=item $ck_bbool->set ($bool)
+Sets the CK_BBOOL value within the attribute. May croak on error and returns
+itself on success.
+
+=over 4
+
+=item $bool
+
+Must be defined and set to true (!0) or false (0).
+
+=back
 
 =item $bool = $ck_bbool->get
+
+Return the CK_BBOOL value within the attribute or undef if not set.
 
 =back
 

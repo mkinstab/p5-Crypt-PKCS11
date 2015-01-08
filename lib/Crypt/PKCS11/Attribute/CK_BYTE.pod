@@ -2,19 +2,39 @@
 
 =head1 NAME
 
+Crypt::PKCS11::Attribute::CK_BYTE - A CK_BYTE PKCS #11 attribute.
+
 =head1 SYNPOSIS
 
+  package Crypt::PKCS11::Attribute::VendorDefined;
+  use base qw(Crypt::PKCS11::Attribute::CK_BYTE);
+  use Crypt::PKCS11 qw(:constant);
+  sub type () { CKA_VENDOR_DEFINED }
+
 =head1 DESCRIPTION
+
+A PKCS #11 attribute containing a CK_BYTE value.
 
 =head1 METHODS
 
 =over 4
 
-=item $ck_byte = Crypt::PKCS11::Attribute::CK_BYTE->new
+=item $ck_byte = $ck_byte->set ($byte)
 
-=item $ck_byte->set ($byte)
+Sets the CK_BYTE value within the attribute. May croak on error and returns
+itself on success.
+
+=over 4
+
+=item $byte
+
+Must be an unsigned integer value between 0 and 255.
+
+=back
 
 =item $byte = $ck_byte->get
+
+Return the CK_BYTE value within the attribute or undef if not set.
 
 =back
 
