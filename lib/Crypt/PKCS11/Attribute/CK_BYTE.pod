@@ -6,10 +6,15 @@ Crypt::PKCS11::Attribute::CK_BYTE - A CK_BYTE PKCS #11 attribute.
 
 =head1 SYNPOSIS
 
+  # Create an attribute module with a CK_BYTE value
   package Crypt::PKCS11::Attribute::VendorDefined;
   use base qw(Crypt::PKCS11::Attribute::CK_BYTE);
   use Crypt::PKCS11 qw(:constant);
   sub type () { CKA_VENDOR_DEFINED }
+
+  # Use the attribute
+  my $attribute = Crypt::PKCS11::Attribute::VendorDefined->new;
+  $attribute->set(99);
 
 =head1 DESCRIPTION
 

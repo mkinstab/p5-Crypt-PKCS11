@@ -2,17 +2,44 @@
 
 =head1 NAME
 
+Crypt::PKCS11::Attribute::UlongArray - An array of CK_ULONG values as an PKCS #11 attribute.
+
 =head1 SYNPOSIS
 
+  # Create an attribute module with an array of CK_BYTE values
+  package Crypt::PKCS11::Attribute::AllowedMechanisms;
+  use base qw(Crypt::PKCS11::Attribute::UlongArray);
+  use Crypt::PKCS11 qw(:constant);
+  sub type () { CKA_ALLOWED_MECHANISMS }
+
+  # Use the attribute
+  my $attribute = Crypt::PKCS11::Attribute::AllowedMechanisms->new;
+  $attribute->set(CKM_..., CKM_...);
+
 =head1 DESCRIPTION
+
+A PKCS #11 attribute containing an array of CK_ULONG values.
 
 =head1 METHODS
 
 =over 4
 
-=item $ulongArray->set (@ulongs)
+=item $ulongArray = $ulongArray->set (@ulongs)
+
+Set the array of CK_ULONG values for the attribute from the list of arguments.
+May croak on error and returns itself on success.
+
+=over 4
+
+=item @ulongs
+
+A list of CK_ULONG values, each must be an unsigned integer value.
+
+=back
 
 =item @ulongs = $ulongArray->get
+
+Return a list of CK_ULONG values within the attribute or undef if not set.
 
 =back
 

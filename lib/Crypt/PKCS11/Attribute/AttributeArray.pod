@@ -2,29 +2,80 @@
 
 =head1 NAME
 
+Crypt::PKCS11::Attribute::AttributeArray - An array of Crypt::PKCS11::Attribute objects as an PKCS #11 attribute.
+
 =head1 SYNPOSIS
 
+  # Create an attribute module with an array of Crypt::PKCS11::Attribute objects
+  package Crypt::PKCS11::Attribute::WrapTemplate;
+  use base qw(Crypt::PKCS11::Attribute::AttributeArray);
+  use Crypt::PKCS11 qw(:constant);
+  sub type () { CKA_WRAP_TEMPLATE }
+
+  # Use the attribute
+  my $attribute = Crypt::PKCS11::Attribute::WrapTemplate->new;
+  $attribute->push(
+      Crypt::PKCS11::Attribute::Token->new->set(1)
+  );
+
 =head1 DESCRIPTION
+
+A PKCS #11 attribute containing an array of Crypt::PKCS11::Attribute objects.
+
+This module is similar to `Crypt::PKCS11::Attributes` but is specially used to
+contain attributes within attributes.
 
 =head1 METHODS
 
 =over 4
 
-=item $attributeArray->push
+=item $attributeArray = $attributeArray->push (...)
 
-=item $attributeArray->pop
+Appends all arguments to the container, will croak unless each argument is a
+`Crypt::PKCS11::Attribute`. Returns itself on success.
 
-=item $attributeArray->shift
+=item $attribute = $attributeArray->pop
 
-=item $attributeArray->unshift
+Removes and returns the last attribute in the container or undef if there are
+none.
 
-=item $attributeArray->foreach ($cb)
+=item $attribute = $attributeArray->shift
 
-=item $attributeArray->toArray
+Removes and returns the first attribute in the container or undef if there are
+none.
 
-=item $attributeArray->set (@attributes)
+=item $attributeArray = $attributeArray->unshift (...)
+
+Prepends all arguments to the container, will croak unless each argument is a
+`Crypt::PKCS11::Attribute`. Returns itself on success.
+
+=item $attributeArray = $attributeArray->foreach ($cb)
+
+For each attribute in the container, call the given callback and supply it with
+the attribute. Will croak if no callback is given and returns itself on success.
+
+=item $array_ref = $attributeArray->toArray
+
+Convert the container to an array reference in the format needed for the XS
+calls, see `TEMPLATE ARGUMENT` in `Crypt::PKCS11::XS`. Croaks on error.
+
+=item $attributeArray = $attributeArray->set (@attributes)
+
+Set the array of Crypt::PKCS11::Attribute objects for the attribute from the
+list of arguments. May croak on error and returns itself on success.
+
+=over 4
+
+=item @bytes
+
+A list of Crypt::PKCS11::Attribute objects.
+
+=back
 
 =item $pValue = $attributeArray->pValue
+
+Overloads the default pValue call and returns an array references as decribed in
+the `toArray` call.
 
 =back
 

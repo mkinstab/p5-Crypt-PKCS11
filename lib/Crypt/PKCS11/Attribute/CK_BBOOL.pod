@@ -6,10 +6,15 @@ Crypt::PKCS11::Attribute::CK_BBOOL - A CK_BBOOL PKCS #11 attribute.
 
 =head1 SYNPOSIS
 
+  # Create an attribute module with a CK_BBOOL value
   package Crypt::PKCS11::Attribute::Token;
   use base qw(Crypt::PKCS11::Attribute::CK_BBOOL);
   use Crypt::PKCS11 qw(:constant);
   sub type () { CKA_TOKEN }
+
+  # Use the attribute
+  my $attribute = Crypt::PKCS11::Attribute::Token->new;
+  $attribute->set(1);
 
 =head1 DESCRIPTION
 

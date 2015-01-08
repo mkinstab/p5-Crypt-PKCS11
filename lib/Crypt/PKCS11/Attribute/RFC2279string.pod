@@ -6,10 +6,15 @@ Crypt::PKCS11::Attribute::RFC2279string - A RFC2279 string PKCS #11 attribute.
 
 =head1 SYNPOSIS
 
+  # Create an attribute module with a RFC2279 string value
   package Crypt::PKCS11::Attribute::Label;
   use base qw(Crypt::PKCS11::Attribute::RFC2279string);
   use Crypt::PKCS11 qw(:constant);
   sub type () { CKA_LABEL }
+
+  # Use the attribute
+  my $attribute = Crypt::PKCS11::Attribute::Label->new;
+  $attribute->set("A Label");
 
 =head1 DESCRIPTION
 

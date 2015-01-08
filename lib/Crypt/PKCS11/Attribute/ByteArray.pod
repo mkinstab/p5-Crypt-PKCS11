@@ -2,17 +2,45 @@
 
 =head1 NAME
 
+Crypt::PKCS11::Attribute::ByteArray - An array of CK_BYTE values as an PKCS #11 attribute.
+
 =head1 SYNPOSIS
 
+  # Create an attribute module with an array of CK_BYTE values
+  package Crypt::PKCS11::Attribute::ObjectId;
+  use base qw(Crypt::PKCS11::Attribute::ByteArray);
+  use Crypt::PKCS11 qw(:constant);
+  sub type () { CKA_OBJECT_ID }
+
+  # Use the attribute
+  my $attribute = Crypt::PKCS11::Attribute::ObjectId->new;
+  $attribute->set(0, 1, 2);
+
 =head1 DESCRIPTION
+
+A PKCS #11 attribute containing an array of CK_BYTE values.
 
 =head1 METHODS
 
 =over 4
 
-=item $byteArray->set (@bytes)
+=item $byteArray = $byteArray->set (@bytes)
+
+Set the array of CK_BYTE values for the attribute from the list of arguments.
+May croak on error and returns itself on success.
+
+=over 4
+
+=item @bytes
+
+A list of CK_BYTE values, each must be an unsigned integer value between 0 and
+255.
+
+=back
 
 =item @bytes = $byteArray->get
+
+Return a list of CK_BYTE values within the attribute or undef if not set.
 
 =back
 

@@ -6,10 +6,15 @@ Crypt::PKCS11::Attribute::CK_DATE - A CK_DATE PKCS #11 attribute.
 
 =head1 SYNPOSIS
 
+  # Create an attribute module with a CK_DATE value
   package Crypt::PKCS11::Attribute::StartDate;
   use base qw(Crypt::PKCS11::Attribute::CK_DATE);
   use Crypt::PKCS11 qw(:constant);
   sub type () { CKA_START_DATE }
+
+  # Use the attribute
+  my $attribute = Crypt::PKCS11::Attribute::StartDate->new;
+  $attribute->set("20150101");
 
 =head1 DESCRIPTION
 
