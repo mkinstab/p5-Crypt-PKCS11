@@ -49,6 +49,14 @@ Return the CK_BBOOL value within the attribute or undef if not set.
 
 Derived from the RSA Security Inc. PKCS #11 Cryptographic Token Interface (Cryptoki)
 
+=head1 AUTHOR
+
+Jerry Lundström <lundstrom.jerry@gmail.com>
+
+=head1 REPORTING BUGS
+
+Report bugs at https://github.com/dotse/p5-Crypt-PKCS11/issues .
+
 =head1 LICENSE
 
   Copyright (c) 2015 Jerry Lundström <lundstrom.jerry@gmail.com>
