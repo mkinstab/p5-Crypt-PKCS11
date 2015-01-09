@@ -91,7 +91,7 @@ private key.
 
 A module that represent a PKCS #11 attribute that are used in templates when for
 example creating keys. This is only a base class, see
-`Crypt::PKCS11::Attributes` for a list of all available attribute.
+`Crypt::PKCS11::Attributes` for a list of all available attributes.
 
 =item Crypt::PKCS11::Attributes
 
