@@ -22,9 +22,11 @@ A PKCS #11 attribute containing a CK_DATE value.
 
 =head1 METHODS
 
+See also `Crypt::PKCS11::Attribute` for the base module methods.
+
 =over 4
 
-=item $ck_date = $ck_date->set (< $date || $year, $month, $day >)
+=item $attribute = $attribute->set (< $date || $year, $month, $day >)
 
 Sets the CK_DATE value within the attribute. May croak on error and returns
 itself on success.
@@ -42,7 +44,7 @@ Set the CK_DATE by giving the year, month and day as seperate arguments.
 
 =back
 
-=item $date = $ck_date->get
+=item $date = $attribute->get
 
 Return the CK_DATE value within the attribute or undef if not set.
 

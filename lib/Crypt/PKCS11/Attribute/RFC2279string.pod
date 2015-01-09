@@ -22,9 +22,11 @@ A PKCS #11 attribute containing a RFC2279 string value.
 
 =head1 METHODS
 
+See also `Crypt::PKCS11::Attribute` for the base module methods.
+
 =over 4
 
-=item $rfc2279string = $rfc2279string->set ($string)
+=item $attribute = $attribute->set ($string)
 
 Sets the RFC2279 string value within the attribute. May croak on error and
 returns itself on success.
@@ -37,7 +39,7 @@ A defined scalar.
 
 =back
 
-=item $string = $rfc2279string->get
+=item $string = $attribute->get
 
 Return the RFC2279 string value within the attribute or undef if not set.
 

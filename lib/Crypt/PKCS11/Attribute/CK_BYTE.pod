@@ -22,9 +22,11 @@ A PKCS #11 attribute containing a CK_BYTE value.
 
 =head1 METHODS
 
+See also `Crypt::PKCS11::Attribute` for the base module methods.
+
 =over 4
 
-=item $ck_byte = $ck_byte->set ($byte)
+=item $attribute = $attribute->set ($byte)
 
 Sets the CK_BYTE value within the attribute. May croak on error and returns
 itself on success.
@@ -37,7 +39,7 @@ Must be an unsigned integer value between 0 and 255.
 
 =back
 
-=item $byte = $ck_byte->get
+=item $byte = $attribute->get
 
 Return the CK_BYTE value within the attribute or undef if not set.
 

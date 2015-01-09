@@ -27,6 +27,8 @@ contain attributes within attributes.
 
 =head1 METHODS
 
+See also `Crypt::PKCS11::Attribute` for the base module methods.
+
 =over 4
 
 =item $attributeArray = $attributeArray->push (...)

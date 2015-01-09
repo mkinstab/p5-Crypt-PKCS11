@@ -22,9 +22,11 @@ A PKCS #11 attribute containing a CK_ULONG value.
 
 =head1 METHODS
 
+See also `Crypt::PKCS11::Attribute` for the base module methods.
+
 =over 4
 
-=item $ck_ulong = $ck_ulong->set ($ulong)
+=item $attribute = $attribute->set ($ulong)
 
 Sets the CK_ULONG value within the attribute. May croak on error and returns
 itself on success.
@@ -37,7 +39,7 @@ Must be an unsigned integer value.
 
 =back
 
-=item $ulong = $ck_ulong->get
+=item $ulong = $attribute->get
 
 Return the CK_ULONG value within the attribute or undef if not set.
 
