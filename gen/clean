@@ -1,0 +1,2 @@
+#!/bin/sh
+rm *.gcov *.gcda *.gcno -rf cover_db
