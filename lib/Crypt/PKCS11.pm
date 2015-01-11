@@ -1653,9 +1653,9 @@ sub Initialize {
         or exists $args->{UnlockMutex})
     {
         unless (ref($args->{CreateMutex}) eq 'CODE'
-            or ref($args->{DestroyMutex}) eq 'CODE'
-            or ref($args->{LockMutex}) eq 'CODE'
-            or ref($args->{UnlockMutex}) eq 'CODE')
+            and ref($args->{DestroyMutex}) eq 'CODE'
+            and ref($args->{LockMutex}) eq 'CODE'
+            and ref($args->{UnlockMutex}) eq 'CODE')
         {
             confess 'Any or all of Mutex options are invalid';
         }
