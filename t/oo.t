@@ -150,6 +150,8 @@ sub mytests {
         ok( $obj->load($so), $so.' load' );
         ok( $obj->Initialize, $so.' Initialize' );
         isa_ok( $obj->GetInfo, 'HASH', $so.' GetInfo' );
+        my %hash = $obj->GetInfo;
+        ok( scalar %hash, 'GetInfo %hash' );
         isa_ok( $s = $obj->OpenSession($slotWithToken, CKF_SERIAL_SESSION), 'Crypt::PKCS11::Session', $so.' OpenSession' );
         ok( $obj->Finalize, $so.' Finalize' );
         signVerifyCheck($obj);
