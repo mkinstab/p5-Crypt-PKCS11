@@ -35,6 +35,28 @@ ok( $@, '$obj->Initialize({ CreateMutex => sub{}, DestroyMutex => sub{}, LockMut
 is( $obj->Initialize({ CreateMutex => sub{}, DestroyMutex => sub{}, LockMutex => sub{}, UnlockMutex => sub{} }), undef, '$obj->Initialize({ CreateMutex => sub{}, DestroyMutex => sub{}, LockMutex => sub{}, UnlockMutex => sub{} })' );
 is( $obj->Finalize, undef, '$obj->Finalize' );
 is( $obj->GetInfo, undef, '$obj->GetInfo' );
+is( $obj->GetSlotList, undef, '$obj->GetSlotList' );
+$@ = undef; eval { $obj->GetSlotInfo; };
+ok( $@, '$obj->GetSlotInfo' );
+is( $obj->GetSlotInfo(1), undef, '$obj->GetSlotInfo' );
+$@ = undef; eval { $obj->GetTokenInfo; };
+ok( $@, '$obj->GetTokenInfo' );
+is( $obj->GetTokenInfo(1), undef, '$obj->GetTokenInfo' );
+$@ = undef; eval { $obj->GetMechanismList; };
+ok( $@, '$obj->GetMechanismList' );
+is( $obj->GetMechanismList(1), undef, '$obj->GetMechanismList' );
+$@ = undef; eval { $obj->GetMechanismInfo; };
+ok( $@, '$obj->GetMechanismInfo' );
+$@ = undef; eval { $obj->GetMechanismInfo(1); };
+ok( $@, '$obj->GetMechanismInfo' );
+is( $obj->GetMechanismInfo(1, 1), undef, '$obj->GetMechanismInfo' );
+$@ = undef; eval { $obj->OpenSession(undef); };
+ok( $@, '$obj->OpenSession(undef)' );
+$@ = undef; eval { $obj->OpenSession(1, undef, 1); };
+ok( $@, '$obj->OpenSession(1, undef, 1)' );
+is( $obj->OpenSession(1, undef, sub{}), undef, '$obj->OpenSession(1, undef, sub{})' );
+$@ = undef; eval { $obj->CloseAllSessions; };
+ok( $@, '$obj->CloseAllSessions' );
 
 $rv = 0;
 if ($ENV{TEST_DEVEL_COVER}) {
@@ -44,10 +66,13 @@ if ($ENV{TEST_DEVEL_COVER}) {
 }
 is( $rv, 0, 'Failed on line '.$rv );
 
-*Crypt::PKCS11::XS::new = sub ($) {};
-eval {
-    Crypt::PKCS11->new;
-};
-ok( $@, '*Crypt::PKCS11::XS::new undef' );
+{
+    local $SIG{__WARN__} = sub {};
+    *Crypt::PKCS11::XS::new = sub ($) {};
+    eval {
+        Crypt::PKCS11->new;
+    };
+    ok( $@, '*Crypt::PKCS11::XS::new undef' );
+}
 
 done_testing;

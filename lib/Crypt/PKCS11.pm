@@ -1601,6 +1601,7 @@ sub new {
     };
     bless $self, $class;
 
+    # uncoverable branch true
     unless (defined($self->{pkcs11xs} = Crypt::PKCS11::XS->new())) {
         confess __PACKAGE__, 'Unable to create Crypt::PKCS11::XS object';
     }

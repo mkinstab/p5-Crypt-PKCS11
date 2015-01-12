@@ -146,13 +146,32 @@ sub mytests {
             delete $MECHANISM_SIGNVERIFY{CKM_RIPEMD160_RSA_PKCS};
         }
 
+        my (%hash, @array, $a);
         isa_ok( $obj = Crypt::PKCS11->new, 'Crypt::PKCS11', $so.' new' );
         ok( $obj->load($so), $so.' load' );
         ok( $obj->Initialize, $so.' Initialize' );
         isa_ok( $obj->GetInfo, 'HASH', $so.' GetInfo' );
-        my %hash = $obj->GetInfo;
+        %hash = $obj->GetInfo;
         ok( scalar %hash, 'GetInfo %hash' );
+        isa_ok( $obj->GetSlotList, 'ARRAY', $so.' GetSlotList' );
+        @array = $obj->GetSlotList;
+        ok( scalar @array, 'GetSlotList @array' );
+        isa_ok( $obj->GetSlotInfo($slotWithToken), 'HASH', $so.' GetSlotInfo' );
+        %hash = $obj->GetSlotInfo($slotWithToken);
+        ok( scalar %hash, 'GetSlotInfo %hash' );
+        isa_ok( $obj->GetTokenInfo($slotWithToken), 'HASH', $so.' GetTokenInfo' );
+        %hash = $obj->GetTokenInfo($slotWithToken);
+        ok( scalar %hash, 'GetTokenInfo %hash' );
+        isa_ok( $obj->GetMechanismList($slotWithToken), 'ARRAY', $so.' GetMechanismList' );
+        @array = $obj->GetMechanismList($slotWithToken);
+        ok( scalar @array, 'GetMechanismList @array' );
+        isa_ok( $obj->GetMechanismInfo($slotWithToken, $array[0]), 'HASH', $so.' GetMechanismInfo' );
+        %hash = $obj->GetMechanismInfo($slotWithToken, $array[0]);
+        ok( scalar %hash, 'GetMechanismInfo %hash' );
         isa_ok( $s = $obj->OpenSession($slotWithToken, CKF_SERIAL_SESSION), 'Crypt::PKCS11::Session', $so.' OpenSession' );
+        ok( $s->CloseSession, $so.' CloseSession' );
+        ok( $obj->CloseAllSessions($slotWithToken), $so.' CloseAllSessions' );
+        is( $obj->WaitForSlotEvent(CKF_DONT_BLOCK, $a = undef), undef, $so.' WaitForSlotEvent' );
         ok( $obj->Finalize, $so.' Finalize' );
         signVerifyCheck($obj);
         ok( $obj->unload, $so.' unload' );
