@@ -1744,7 +1744,7 @@ sub InitToken {
     my $self = shift;
     my ($slotID, $pin, $label);
 
-    if (scalar $@ == 2) {
+    if (scalar @_ == 2) {
         ($slotID, $label) = @_;
     }
     else {
