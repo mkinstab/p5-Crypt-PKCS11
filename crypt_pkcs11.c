@@ -1023,7 +1023,7 @@ CK_RV crypt_pkcs11_xs_C_InitToken(Crypt__PKCS11__XS* object, CK_SLOT_ID slotID, 
         return CKR_ARGUMENTS_BAD;
     }
 
-    if (!pPin) {
+    if (pPin) {
         if (!SvOK(pPin)) {
             return CKR_ARGUMENTS_BAD;
         }
@@ -1102,7 +1102,7 @@ CK_RV crypt_pkcs11_xs_C_InitPIN(Crypt__PKCS11__XS* object, CK_SESSION_HANDLE hSe
         return CKR_SESSION_HANDLE_INVALID;
     }
 
-    if (!pPin) {
+    if (pPin) {
         if (!SvOK(pPin)) {
             return CKR_ARGUMENTS_BAD;
         }
@@ -1151,7 +1151,7 @@ CK_RV crypt_pkcs11_xs_C_SetPIN(Crypt__PKCS11__XS* object, CK_SESSION_HANDLE hSes
         return CKR_SESSION_HANDLE_INVALID;
     }
 
-    if (!pOldPin) {
+    if (pOldPin) {
         if (!SvOK(pOldPin)) {
             return CKR_ARGUMENTS_BAD;
         }
@@ -1169,7 +1169,7 @@ CK_RV crypt_pkcs11_xs_C_SetPIN(Crypt__PKCS11__XS* object, CK_SESSION_HANDLE hSes
         }
     }
 
-    if (!pNewPin) {
+    if (pNewPin) {
         if (!SvOK(pNewPin)) {
             if (_pOldPin) {
                 SvREFCNT_dec(_pOldPin);
