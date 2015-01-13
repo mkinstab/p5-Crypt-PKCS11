@@ -993,7 +993,6 @@ sub mytests {
         decryptCheck($obj);
         signVerifyCheck($obj);
 
-        # TODO: setCreate/Destroy/Lock/Unlock-Mutex
 #        foreach (@$a) {
 #            myis( $obj->C_InitToken($_, "12345678", "ѪѫѬѪѫѬ"), Crypt::PKCS11::CKR_OK );
 
@@ -1027,7 +1026,6 @@ sub mytests {
 #        }
 
         myis( $obj->unload, Crypt::PKCS11::CKR_OK );
-        # TODO: clearCreate/Destroy/Lock/Unlock-Mutex
     }
 }
 

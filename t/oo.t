@@ -174,6 +174,9 @@ sub mytests {
         is( $obj->WaitForSlotEvent(CKF_DONT_BLOCK, $a = undef), undef, $so.' WaitForSlotEvent' );
         ok( $obj->Finalize, $so.' Finalize' );
         signVerifyCheck($obj);
+        ok( $obj->Initialize, $so.' Initialize' );
+        ok( $obj->InitToken($slotWithToken, "12345678", "ѪѫѬѪѫѬ"), 'InitToken '.$obj->errstr );
+        ok( $obj->Finalize, $so.' Finalize' );
         ok( $obj->unload, $so.' unload' );
     }
 }
