@@ -1038,7 +1038,7 @@ BEGIN {
 
 chdir('t');
 mytests;
-if ($HAVE_LEAKTRACE) {
+if ($HAVE_LEAKTRACE and $ENV{TEST_LEAKTRACE}) {
     $LEAK_TESTING = 1;
     leaks_cmp_ok { mytests; } '<', 1;
 }
