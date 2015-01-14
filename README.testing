@@ -1,4 +1,4 @@
-apt-get install build-essential libxml2-dev libsqlite3-dev sqlite3 libbotan1.10-dev libssl-dev autoconf automake libtool libcunit1-dev libxml2-utils libcppunit-dev wget sshfs
+apt-get install build-essential libxml2-dev libsqlite3-dev sqlite3 libbotan1.10-dev libssl-dev autoconf automake libtool libcunit1-dev libxml2-utils libcppunit-dev wget ccache libtest-checkmanifest-perl libtest-leaktrace-perl libtest-pod-coverage-perl libdevel-cover-perl
 
 wget --no-check-certificate http://www.opendnssec.org/files/source/softhsm-1.3.7.tar.gz
 wget --no-check-certificate http://www.opendnssec.org/files/source/testing/softhsm-2.0.0b2.tar.gz
@@ -52,3 +52,10 @@ patch MutexFactory.cpp <<EOF
  }
  
 EOF
+
+export TEST_DEVEL_COVER=1 RELEASE_TESTING=1 PATH="/usr/lib/ccache:$PATH"
+perl Makefile.PL
+make all test
+make clean
+perl Makefile.PL
+cover -test && chmod a+rx `find cover_db -type d`
