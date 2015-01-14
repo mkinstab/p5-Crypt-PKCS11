@@ -1793,6 +1793,7 @@ sub WaitForSlotEvent {
     my $slotID;
 
     $self->{rv} = $self->{pkcs11xs}->C_WaitForSlotEvent(defined $flags ? $flags : 0, $slotID);
+    # uncoverable branch true
     return $self->{rv} == CKR_OK ? $slotID : undef;
 }
 
@@ -1940,9 +1941,11 @@ use Crypt::PKCS11 qw(:constant);
 sub toHash {
     my ($mechanism, $pParameter);
 
+    # uncoverable branch true
     unless ($_[0]->get_mechanism($mechanism) == CKR_OK) {
         confess 'Unable to get mechanism';
     }
+    # uncoverable branch true
     unless ($_[0]->get_pParameter($pParameter) == CKR_OK) {
         confess 'Unable to get pParameter';
     }

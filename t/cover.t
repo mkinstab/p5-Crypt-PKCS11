@@ -50,6 +50,13 @@ ok( $@, '$obj->GetMechanismInfo' );
 $@ = undef; eval { $obj->GetMechanismInfo(1); };
 ok( $@, '$obj->GetMechanismInfo' );
 is( $obj->GetMechanismInfo(1, 1), undef, '$obj->GetMechanismInfo' );
+$@ = undef; eval { $obj->InitToken; };
+ok( $@, '$obj->InitToken' );
+$@ = undef; eval { $obj->InitToken(undef, undef); };
+ok( $@, '$obj->InitToken(undef, undef)' );
+$@ = undef; eval { $obj->InitToken(1, undef); };
+ok( $@, '$obj->InitToken(1, undef)' );
+is( $obj->InitToken(1, 1), undef, '$obj->InitToken' );
 $@ = undef; eval { $obj->OpenSession(undef); };
 ok( $@, '$obj->OpenSession(undef)' );
 $@ = undef; eval { $obj->OpenSession(1, undef, 1); };
@@ -57,6 +64,17 @@ ok( $@, '$obj->OpenSession(1, undef, 1)' );
 is( $obj->OpenSession(1, undef, sub{}), undef, '$obj->OpenSession(1, undef, sub{})' );
 $@ = undef; eval { $obj->CloseAllSessions; };
 ok( $@, '$obj->CloseAllSessions' );
+is( $obj->CloseAllSessions(1), undef, '$obj->CloseAllSessions' );
+is( $obj->WaitForSlotEvent, undef, '$obj->WaitForSlotEvent' );
+ok( $obj->errno, '$obj->errno' );
+
+$@ = undef; eval { Crypt::PKCS11::struct::toBytes; };
+ok( $@, 'Crypt::PKCS11::struct::toBytes' );
+
+my $mechanism = Crypt::PKCS11::CK_MECHANISM->new;
+$mechanism->set_mechanism(CKM_RSA_PKCS_KEY_PAIR_GEN);
+$mechanism->set_pParameter('abc');
+isa_ok( $mechanism->toHash, 'HASH', '$mechanism->toHash' );
 
 $rv = 0;
 if ($ENV{TEST_DEVEL_COVER}) {
@@ -69,10 +87,20 @@ is( $rv, 0, 'Failed on line '.$rv );
 {
     local $SIG{__WARN__} = sub {};
     *Crypt::PKCS11::XS::new = sub ($) {};
-    eval {
-        Crypt::PKCS11->new;
-    };
+    $@ = undef; eval { Crypt::PKCS11->new; };
     ok( $@, '*Crypt::PKCS11::XS::new undef' );
+}
+
+{
+    local $SIG{__WARN__} = sub {};
+    *Crypt::PKCS11::CK_MECHANISMPtr::get_pParameter = sub ($) { return CKR_GENERAL_ERROR; };
+    $mechanism = Crypt::PKCS11::CK_MECHANISM->new;
+    $@ = undef; eval { $mechanism->toHash; };
+    ok( $@, '$mechanism->toHash' );
+    *Crypt::PKCS11::CK_MECHANISMPtr::get_mechanism = sub ($) { return CKR_GENERAL_ERROR; };
+    $mechanism = Crypt::PKCS11::CK_MECHANISM->new;
+    $@ = undef; eval { $mechanism->toHash; };
+    ok( $@, '$mechanism->toHash' );
 }
 
 done_testing;
