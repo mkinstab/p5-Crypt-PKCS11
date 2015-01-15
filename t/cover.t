@@ -2,7 +2,13 @@
 
 use Test::More;
 use Crypt::PKCS11 qw(:constant);
+use Crypt::PKCS11::Attribute;
+use Crypt::PKCS11::Attributes;
+use Crypt::PKCS11::Object;
+use Crypt::PKCS11::Session;
 use Scalar::Util qw(blessed);
+
+# Crypt/PKCS11.pm
 
 $obj = eval {
     local $SIG{__WARN__} = sub {};
@@ -86,13 +92,6 @@ is( $rv, 0, 'Failed on line '.$rv );
 
 {
     local $SIG{__WARN__} = sub {};
-    *Crypt::PKCS11::XS::new = sub ($) {};
-    $@ = undef; eval { Crypt::PKCS11->new; };
-    ok( $@, '*Crypt::PKCS11::XS::new undef' );
-}
-
-{
-    local $SIG{__WARN__} = sub {};
     *Crypt::PKCS11::CK_MECHANISMPtr::get_pParameter = sub ($) { return CKR_GENERAL_ERROR; };
     $mechanism = Crypt::PKCS11::CK_MECHANISM->new;
     $@ = undef; eval { $mechanism->toHash; };
@@ -101,6 +100,54 @@ is( $rv, 0, 'Failed on line '.$rv );
     $mechanism = Crypt::PKCS11::CK_MECHANISM->new;
     $@ = undef; eval { $mechanism->toHash; };
     ok( $@, '$mechanism->toHash' );
+}
+
+# Crypt/PKCS11/Attribute.pm
+
+$obj = eval {
+    local $SIG{__WARN__} = sub {};
+    Crypt::PKCS11::Attribute::new;
+};
+ok( blessed $obj, 'Crypt::PKCS11::Attribute::new' );
+isa_ok( $obj = Crypt::PKCS11::Attribute->new, 'Crypt::PKCS11::Attribute', 'Crypt::PKCS11::Attribute->new' );
+isa_ok( $obj = $obj->new, 'Crypt::PKCS11::Attribute', 'Crypt::PKCS11::Attribute $obj->new' );
+
+# Crypt/PKCS11/Attributes.pm
+
+$obj = eval {
+    local $SIG{__WARN__} = sub {};
+    Crypt::PKCS11::Attributes::new;
+};
+ok( blessed $obj, 'Crypt::PKCS11::Attributes::new' );
+isa_ok( $obj = Crypt::PKCS11::Attributes->new, 'Crypt::PKCS11::Attributes', 'Crypt::PKCS11::Attributes->new' );
+isa_ok( $obj = $obj->new, 'Crypt::PKCS11::Attributes', 'Crypt::PKCS11::Attributes $obj->new' );
+
+# Crypt/PKCS11/Object.pm
+
+$obj = eval {
+    local $SIG{__WARN__} = sub {};
+    Crypt::PKCS11::Object::new(undef, 1);
+};
+ok( blessed $obj, 'Crypt::PKCS11::Object::new' );
+isa_ok( $obj = Crypt::PKCS11::Object->new(1), 'Crypt::PKCS11::Object', 'Crypt::PKCS11::Object->new' );
+isa_ok( $obj = $obj->new(1), 'Crypt::PKCS11::Object', 'Crypt::PKCS11::Object $obj->new' );
+
+# Crypt/PKCS11/Session.pm
+
+$obj = eval {
+    local $SIG{__WARN__} = sub {};
+    Crypt::PKCS11::Session::new(undef, Crypt::PKCS11::XS->new, 1);
+};
+ok( blessed $obj, 'Crypt::PKCS11::Session::new' );
+isa_ok( $obj = Crypt::PKCS11::Session->new(Crypt::PKCS11::XS->new, 1), 'Crypt::PKCS11::Session', 'Crypt::PKCS11::Session->new' );
+isa_ok( $obj = $obj->new(Crypt::PKCS11::XS->new, 1), 'Crypt::PKCS11::Session', 'Crypt::PKCS11::Session $obj->new' );
+
+# NOTE: This must run last!
+{
+    local $SIG{__WARN__} = sub {};
+    *Crypt::PKCS11::XS::new = sub ($) {};
+    $@ = undef; eval { Crypt::PKCS11->new; };
+    ok( $@, '*Crypt::PKCS11::XS::new undef' );
 }
 
 done_testing;
