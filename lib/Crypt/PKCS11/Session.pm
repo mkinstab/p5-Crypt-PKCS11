@@ -54,7 +54,7 @@ sub new {
 }
 
 sub DESTROY {
-    if (exists $_[0]->{session}) {
+    if (exists $_[0]->{session} and defined $_[0]->{pkcs11xs}) {
         $_[0]->{pkcs11xs}->C_CloseSession($_[0]->{session});
     }
 }
