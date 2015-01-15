@@ -4692,9 +4692,6 @@ void crypt_pkcs11_ck_pbe_params_DESTROY(Crypt__PKCS11__CK_PBE_PARAMS* object) {
         if (object->private.pSalt) {
             free(object->private.pSalt);
         }
-        if (object->private.pInitVector) {
-            free(object->private.pInitVector);
-        }
         free(object);
     }
 }
@@ -6552,9 +6549,6 @@ void crypt_pkcs11_ck_wtls_master_key_derive_params_DESTROY(Crypt__PKCS11__CK_WTL
         if (object->private.pVersion) {
             free(object->private.pVersion);
         }
-        if (object->private.pVersion) {
-            free(object->private.pVersion);
-        }
         free(object);
     }
 }
@@ -7634,9 +7628,6 @@ void crypt_pkcs11_ck_cms_sig_params_DESTROY(Crypt__PKCS11__CK_CMS_SIG_PARAMS* ob
         }
         if (object->private.pContentType) {
             free(object->private.pContentType);
-        }
-        if (object->private.pRequestedAttributes) {
-            free(object->private.pRequestedAttributes);
         }
         if (object->private.pRequiredAttributes) {
             free(object->private.pRequiredAttributes);
