@@ -182,6 +182,10 @@ my %XS = (
 my %XSXS = (
 );
 my %FB = (
+    # TODO: Fix CK_WTLS_MASTER_KEY_DERIVE_PARAMS and CK_CMS_SIG_PARAMS
+    CK_WTLS_MASTER_KEY_DERIVE_PARAMS => \&not_supported_fromBytes,
+    CK_CMS_SIG_PARAMS => \&not_supported_fromBytes,
+
     CK_SSL3_KEY_MAT_OUT => \&not_supported_fromBytes,
     CK_SSL3_KEY_MAT_PARAMS => \&not_supported_fromBytes,
     CK_WTLS_KEY_MAT_OUT => \&not_supported_fromBytes,
@@ -197,6 +201,11 @@ my %FB_T = (
     CK_SSL3_RANDOM_DATA => \&ck_ssl3_random_data_fromBytes,
     CK_WTLS_RANDOM_DATA => \&ck_wtls_random_data_fromBytes,
     CK_OTP_PARAM_PTR => \&ck_otp_param_ptr_fromBytes,
+);
+my %FB_TT = (
+    CK_PBE_PARAMS => {
+        pInitVector => \&CK_PBE_PARAMS_pInitVector_fromBytes,
+    },
 );
 
 open(HEADER, 'pkcs11t.h') || die;
@@ -264,6 +273,20 @@ print C '/*
 #include "crypt_pkcs11_struct.h"
 
 #include <stdlib.h>
+
+#ifdef TEST_DEVEL_COVER
+int __test_devel_cover_calloc_always_fail = 0;
+static void* __calloc(size_t nmemb, size_t size) {
+    if (__test_devel_cover_calloc_always_fail) {
+        return 0;
+    }
+    return calloc(nmemb, size);
+}
+#define calloc(a,b) __calloc(a,b)
+#define __croak(x) return 0
+#else
+#define __croak(x) croak(x)
+#endif
 
 extern int crypt_pkcs11_xs_SvUOK(SV* sv);
 
@@ -510,7 +533,7 @@ sub gen_c {
     print C $c_struct.'* crypt_pkcs11_'.$lc_struct.'_new(const char* class) {
     '.$c_struct.'* object = calloc(1, sizeof('.$c_struct.'));
     if (!object) {
-        croak("memory allocation error");
+        __croak("memory allocation error");
 ';
     my $else = 1;
     if (exists $HEADER_ALLOC_DESTORY{$struct}) {
@@ -546,19 +569,19 @@ print C '    }
 }
 
 SV* crypt_pkcs11_'.$lc_struct.'_toBytes('.$c_struct.'* object) {
-    SV* retval = NULL_PTR;
-
-    if (object) {
-        retval = newSVpvn((const char*)&(object->private), sizeof('.$struct.'));
-    }
-    else {
-        retval = newSVsv(&PL_sv_undef);
+    if (!object) {
+        return 0;
     }
 
-    return retval;
+    return newSVpvn((const char*)&(object->private), sizeof('.$struct.'));
 }
 
-CK_RV crypt_pkcs11_'.$lc_struct.'_fromBytes('.$c_struct.'* object, SV* sv) {
+';
+if (exists $FB{$struct}) {
+    $FB{$struct}->($struct, $c_struct, $lc_struct);
+}
+else {
+print C 'CK_RV crypt_pkcs11_'.$lc_struct.'_fromBytes('.$c_struct.'* object, SV* sv) {
     CK_BYTE_PTR p;
     STRLEN l;
 
@@ -580,6 +603,10 @@ CK_RV crypt_pkcs11_'.$lc_struct.'_fromBytes('.$c_struct.'* object, SV* sv) {
 
 ';
     foreach (@$types) {
+        if (exists $FB_TT{$struct} and exists $FB_TT{$struct}->{$_->{name}}) {
+            $FB_TT{$struct}->{$_->{name}}->(0, $struct, $c_struct, $lc_struct, $_);
+            next;
+        }
         my $type = $_->{type};
         while (1) {
             if (exists $FB_T{$type}) {
@@ -598,6 +625,10 @@ print C '    memcpy(&(object->private), p, l);
 
 ';
     foreach (@$types) {
+        if (exists $FB_TT{$struct} and exists $FB_TT{$struct}->{$_->{name}}) {
+            $FB_TT{$struct}->{$_->{name}}->(1, $struct, $c_struct, $lc_struct, $_);
+            next;
+        }
         my $type = $_->{type};
         while (1) {
             if (exists $FB_T{$type}) {
@@ -615,7 +646,9 @@ print C '    memcpy(&(object->private), p, l);
 print C '    return CKR_OK;
 }
 
-void crypt_pkcs11_'.$lc_struct.'_DESTROY('.$c_struct.'* object) {
+';
+}
+print C 'void crypt_pkcs11_'.$lc_struct.'_DESTROY('.$c_struct.'* object) {
     if (object) {
 ';
     foreach (@$types) {
@@ -732,7 +765,7 @@ CK_RV crypt_pkcs11_'.$lc_struct.'_set_'.$type->{name}.'('.$c_struct.'* object, S
 }
 
 sub not_supported_fromBytes {
-    my ($struct, $c_struct, $lc_struct, $type) = @_;
+    my ($struct, $c_struct, $lc_struct) = @_;
 
     print C 'CK_RV crypt_pkcs11_'.$lc_struct.'_fromBytes('.$c_struct.'* object, SV* sv) {
     return CKR_FUNCTION_NOT_SUPPORTED;
@@ -1053,6 +1086,36 @@ sub ck_byte_ptr_fromBytes {
     }
 ';
     }
+    else {
+        if (exists $type->{outLen}) {
+    print C '    if (object->private.'.$type->{outLen}.') {
+        object->'.$type->{outLen}.' = *(object->private.'.$type->{outLen}.');
+    }
+    object->private.'.$type->{outLen}.' = &(object->'.$type->{outLen}.');
+    if (object->private.'.$type->{name}.') {
+        CK_BYTE_PTR '.$type->{name}.' = calloc(object->'.$type->{outLen}.', sizeof(CK_BYTE));
+        if (!'.$type->{name}.') {
+            __croak("memory allocation error");
+        }
+        memcpy('.$type->{name}.', object->private.'.$type->{name}.', object->'.$type->{outLen}.');
+        object->private.'.$type->{name}.' = '.$type->{name}.';
+    }
+';
+            return;
+        }
+    unless (exists $type->{len}) {
+        croak $struct.'->'.$type->{name}.': Invalid CK_BYTE_PTR/CK_VOID_PTR, missing len',"\n";
+    }
+    print C '    if (object->private.'.$type->{name}.') {
+        CK_BYTE_PTR '.$type->{name}.' = calloc(object->private.'.$type->{len}.', sizeof(CK_BYTE));
+        if (!'.$type->{name}.') {
+            __croak("memory allocation error");
+        }
+        memcpy('.$type->{name}.', object->private.'.$type->{name}.', object->private.'.$type->{len}.');
+        object->private.'.$type->{name}.' = '.$type->{name}.';
+    }
+';
+    }
 }
 
 sub ck_byte_ptr_DESTROY {
@@ -1236,6 +1299,36 @@ sub ck_char_ptr_fromBytes {
     }
 ';
     }
+    else {
+        if (exists $type->{outLen}) {
+    print C '    if (object->private.'.$type->{outLen}.') {
+        object->'.$type->{outLen}.' = *(object->private.'.$type->{outLen}.');
+    }
+    object->private.'.$type->{outLen}.' = &(object->'.$type->{outLen}.');
+    if (object->private.'.$type->{name}.') {
+        CK_CHAR_PTR '.$type->{name}.' = calloc(object->'.$type->{outLen}.', sizeof(CK_CHAR));
+        if (!'.$type->{name}.') {
+            __croak("memory allocation error");
+        }
+        memcpy('.$type->{name}.', object->private.'.$type->{name}.', object->'.$type->{outLen}.');
+        object->private.'.$type->{name}.' = '.$type->{name}.';
+    }
+';
+            return;
+        }
+    unless (exists $type->{len}) {
+        croak $struct.'->'.$type->{name}.': Invalid CK_CHAR_PTR/CK_UTF8CHAR_PTR, missing len',"\n";
+    }
+    print C '    if (object->private.'.$type->{name}.') {
+        CK_CHAR_PTR '.$type->{name}.' = calloc(object->private.'.$type->{len}.', sizeof(CK_CHAR));
+        if (!'.$type->{name}.') {
+            __croak("memory allocation error");
+        }
+        memcpy('.$type->{name}.', object->private.'.$type->{name}.', object->private.'.$type->{len}.');
+        object->private.'.$type->{name}.' = '.$type->{name}.';
+    }
+';
+    }
 }
 
 sub ck_char_ptr_DESTROY {
@@ -1300,10 +1393,14 @@ CK_RV crypt_pkcs11_'.$lc_struct.'_set_'.$type->{name}.'('.$c_struct.'* object, C
 sub ck_version_ptr_fromBytes {
     my ($what, $struct, $c_struct, $lc_struct, $type) = @_;
 
-    if ($what) {
+    unless ($what) {
+        print C '    memset(object->private.'.$type->{name}.', 0, sizeof(CK_VERSION));
+
+';
+    }
+    else {
         print C '    if (object->private.'.$type->{name}.') {
         memcpy(&(object->'.$type->{name}.'), object->private.'.$type->{name}.', sizeof(CK_VERSION));
-        free(object->private.'.$type->{name}.');
     }
     object->private.'.$type->{name}.' = &(object->'.$type->{name}.');
 
@@ -1431,12 +1528,20 @@ sub ck_mechanism_ptr_fromBytes {
         print C '    if (object->'.$type->{name}.'.pParameter) {
         free(object->'.$type->{name}.'.pParameter);
     }
+    memset(&(object->'.$type->{name}.'), 0, sizeof(CK_MECHANISM));
 ';
     }
     else {
         print C '    if (object->private.'.$type->{name}.') {
         memcpy(&(object->'.$type->{name}.'), object->private.'.$type->{name}.', sizeof(CK_MECHANISM));
-        free(object->private.'.$type->{name}.');
+        if (object->'.$type->{name}.'.pParameter) {
+            CK_VOID_PTR pParameter = calloc(object->'.$type->{name}.'.ulParameterLen, 1);
+            if (!pParameter) {
+                __croak("memory allocation error");
+            }
+            memcpy(pParameter, object->'.$type->{name}.'.pParameter, object->'.$type->{name}.'.ulParameterLen);
+            object->'.$type->{name}.'.pParameter = pParameter;
+        }
     }
     object->private.'.$type->{name}.' = &(object->'.$type->{name}.');
 
@@ -1504,7 +1609,7 @@ sub CK_PBE_PARAMS {
     if ($_[0] == 1) {
         print C '        if (!(object->private.pInitVector = calloc(1, 8))) {
             free(object);
-            croak("memory allocation error");
+            __croak("memory allocation error");
             return 0;
         }
 ';
@@ -1564,6 +1669,28 @@ CK_RV crypt_pkcs11_'.$lc_struct.'_set_'.$type->{name}.'('.$c_struct.'* object, S
 }
 
 ';
+}
+
+sub CK_PBE_PARAMS_pInitVector_fromBytes {
+    my ($what, $struct, $c_struct, $lc_struct, $type) = @_;
+
+    unless ($what) {
+    print C '    if (object->private.'.$type->{name}.') {
+        free(object->private.'.$type->{name}.');
+    }
+';
+    }
+    else {
+    print C '    if (object->private.'.$type->{name}.') {
+        CK_BYTE_PTR '.$type->{name}.' = calloc(8, sizeof(CK_BYTE));
+        if (!'.$type->{name}.') {
+            __croak("memory allocation error");
+        }
+        memcpy('.$type->{name}.', object->private.'.$type->{name}.', 8);
+        object->private.'.$type->{name}.' = '.$type->{name}.';
+    }
+';
+    }
 }
 
 sub ck_ssl3_random_data {
@@ -1671,6 +1798,25 @@ sub ck_ssl3_random_data_fromBytes {
     }
     if (object->private.'.$type->{name}.'.pServerRandom) {
         free(object->private.'.$type->{name}.'.pServerRandom);
+    }
+';
+    }
+    else {
+    print C '    if (object->private.'.$type->{name}.'.pClientRandom) {
+        CK_BYTE_PTR pClientRandom = calloc(object->private.'.$type->{name}.'.ulClientRandomLen, sizeof(CK_BYTE));
+        if (!pClientRandom) {
+            __croak("memory allocation error");
+        }
+        memcpy(pClientRandom, object->private.'.$type->{name}.'.pClientRandom, object->private.'.$type->{name}.'.ulClientRandomLen);
+        object->private.'.$type->{name}.'.pClientRandom = pClientRandom;
+    }
+    if (object->private.'.$type->{name}.'.pServerRandom) {
+        CK_BYTE_PTR pServerRandom = calloc(object->private.'.$type->{name}.'.ulServerRandomLen, sizeof(CK_BYTE));
+        if (!pServerRandom) {
+            __croak("memory allocation error");
+        }
+        memcpy(pServerRandom, object->private.'.$type->{name}.'.pServerRandom, object->private.'.$type->{name}.'.ulServerRandomLen);
+        object->private.'.$type->{name}.'.pServerRandom = pServerRandom;
     }
 ';
     }
@@ -1913,7 +2059,7 @@ sub CK_WTLS_MASTER_KEY_DERIVE_PARAMS {
     if ($_[0] == 1) {
         print C '        if (!(object->private.pVersion = calloc(1, 1))) {
             free(object);
-            croak("memory allocation error");
+            __croak("memory allocation error");
             return 0;
         }
 ';
@@ -2050,6 +2196,25 @@ sub ck_wtls_random_data_fromBytes {
     }
     if (object->private.'.$type->{name}.'.pServerRandom) {
         free(object->private.'.$type->{name}.'.pServerRandom);
+    }
+';
+    }
+    else {
+    print C '    if (object->private.'.$type->{name}.'.pClientRandom) {
+        CK_BYTE_PTR pClientRandom = calloc(object->private.'.$type->{name}.'.ulClientRandomLen, sizeof(CK_BYTE));
+        if (!pClientRandom) {
+            __croak("memory allocation error");
+        }
+        memcpy(pClientRandom, object->private.'.$type->{name}.'.pClientRandom, object->private.'.$type->{name}.'.ulClientRandomLen);
+        object->private.'.$type->{name}.'.pClientRandom = pClientRandom;
+    }
+    if (object->private.'.$type->{name}.'.pServerRandom) {
+        CK_BYTE_PTR pServerRandom = calloc(object->private.'.$type->{name}.'.ulServerRandomLen, sizeof(CK_BYTE));
+        if (!pServerRandom) {
+            __croak("memory allocation error");
+        }
+        memcpy(pServerRandom, object->private.'.$type->{name}.'.pServerRandom, object->private.'.$type->{name}.'.ulServerRandomLen);
+        object->private.'.$type->{name}.'.pServerRandom = pServerRandom;
     }
 ';
     }

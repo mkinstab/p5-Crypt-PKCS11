@@ -3522,6 +3522,7 @@ CK_RV crypt_pkcs11_xs_C_WaitForSlotEvent(Crypt__PKCS11__XS* object, CK_FLAGS fla
 }
 
 #ifdef TEST_DEVEL_COVER
+extern int __test_devel_cover_calloc_always_fail;
 int crypt_pkcs11_xs_test_devel_cover(Crypt__PKCS11__XS* object) {
     struct crypt_pkcs11_xs_object object_no_function_list = {
         0,
@@ -3849,6 +3850,238 @@ int crypt_pkcs11_xs_test_devel_cover(Crypt__PKCS11__XS* object) {
     if (crypt_pkcs11_xs_C_WaitForSlotEvent(&object_no_function_list, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_WaitForSlotEvent(&object_empty_function_list, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_WaitForSlotEvent(object, 0, 0) != CKR_FUNCTION_NOT_SUPPORTED) { return __LINE__; }
+    __test_devel_cover_calloc_always_fail = 1;
+    if (crypt_pkcs11_ck_version_new("")) { return __LINE__; }
+    if (crypt_pkcs11_ck_mechanism_new("")) { return __LINE__; }
+    if (crypt_pkcs11_ck_rsa_pkcs_oaep_params_new("")) { return __LINE__; }
+    if (crypt_pkcs11_ck_rsa_pkcs_pss_params_new("")) { return __LINE__; }
+    if (crypt_pkcs11_ck_ecdh1_derive_params_new("")) { return __LINE__; }
+    if (crypt_pkcs11_ck_ecdh2_derive_params_new("")) { return __LINE__; }
+    if (crypt_pkcs11_ck_ecmqv_derive_params_new("")) { return __LINE__; }
+    if (crypt_pkcs11_ck_x9_42_dh1_derive_params_new("")) { return __LINE__; }
+    if (crypt_pkcs11_ck_x9_42_dh2_derive_params_new("")) { return __LINE__; }
+    if (crypt_pkcs11_ck_x9_42_mqv_derive_params_new("")) { return __LINE__; }
+    if (crypt_pkcs11_ck_kea_derive_params_new("")) { return __LINE__; }
+    if (crypt_pkcs11_ck_rc2_cbc_params_new("")) { return __LINE__; }
+    if (crypt_pkcs11_ck_rc2_mac_general_params_new("")) { return __LINE__; }
+    if (crypt_pkcs11_ck_rc5_params_new("")) { return __LINE__; }
+    if (crypt_pkcs11_ck_rc5_cbc_params_new("")) { return __LINE__; }
+    if (crypt_pkcs11_ck_rc5_mac_general_params_new("")) { return __LINE__; }
+    if (crypt_pkcs11_ck_des_cbc_encrypt_data_params_new("")) { return __LINE__; }
+    if (crypt_pkcs11_ck_aes_cbc_encrypt_data_params_new("")) { return __LINE__; }
+    if (crypt_pkcs11_ck_skipjack_private_wrap_params_new("")) { return __LINE__; }
+    if (crypt_pkcs11_ck_skipjack_relayx_params_new("")) { return __LINE__; }
+    if (crypt_pkcs11_ck_pbe_params_new("")) { return __LINE__; }
+    if (crypt_pkcs11_ck_key_wrap_set_oaep_params_new("")) { return __LINE__; }
+    if (crypt_pkcs11_ck_ssl3_random_data_new("")) { return __LINE__; }
+    if (crypt_pkcs11_ck_ssl3_master_key_derive_params_new("")) { return __LINE__; }
+    if (crypt_pkcs11_ck_ssl3_key_mat_out_new("")) { return __LINE__; }
+    if (crypt_pkcs11_ck_ssl3_key_mat_params_new("")) { return __LINE__; }
+    if (crypt_pkcs11_ck_tls_prf_params_new("")) { return __LINE__; }
+    if (crypt_pkcs11_ck_wtls_random_data_new("")) { return __LINE__; }
+    if (crypt_pkcs11_ck_wtls_master_key_derive_params_new("")) { return __LINE__; }
+    if (crypt_pkcs11_ck_wtls_prf_params_new("")) { return __LINE__; }
+    if (crypt_pkcs11_ck_wtls_key_mat_out_new("")) { return __LINE__; }
+    if (crypt_pkcs11_ck_wtls_key_mat_params_new("")) { return __LINE__; }
+    if (crypt_pkcs11_ck_cms_sig_params_new("")) { return __LINE__; }
+    if (crypt_pkcs11_ck_key_derivation_string_data_new("")) { return __LINE__; }
+    if (crypt_pkcs11_ck_pkcs5_pbkd2_params_new("")) { return __LINE__; }
+    if (crypt_pkcs11_ck_otp_param_new("")) { return __LINE__; }
+    if (crypt_pkcs11_ck_otp_params_new("")) { return __LINE__; }
+    if (crypt_pkcs11_ck_otp_signature_info_new("")) { return __LINE__; }
+    if (crypt_pkcs11_ck_kip_params_new("")) { return __LINE__; }
+    if (crypt_pkcs11_ck_aes_ctr_params_new("")) { return __LINE__; }
+    if (crypt_pkcs11_ck_aes_gcm_params_new("")) { return __LINE__; }
+    if (crypt_pkcs11_ck_aes_ccm_params_new("")) { return __LINE__; }
+    if (crypt_pkcs11_ck_camellia_ctr_params_new("")) { return __LINE__; }
+    if (crypt_pkcs11_ck_camellia_cbc_encrypt_data_params_new("")) { return __LINE__; }
+    if (crypt_pkcs11_ck_aria_cbc_encrypt_data_params_new("")) { return __LINE__; }
+    __test_devel_cover_calloc_always_fail = 0;
+
+    if (crypt_pkcs11_ck_version_toBytes(0)) { return __LINE__; }
+    if (crypt_pkcs11_ck_mechanism_toBytes(0)) { return __LINE__; }
+    if (crypt_pkcs11_ck_rsa_pkcs_oaep_params_toBytes(0)) { return __LINE__; }
+    if (crypt_pkcs11_ck_rsa_pkcs_pss_params_toBytes(0)) { return __LINE__; }
+    if (crypt_pkcs11_ck_ecdh1_derive_params_toBytes(0)) { return __LINE__; }
+    if (crypt_pkcs11_ck_ecdh2_derive_params_toBytes(0)) { return __LINE__; }
+    if (crypt_pkcs11_ck_ecmqv_derive_params_toBytes(0)) { return __LINE__; }
+    if (crypt_pkcs11_ck_x9_42_dh1_derive_params_toBytes(0)) { return __LINE__; }
+    if (crypt_pkcs11_ck_x9_42_dh2_derive_params_toBytes(0)) { return __LINE__; }
+    if (crypt_pkcs11_ck_x9_42_mqv_derive_params_toBytes(0)) { return __LINE__; }
+    if (crypt_pkcs11_ck_kea_derive_params_toBytes(0)) { return __LINE__; }
+    if (crypt_pkcs11_ck_rc2_cbc_params_toBytes(0)) { return __LINE__; }
+    if (crypt_pkcs11_ck_rc2_mac_general_params_toBytes(0)) { return __LINE__; }
+    if (crypt_pkcs11_ck_rc5_params_toBytes(0)) { return __LINE__; }
+    if (crypt_pkcs11_ck_rc5_cbc_params_toBytes(0)) { return __LINE__; }
+    if (crypt_pkcs11_ck_rc5_mac_general_params_toBytes(0)) { return __LINE__; }
+    if (crypt_pkcs11_ck_des_cbc_encrypt_data_params_toBytes(0)) { return __LINE__; }
+    if (crypt_pkcs11_ck_aes_cbc_encrypt_data_params_toBytes(0)) { return __LINE__; }
+    if (crypt_pkcs11_ck_skipjack_private_wrap_params_toBytes(0)) { return __LINE__; }
+    if (crypt_pkcs11_ck_skipjack_relayx_params_toBytes(0)) { return __LINE__; }
+    if (crypt_pkcs11_ck_pbe_params_toBytes(0)) { return __LINE__; }
+    if (crypt_pkcs11_ck_key_wrap_set_oaep_params_toBytes(0)) { return __LINE__; }
+    if (crypt_pkcs11_ck_ssl3_random_data_toBytes(0)) { return __LINE__; }
+    if (crypt_pkcs11_ck_ssl3_master_key_derive_params_toBytes(0)) { return __LINE__; }
+    if (crypt_pkcs11_ck_ssl3_key_mat_out_toBytes(0)) { return __LINE__; }
+    if (crypt_pkcs11_ck_ssl3_key_mat_params_toBytes(0)) { return __LINE__; }
+    if (crypt_pkcs11_ck_tls_prf_params_toBytes(0)) { return __LINE__; }
+    if (crypt_pkcs11_ck_wtls_random_data_toBytes(0)) { return __LINE__; }
+    if (crypt_pkcs11_ck_wtls_master_key_derive_params_toBytes(0)) { return __LINE__; }
+    if (crypt_pkcs11_ck_wtls_prf_params_toBytes(0)) { return __LINE__; }
+    if (crypt_pkcs11_ck_wtls_key_mat_out_toBytes(0)) { return __LINE__; }
+    if (crypt_pkcs11_ck_wtls_key_mat_params_toBytes(0)) { return __LINE__; }
+    if (crypt_pkcs11_ck_cms_sig_params_toBytes(0)) { return __LINE__; }
+    if (crypt_pkcs11_ck_key_derivation_string_data_toBytes(0)) { return __LINE__; }
+    if (crypt_pkcs11_ck_pkcs5_pbkd2_params_toBytes(0)) { return __LINE__; }
+    if (crypt_pkcs11_ck_otp_param_toBytes(0)) { return __LINE__; }
+    if (crypt_pkcs11_ck_otp_params_toBytes(0)) { return __LINE__; }
+    if (crypt_pkcs11_ck_otp_signature_info_toBytes(0)) { return __LINE__; }
+    if (crypt_pkcs11_ck_kip_params_toBytes(0)) { return __LINE__; }
+    if (crypt_pkcs11_ck_aes_ctr_params_toBytes(0)) { return __LINE__; }
+    if (crypt_pkcs11_ck_aes_gcm_params_toBytes(0)) { return __LINE__; }
+    if (crypt_pkcs11_ck_aes_ccm_params_toBytes(0)) { return __LINE__; }
+    if (crypt_pkcs11_ck_camellia_ctr_params_toBytes(0)) { return __LINE__; }
+    if (crypt_pkcs11_ck_camellia_cbc_encrypt_data_params_toBytes(0)) { return __LINE__; }
+    if (crypt_pkcs11_ck_aria_cbc_encrypt_data_params_toBytes(0)) { return __LINE__; }
+
+    if (crypt_pkcs11_ck_version_fromBytes(0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_mechanism_fromBytes(0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_rsa_pkcs_oaep_params_fromBytes(0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_rsa_pkcs_pss_params_fromBytes(0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_ecdh1_derive_params_fromBytes(0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_ecdh2_derive_params_fromBytes(0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_ecmqv_derive_params_fromBytes(0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_x9_42_dh1_derive_params_fromBytes(0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_x9_42_dh2_derive_params_fromBytes(0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_x9_42_mqv_derive_params_fromBytes(0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_kea_derive_params_fromBytes(0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_rc2_cbc_params_fromBytes(0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_rc2_mac_general_params_fromBytes(0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_rc5_params_fromBytes(0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_rc5_cbc_params_fromBytes(0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_rc5_mac_general_params_fromBytes(0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_des_cbc_encrypt_data_params_fromBytes(0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_aes_cbc_encrypt_data_params_fromBytes(0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_skipjack_private_wrap_params_fromBytes(0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_skipjack_relayx_params_fromBytes(0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_pbe_params_fromBytes(0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_key_wrap_set_oaep_params_fromBytes(0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_ssl3_random_data_fromBytes(0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_ssl3_master_key_derive_params_fromBytes(0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_ssl3_key_mat_out_fromBytes(0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_ssl3_key_mat_params_fromBytes(0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_tls_prf_params_fromBytes(0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_wtls_random_data_fromBytes(0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_wtls_master_key_derive_params_fromBytes(0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_wtls_prf_params_fromBytes(0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_wtls_key_mat_out_fromBytes(0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_wtls_key_mat_params_fromBytes(0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_cms_sig_params_fromBytes(0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_key_derivation_string_data_fromBytes(0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_pkcs5_pbkd2_params_fromBytes(0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_otp_param_fromBytes(0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_otp_params_fromBytes(0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_otp_signature_info_fromBytes(0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_kip_params_fromBytes(0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_aes_ctr_params_fromBytes(0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_aes_gcm_params_fromBytes(0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_aes_ccm_params_fromBytes(0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_camellia_ctr_params_fromBytes(0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_camellia_cbc_encrypt_data_params_fromBytes(0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_aria_cbc_encrypt_data_params_fromBytes(0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+
+    if (crypt_pkcs11_ck_version_fromBytes(1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_mechanism_fromBytes(1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_rsa_pkcs_oaep_params_fromBytes(1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_rsa_pkcs_pss_params_fromBytes(1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_ecdh1_derive_params_fromBytes(1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_ecdh2_derive_params_fromBytes(1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_ecmqv_derive_params_fromBytes(1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_x9_42_dh1_derive_params_fromBytes(1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_x9_42_dh2_derive_params_fromBytes(1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_x9_42_mqv_derive_params_fromBytes(1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_kea_derive_params_fromBytes(1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_rc2_cbc_params_fromBytes(1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_rc2_mac_general_params_fromBytes(1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_rc5_params_fromBytes(1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_rc5_cbc_params_fromBytes(1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_rc5_mac_general_params_fromBytes(1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_des_cbc_encrypt_data_params_fromBytes(1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_aes_cbc_encrypt_data_params_fromBytes(1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_skipjack_private_wrap_params_fromBytes(1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_skipjack_relayx_params_fromBytes(1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_pbe_params_fromBytes(1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_key_wrap_set_oaep_params_fromBytes(1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_ssl3_random_data_fromBytes(1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_ssl3_master_key_derive_params_fromBytes(1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_ssl3_key_mat_out_fromBytes(1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_ssl3_key_mat_params_fromBytes(1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_tls_prf_params_fromBytes(1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_wtls_random_data_fromBytes(1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_wtls_master_key_derive_params_fromBytes(1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_wtls_prf_params_fromBytes(1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_wtls_key_mat_out_fromBytes(1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_wtls_key_mat_params_fromBytes(1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_cms_sig_params_fromBytes(1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_key_derivation_string_data_fromBytes(1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_pkcs5_pbkd2_params_fromBytes(1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_otp_param_fromBytes(1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_otp_params_fromBytes(1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_otp_signature_info_fromBytes(1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_kip_params_fromBytes(1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_aes_ctr_params_fromBytes(1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_aes_gcm_params_fromBytes(1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_aes_ccm_params_fromBytes(1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_camellia_ctr_params_fromBytes(1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_camellia_cbc_encrypt_data_params_fromBytes(1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_ck_aria_cbc_encrypt_data_params_fromBytes(1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+
+    crypt_pkcs11_ck_version_DESTROY(0);
+    crypt_pkcs11_ck_mechanism_DESTROY(0);
+    crypt_pkcs11_ck_rsa_pkcs_oaep_params_DESTROY(0);
+    crypt_pkcs11_ck_rsa_pkcs_pss_params_DESTROY(0);
+    crypt_pkcs11_ck_ecdh1_derive_params_DESTROY(0);
+    crypt_pkcs11_ck_ecdh2_derive_params_DESTROY(0);
+    crypt_pkcs11_ck_ecmqv_derive_params_DESTROY(0);
+    crypt_pkcs11_ck_x9_42_dh1_derive_params_DESTROY(0);
+    crypt_pkcs11_ck_x9_42_dh2_derive_params_DESTROY(0);
+    crypt_pkcs11_ck_x9_42_mqv_derive_params_DESTROY(0);
+    crypt_pkcs11_ck_kea_derive_params_DESTROY(0);
+    crypt_pkcs11_ck_rc2_cbc_params_DESTROY(0);
+    crypt_pkcs11_ck_rc2_mac_general_params_DESTROY(0);
+    crypt_pkcs11_ck_rc5_params_DESTROY(0);
+    crypt_pkcs11_ck_rc5_cbc_params_DESTROY(0);
+    crypt_pkcs11_ck_rc5_mac_general_params_DESTROY(0);
+    crypt_pkcs11_ck_des_cbc_encrypt_data_params_DESTROY(0);
+    crypt_pkcs11_ck_aes_cbc_encrypt_data_params_DESTROY(0);
+    crypt_pkcs11_ck_skipjack_private_wrap_params_DESTROY(0);
+    crypt_pkcs11_ck_skipjack_relayx_params_DESTROY(0);
+    crypt_pkcs11_ck_pbe_params_DESTROY(0);
+    crypt_pkcs11_ck_key_wrap_set_oaep_params_DESTROY(0);
+    crypt_pkcs11_ck_ssl3_random_data_DESTROY(0);
+    crypt_pkcs11_ck_ssl3_master_key_derive_params_DESTROY(0);
+    crypt_pkcs11_ck_ssl3_key_mat_out_DESTROY(0);
+    crypt_pkcs11_ck_ssl3_key_mat_params_DESTROY(0);
+    crypt_pkcs11_ck_tls_prf_params_DESTROY(0);
+    crypt_pkcs11_ck_wtls_random_data_DESTROY(0);
+    crypt_pkcs11_ck_wtls_master_key_derive_params_DESTROY(0);
+    crypt_pkcs11_ck_wtls_prf_params_DESTROY(0);
+    crypt_pkcs11_ck_wtls_key_mat_out_DESTROY(0);
+    crypt_pkcs11_ck_wtls_key_mat_params_DESTROY(0);
+    crypt_pkcs11_ck_cms_sig_params_DESTROY(0);
+    crypt_pkcs11_ck_key_derivation_string_data_DESTROY(0);
+    crypt_pkcs11_ck_pkcs5_pbkd2_params_DESTROY(0);
+    crypt_pkcs11_ck_otp_param_DESTROY(0);
+    crypt_pkcs11_ck_otp_params_DESTROY(0);
+    crypt_pkcs11_ck_otp_signature_info_DESTROY(0);
+    crypt_pkcs11_ck_kip_params_DESTROY(0);
+    crypt_pkcs11_ck_aes_ctr_params_DESTROY(0);
+    crypt_pkcs11_ck_aes_gcm_params_DESTROY(0);
+    crypt_pkcs11_ck_aes_ccm_params_DESTROY(0);
+    crypt_pkcs11_ck_camellia_ctr_params_DESTROY(0);
+    crypt_pkcs11_ck_camellia_cbc_encrypt_data_params_DESTROY(0);
+    crypt_pkcs11_ck_aria_cbc_encrypt_data_params_DESTROY(0);
+
     return 0;
 }
 
