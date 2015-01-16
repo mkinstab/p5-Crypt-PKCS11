@@ -35,11 +35,8 @@ sub set {
     my ($self, $year, $month, $day) = @_;
 
     unless (defined $month and defined $day) {
-        if ($year =~ /^([0-9]{4})-?([0-9]{2})-?([0-9]{2})$/o) {
+        if (defined $year and $year =~ /^([0-9]{4})-?([0-9]{2})-?([0-9]{2})$/o) {
             ($year, $month, $day) = ($1, $2, $3);
-        }
-        else {
-            confess 'Value to set is not a valid date';
         }
     }
     unless (defined $year and defined $month and defined $day) {
