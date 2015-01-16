@@ -38,14 +38,15 @@ sub type () { CKA_VALUE }
 sub set {
     my ($self) = shift;
 
-    if (scalar @_ == 1 and defined $_[0] and !Crypt::PKCS11::XS::SvUOK($_[0])) {
-        unless (utf8::downgrade($_[0], 1)) {
-            confess 'Value to set is not a valid string';
-        }
-
+    if (scalar @_ == 1 and defined $_[0] and !Crypt::PKCS11::XS::SvUOK($_[0]) and !Crypt::PKCS11::XS::SvIOK($_[0])) {
+        utf8::downgrade($_[0]);
         $self->{pValue} = pack('a*', $_[0]);
     }
     else {
+        unless (scalar @_) {
+            confess 'No byte values in arguments';
+        }
+
         foreach (@_) {
             unless (defined $_  and Crypt::PKCS11::XS::SvUOK($_) and $_ <= 255) {
                 confess 'Value to set is not a valid byte';
