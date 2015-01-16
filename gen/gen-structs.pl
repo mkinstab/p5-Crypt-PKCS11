@@ -1509,12 +1509,6 @@ sub CK_PBE_PARAMS {
         }
 ';
     }
-    elsif ($_[0] == 0) {
-        print C '        if (object->private.pInitVector) {
-            free(object->private.pInitVector);
-        }
-';
-    }
 }
 
 sub CK_PBE_PARAMS_pInitVector {
@@ -1921,12 +1915,6 @@ sub CK_WTLS_MASTER_KEY_DERIVE_PARAMS {
             free(object);
             croak("memory allocation error");
             return 0;
-        }
-';
-    }
-    elsif ($_[0] == 0) {
-        print C '        if (object->private.pVersion) {
-            free(object->private.pVersion);
         }
 ';
     }

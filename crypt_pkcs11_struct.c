@@ -7629,6 +7629,9 @@ void crypt_pkcs11_ck_cms_sig_params_DESTROY(Crypt__PKCS11__CK_CMS_SIG_PARAMS* ob
         if (object->private.pContentType) {
             free(object->private.pContentType);
         }
+        if (object->private.pRequestedAttributes) {
+            free(object->private.pRequestedAttributes);
+        }
         if (object->private.pRequiredAttributes) {
             free(object->private.pRequiredAttributes);
         }
