@@ -36,6 +36,10 @@ use Crypt::PKCS11;
 sub set {
     my $self = shift;
 
+    unless (scalar @_) {
+        confess 'No byte values in arguments';
+    }
+
     foreach (@_) {
         unless (defined $_ and Crypt::PKCS11::XS::SvUOK($_) and $_ <= 255) {
             confess 'Value to set is not a valid byte';
