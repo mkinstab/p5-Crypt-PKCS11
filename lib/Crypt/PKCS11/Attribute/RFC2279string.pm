@@ -34,10 +34,11 @@ use base qw(Crypt::PKCS11::Attribute);
 sub set {
     my ($self, $string) = @_;
 
-    unless (defined $string and utf8::downgrade($string, 1)) {
+    unless (defined $string) {
         confess 'Value to set is not a valid string';
     }
 
+    utf8::downgrade($string);
     $self->{pValue} = pack('a*', $string);
 
     return $self;
