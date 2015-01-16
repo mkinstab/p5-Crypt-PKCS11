@@ -1523,6 +1523,11 @@ elsewhere.
 Returns true (1) if the given SV is considered an unsigned number by Perl
 otherwise return false (0/undef).
 
+=item Crypt::PKCS11::XS::SvIOK ($sv)
+
+Returns true (1) if the given SV is considered an signed number by Perl
+otherwise return false (0/undef).
+
 =over 4
 
 =item $sv

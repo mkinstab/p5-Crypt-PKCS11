@@ -372,6 +372,16 @@ int crypt_pkcs11_xs_SvUOK(SV* sv) {
     return SvUOK(sv) ? 1 : 0;
 }
 
+int crypt_pkcs11_xs_SvIOK(SV* sv) {
+    if (!sv) {
+        return 0;
+    }
+
+    SvGETMAGIC(sv);
+
+    return SvIOK(sv) ? 1 : 0;
+}
+
 static SV* __CreateMutexSV = NULL_PTR;
 
 static CK_RV __CreateMutex(CK_VOID_PTR_PTR ppMutex) {
