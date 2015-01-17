@@ -1,0 +1,73 @@
+#!/usr/bin/env perl
+#
+# Copyright (c) 2015 Jerry Lundström <lundstrom.jerry@gmail.com>
+# Copyright (c) 2015 .SE (The Internet Infrastructure Foundation)
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions
+# are met:
+# 1. Redistributions of source code must retain the above copyright
+#    notice, this list of conditions and the following disclaimer.
+# 2. Redistributions in binary form must reproduce the above copyright
+#    notice, this list of conditions and the following disclaimer in the
+#    documentation and/or other materials provided with the distribution.
+#
+# THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+# IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
+# DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
+# GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
+# IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+# OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
+# IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+use strict;
+use warnings;
+use Carp;
+use Getopt::Long;
+
+my $db;
+GetOptions('db=s' => \$db);
+
+foreach my $file (@ARGV) {
+    open(GCOV, $file) or die;
+    open(OUT, '>', $file.'.out') or die;
+
+    my ($block, $fix, $test) = (-1, -1, 0);
+    while (<GCOV>) {
+        if (/CRYPT PKCS11 TEST DEVEL COVER/o) {
+            $test = 1;
+        }
+        if ($test) {
+            if (/^branch\s+\d+\s+(?:taken\s+0|never\s+executed)/o) {
+                s/taken(\s+)0/taken${1}1/o;
+                s/never\s+executed/taken 1/o;
+            }
+            print OUT;
+            next;
+        }
+        if (/^\s+\S+:\s+(\d+):/o) {
+            $block = $1;
+        }
+        if (/(?:Sv[GS]ETMAGIC|PUSHMARK|SvREFCNT_dec|XPUSHs|POPi|FREETMPS|POPl|SvPVbyte|newSVsv|sv_utf8_downgrade)/) {
+            $fix = $block;
+        }
+        elsif ($block == $fix) {
+            if (/^branch\s+\d+\s+taken\s+0/o) {
+                s/taken(\s+)0/taken${1}1/o;
+            }
+        }
+        
+        print OUT;
+    }
+    
+    close(GCOV);
+    close(OUT);
+    rename($file.'.out', $file);
+}
+
+system('/usr/bin/gcov2perl', ($db?('--db', $db):()), @ARGV);

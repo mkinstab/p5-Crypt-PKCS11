@@ -182,10 +182,6 @@ my %XS = (
 my %XSXS = (
 );
 my %FB = (
-    # TODO: Fix CK_WTLS_MASTER_KEY_DERIVE_PARAMS and CK_CMS_SIG_PARAMS
-    CK_WTLS_MASTER_KEY_DERIVE_PARAMS => \&not_supported_fromBytes,
-    CK_CMS_SIG_PARAMS => \&not_supported_fromBytes,
-
     CK_SSL3_KEY_MAT_OUT => \&not_supported_fromBytes,
     CK_SSL3_KEY_MAT_PARAMS => \&not_supported_fromBytes,
     CK_WTLS_KEY_MAT_OUT => \&not_supported_fromBytes,
@@ -205,6 +201,12 @@ my %FB_T = (
 my %FB_TT = (
     CK_PBE_PARAMS => {
         pInitVector => \&CK_PBE_PARAMS_pInitVector_fromBytes,
+    },
+    CK_WTLS_MASTER_KEY_DERIVE_PARAMS => {
+        pVersion => \&CK_WTLS_MASTER_KEY_DERIVE_PARAMS_pVersion_fromBytes,
+    },
+    CK_CMS_SIG_PARAMS => {
+        pContentType => \&CK_CMS_SIG_PARAMS_pContentType_fromBytes,
     },
 );
 
@@ -273,6 +275,7 @@ print C '/*
 #include "crypt_pkcs11_struct.h"
 
 #include <stdlib.h>
+#include <string.h>
 
 #ifdef TEST_DEVEL_COVER
 int __test_devel_cover_calloc_always_fail = 0;
@@ -1607,10 +1610,8 @@ OUTPUT:
 
 sub CK_PBE_PARAMS {
     if ($_[0] == 1) {
-        print C '        if (!(object->private.pInitVector = calloc(1, 8))) {
-            free(object);
+        print C '        if (!(object->private.pInitVector = calloc(8, sizeof(CK_BYTE)))) {
             __croak("memory allocation error");
-            return 0;
         }
 ';
     }
@@ -1628,7 +1629,7 @@ sub CK_PBE_PARAMS_pInitVector {
     }
 
     SvGETMAGIC(sv);
-    sv_setpvn(sv, object->private.'.$type->{name}.', 8);
+    sv_setpvn(sv, object->private.'.$type->{name}.', 8 * sizeof(CK_BYTE));
     SvSETMAGIC(sv);
 
     return CKR_OK;
@@ -1648,7 +1649,7 @@ CK_RV crypt_pkcs11_'.$lc_struct.'_set_'.$type->{name}.'('.$c_struct.'* object, S
     SvGETMAGIC(sv);
 
     if (!SvOK(sv)) {
-        memset(object->private.'.$type->{name}.', 0, 8);
+        memset(object->private.'.$type->{name}.', 0, 8 * sizeof(CK_BYTE));
         return CKR_OK;
     }
 
@@ -1663,7 +1664,7 @@ CK_RV crypt_pkcs11_'.$lc_struct.'_set_'.$type->{name}.'('.$c_struct.'* object, S
         return CKR_ARGUMENTS_BAD;
     }
 
-    memcpy(object->private.'.$type->{name}.', p, 8);
+    memcpy(object->private.'.$type->{name}.', p, 8 * sizeof(CK_BYTE));
 
     return CKR_OK;
 }
@@ -1686,7 +1687,7 @@ sub CK_PBE_PARAMS_pInitVector_fromBytes {
         if (!'.$type->{name}.') {
             __croak("memory allocation error");
         }
-        memcpy('.$type->{name}.', object->private.'.$type->{name}.', 8);
+        memcpy('.$type->{name}.', object->private.'.$type->{name}.', 8 * sizeof(CK_BYTE));
         object->private.'.$type->{name}.' = '.$type->{name}.';
     }
 ';
@@ -2057,10 +2058,8 @@ OUTPUT:
 
 sub CK_WTLS_MASTER_KEY_DERIVE_PARAMS {
     if ($_[0] == 1) {
-        print C '        if (!(object->private.pVersion = calloc(1, 1))) {
-            free(object);
+        print C '        if (!(object->private.pVersion = calloc(1, sizeof(CK_BYTE)))) {
             __croak("memory allocation error");
-            return 0;
         }
 ';
     }
@@ -2089,6 +2088,28 @@ CK_RV crypt_pkcs11_'.$lc_struct.'_set_'.$type->{name}.'('.$c_struct.'* object, S
 }
 
 ';
+}
+
+sub CK_WTLS_MASTER_KEY_DERIVE_PARAMS_pVersion_fromBytes {
+    my ($what, $struct, $c_struct, $lc_struct, $type) = @_;
+
+    unless ($what) {
+    print C '    if (object->private.'.$type->{name}.') {
+        free(object->private.'.$type->{name}.');
+    }
+';
+    }
+    else {
+    print C '    if (object->private.'.$type->{name}.') {
+        CK_BYTE_PTR '.$type->{name}.' = calloc(1, sizeof(CK_BYTE));
+        if (!'.$type->{name}.') {
+            __croak("memory allocation error");
+        }
+        memcpy('.$type->{name}.', object->private.'.$type->{name}.', 1 * sizeof(CK_BYTE));
+        object->private.'.$type->{name}.' = '.$type->{name}.';
+    }
+';
+    }
 }
 
 sub ck_wtls_random_data {
@@ -2473,6 +2494,27 @@ CK_RV crypt_pkcs11_'.$lc_struct.'_set_'.$type->{name}.'('.$c_struct.'* object, S
 }
 
 ';
+}
+
+sub CK_CMS_SIG_PARAMS_pContentType_fromBytes {
+    my ($what, $struct, $c_struct, $lc_struct, $type) = @_;
+
+    unless ($what) {
+    print C '    if (object->private.'.$type->{name}.') {
+        free(object->private.'.$type->{name}.');
+    }
+';
+    }
+    else {
+    print C '    if (object->private.'.$type->{name}.') {
+        CK_CHAR_PTR '.$type->{name}.' = strdup(object->private.'.$type->{name}.');
+        if (!'.$type->{name}.') {
+            __croak("memory allocation error");
+        }
+        object->private.'.$type->{name}.' = '.$type->{name}.';
+    }
+';
+    }
 }
 
 sub ck_otp_param_ptr {

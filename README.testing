@@ -58,4 +58,4 @@ perl Makefile.PL
 make all test
 make clean
 perl Makefile.PL
-cover -test && chmod a+rx `find cover_db -type d`
+PATH="$PWD/gen:$PATH" cover -test && chmod a+rx `find cover_db -type d`

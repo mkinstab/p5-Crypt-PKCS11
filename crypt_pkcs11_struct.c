@@ -29,6 +29,7 @@
 #include "crypt_pkcs11_struct.h"
 
 #include <stdlib.h>
+#include <string.h>
 
 #ifdef TEST_DEVEL_COVER
 int __test_devel_cover_calloc_always_fail = 0;
@@ -4835,10 +4836,8 @@ Crypt__PKCS11__CK_PBE_PARAMS* crypt_pkcs11_ck_pbe_params_new(const char* class) 
         __croak("memory allocation error");
     }
     else {
-        if (!(object->private.pInitVector = calloc(1, 8))) {
-            free(object);
+        if (!(object->private.pInitVector = calloc(8, sizeof(CK_BYTE)))) {
             __croak("memory allocation error");
-            return 0;
         }
     }
     return object;
@@ -4888,7 +4887,7 @@ CK_RV crypt_pkcs11_ck_pbe_params_fromBytes(Crypt__PKCS11__CK_PBE_PARAMS* object,
         if (!pInitVector) {
             __croak("memory allocation error");
         }
-        memcpy(pInitVector, object->private.pInitVector, 8);
+        memcpy(pInitVector, object->private.pInitVector, 8 * sizeof(CK_BYTE));
         object->private.pInitVector = pInitVector;
     }
     if (object->private.pPassword) {
@@ -4934,7 +4933,7 @@ CK_RV crypt_pkcs11_ck_pbe_params_get_pInitVector(Crypt__PKCS11__CK_PBE_PARAMS* o
     }
 
     SvGETMAGIC(sv);
-    sv_setpvn(sv, object->private.pInitVector, 8);
+    sv_setpvn(sv, object->private.pInitVector, 8 * sizeof(CK_BYTE));
     SvSETMAGIC(sv);
 
     return CKR_OK;
@@ -4954,7 +4953,7 @@ CK_RV crypt_pkcs11_ck_pbe_params_set_pInitVector(Crypt__PKCS11__CK_PBE_PARAMS* o
     SvGETMAGIC(sv);
 
     if (!SvOK(sv)) {
-        memset(object->private.pInitVector, 0, 8);
+        memset(object->private.pInitVector, 0, 8 * sizeof(CK_BYTE));
         return CKR_OK;
     }
 
@@ -4969,7 +4968,7 @@ CK_RV crypt_pkcs11_ck_pbe_params_set_pInitVector(Crypt__PKCS11__CK_PBE_PARAMS* o
         return CKR_ARGUMENTS_BAD;
     }
 
-    memcpy(object->private.pInitVector, p, 8);
+    memcpy(object->private.pInitVector, p, 8 * sizeof(CK_BYTE));
 
     return CKR_OK;
 }
@@ -6707,10 +6706,8 @@ Crypt__PKCS11__CK_WTLS_MASTER_KEY_DERIVE_PARAMS* crypt_pkcs11_ck_wtls_master_key
         __croak("memory allocation error");
     }
     else {
-        if (!(object->private.pVersion = calloc(1, 1))) {
-            free(object);
+        if (!(object->private.pVersion = calloc(1, sizeof(CK_BYTE)))) {
             __croak("memory allocation error");
-            return 0;
         }
     }
     return object;
@@ -6725,7 +6722,61 @@ SV* crypt_pkcs11_ck_wtls_master_key_derive_params_toBytes(Crypt__PKCS11__CK_WTLS
 }
 
 CK_RV crypt_pkcs11_ck_wtls_master_key_derive_params_fromBytes(Crypt__PKCS11__CK_WTLS_MASTER_KEY_DERIVE_PARAMS* object, SV* sv) {
-    return CKR_FUNCTION_NOT_SUPPORTED;
+    CK_BYTE_PTR p;
+    STRLEN l;
+
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    SvGETMAGIC(sv);
+
+    if (!SvPOK(sv)
+        || !(p = SvPVbyte(sv, l))
+        || l != sizeof(CK_WTLS_MASTER_KEY_DERIVE_PARAMS))
+    {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    if (object->private.RandomInfo.pClientRandom) {
+        free(object->private.RandomInfo.pClientRandom);
+    }
+    if (object->private.RandomInfo.pServerRandom) {
+        free(object->private.RandomInfo.pServerRandom);
+    }
+    if (object->private.pVersion) {
+        free(object->private.pVersion);
+    }
+    memcpy(&(object->private), p, l);
+
+    if (object->private.RandomInfo.pClientRandom) {
+        CK_BYTE_PTR pClientRandom = calloc(object->private.RandomInfo.ulClientRandomLen, sizeof(CK_BYTE));
+        if (!pClientRandom) {
+            __croak("memory allocation error");
+        }
+        memcpy(pClientRandom, object->private.RandomInfo.pClientRandom, object->private.RandomInfo.ulClientRandomLen);
+        object->private.RandomInfo.pClientRandom = pClientRandom;
+    }
+    if (object->private.RandomInfo.pServerRandom) {
+        CK_BYTE_PTR pServerRandom = calloc(object->private.RandomInfo.ulServerRandomLen, sizeof(CK_BYTE));
+        if (!pServerRandom) {
+            __croak("memory allocation error");
+        }
+        memcpy(pServerRandom, object->private.RandomInfo.pServerRandom, object->private.RandomInfo.ulServerRandomLen);
+        object->private.RandomInfo.pServerRandom = pServerRandom;
+    }
+    if (object->private.pVersion) {
+        CK_BYTE_PTR pVersion = calloc(1, sizeof(CK_BYTE));
+        if (!pVersion) {
+            __croak("memory allocation error");
+        }
+        memcpy(pVersion, object->private.pVersion, 1 * sizeof(CK_BYTE));
+        object->private.pVersion = pVersion;
+    }
+    return CKR_OK;
 }
 
 void crypt_pkcs11_ck_wtls_master_key_derive_params_DESTROY(Crypt__PKCS11__CK_WTLS_MASTER_KEY_DERIVE_PARAMS* object) {
@@ -7714,7 +7765,94 @@ SV* crypt_pkcs11_ck_cms_sig_params_toBytes(Crypt__PKCS11__CK_CMS_SIG_PARAMS* obj
 }
 
 CK_RV crypt_pkcs11_ck_cms_sig_params_fromBytes(Crypt__PKCS11__CK_CMS_SIG_PARAMS* object, SV* sv) {
-    return CKR_FUNCTION_NOT_SUPPORTED;
+    CK_BYTE_PTR p;
+    STRLEN l;
+
+    if (!object) {
+        return CKR_ARGUMENTS_BAD;
+    }
+    if (!sv) {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    SvGETMAGIC(sv);
+
+    if (!SvPOK(sv)
+        || !(p = SvPVbyte(sv, l))
+        || l != sizeof(CK_CMS_SIG_PARAMS))
+    {
+        return CKR_ARGUMENTS_BAD;
+    }
+
+    if (object->pSigningMechanism.pParameter) {
+        free(object->pSigningMechanism.pParameter);
+    }
+    memset(&(object->pSigningMechanism), 0, sizeof(CK_MECHANISM));
+    if (object->pDigestMechanism.pParameter) {
+        free(object->pDigestMechanism.pParameter);
+    }
+    memset(&(object->pDigestMechanism), 0, sizeof(CK_MECHANISM));
+    if (object->private.pContentType) {
+        free(object->private.pContentType);
+    }
+    if (object->private.pRequestedAttributes) {
+        free(object->private.pRequestedAttributes);
+    }
+    if (object->private.pRequiredAttributes) {
+        free(object->private.pRequiredAttributes);
+    }
+    memcpy(&(object->private), p, l);
+
+    if (object->private.pSigningMechanism) {
+        memcpy(&(object->pSigningMechanism), object->private.pSigningMechanism, sizeof(CK_MECHANISM));
+        if (object->pSigningMechanism.pParameter) {
+            CK_VOID_PTR pParameter = calloc(object->pSigningMechanism.ulParameterLen, 1);
+            if (!pParameter) {
+                __croak("memory allocation error");
+            }
+            memcpy(pParameter, object->pSigningMechanism.pParameter, object->pSigningMechanism.ulParameterLen);
+            object->pSigningMechanism.pParameter = pParameter;
+        }
+    }
+    object->private.pSigningMechanism = &(object->pSigningMechanism);
+
+    if (object->private.pDigestMechanism) {
+        memcpy(&(object->pDigestMechanism), object->private.pDigestMechanism, sizeof(CK_MECHANISM));
+        if (object->pDigestMechanism.pParameter) {
+            CK_VOID_PTR pParameter = calloc(object->pDigestMechanism.ulParameterLen, 1);
+            if (!pParameter) {
+                __croak("memory allocation error");
+            }
+            memcpy(pParameter, object->pDigestMechanism.pParameter, object->pDigestMechanism.ulParameterLen);
+            object->pDigestMechanism.pParameter = pParameter;
+        }
+    }
+    object->private.pDigestMechanism = &(object->pDigestMechanism);
+
+    if (object->private.pContentType) {
+        CK_CHAR_PTR pContentType = strdup(object->private.pContentType);
+        if (!pContentType) {
+            __croak("memory allocation error");
+        }
+        object->private.pContentType = pContentType;
+    }
+    if (object->private.pRequestedAttributes) {
+        CK_BYTE_PTR pRequestedAttributes = calloc(object->private.ulRequestedAttributesLen, sizeof(CK_BYTE));
+        if (!pRequestedAttributes) {
+            __croak("memory allocation error");
+        }
+        memcpy(pRequestedAttributes, object->private.pRequestedAttributes, object->private.ulRequestedAttributesLen);
+        object->private.pRequestedAttributes = pRequestedAttributes;
+    }
+    if (object->private.pRequiredAttributes) {
+        CK_BYTE_PTR pRequiredAttributes = calloc(object->private.ulRequiredAttributesLen, sizeof(CK_BYTE));
+        if (!pRequiredAttributes) {
+            __croak("memory allocation error");
+        }
+        memcpy(pRequiredAttributes, object->private.pRequiredAttributes, object->private.ulRequiredAttributesLen);
+        object->private.pRequiredAttributes = pRequiredAttributes;
+    }
+    return CKR_OK;
 }
 
 void crypt_pkcs11_ck_cms_sig_params_DESTROY(Crypt__PKCS11__CK_CMS_SIG_PARAMS* object) {

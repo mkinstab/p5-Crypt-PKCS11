@@ -20,40 +20,44 @@ our %SUPPORT;
 
 sub myisa_ok {
     my ($obj, $class, $name) = @_;
+    my ($package, $filename, $line) = caller;
 
     unless ($LEAK_TESTING) {
-        isa_ok( $obj, $class, $name );
+        isa_ok( $obj, $class, $filename.'@'.$line.($name?': '.$name:'') );
     }
 }
 
 sub myis {
     my ($a, $b, $n) = @_;
+    my ($package, $filename, $line) = caller;
 
     unless ($LEAK_TESTING) {
-        is( $a, $b, $n );
+        is( $a, $b, $filename.'@'.$line.($n?': '.$n:'') );
     }
 }
 
 sub myis2 {
     my $a = shift;
     my $n = pop;
+    my ($package, $filename, $line) = caller;
 
     unless ($LEAK_TESTING) {
         foreach (@_) {
             if ($a == $_) {
-                is( $a, $_, $n );
+                is( $a, $_, $filename.'@'.$line.($n?': '.$n:'') );
                 return;
             }
         }
-        is( $a, $_[0], $n );
+        is( $a, $_[0], $filename.'@'.$line.($n?': '.$n:'') );
     }
 }
 
 sub myisnt {
     my ($a, $b, $n) = @_;
+    my ($package, $filename, $line) = caller;
 
     unless ($LEAK_TESTING) {
-        isnt( $a, $b, $n );
+        isnt( $a, $b, $filename.'@'.$line.($n?': '.$n:'') );
     }
 }
 

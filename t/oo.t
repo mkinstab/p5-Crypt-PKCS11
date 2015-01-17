@@ -6,6 +6,61 @@ use Config;
 use Crypt::PKCS11 qw(:constant :constant_names);
 use Crypt::PKCS11::Attributes;
 
+our $HAVE_LEAKTRACE;
+our $LEAK_TESTING;
+
+sub myok {
+    my ($res, $name) = @_;
+    my ($package, $filename, $line) = caller;
+
+    unless ($LEAK_TESTING) {
+        ok( $res, $filename.'@'.$line.($name?': '.$name:'') );
+    }
+}
+
+sub myisa_ok {
+    my ($obj, $class, $name) = @_;
+    my ($package, $filename, $line) = caller;
+
+    unless ($LEAK_TESTING) {
+        isa_ok( $obj, $class, $filename.'@'.$line.($name?': '.$name:'') );
+    }
+}
+
+sub myis {
+    my ($a, $b, $n) = @_;
+    my ($package, $filename, $line) = caller;
+
+    unless ($LEAK_TESTING) {
+        is( $a, $b, $filename.'@'.$line.($n?': '.$n:'') );
+    }
+}
+
+sub myis2 {
+    my $a = shift;
+    my $n = pop;
+    my ($package, $filename, $line) = caller;
+
+    unless ($LEAK_TESTING) {
+        foreach (@_) {
+            if ($a == $_) {
+                is( $a, $_, $filename.'@'.$line.($n?': '.$n:'') );
+                return;
+            }
+        }
+        is( $a, $_[0], $filename.'@'.$line.($n?': '.$n:'') );
+    }
+}
+
+sub myisnt {
+    my ($a, $b, $n) = @_;
+    my ($package, $filename, $line) = caller;
+
+    unless ($LEAK_TESTING) {
+        isnt( $a, $b, $filename.'@'.$line.($n?': '.$n:'') );
+    }
+}
+
 sub signVerifyCheck {
     my ($obj) = @_;
     my $mechanism = Crypt::PKCS11::CK_MECHANISM->new;
@@ -30,14 +85,14 @@ sub signVerifyCheck {
     my $signature;
     my $session;
 
-    ok( $obj->Initialize, 'signVerifyCheck: Initialize' );
-    isa_ok( $session = $obj->OpenSession($slotWithToken, CKF_SERIAL_SESSION | CKF_RW_SESSION), 'Crypt::PKCS11::Session', 'signVerifyCheck: OpenSession #1' );
-    ok( $session->Login(CKU_USER, "1234"), 'signVerifyCheck: Login' );
-    is( $mechanism->set_mechanism(CKM_RSA_PKCS_KEY_PAIR_GEN), CKR_OK, 'signVerifyCheck: set_mechanism' );
+    myok( $obj->Initialize, 'signVerifyCheck: Initialize' );
+    myisa_ok( $session = $obj->OpenSession($slotWithToken, CKF_SERIAL_SESSION | CKF_RW_SESSION), 'Crypt::PKCS11::Session', 'signVerifyCheck: OpenSession #1' );
+    myok( $session->Login(CKU_USER, "1234"), 'signVerifyCheck: Login' );
+    myis( $mechanism->set_mechanism(CKM_RSA_PKCS_KEY_PAIR_GEN), CKR_OK, 'signVerifyCheck: set_mechanism' );
     my ($publicKey, $privateKey) = $session->GenerateKeyPair($mechanism, $publicKeyTemplate, $privateKeyTemplate);
-    is( $session->errno, CKR_OK, 'signVerifyCheck: GenerateKeyPair '.$session->errstr );
-    isa_ok( $publicKey, 'Crypt::PKCS11::Object', 'signVerifyCheck: publicKey' );
-    isa_ok( $privateKey, 'Crypt::PKCS11::Object', 'signVerifyCheck: privateKey' );
+    myis( $session->errno, CKR_OK, 'signVerifyCheck: GenerateKeyPair '.$session->errstr );
+    myisa_ok( $publicKey, 'Crypt::PKCS11::Object', 'signVerifyCheck: publicKey' );
+    myisa_ok( $privateKey, 'Crypt::PKCS11::Object', 'signVerifyCheck: privateKey' );
 #    foreach (values %MECHANISM_SIGNVERIFY) {
 #        myis( $obj->C_SignInit($sessions[0], $_, $privateKey), CKR_OK, 'signVerifyCheck: C_SignInit mech '.($MECHANISM_INFO{$_->{mechanism}} ? $MECHANISM_INFO{$_->{mechanism}}->[1] : $_->{mechanism}) );
 #        $signature = undef;
@@ -47,7 +102,7 @@ sub signVerifyCheck {
 #    }
 #    myis( $obj->C_DestroyObject($sessions[0], $privateKey), CKR_OK, 'signVerifyCheck: C_DestroyObject' );
 #    myis( $obj->C_DestroyObject($sessions[0], $publicKey), CKR_OK, 'signVerifyCheck: C_DestroyObject #2' );
-    ok( $obj->Finalize, 'signVerifyCheck: Finalize' );
+    myok( $obj->Finalize, 'signVerifyCheck: Finalize' );
 }
 
 sub mytests {
@@ -104,33 +159,33 @@ sub mytests {
             CKM_SHA256_RSA_PKCS_PSS, CKM_SHA384_RSA_PKCS_PSS,
             CKM_SHA512_RSA_PKCS_PSS ))
         {
-            isa_ok( ($MECHANISM_SIGNVERIFY{$_} = Crypt::PKCS11::CK_MECHANISM->new), 'Crypt::PKCS11::CK_MECHANISMPtr' );
-            is( $MECHANISM_SIGNVERIFY{$_}->set_mechanism($_), CKR_OK, 'CK_MECHANISM->new->set_mechanism('.$CKM_NAME{$_}.')' );
+            myisa_ok( ($MECHANISM_SIGNVERIFY{$_} = Crypt::PKCS11::CK_MECHANISM->new), 'Crypt::PKCS11::CK_MECHANISMPtr' );
+            myis( $MECHANISM_SIGNVERIFY{$_}->set_mechanism($_), CKR_OK, 'CK_MECHANISM->new->set_mechanism('.$CKM_NAME{$_}.')' );
         }
 
-        isa_ok( ($param = Crypt::PKCS11::CK_RSA_PKCS_PSS_PARAMS->new), 'Crypt::PKCS11::CK_RSA_PKCS_PSS_PARAMSPtr' );
-        is( $param->set_hashAlg(CKM_SHA_1), CKR_OK, 'CK_RSA_PKCS_PSS_PARAMS->set_hashAlg(CKM_SHA_1)' );
-        is( $param->set_mgf(CKG_MGF1_SHA1), CKR_OK, 'CK_RSA_PKCS_PSS_PARAMS->set_mgf(CKG_MGF1_SHA1)' );
-        is( $param->set_sLen(20), CKR_OK, 'CK_RSA_PKCS_PSS_PARAMS->set_sLen(20)' );
-        is( $MECHANISM_SIGNVERIFY{CKM_SHA1_RSA_PKCS_PSS()}->set_pParameter($param->toBytes), CKR_OK, 'CK_MECHANISM(CKM_SHA1_RSA_PKCS_PSS)->new->set_pParameter()' );
+        myisa_ok( ($param = Crypt::PKCS11::CK_RSA_PKCS_PSS_PARAMS->new), 'Crypt::PKCS11::CK_RSA_PKCS_PSS_PARAMSPtr' );
+        myis( $param->set_hashAlg(CKM_SHA_1), CKR_OK, 'CK_RSA_PKCS_PSS_PARAMS->set_hashAlg(CKM_SHA_1)' );
+        myis( $param->set_mgf(CKG_MGF1_SHA1), CKR_OK, 'CK_RSA_PKCS_PSS_PARAMS->set_mgf(CKG_MGF1_SHA1)' );
+        myis( $param->set_sLen(20), CKR_OK, 'CK_RSA_PKCS_PSS_PARAMS->set_sLen(20)' );
+        myis( $MECHANISM_SIGNVERIFY{CKM_SHA1_RSA_PKCS_PSS()}->set_pParameter($param->toBytes), CKR_OK, 'CK_MECHANISM(CKM_SHA1_RSA_PKCS_PSS)->new->set_pParameter()' );
 
-        isa_ok( ($param = Crypt::PKCS11::CK_RSA_PKCS_PSS_PARAMS->new), 'Crypt::PKCS11::CK_RSA_PKCS_PSS_PARAMSPtr' );
-        is( $param->set_hashAlg(CKM_SHA256), CKR_OK, 'CK_RSA_PKCS_PSS_PARAMS->set_hashAlg(CKM_SHA256)' );
-        is( $param->set_mgf(CKG_MGF1_SHA256), CKR_OK, 'CK_RSA_PKCS_PSS_PARAMS->set_mgf(CKG_MGF1_SHA256)' );
-        is( $param->set_sLen(0), CKR_OK, 'CK_RSA_PKCS_PSS_PARAMS->set_sLen(0)' );
-        is( $MECHANISM_SIGNVERIFY{CKM_SHA256_RSA_PKCS_PSS()}->set_pParameter($param->toBytes), CKR_OK, 'CK_MECHANISM(CKM_SHA256_RSA_PKCS_PSS)->new->set_pParameter()' );
+        myisa_ok( ($param = Crypt::PKCS11::CK_RSA_PKCS_PSS_PARAMS->new), 'Crypt::PKCS11::CK_RSA_PKCS_PSS_PARAMSPtr' );
+        myis( $param->set_hashAlg(CKM_SHA256), CKR_OK, 'CK_RSA_PKCS_PSS_PARAMS->set_hashAlg(CKM_SHA256)' );
+        myis( $param->set_mgf(CKG_MGF1_SHA256), CKR_OK, 'CK_RSA_PKCS_PSS_PARAMS->set_mgf(CKG_MGF1_SHA256)' );
+        myis( $param->set_sLen(0), CKR_OK, 'CK_RSA_PKCS_PSS_PARAMS->set_sLen(0)' );
+        myis( $MECHANISM_SIGNVERIFY{CKM_SHA256_RSA_PKCS_PSS()}->set_pParameter($param->toBytes), CKR_OK, 'CK_MECHANISM(CKM_SHA256_RSA_PKCS_PSS)->new->set_pParameter()' );
 
-        isa_ok( ($param = Crypt::PKCS11::CK_RSA_PKCS_PSS_PARAMS->new), 'Crypt::PKCS11::CK_RSA_PKCS_PSS_PARAMSPtr' );
-        is( $param->set_hashAlg(CKM_SHA384), CKR_OK, 'CK_RSA_PKCS_PSS_PARAMS->set_hashAlg(CKM_SHA384)' );
-        is( $param->set_mgf(CKG_MGF1_SHA384), CKR_OK, 'CK_RSA_PKCS_PSS_PARAMS->set_mgf(CKG_MGF1_SHA384)' );
-        is( $param->set_sLen(0), CKR_OK, 'CK_RSA_PKCS_PSS_PARAMS->set_sLen(0)' );
-        is( $MECHANISM_SIGNVERIFY{CKM_SHA384_RSA_PKCS_PSS()}->set_pParameter($param->toBytes), CKR_OK, 'CK_MECHANISM(CKM_SHA384_RSA_PKCS_PSS)->new->set_pParameter()' );
+        myisa_ok( ($param = Crypt::PKCS11::CK_RSA_PKCS_PSS_PARAMS->new), 'Crypt::PKCS11::CK_RSA_PKCS_PSS_PARAMSPtr' );
+        myis( $param->set_hashAlg(CKM_SHA384), CKR_OK, 'CK_RSA_PKCS_PSS_PARAMS->set_hashAlg(CKM_SHA384)' );
+        myis( $param->set_mgf(CKG_MGF1_SHA384), CKR_OK, 'CK_RSA_PKCS_PSS_PARAMS->set_mgf(CKG_MGF1_SHA384)' );
+        myis( $param->set_sLen(0), CKR_OK, 'CK_RSA_PKCS_PSS_PARAMS->set_sLen(0)' );
+        myis( $MECHANISM_SIGNVERIFY{CKM_SHA384_RSA_PKCS_PSS()}->set_pParameter($param->toBytes), CKR_OK, 'CK_MECHANISM(CKM_SHA384_RSA_PKCS_PSS)->new->set_pParameter()' );
 
-        isa_ok( ($param = Crypt::PKCS11::CK_RSA_PKCS_PSS_PARAMS->new), 'Crypt::PKCS11::CK_RSA_PKCS_PSS_PARAMSPtr' );
-        is( $param->set_hashAlg(CKM_SHA512), CKR_OK, 'CK_RSA_PKCS_PSS_PARAMS->set_hashAlg(CKM_SHA512)' );
-        is( $param->set_mgf(CKG_MGF1_SHA512), CKR_OK, 'CK_RSA_PKCS_PSS_PARAMS->set_mgf(CKG_MGF1_SHA512)' );
-        is( $param->set_sLen(0), CKR_OK, 'CK_RSA_PKCS_PSS_PARAMS->set_sLen(0)' );
-        is( $MECHANISM_SIGNVERIFY{CKM_SHA512_RSA_PKCS_PSS()}->set_pParameter($param->toBytes), CKR_OK, 'CK_MECHANISM(CKM_SHA512_RSA_PKCS_PSS)->new->set_pParameter()' );
+        myisa_ok( ($param = Crypt::PKCS11::CK_RSA_PKCS_PSS_PARAMS->new), 'Crypt::PKCS11::CK_RSA_PKCS_PSS_PARAMSPtr' );
+        myis( $param->set_hashAlg(CKM_SHA512), CKR_OK, 'CK_RSA_PKCS_PSS_PARAMS->set_hashAlg(CKM_SHA512)' );
+        myis( $param->set_mgf(CKG_MGF1_SHA512), CKR_OK, 'CK_RSA_PKCS_PSS_PARAMS->set_mgf(CKG_MGF1_SHA512)' );
+        myis( $param->set_sLen(0), CKR_OK, 'CK_RSA_PKCS_PSS_PARAMS->set_sLen(0)' );
+        myis( $MECHANISM_SIGNVERIFY{CKM_SHA512_RSA_PKCS_PSS()}->set_pParameter($param->toBytes), CKR_OK, 'CK_MECHANISM(CKM_SHA512_RSA_PKCS_PSS)->new->set_pParameter()' );
 
         if ($so =~ /libsofthsm\.so$/o) {
             $ENV{SOFTHSM_CONF} = 'softhsm.conf';
@@ -147,40 +202,44 @@ sub mytests {
         }
 
         my (%hash, @array, $a);
-        isa_ok( $obj = Crypt::PKCS11->new, 'Crypt::PKCS11', $so.' new' );
-        ok( $obj->load($so), $so.' load' );
-        ok( $obj->Initialize, $so.' Initialize' );
-        isa_ok( $obj->GetInfo, 'HASH', $so.' GetInfo' );
+        myisa_ok( $obj = Crypt::PKCS11->new, 'Crypt::PKCS11', $so.' new' );
+        myok( $obj->load($so), $so.' load' );
+        myok( $obj->Initialize, $so.' Initialize' );
+        myisa_ok( scalar $obj->GetInfo, 'HASH', $so.' GetInfo' );
         %hash = $obj->GetInfo;
-        ok( scalar %hash, 'GetInfo %hash' );
-        isa_ok( $obj->GetSlotList, 'ARRAY', $so.' GetSlotList' );
+        myok( scalar %hash, 'GetInfo %hash' );
+        myisa_ok( scalar $obj->GetSlotList, 'ARRAY', $so.' GetSlotList' );
         @array = $obj->GetSlotList;
-        ok( scalar @array, 'GetSlotList @array' );
-        isa_ok( $obj->GetSlotInfo($slotWithToken), 'HASH', $so.' GetSlotInfo' );
+        myok( scalar @array, 'GetSlotList @array' );
+        myisa_ok( scalar $obj->GetSlotInfo($slotWithToken), 'HASH', $so.' GetSlotInfo' );
         %hash = $obj->GetSlotInfo($slotWithToken);
-        ok( scalar %hash, 'GetSlotInfo %hash' );
-        isa_ok( $obj->GetTokenInfo($slotWithToken), 'HASH', $so.' GetTokenInfo' );
+        myok( scalar %hash, 'GetSlotInfo %hash' );
+        myisa_ok( scalar $obj->GetTokenInfo($slotWithToken), 'HASH', $so.' GetTokenInfo' );
         %hash = $obj->GetTokenInfo($slotWithToken);
-        ok( scalar %hash, 'GetTokenInfo %hash' );
-        isa_ok( $obj->GetMechanismList($slotWithToken), 'ARRAY', $so.' GetMechanismList' );
+        myok( scalar %hash, 'GetTokenInfo %hash' );
+        myisa_ok( scalar $obj->GetMechanismList($slotWithToken), 'ARRAY', $so.' GetMechanismList' );
         @array = $obj->GetMechanismList($slotWithToken);
-        ok( scalar @array, 'GetMechanismList @array' );
-        isa_ok( $obj->GetMechanismInfo($slotWithToken, $array[0]), 'HASH', $so.' GetMechanismInfo' );
+        myok( scalar @array, 'GetMechanismList @array' );
+        myisa_ok( scalar $obj->GetMechanismInfo($slotWithToken, $array[0]), 'HASH', $so.' GetMechanismInfo' );
         %hash = $obj->GetMechanismInfo($slotWithToken, $array[0]);
-        ok( scalar %hash, 'GetMechanismInfo %hash' );
-        isa_ok( $s = $obj->OpenSession($slotWithToken, CKF_SERIAL_SESSION), 'Crypt::PKCS11::Session', $so.' OpenSession' );
-        ok( $s->CloseSession, $so.' CloseSession' );
-        ok( $obj->CloseAllSessions($slotWithToken), $so.' CloseAllSessions' );
-        is( $obj->WaitForSlotEvent(CKF_DONT_BLOCK, $a = undef), undef, $so.' WaitForSlotEvent' );
-        ok( $obj->Finalize, $so.' Finalize' );
+        myok( scalar %hash, 'GetMechanismInfo %hash' );
+        myisa_ok( $s = $obj->OpenSession($slotWithToken, CKF_SERIAL_SESSION), 'Crypt::PKCS11::Session', $so.' OpenSession' );
+        myok( $s->CloseSession, $so.' CloseSession' );
+        myok( $obj->CloseAllSessions($slotWithToken), $so.' CloseAllSessions' );
+        myis( $obj->WaitForSlotEvent(CKF_DONT_BLOCK, $a = undef), undef, $so.' WaitForSlotEvent' );
+        myok( $obj->Finalize, $so.' Finalize' );
         signVerifyCheck($obj);
-        ok( $obj->Initialize, $so.' Initialize' );
-        ok( $obj->InitToken($slotWithToken, "12345678", "ѪѫѬѪѫѬ"), 'InitToken '.$obj->errstr );
-        ok( $obj->Finalize, $so.' Finalize' );
-        ok( $obj->unload, $so.' unload' );
+        myok( $obj->Initialize, $so.' Initialize' );
+        myok( $obj->InitToken($slotWithToken, "12345678", "ѪѫѬѪѫѬ"), 'InitToken '.$obj->errstr );
+        myok( $obj->Finalize, $so.' Finalize' );
+        myok( $obj->unload, $so.' unload' );
     }
 }
 
 chdir('t');
 mytests;
+if ($HAVE_LEAKTRACE and $ENV{TEST_LEAKTRACE}) {
+    $LEAK_TESTING = 1;
+    leaks_cmp_ok { mytests; } '<', 1;
+}
 done_testing;
