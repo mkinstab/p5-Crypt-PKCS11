@@ -76,6 +76,7 @@ static const char __pParameter_str[] = "pParameter";
 Crypt__PKCS11__XS* crypt_pkcs11_xs_new(const char* class) {
     Crypt__PKCS11__XS* object = calloc(1, sizeof(Crypt__PKCS11__XS));
 
+    /* uncoverable branch 0 */
     if (!object) {
         croak("Memory allocation error");
     }
@@ -366,6 +367,7 @@ int crypt_pkcs11_xs_SvUOK(SV* sv) {
     SvGETMAGIC(sv);
 
     if (SvIOK(sv)) {
+        /* uncoverable branch 1 */
         return SvIV(sv) < 0 ? 0 : 1;
     }
 
@@ -395,6 +397,7 @@ static CK_RV __CreateMutex(CK_VOID_PTR_PTR ppMutex) {
 
     SPAGAIN;
 
+    /* uncoverable branch 0 */
     if (args != 1) {
         croak("No return from CreateMutex");
     }
@@ -439,6 +442,7 @@ static CK_RV __DestroyMutex(CK_VOID_PTR pMutex) {
 
     SPAGAIN;
 
+    /* uncoverable branch 0 */
     if (args != 1) {
         croak("No return from DestroyMutex");
     }
@@ -485,6 +489,7 @@ static CK_RV __LockMutex(CK_VOID_PTR pMutex) {
 
     SPAGAIN;
 
+    /* uncoverable branch 0 */
     if (args != 1) {
         croak("No return from LockMutex");
     }
@@ -530,6 +535,7 @@ static CK_RV __UnlockMutex(CK_VOID_PTR pMutex) {
 
     SPAGAIN;
 
+    /* uncoverable branch 0 */
     if (args != 1) {
         croak("No return from UnlockMutex");
     }
@@ -800,6 +806,7 @@ CK_RV crypt_pkcs11_xs_C_GetSlotList(Crypt__PKCS11__XS* object, CK_BBOOL tokenPre
         return rv;
     }
 
+    /* uncoverable branch 1 */
     if (!(_pSlotList = calloc(ulCount, sizeof(CK_SLOT_ID)))) {
         return CKR_HOST_MEMORY;
     }
@@ -965,6 +972,7 @@ CK_RV crypt_pkcs11_xs_C_GetMechanismList(Crypt__PKCS11__XS* object, CK_SLOT_ID s
         return rv;
     }
 
+    /* uncoverable branch 1 */
     if (!(_pMechanismList = calloc(ulCount, sizeof(CK_MECHANISM_TYPE)))) {
         return CKR_HOST_MEMORY;
     }
@@ -1043,9 +1051,8 @@ CK_RV crypt_pkcs11_xs_C_InitToken(Crypt__PKCS11__XS* object, CK_SLOT_ID slotID, 
             return CKR_GENERAL_ERROR;
         }
 
-        if (!sv_utf8_downgrade(_pPin, 0)
-            || !(_pPin2 = SvPV(_pPin, len)))
-        {
+        sv_utf8_downgrade(_pPin, 0);
+        if (!(_pPin2 = SvPV(_pPin, len))) {
             SvREFCNT_dec(_pPin);
             return CKR_GENERAL_ERROR;
         }
@@ -1059,9 +1066,8 @@ CK_RV crypt_pkcs11_xs_C_InitToken(Crypt__PKCS11__XS* object, CK_SLOT_ID slotID, 
         return CKR_GENERAL_ERROR;
     }
 
-    if (!sv_utf8_downgrade(_pLabel, 0)
-        || !(_pLabel2 = SvPV(_pLabel, len2)))
-    {
+    sv_utf8_downgrade(_pLabel, 0);
+    if (!(_pLabel2 = SvPV(_pLabel, len2))) {
         SvREFCNT_dec(_pLabel);
         if (_pPin) {
             SvREFCNT_dec(_pPin);
@@ -1070,6 +1076,7 @@ CK_RV crypt_pkcs11_xs_C_InitToken(Crypt__PKCS11__XS* object, CK_SLOT_ID slotID, 
     }
 
     if (len2 < 32) {
+        /* uncoverable branch 1 */
         if (!(_pLabel3 = calloc(1, 32))) {
             SvREFCNT_dec(_pLabel);
             if (_pPin) {
@@ -1122,9 +1129,8 @@ CK_RV crypt_pkcs11_xs_C_InitPIN(Crypt__PKCS11__XS* object, CK_SESSION_HANDLE hSe
             return CKR_GENERAL_ERROR;
         }
 
-        if (!sv_utf8_downgrade(_pPin, 0)
-            || !(_pPin2 = SvPV(_pPin, len)))
-        {
+        sv_utf8_downgrade(_pPin, 0);
+        if (!(_pPin2 = SvPV(_pPin, len))) {
             SvREFCNT_dec(_pPin);
             return CKR_GENERAL_ERROR;
         }
@@ -1171,9 +1177,8 @@ CK_RV crypt_pkcs11_xs_C_SetPIN(Crypt__PKCS11__XS* object, CK_SESSION_HANDLE hSes
             return CKR_GENERAL_ERROR;
         }
 
-        if (!sv_utf8_downgrade(_pOldPin, 0)
-            || !(_pOldPin2 = SvPV(_pOldPin, oldLen)))
-        {
+        sv_utf8_downgrade(_pOldPin, 0);
+        if (!(_pOldPin2 = SvPV(_pOldPin, oldLen))) {
             SvREFCNT_dec(_pOldPin);
             return CKR_GENERAL_ERROR;
         }
@@ -1195,9 +1200,8 @@ CK_RV crypt_pkcs11_xs_C_SetPIN(Crypt__PKCS11__XS* object, CK_SESSION_HANDLE hSes
             return CKR_GENERAL_ERROR;
         }
 
-        if (!sv_utf8_downgrade(_pNewPin, 0)
-            || !(_pNewPin2 = SvPV(_pNewPin, newLen)))
-        {
+        sv_utf8_downgrade(_pNewPin, 0);
+        if (!(_pNewPin2 = SvPV(_pNewPin, newLen))) {
             if (_pOldPin) {
                 SvREFCNT_dec(_pOldPin);
             }
@@ -1374,6 +1378,7 @@ CK_RV crypt_pkcs11_xs_C_GetOperationState(Crypt__PKCS11__XS* object, CK_SESSION_
         return rv;
     }
 
+    /* uncoverable branch 1 */
     if (!(_pOperationState = calloc(ulOperationStateLen, sizeof(CK_BYTE)))) {
         return CKR_HOST_MEMORY;
     }
@@ -1456,9 +1461,8 @@ CK_RV crypt_pkcs11_xs_C_Login(Crypt__PKCS11__XS* object, CK_SESSION_HANDLE hSess
             return CKR_GENERAL_ERROR;
         }
 
-        if (!sv_utf8_downgrade(_pPin, 0)
-            || !(_pPin2 = SvPV(_pPin, len)))
-        {
+        sv_utf8_downgrade(_pPin, 0);
+        if (!(_pPin2 = SvPV(_pPin, len))) {
             SvREFCNT_dec(_pPin);
             return CKR_GENERAL_ERROR;
         }
@@ -1574,6 +1578,7 @@ static CK_RV __create_CK_ATTRIBUTE(CK_ATTRIBUTE_PTR* ppTemplate, AV* pTemplate, 
      * Create CK_ATTRIBUTE objects and extract the information from the hash.
      */
 
+    /* uncoverable branch 1 */
     if (!(*ppTemplate = calloc(ulCount, sizeof(CK_ATTRIBUTE)))) {
         return CKR_HOST_MEMORY;
     }
@@ -2055,6 +2060,7 @@ CK_RV crypt_pkcs11_xs_C_FindObjects(Crypt__PKCS11__XS* object, CK_SESSION_HANDLE
         return CKR_OK;
     }
 
+    /* uncoverable branch 1 */
     if (!(_phObject = calloc(ulMaxObjectCount, sizeof(CK_OBJECT_HANDLE)))) {
         return CKR_HOST_MEMORY;
     }
@@ -2175,6 +2181,7 @@ static CK_RV __action(__action_call_t call, CK_SESSION_HANDLE hSession, SV* pFro
         if (!pulToLen) {
             return CKR_GENERAL_ERROR;
         }
+        /* uncoverable branch 1 */
         if (!(_pTo = calloc(pulToLen, sizeof(CK_BYTE)))) {
             return CKR_HOST_MEMORY;
         }
@@ -2277,6 +2284,7 @@ static CK_RV __action_final(__action_final_call_t call, CK_SESSION_HANDLE hSessi
         if (!pulLastPartLen) {
             return CKR_GENERAL_ERROR;
         }
+        /* uncoverable branch 1 */
         if (!(_pLastPart = calloc(pulLastPartLen, sizeof(CK_BYTE)))) {
             return CKR_HOST_MEMORY;
         }
@@ -3214,6 +3222,7 @@ CK_RV crypt_pkcs11_xs_C_WrapKey(Crypt__PKCS11__XS* object, CK_SESSION_HANDLE hSe
         if (!pulWrappedKey) {
             return CKR_GENERAL_ERROR;
         }
+        /* uncoverable branch 1 */
         if (!(_pWrappedKey = calloc(pulWrappedKey, sizeof(CK_BYTE)))) {
             return CKR_HOST_MEMORY;
         }
@@ -3433,6 +3442,7 @@ CK_RV crypt_pkcs11_xs_C_GenerateRandom(Crypt__PKCS11__XS* object, CK_SESSION_HAN
         return CKR_ARGUMENTS_BAD;
     }
 
+    /* uncoverable branch 1 */
     if (!(_RandomData = calloc(ulRandomLen, sizeof(CK_BYTE)))) {
         return CKR_HOST_MEMORY;
     }
@@ -3562,8 +3572,10 @@ int crypt_pkcs11_xs_test_devel_cover(Crypt__PKCS11__XS* object) {
     SV* sv;
     /* CRYPT PKCS11 TEST DEVEL COVER */
     if (crypt_pkcs11_xs_SvUOK(0) != 0) { return __LINE__; }
+    if (crypt_pkcs11_xs_SvIOK(0) != 0) { return __LINE__; }
     sv = newSViv(1);
     if (crypt_pkcs11_xs_SvUOK(sv) != 1) { return __LINE__; }
+    if (crypt_pkcs11_xs_SvIOK(sv) != 1) { return __LINE__; }
     crypt_pkcs11_xs_setCreateMutex(sv);
     crypt_pkcs11_xs_setDestroyMutex(sv);
     crypt_pkcs11_xs_setLockMutex(sv);

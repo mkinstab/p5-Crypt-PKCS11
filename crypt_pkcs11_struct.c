@@ -203,6 +203,7 @@ CK_RV crypt_pkcs11_ck_mechanism_fromBytes(Crypt__PKCS11__CK_MECHANISM* object, S
 
     if (object->private.pParameter) {
         CK_BYTE_PTR pParameter = calloc(object->private.ulParameterLen, sizeof(CK_BYTE));
+        /* uncoverable branch 0 */
         if (!pParameter) {
             __croak("memory allocation error");
         }
@@ -299,6 +300,7 @@ CK_RV crypt_pkcs11_ck_mechanism_set_pParameter(Crypt__PKCS11__CK_MECHANISM* obje
         return CKR_ARGUMENTS_BAD;
     }
 
+    /* uncoverable branch 1 */
     if (!(n = calloc(1, l + 1))) {
         return CKR_HOST_MEMORY;
     }
@@ -356,6 +358,7 @@ CK_RV crypt_pkcs11_ck_rsa_pkcs_oaep_params_fromBytes(Crypt__PKCS11__CK_RSA_PKCS_
 
     if (object->private.pSourceData) {
         CK_BYTE_PTR pSourceData = calloc(object->private.ulSourceDataLen, sizeof(CK_BYTE));
+        /* uncoverable branch 0 */
         if (!pSourceData) {
             __croak("memory allocation error");
         }
@@ -518,6 +521,7 @@ CK_RV crypt_pkcs11_ck_rsa_pkcs_oaep_params_set_pSourceData(Crypt__PKCS11__CK_RSA
         return CKR_ARGUMENTS_BAD;
     }
 
+    /* uncoverable branch 1 */
     if (!(n = calloc(1, l + 1))) {
         return CKR_HOST_MEMORY;
     }
@@ -724,6 +728,7 @@ CK_RV crypt_pkcs11_ck_ecdh1_derive_params_fromBytes(Crypt__PKCS11__CK_ECDH1_DERI
 
     if (object->private.pSharedData) {
         CK_BYTE_PTR pSharedData = calloc(object->private.ulSharedDataLen, sizeof(CK_BYTE));
+        /* uncoverable branch 0 */
         if (!pSharedData) {
             __croak("memory allocation error");
         }
@@ -732,6 +737,7 @@ CK_RV crypt_pkcs11_ck_ecdh1_derive_params_fromBytes(Crypt__PKCS11__CK_ECDH1_DERI
     }
     if (object->private.pPublicData) {
         CK_BYTE_PTR pPublicData = calloc(object->private.ulPublicDataLen, sizeof(CK_BYTE));
+        /* uncoverable branch 0 */
         if (!pPublicData) {
             __croak("memory allocation error");
         }
@@ -831,6 +837,7 @@ CK_RV crypt_pkcs11_ck_ecdh1_derive_params_set_pSharedData(Crypt__PKCS11__CK_ECDH
         return CKR_ARGUMENTS_BAD;
     }
 
+    /* uncoverable branch 1 */
     if (!(n = calloc(1, l + 1))) {
         return CKR_HOST_MEMORY;
     }
@@ -890,6 +897,7 @@ CK_RV crypt_pkcs11_ck_ecdh1_derive_params_set_pPublicData(Crypt__PKCS11__CK_ECDH
         return CKR_ARGUMENTS_BAD;
     }
 
+    /* uncoverable branch 1 */
     if (!(n = calloc(1, l + 1))) {
         return CKR_HOST_MEMORY;
     }
@@ -953,6 +961,7 @@ CK_RV crypt_pkcs11_ck_ecdh2_derive_params_fromBytes(Crypt__PKCS11__CK_ECDH2_DERI
 
     if (object->private.pSharedData) {
         CK_BYTE_PTR pSharedData = calloc(object->private.ulSharedDataLen, sizeof(CK_BYTE));
+        /* uncoverable branch 0 */
         if (!pSharedData) {
             __croak("memory allocation error");
         }
@@ -961,6 +970,7 @@ CK_RV crypt_pkcs11_ck_ecdh2_derive_params_fromBytes(Crypt__PKCS11__CK_ECDH2_DERI
     }
     if (object->private.pPublicData) {
         CK_BYTE_PTR pPublicData = calloc(object->private.ulPublicDataLen, sizeof(CK_BYTE));
+        /* uncoverable branch 0 */
         if (!pPublicData) {
             __croak("memory allocation error");
         }
@@ -969,6 +979,7 @@ CK_RV crypt_pkcs11_ck_ecdh2_derive_params_fromBytes(Crypt__PKCS11__CK_ECDH2_DERI
     }
     if (object->private.pPublicData2) {
         CK_BYTE_PTR pPublicData2 = calloc(object->private.ulPublicDataLen2, sizeof(CK_BYTE));
+        /* uncoverable branch 0 */
         if (!pPublicData2) {
             __croak("memory allocation error");
         }
@@ -1071,6 +1082,7 @@ CK_RV crypt_pkcs11_ck_ecdh2_derive_params_set_pSharedData(Crypt__PKCS11__CK_ECDH
         return CKR_ARGUMENTS_BAD;
     }
 
+    /* uncoverable branch 1 */
     if (!(n = calloc(1, l + 1))) {
         return CKR_HOST_MEMORY;
     }
@@ -1130,6 +1142,7 @@ CK_RV crypt_pkcs11_ck_ecdh2_derive_params_set_pPublicData(Crypt__PKCS11__CK_ECDH
         return CKR_ARGUMENTS_BAD;
     }
 
+    /* uncoverable branch 1 */
     if (!(n = calloc(1, l + 1))) {
         return CKR_HOST_MEMORY;
     }
@@ -1222,6 +1235,7 @@ CK_RV crypt_pkcs11_ck_ecdh2_derive_params_set_pPublicData2(Crypt__PKCS11__CK_ECD
         return CKR_ARGUMENTS_BAD;
     }
 
+    /* uncoverable branch 1 */
     if (!(n = calloc(1, l + 1))) {
         return CKR_HOST_MEMORY;
     }
@@ -1285,6 +1299,7 @@ CK_RV crypt_pkcs11_ck_ecmqv_derive_params_fromBytes(Crypt__PKCS11__CK_ECMQV_DERI
 
     if (object->private.pSharedData) {
         CK_BYTE_PTR pSharedData = calloc(object->private.ulSharedDataLen, sizeof(CK_BYTE));
+        /* uncoverable branch 0 */
         if (!pSharedData) {
             __croak("memory allocation error");
         }
@@ -1293,6 +1308,7 @@ CK_RV crypt_pkcs11_ck_ecmqv_derive_params_fromBytes(Crypt__PKCS11__CK_ECMQV_DERI
     }
     if (object->private.pPublicData) {
         CK_BYTE_PTR pPublicData = calloc(object->private.ulPublicDataLen, sizeof(CK_BYTE));
+        /* uncoverable branch 0 */
         if (!pPublicData) {
             __croak("memory allocation error");
         }
@@ -1301,6 +1317,7 @@ CK_RV crypt_pkcs11_ck_ecmqv_derive_params_fromBytes(Crypt__PKCS11__CK_ECMQV_DERI
     }
     if (object->private.pPublicData2) {
         CK_BYTE_PTR pPublicData2 = calloc(object->private.ulPublicDataLen2, sizeof(CK_BYTE));
+        /* uncoverable branch 0 */
         if (!pPublicData2) {
             __croak("memory allocation error");
         }
@@ -1403,6 +1420,7 @@ CK_RV crypt_pkcs11_ck_ecmqv_derive_params_set_pSharedData(Crypt__PKCS11__CK_ECMQ
         return CKR_ARGUMENTS_BAD;
     }
 
+    /* uncoverable branch 1 */
     if (!(n = calloc(1, l + 1))) {
         return CKR_HOST_MEMORY;
     }
@@ -1462,6 +1480,7 @@ CK_RV crypt_pkcs11_ck_ecmqv_derive_params_set_pPublicData(Crypt__PKCS11__CK_ECMQ
         return CKR_ARGUMENTS_BAD;
     }
 
+    /* uncoverable branch 1 */
     if (!(n = calloc(1, l + 1))) {
         return CKR_HOST_MEMORY;
     }
@@ -1554,6 +1573,7 @@ CK_RV crypt_pkcs11_ck_ecmqv_derive_params_set_pPublicData2(Crypt__PKCS11__CK_ECM
         return CKR_ARGUMENTS_BAD;
     }
 
+    /* uncoverable branch 1 */
     if (!(n = calloc(1, l + 1))) {
         return CKR_HOST_MEMORY;
     }
@@ -1647,6 +1667,7 @@ CK_RV crypt_pkcs11_ck_x9_42_dh1_derive_params_fromBytes(Crypt__PKCS11__CK_X9_42_
 
     if (object->private.pOtherInfo) {
         CK_BYTE_PTR pOtherInfo = calloc(object->private.ulOtherInfoLen, sizeof(CK_BYTE));
+        /* uncoverable branch 0 */
         if (!pOtherInfo) {
             __croak("memory allocation error");
         }
@@ -1655,6 +1676,7 @@ CK_RV crypt_pkcs11_ck_x9_42_dh1_derive_params_fromBytes(Crypt__PKCS11__CK_X9_42_
     }
     if (object->private.pPublicData) {
         CK_BYTE_PTR pPublicData = calloc(object->private.ulPublicDataLen, sizeof(CK_BYTE));
+        /* uncoverable branch 0 */
         if (!pPublicData) {
             __croak("memory allocation error");
         }
@@ -1754,6 +1776,7 @@ CK_RV crypt_pkcs11_ck_x9_42_dh1_derive_params_set_pOtherInfo(Crypt__PKCS11__CK_X
         return CKR_ARGUMENTS_BAD;
     }
 
+    /* uncoverable branch 1 */
     if (!(n = calloc(1, l + 1))) {
         return CKR_HOST_MEMORY;
     }
@@ -1813,6 +1836,7 @@ CK_RV crypt_pkcs11_ck_x9_42_dh1_derive_params_set_pPublicData(Crypt__PKCS11__CK_
         return CKR_ARGUMENTS_BAD;
     }
 
+    /* uncoverable branch 1 */
     if (!(n = calloc(1, l + 1))) {
         return CKR_HOST_MEMORY;
     }
@@ -1876,6 +1900,7 @@ CK_RV crypt_pkcs11_ck_x9_42_dh2_derive_params_fromBytes(Crypt__PKCS11__CK_X9_42_
 
     if (object->private.pOtherInfo) {
         CK_BYTE_PTR pOtherInfo = calloc(object->private.ulOtherInfoLen, sizeof(CK_BYTE));
+        /* uncoverable branch 0 */
         if (!pOtherInfo) {
             __croak("memory allocation error");
         }
@@ -1884,6 +1909,7 @@ CK_RV crypt_pkcs11_ck_x9_42_dh2_derive_params_fromBytes(Crypt__PKCS11__CK_X9_42_
     }
     if (object->private.pPublicData) {
         CK_BYTE_PTR pPublicData = calloc(object->private.ulPublicDataLen, sizeof(CK_BYTE));
+        /* uncoverable branch 0 */
         if (!pPublicData) {
             __croak("memory allocation error");
         }
@@ -1892,6 +1918,7 @@ CK_RV crypt_pkcs11_ck_x9_42_dh2_derive_params_fromBytes(Crypt__PKCS11__CK_X9_42_
     }
     if (object->private.pPublicData2) {
         CK_BYTE_PTR pPublicData2 = calloc(object->private.ulPublicDataLen2, sizeof(CK_BYTE));
+        /* uncoverable branch 0 */
         if (!pPublicData2) {
             __croak("memory allocation error");
         }
@@ -1994,6 +2021,7 @@ CK_RV crypt_pkcs11_ck_x9_42_dh2_derive_params_set_pOtherInfo(Crypt__PKCS11__CK_X
         return CKR_ARGUMENTS_BAD;
     }
 
+    /* uncoverable branch 1 */
     if (!(n = calloc(1, l + 1))) {
         return CKR_HOST_MEMORY;
     }
@@ -2053,6 +2081,7 @@ CK_RV crypt_pkcs11_ck_x9_42_dh2_derive_params_set_pPublicData(Crypt__PKCS11__CK_
         return CKR_ARGUMENTS_BAD;
     }
 
+    /* uncoverable branch 1 */
     if (!(n = calloc(1, l + 1))) {
         return CKR_HOST_MEMORY;
     }
@@ -2145,6 +2174,7 @@ CK_RV crypt_pkcs11_ck_x9_42_dh2_derive_params_set_pPublicData2(Crypt__PKCS11__CK
         return CKR_ARGUMENTS_BAD;
     }
 
+    /* uncoverable branch 1 */
     if (!(n = calloc(1, l + 1))) {
         return CKR_HOST_MEMORY;
     }
@@ -2208,6 +2238,7 @@ CK_RV crypt_pkcs11_ck_x9_42_mqv_derive_params_fromBytes(Crypt__PKCS11__CK_X9_42_
 
     if (object->private.pOtherInfo) {
         CK_BYTE_PTR pOtherInfo = calloc(object->private.ulOtherInfoLen, sizeof(CK_BYTE));
+        /* uncoverable branch 0 */
         if (!pOtherInfo) {
             __croak("memory allocation error");
         }
@@ -2216,6 +2247,7 @@ CK_RV crypt_pkcs11_ck_x9_42_mqv_derive_params_fromBytes(Crypt__PKCS11__CK_X9_42_
     }
     if (object->private.pPublicData) {
         CK_BYTE_PTR pPublicData = calloc(object->private.ulPublicDataLen, sizeof(CK_BYTE));
+        /* uncoverable branch 0 */
         if (!pPublicData) {
             __croak("memory allocation error");
         }
@@ -2224,6 +2256,7 @@ CK_RV crypt_pkcs11_ck_x9_42_mqv_derive_params_fromBytes(Crypt__PKCS11__CK_X9_42_
     }
     if (object->private.pPublicData2) {
         CK_BYTE_PTR pPublicData2 = calloc(object->private.ulPublicDataLen2, sizeof(CK_BYTE));
+        /* uncoverable branch 0 */
         if (!pPublicData2) {
             __croak("memory allocation error");
         }
@@ -2326,6 +2359,7 @@ CK_RV crypt_pkcs11_ck_x9_42_mqv_derive_params_set_pOtherInfo(Crypt__PKCS11__CK_X
         return CKR_ARGUMENTS_BAD;
     }
 
+    /* uncoverable branch 1 */
     if (!(n = calloc(1, l + 1))) {
         return CKR_HOST_MEMORY;
     }
@@ -2385,6 +2419,7 @@ CK_RV crypt_pkcs11_ck_x9_42_mqv_derive_params_set_pPublicData(Crypt__PKCS11__CK_
         return CKR_ARGUMENTS_BAD;
     }
 
+    /* uncoverable branch 1 */
     if (!(n = calloc(1, l + 1))) {
         return CKR_HOST_MEMORY;
     }
@@ -2477,6 +2512,7 @@ CK_RV crypt_pkcs11_ck_x9_42_mqv_derive_params_set_pPublicData2(Crypt__PKCS11__CK
         return CKR_ARGUMENTS_BAD;
     }
 
+    /* uncoverable branch 1 */
     if (!(n = calloc(1, l + 1))) {
         return CKR_HOST_MEMORY;
     }
@@ -2573,6 +2609,7 @@ CK_RV crypt_pkcs11_ck_kea_derive_params_fromBytes(Crypt__PKCS11__CK_KEA_DERIVE_P
 
     if (object->private.pRandomA) {
         CK_BYTE_PTR pRandomA = calloc(object->private.ulRandomLen, sizeof(CK_BYTE));
+        /* uncoverable branch 0 */
         if (!pRandomA) {
             __croak("memory allocation error");
         }
@@ -2581,6 +2618,7 @@ CK_RV crypt_pkcs11_ck_kea_derive_params_fromBytes(Crypt__PKCS11__CK_KEA_DERIVE_P
     }
     if (object->private.pRandomB) {
         CK_BYTE_PTR pRandomB = calloc(object->private.ulRandomLen, sizeof(CK_BYTE));
+        /* uncoverable branch 0 */
         if (!pRandomB) {
             __croak("memory allocation error");
         }
@@ -2589,6 +2627,7 @@ CK_RV crypt_pkcs11_ck_kea_derive_params_fromBytes(Crypt__PKCS11__CK_KEA_DERIVE_P
     }
     if (object->private.pPublicData) {
         CK_BYTE_PTR pPublicData = calloc(object->private.ulPublicDataLen, sizeof(CK_BYTE));
+        /* uncoverable branch 0 */
         if (!pPublicData) {
             __croak("memory allocation error");
         }
@@ -2696,6 +2735,7 @@ CK_RV crypt_pkcs11_ck_kea_derive_params_set_pRandomA(Crypt__PKCS11__CK_KEA_DERIV
         return CKR_ARGUMENTS_BAD;
     }
 
+    /* uncoverable branch 1 */
     if (!(n = calloc(1, l + 1))) {
         return CKR_HOST_MEMORY;
     }
@@ -2755,6 +2795,7 @@ CK_RV crypt_pkcs11_ck_kea_derive_params_set_pRandomB(Crypt__PKCS11__CK_KEA_DERIV
         return CKR_ARGUMENTS_BAD;
     }
 
+    /* uncoverable branch 1 */
     if (!(n = calloc(1, l + 1))) {
         return CKR_HOST_MEMORY;
     }
@@ -2814,6 +2855,7 @@ CK_RV crypt_pkcs11_ck_kea_derive_params_set_pPublicData(Crypt__PKCS11__CK_KEA_DE
         return CKR_ARGUMENTS_BAD;
     }
 
+    /* uncoverable branch 1 */
     if (!(n = calloc(1, l + 1))) {
         return CKR_HOST_MEMORY;
     }
@@ -3193,6 +3235,7 @@ CK_RV crypt_pkcs11_ck_rc5_cbc_params_fromBytes(Crypt__PKCS11__CK_RC5_CBC_PARAMS*
 
     if (object->private.pIv) {
         CK_BYTE_PTR pIv = calloc(object->private.ulIvLen, sizeof(CK_BYTE));
+        /* uncoverable branch 0 */
         if (!pIv) {
             __croak("memory allocation error");
         }
@@ -3322,6 +3365,7 @@ CK_RV crypt_pkcs11_ck_rc5_cbc_params_set_pIv(Crypt__PKCS11__CK_RC5_CBC_PARAMS* o
         return CKR_ARGUMENTS_BAD;
     }
 
+    /* uncoverable branch 1 */
     if (!(n = calloc(1, l + 1))) {
         return CKR_HOST_MEMORY;
     }
@@ -3492,6 +3536,7 @@ CK_RV crypt_pkcs11_ck_des_cbc_encrypt_data_params_fromBytes(Crypt__PKCS11__CK_DE
 
     if (object->private.pData) {
         CK_BYTE_PTR pData = calloc(object->private.length, sizeof(CK_BYTE));
+        /* uncoverable branch 0 */
         if (!pData) {
             __croak("memory allocation error");
         }
@@ -3604,6 +3649,7 @@ CK_RV crypt_pkcs11_ck_des_cbc_encrypt_data_params_set_pData(Crypt__PKCS11__CK_DE
         return CKR_ARGUMENTS_BAD;
     }
 
+    /* uncoverable branch 1 */
     if (!(n = calloc(1, l + 1))) {
         return CKR_HOST_MEMORY;
     }
@@ -3661,6 +3707,7 @@ CK_RV crypt_pkcs11_ck_aes_cbc_encrypt_data_params_fromBytes(Crypt__PKCS11__CK_AE
 
     if (object->private.pData) {
         CK_BYTE_PTR pData = calloc(object->private.length, sizeof(CK_BYTE));
+        /* uncoverable branch 0 */
         if (!pData) {
             __croak("memory allocation error");
         }
@@ -3773,6 +3820,7 @@ CK_RV crypt_pkcs11_ck_aes_cbc_encrypt_data_params_set_pData(Crypt__PKCS11__CK_AE
         return CKR_ARGUMENTS_BAD;
     }
 
+    /* uncoverable branch 1 */
     if (!(n = calloc(1, l + 1))) {
         return CKR_HOST_MEMORY;
     }
@@ -3845,6 +3893,7 @@ CK_RV crypt_pkcs11_ck_skipjack_private_wrap_params_fromBytes(Crypt__PKCS11__CK_S
 
     if (object->private.pPassword) {
         CK_BYTE_PTR pPassword = calloc(object->private.ulPasswordLen, sizeof(CK_BYTE));
+        /* uncoverable branch 0 */
         if (!pPassword) {
             __croak("memory allocation error");
         }
@@ -3853,6 +3902,7 @@ CK_RV crypt_pkcs11_ck_skipjack_private_wrap_params_fromBytes(Crypt__PKCS11__CK_S
     }
     if (object->private.pPublicData) {
         CK_BYTE_PTR pPublicData = calloc(object->private.ulPublicDataLen, sizeof(CK_BYTE));
+        /* uncoverable branch 0 */
         if (!pPublicData) {
             __croak("memory allocation error");
         }
@@ -3861,6 +3911,7 @@ CK_RV crypt_pkcs11_ck_skipjack_private_wrap_params_fromBytes(Crypt__PKCS11__CK_S
     }
     if (object->private.pRandomA) {
         CK_BYTE_PTR pRandomA = calloc(object->private.ulRandomLen, sizeof(CK_BYTE));
+        /* uncoverable branch 0 */
         if (!pRandomA) {
             __croak("memory allocation error");
         }
@@ -3869,6 +3920,7 @@ CK_RV crypt_pkcs11_ck_skipjack_private_wrap_params_fromBytes(Crypt__PKCS11__CK_S
     }
     if (object->private.pPrimeP) {
         CK_BYTE_PTR pPrimeP = calloc(object->private.ulPAndGLen, sizeof(CK_BYTE));
+        /* uncoverable branch 0 */
         if (!pPrimeP) {
             __croak("memory allocation error");
         }
@@ -3877,6 +3929,7 @@ CK_RV crypt_pkcs11_ck_skipjack_private_wrap_params_fromBytes(Crypt__PKCS11__CK_S
     }
     if (object->private.pBaseG) {
         CK_BYTE_PTR pBaseG = calloc(object->private.ulPAndGLen, sizeof(CK_BYTE));
+        /* uncoverable branch 0 */
         if (!pBaseG) {
             __croak("memory allocation error");
         }
@@ -3885,6 +3938,7 @@ CK_RV crypt_pkcs11_ck_skipjack_private_wrap_params_fromBytes(Crypt__PKCS11__CK_S
     }
     if (object->private.pSubprimeQ) {
         CK_BYTE_PTR pSubprimeQ = calloc(object->private.ulQLen, sizeof(CK_BYTE));
+        /* uncoverable branch 0 */
         if (!pSubprimeQ) {
             __croak("memory allocation error");
         }
@@ -3963,6 +4017,7 @@ CK_RV crypt_pkcs11_ck_skipjack_private_wrap_params_set_pPassword(Crypt__PKCS11__
         return CKR_ARGUMENTS_BAD;
     }
 
+    /* uncoverable branch 1 */
     if (!(n = calloc(1, l + 1))) {
         return CKR_HOST_MEMORY;
     }
@@ -4022,6 +4077,7 @@ CK_RV crypt_pkcs11_ck_skipjack_private_wrap_params_set_pPublicData(Crypt__PKCS11
         return CKR_ARGUMENTS_BAD;
     }
 
+    /* uncoverable branch 1 */
     if (!(n = calloc(1, l + 1))) {
         return CKR_HOST_MEMORY;
     }
@@ -4081,6 +4137,7 @@ CK_RV crypt_pkcs11_ck_skipjack_private_wrap_params_set_pRandomA(Crypt__PKCS11__C
         return CKR_ARGUMENTS_BAD;
     }
 
+    /* uncoverable branch 1 */
     if (!(n = calloc(1, l + 1))) {
         return CKR_HOST_MEMORY;
     }
@@ -4140,6 +4197,7 @@ CK_RV crypt_pkcs11_ck_skipjack_private_wrap_params_set_pPrimeP(Crypt__PKCS11__CK
         return CKR_ARGUMENTS_BAD;
     }
 
+    /* uncoverable branch 1 */
     if (!(n = calloc(1, l + 1))) {
         return CKR_HOST_MEMORY;
     }
@@ -4199,6 +4257,7 @@ CK_RV crypt_pkcs11_ck_skipjack_private_wrap_params_set_pBaseG(Crypt__PKCS11__CK_
         return CKR_ARGUMENTS_BAD;
     }
 
+    /* uncoverable branch 1 */
     if (!(n = calloc(1, l + 1))) {
         return CKR_HOST_MEMORY;
     }
@@ -4258,6 +4317,7 @@ CK_RV crypt_pkcs11_ck_skipjack_private_wrap_params_set_pSubprimeQ(Crypt__PKCS11_
         return CKR_ARGUMENTS_BAD;
     }
 
+    /* uncoverable branch 1 */
     if (!(n = calloc(1, l + 1))) {
         return CKR_HOST_MEMORY;
     }
@@ -4333,6 +4393,7 @@ CK_RV crypt_pkcs11_ck_skipjack_relayx_params_fromBytes(Crypt__PKCS11__CK_SKIPJAC
 
     if (object->private.pOldWrappedX) {
         CK_BYTE_PTR pOldWrappedX = calloc(object->private.ulOldWrappedXLen, sizeof(CK_BYTE));
+        /* uncoverable branch 0 */
         if (!pOldWrappedX) {
             __croak("memory allocation error");
         }
@@ -4341,6 +4402,7 @@ CK_RV crypt_pkcs11_ck_skipjack_relayx_params_fromBytes(Crypt__PKCS11__CK_SKIPJAC
     }
     if (object->private.pOldPassword) {
         CK_BYTE_PTR pOldPassword = calloc(object->private.ulOldPasswordLen, sizeof(CK_BYTE));
+        /* uncoverable branch 0 */
         if (!pOldPassword) {
             __croak("memory allocation error");
         }
@@ -4349,6 +4411,7 @@ CK_RV crypt_pkcs11_ck_skipjack_relayx_params_fromBytes(Crypt__PKCS11__CK_SKIPJAC
     }
     if (object->private.pOldPublicData) {
         CK_BYTE_PTR pOldPublicData = calloc(object->private.ulOldPublicDataLen, sizeof(CK_BYTE));
+        /* uncoverable branch 0 */
         if (!pOldPublicData) {
             __croak("memory allocation error");
         }
@@ -4357,6 +4420,7 @@ CK_RV crypt_pkcs11_ck_skipjack_relayx_params_fromBytes(Crypt__PKCS11__CK_SKIPJAC
     }
     if (object->private.pOldRandomA) {
         CK_BYTE_PTR pOldRandomA = calloc(object->private.ulOldRandomLen, sizeof(CK_BYTE));
+        /* uncoverable branch 0 */
         if (!pOldRandomA) {
             __croak("memory allocation error");
         }
@@ -4365,6 +4429,7 @@ CK_RV crypt_pkcs11_ck_skipjack_relayx_params_fromBytes(Crypt__PKCS11__CK_SKIPJAC
     }
     if (object->private.pNewPassword) {
         CK_BYTE_PTR pNewPassword = calloc(object->private.ulNewPasswordLen, sizeof(CK_BYTE));
+        /* uncoverable branch 0 */
         if (!pNewPassword) {
             __croak("memory allocation error");
         }
@@ -4373,6 +4438,7 @@ CK_RV crypt_pkcs11_ck_skipjack_relayx_params_fromBytes(Crypt__PKCS11__CK_SKIPJAC
     }
     if (object->private.pNewPublicData) {
         CK_BYTE_PTR pNewPublicData = calloc(object->private.ulNewPublicDataLen, sizeof(CK_BYTE));
+        /* uncoverable branch 0 */
         if (!pNewPublicData) {
             __croak("memory allocation error");
         }
@@ -4381,6 +4447,7 @@ CK_RV crypt_pkcs11_ck_skipjack_relayx_params_fromBytes(Crypt__PKCS11__CK_SKIPJAC
     }
     if (object->private.pNewRandomA) {
         CK_BYTE_PTR pNewRandomA = calloc(object->private.ulNewRandomLen, sizeof(CK_BYTE));
+        /* uncoverable branch 0 */
         if (!pNewRandomA) {
             __croak("memory allocation error");
         }
@@ -4462,6 +4529,7 @@ CK_RV crypt_pkcs11_ck_skipjack_relayx_params_set_pOldWrappedX(Crypt__PKCS11__CK_
         return CKR_ARGUMENTS_BAD;
     }
 
+    /* uncoverable branch 1 */
     if (!(n = calloc(1, l + 1))) {
         return CKR_HOST_MEMORY;
     }
@@ -4521,6 +4589,7 @@ CK_RV crypt_pkcs11_ck_skipjack_relayx_params_set_pOldPassword(Crypt__PKCS11__CK_
         return CKR_ARGUMENTS_BAD;
     }
 
+    /* uncoverable branch 1 */
     if (!(n = calloc(1, l + 1))) {
         return CKR_HOST_MEMORY;
     }
@@ -4580,6 +4649,7 @@ CK_RV crypt_pkcs11_ck_skipjack_relayx_params_set_pOldPublicData(Crypt__PKCS11__C
         return CKR_ARGUMENTS_BAD;
     }
 
+    /* uncoverable branch 1 */
     if (!(n = calloc(1, l + 1))) {
         return CKR_HOST_MEMORY;
     }
@@ -4639,6 +4709,7 @@ CK_RV crypt_pkcs11_ck_skipjack_relayx_params_set_pOldRandomA(Crypt__PKCS11__CK_S
         return CKR_ARGUMENTS_BAD;
     }
 
+    /* uncoverable branch 1 */
     if (!(n = calloc(1, l + 1))) {
         return CKR_HOST_MEMORY;
     }
@@ -4698,6 +4769,7 @@ CK_RV crypt_pkcs11_ck_skipjack_relayx_params_set_pNewPassword(Crypt__PKCS11__CK_
         return CKR_ARGUMENTS_BAD;
     }
 
+    /* uncoverable branch 1 */
     if (!(n = calloc(1, l + 1))) {
         return CKR_HOST_MEMORY;
     }
@@ -4757,6 +4829,7 @@ CK_RV crypt_pkcs11_ck_skipjack_relayx_params_set_pNewPublicData(Crypt__PKCS11__C
         return CKR_ARGUMENTS_BAD;
     }
 
+    /* uncoverable branch 1 */
     if (!(n = calloc(1, l + 1))) {
         return CKR_HOST_MEMORY;
     }
@@ -4816,6 +4889,7 @@ CK_RV crypt_pkcs11_ck_skipjack_relayx_params_set_pNewRandomA(Crypt__PKCS11__CK_S
         return CKR_ARGUMENTS_BAD;
     }
 
+    /* uncoverable branch 1 */
     if (!(n = calloc(1, l + 1))) {
         return CKR_HOST_MEMORY;
     }
@@ -4836,6 +4910,7 @@ Crypt__PKCS11__CK_PBE_PARAMS* crypt_pkcs11_ck_pbe_params_new(const char* class) 
         __croak("memory allocation error");
     }
     else {
+        /* uncoverable branch 1 */
         if (!(object->private.pInitVector = calloc(8, sizeof(CK_BYTE)))) {
             __croak("memory allocation error");
         }
@@ -4884,6 +4959,7 @@ CK_RV crypt_pkcs11_ck_pbe_params_fromBytes(Crypt__PKCS11__CK_PBE_PARAMS* object,
 
     if (object->private.pInitVector) {
         CK_BYTE_PTR pInitVector = calloc(8, sizeof(CK_BYTE));
+        /* uncoverable branch 0 */
         if (!pInitVector) {
             __croak("memory allocation error");
         }
@@ -4892,6 +4968,7 @@ CK_RV crypt_pkcs11_ck_pbe_params_fromBytes(Crypt__PKCS11__CK_PBE_PARAMS* object,
     }
     if (object->private.pPassword) {
         CK_CHAR_PTR pPassword = calloc(object->private.ulPasswordLen, sizeof(CK_CHAR));
+        /* uncoverable branch 0 */
         if (!pPassword) {
             __croak("memory allocation error");
         }
@@ -4900,6 +4977,7 @@ CK_RV crypt_pkcs11_ck_pbe_params_fromBytes(Crypt__PKCS11__CK_PBE_PARAMS* object,
     }
     if (object->private.pSalt) {
         CK_BYTE_PTR pSalt = calloc(object->private.ulSaltLen, sizeof(CK_BYTE));
+        /* uncoverable branch 0 */
         if (!pSalt) {
             __croak("memory allocation error");
         }
@@ -4983,7 +5061,7 @@ CK_RV crypt_pkcs11_ck_pbe_params_get_pPassword(Crypt__PKCS11__CK_PBE_PARAMS* obj
 
     SvGETMAGIC(sv);
     sv_setpvn(sv, object->private.pPassword, object->private.ulPasswordLen);
-    sv_utf8_upgrade(sv);
+    sv_utf8_upgrade_nomg(sv);
     SvSETMAGIC(sv);
 
     return CKR_OK;
@@ -5021,13 +5099,13 @@ CK_RV crypt_pkcs11_ck_pbe_params_set_pPassword(Crypt__PKCS11__CK_PBE_PARAMS* obj
         return CKR_GENERAL_ERROR;
     }
 
-    if (!sv_utf8_downgrade(_sv, 0)
-        || !(p = SvPV(_sv, l)))
-    {
+    sv_utf8_downgrade(_sv, 0);
+    if (!(p = SvPV(_sv, l))) {
         SvREFCNT_dec(_sv);
         return CKR_GENERAL_ERROR;
     }
 
+    /* uncoverable branch 1 */
     if (!(n = calloc(1, l + 1))) {
         SvREFCNT_dec(_sv);
         return CKR_HOST_MEMORY;
@@ -5089,6 +5167,7 @@ CK_RV crypt_pkcs11_ck_pbe_params_set_pSalt(Crypt__PKCS11__CK_PBE_PARAMS* object,
         return CKR_ARGUMENTS_BAD;
     }
 
+    /* uncoverable branch 1 */
     if (!(n = calloc(1, l + 1))) {
         return CKR_HOST_MEMORY;
     }
@@ -5179,6 +5258,7 @@ CK_RV crypt_pkcs11_ck_key_wrap_set_oaep_params_fromBytes(Crypt__PKCS11__CK_KEY_W
 
     if (object->private.pX) {
         CK_BYTE_PTR pX = calloc(object->private.ulXLen, sizeof(CK_BYTE));
+        /* uncoverable branch 0 */
         if (!pX) {
             __croak("memory allocation error");
         }
@@ -5275,6 +5355,7 @@ CK_RV crypt_pkcs11_ck_key_wrap_set_oaep_params_set_pX(Crypt__PKCS11__CK_KEY_WRAP
         return CKR_ARGUMENTS_BAD;
     }
 
+    /* uncoverable branch 1 */
     if (!(n = calloc(1, l + 1))) {
         return CKR_HOST_MEMORY;
     }
@@ -5335,6 +5416,7 @@ CK_RV crypt_pkcs11_ck_ssl3_random_data_fromBytes(Crypt__PKCS11__CK_SSL3_RANDOM_D
 
     if (object->private.pClientRandom) {
         CK_BYTE_PTR pClientRandom = calloc(object->private.ulClientRandomLen, sizeof(CK_BYTE));
+        /* uncoverable branch 0 */
         if (!pClientRandom) {
             __croak("memory allocation error");
         }
@@ -5343,6 +5425,7 @@ CK_RV crypt_pkcs11_ck_ssl3_random_data_fromBytes(Crypt__PKCS11__CK_SSL3_RANDOM_D
     }
     if (object->private.pServerRandom) {
         CK_BYTE_PTR pServerRandom = calloc(object->private.ulServerRandomLen, sizeof(CK_BYTE));
+        /* uncoverable branch 0 */
         if (!pServerRandom) {
             __croak("memory allocation error");
         }
@@ -5409,6 +5492,7 @@ CK_RV crypt_pkcs11_ck_ssl3_random_data_set_pClientRandom(Crypt__PKCS11__CK_SSL3_
         return CKR_ARGUMENTS_BAD;
     }
 
+    /* uncoverable branch 1 */
     if (!(n = calloc(1, l + 1))) {
         return CKR_HOST_MEMORY;
     }
@@ -5468,6 +5552,7 @@ CK_RV crypt_pkcs11_ck_ssl3_random_data_set_pServerRandom(Crypt__PKCS11__CK_SSL3_
         return CKR_ARGUMENTS_BAD;
     }
 
+    /* uncoverable branch 1 */
     if (!(n = calloc(1, l + 1))) {
         return CKR_HOST_MEMORY;
     }
@@ -5533,6 +5618,7 @@ CK_RV crypt_pkcs11_ck_ssl3_master_key_derive_params_fromBytes(Crypt__PKCS11__CK_
 
     if (object->private.RandomInfo.pClientRandom) {
         CK_BYTE_PTR pClientRandom = calloc(object->private.RandomInfo.ulClientRandomLen, sizeof(CK_BYTE));
+        /* uncoverable branch 0 */
         if (!pClientRandom) {
             __croak("memory allocation error");
         }
@@ -5541,6 +5627,7 @@ CK_RV crypt_pkcs11_ck_ssl3_master_key_derive_params_fromBytes(Crypt__PKCS11__CK_
     }
     if (object->private.RandomInfo.pServerRandom) {
         CK_BYTE_PTR pServerRandom = calloc(object->private.RandomInfo.ulServerRandomLen, sizeof(CK_BYTE));
+        /* uncoverable branch 0 */
         if (!pServerRandom) {
             __croak("memory allocation error");
         }
@@ -5579,11 +5666,13 @@ CK_RV crypt_pkcs11_ck_ssl3_master_key_derive_params_get_RandomInfo(Crypt__PKCS11
     }
 
     if (object->private.RandomInfo.pClientRandom
+        /* uncoverable branch 1 */
         && !(pClientRandom = calloc(object->private.RandomInfo.ulClientRandomLen, sizeof(CK_BYTE))))
     {
         return CKR_HOST_MEMORY;
     }
     if (object->private.RandomInfo.pServerRandom
+        /* uncoverable branch 1 */
         && !(pServerRandom = calloc(object->private.RandomInfo.ulServerRandomLen, sizeof(CK_BYTE))))
     {
         free(pClientRandom);
@@ -5624,11 +5713,13 @@ CK_RV crypt_pkcs11_ck_ssl3_master_key_derive_params_set_RandomInfo(Crypt__PKCS11
     }
 
     if (sv->private.pClientRandom
+        /* uncoverable branch 1 */
         && !(pClientRandom = calloc(sv->private.ulClientRandomLen, sizeof(CK_BYTE))))
     {
         return CKR_HOST_MEMORY;
     }
     if (sv->private.pServerRandom
+        /* uncoverable branch 1 */
         && !(pServerRandom = calloc(sv->private.ulServerRandomLen, sizeof(CK_BYTE))))
     {
         free(pClientRandom);
@@ -6079,11 +6170,13 @@ CK_RV crypt_pkcs11_ck_ssl3_key_mat_params_get_RandomInfo(Crypt__PKCS11__CK_SSL3_
     }
 
     if (object->private.RandomInfo.pClientRandom
+        /* uncoverable branch 1 */
         && !(pClientRandom = calloc(object->private.RandomInfo.ulClientRandomLen, sizeof(CK_BYTE))))
     {
         return CKR_HOST_MEMORY;
     }
     if (object->private.RandomInfo.pServerRandom
+        /* uncoverable branch 1 */
         && !(pServerRandom = calloc(object->private.RandomInfo.ulServerRandomLen, sizeof(CK_BYTE))))
     {
         free(pClientRandom);
@@ -6124,11 +6217,13 @@ CK_RV crypt_pkcs11_ck_ssl3_key_mat_params_set_RandomInfo(Crypt__PKCS11__CK_SSL3_
     }
 
     if (sv->private.pClientRandom
+        /* uncoverable branch 1 */
         && !(pClientRandom = calloc(sv->private.ulClientRandomLen, sizeof(CK_BYTE))))
     {
         return CKR_HOST_MEMORY;
     }
     if (sv->private.pServerRandom
+        /* uncoverable branch 1 */
         && !(pServerRandom = calloc(sv->private.ulServerRandomLen, sizeof(CK_BYTE))))
     {
         free(pClientRandom);
@@ -6173,11 +6268,13 @@ CK_RV crypt_pkcs11_ck_ssl3_key_mat_params_get_pReturnedKeyMaterial(Crypt__PKCS11
     }
 
     if (object->private.ulIVSizeInBits
+        /* uncoverable branch 1 */
         && !(pIVClient = calloc(object->private.ulIVSizeInBits / 8, sizeof(CK_BYTE))))
     {
         return CKR_HOST_MEMORY;
     }
     if (object->private.ulIVSizeInBits
+        /* uncoverable branch 1 */
         && !(pIVServer = calloc(object->private.ulIVSizeInBits / 8, sizeof(CK_BYTE))))
     {
         free(pIVClient);
@@ -6269,6 +6366,7 @@ CK_RV crypt_pkcs11_ck_tls_prf_params_fromBytes(Crypt__PKCS11__CK_TLS_PRF_PARAMS*
 
     if (object->private.pSeed) {
         CK_BYTE_PTR pSeed = calloc(object->private.ulSeedLen, sizeof(CK_BYTE));
+        /* uncoverable branch 0 */
         if (!pSeed) {
             __croak("memory allocation error");
         }
@@ -6277,6 +6375,7 @@ CK_RV crypt_pkcs11_ck_tls_prf_params_fromBytes(Crypt__PKCS11__CK_TLS_PRF_PARAMS*
     }
     if (object->private.pLabel) {
         CK_BYTE_PTR pLabel = calloc(object->private.ulLabelLen, sizeof(CK_BYTE));
+        /* uncoverable branch 0 */
         if (!pLabel) {
             __croak("memory allocation error");
         }
@@ -6289,6 +6388,7 @@ CK_RV crypt_pkcs11_ck_tls_prf_params_fromBytes(Crypt__PKCS11__CK_TLS_PRF_PARAMS*
     object->private.pulOutputLen = &(object->pulOutputLen);
     if (object->private.pOutput) {
         CK_BYTE_PTR pOutput = calloc(object->pulOutputLen, sizeof(CK_BYTE));
+        /* uncoverable branch 0 */
         if (!pOutput) {
             __croak("memory allocation error");
         }
@@ -6358,6 +6458,7 @@ CK_RV crypt_pkcs11_ck_tls_prf_params_set_pSeed(Crypt__PKCS11__CK_TLS_PRF_PARAMS*
         return CKR_ARGUMENTS_BAD;
     }
 
+    /* uncoverable branch 1 */
     if (!(n = calloc(1, l + 1))) {
         return CKR_HOST_MEMORY;
     }
@@ -6417,6 +6518,7 @@ CK_RV crypt_pkcs11_ck_tls_prf_params_set_pLabel(Crypt__PKCS11__CK_TLS_PRF_PARAMS
         return CKR_ARGUMENTS_BAD;
     }
 
+    /* uncoverable branch 1 */
     if (!(n = calloc(1, l + 1))) {
         return CKR_HOST_MEMORY;
     }
@@ -6449,6 +6551,7 @@ CK_RV crypt_pkcs11_ck_tls_prf_params_get_pOutput(Crypt__PKCS11__CK_TLS_PRF_PARAM
             free(object->private.pOutput);
         }
 
+        /* uncoverable branch 1 */
         if (!(object->private.pOutput = calloc(1, object->pulOutputLen))) {
             return CKR_HOST_MEMORY;
         }
@@ -6498,6 +6601,7 @@ CK_RV crypt_pkcs11_ck_tls_prf_params_set_pOutput(Crypt__PKCS11__CK_TLS_PRF_PARAM
         free(object->private.pOutput);
     }
 
+    /* uncoverable branch 1 */
     if (!(object->private.pOutput = calloc(1, l))) {
         return CKR_HOST_MEMORY;
     }
@@ -6553,6 +6657,7 @@ CK_RV crypt_pkcs11_ck_wtls_random_data_fromBytes(Crypt__PKCS11__CK_WTLS_RANDOM_D
 
     if (object->private.pClientRandom) {
         CK_BYTE_PTR pClientRandom = calloc(object->private.ulClientRandomLen, sizeof(CK_BYTE));
+        /* uncoverable branch 0 */
         if (!pClientRandom) {
             __croak("memory allocation error");
         }
@@ -6561,6 +6666,7 @@ CK_RV crypt_pkcs11_ck_wtls_random_data_fromBytes(Crypt__PKCS11__CK_WTLS_RANDOM_D
     }
     if (object->private.pServerRandom) {
         CK_BYTE_PTR pServerRandom = calloc(object->private.ulServerRandomLen, sizeof(CK_BYTE));
+        /* uncoverable branch 0 */
         if (!pServerRandom) {
             __croak("memory allocation error");
         }
@@ -6627,6 +6733,7 @@ CK_RV crypt_pkcs11_ck_wtls_random_data_set_pClientRandom(Crypt__PKCS11__CK_WTLS_
         return CKR_ARGUMENTS_BAD;
     }
 
+    /* uncoverable branch 1 */
     if (!(n = calloc(1, l + 1))) {
         return CKR_HOST_MEMORY;
     }
@@ -6686,6 +6793,7 @@ CK_RV crypt_pkcs11_ck_wtls_random_data_set_pServerRandom(Crypt__PKCS11__CK_WTLS_
         return CKR_ARGUMENTS_BAD;
     }
 
+    /* uncoverable branch 1 */
     if (!(n = calloc(1, l + 1))) {
         return CKR_HOST_MEMORY;
     }
@@ -6706,6 +6814,7 @@ Crypt__PKCS11__CK_WTLS_MASTER_KEY_DERIVE_PARAMS* crypt_pkcs11_ck_wtls_master_key
         __croak("memory allocation error");
     }
     else {
+        /* uncoverable branch 1 */
         if (!(object->private.pVersion = calloc(1, sizeof(CK_BYTE)))) {
             __croak("memory allocation error");
         }
@@ -6754,6 +6863,7 @@ CK_RV crypt_pkcs11_ck_wtls_master_key_derive_params_fromBytes(Crypt__PKCS11__CK_
 
     if (object->private.RandomInfo.pClientRandom) {
         CK_BYTE_PTR pClientRandom = calloc(object->private.RandomInfo.ulClientRandomLen, sizeof(CK_BYTE));
+        /* uncoverable branch 0 */
         if (!pClientRandom) {
             __croak("memory allocation error");
         }
@@ -6762,6 +6872,7 @@ CK_RV crypt_pkcs11_ck_wtls_master_key_derive_params_fromBytes(Crypt__PKCS11__CK_
     }
     if (object->private.RandomInfo.pServerRandom) {
         CK_BYTE_PTR pServerRandom = calloc(object->private.RandomInfo.ulServerRandomLen, sizeof(CK_BYTE));
+        /* uncoverable branch 0 */
         if (!pServerRandom) {
             __croak("memory allocation error");
         }
@@ -6770,6 +6881,7 @@ CK_RV crypt_pkcs11_ck_wtls_master_key_derive_params_fromBytes(Crypt__PKCS11__CK_
     }
     if (object->private.pVersion) {
         CK_BYTE_PTR pVersion = calloc(1, sizeof(CK_BYTE));
+        /* uncoverable branch 0 */
         if (!pVersion) {
             __croak("memory allocation error");
         }
@@ -6839,11 +6951,13 @@ CK_RV crypt_pkcs11_ck_wtls_master_key_derive_params_get_RandomInfo(Crypt__PKCS11
     }
 
     if (object->private.RandomInfo.pClientRandom
+        /* uncoverable branch 1 */
         && !(pClientRandom = calloc(object->private.RandomInfo.ulClientRandomLen, sizeof(CK_BYTE))))
     {
         return CKR_HOST_MEMORY;
     }
     if (object->private.RandomInfo.pServerRandom
+        /* uncoverable branch 1 */
         && !(pServerRandom = calloc(object->private.RandomInfo.ulServerRandomLen, sizeof(CK_BYTE))))
     {
         free(pClientRandom);
@@ -6884,11 +6998,13 @@ CK_RV crypt_pkcs11_ck_wtls_master_key_derive_params_set_RandomInfo(Crypt__PKCS11
     }
 
     if (sv->private.pClientRandom
+        /* uncoverable branch 1 */
         && !(pClientRandom = calloc(sv->private.ulClientRandomLen, sizeof(CK_BYTE))))
     {
         return CKR_HOST_MEMORY;
     }
     if (sv->private.pServerRandom
+        /* uncoverable branch 1 */
         && !(pServerRandom = calloc(sv->private.ulServerRandomLen, sizeof(CK_BYTE))))
     {
         free(pClientRandom);
@@ -6985,6 +7101,7 @@ CK_RV crypt_pkcs11_ck_wtls_prf_params_fromBytes(Crypt__PKCS11__CK_WTLS_PRF_PARAM
 
     if (object->private.pSeed) {
         CK_BYTE_PTR pSeed = calloc(object->private.ulSeedLen, sizeof(CK_BYTE));
+        /* uncoverable branch 0 */
         if (!pSeed) {
             __croak("memory allocation error");
         }
@@ -6993,6 +7110,7 @@ CK_RV crypt_pkcs11_ck_wtls_prf_params_fromBytes(Crypt__PKCS11__CK_WTLS_PRF_PARAM
     }
     if (object->private.pLabel) {
         CK_BYTE_PTR pLabel = calloc(object->private.ulLabelLen, sizeof(CK_BYTE));
+        /* uncoverable branch 0 */
         if (!pLabel) {
             __croak("memory allocation error");
         }
@@ -7005,6 +7123,7 @@ CK_RV crypt_pkcs11_ck_wtls_prf_params_fromBytes(Crypt__PKCS11__CK_WTLS_PRF_PARAM
     object->private.pulOutputLen = &(object->pulOutputLen);
     if (object->private.pOutput) {
         CK_BYTE_PTR pOutput = calloc(object->pulOutputLen, sizeof(CK_BYTE));
+        /* uncoverable branch 0 */
         if (!pOutput) {
             __croak("memory allocation error");
         }
@@ -7107,6 +7226,7 @@ CK_RV crypt_pkcs11_ck_wtls_prf_params_set_pSeed(Crypt__PKCS11__CK_WTLS_PRF_PARAM
         return CKR_ARGUMENTS_BAD;
     }
 
+    /* uncoverable branch 1 */
     if (!(n = calloc(1, l + 1))) {
         return CKR_HOST_MEMORY;
     }
@@ -7166,6 +7286,7 @@ CK_RV crypt_pkcs11_ck_wtls_prf_params_set_pLabel(Crypt__PKCS11__CK_WTLS_PRF_PARA
         return CKR_ARGUMENTS_BAD;
     }
 
+    /* uncoverable branch 1 */
     if (!(n = calloc(1, l + 1))) {
         return CKR_HOST_MEMORY;
     }
@@ -7198,6 +7319,7 @@ CK_RV crypt_pkcs11_ck_wtls_prf_params_get_pOutput(Crypt__PKCS11__CK_WTLS_PRF_PAR
             free(object->private.pOutput);
         }
 
+        /* uncoverable branch 1 */
         if (!(object->private.pOutput = calloc(1, object->pulOutputLen))) {
             return CKR_HOST_MEMORY;
         }
@@ -7247,6 +7369,7 @@ CK_RV crypt_pkcs11_ck_wtls_prf_params_set_pOutput(Crypt__PKCS11__CK_WTLS_PRF_PAR
         free(object->private.pOutput);
     }
 
+    /* uncoverable branch 1 */
     if (!(object->private.pOutput = calloc(1, l))) {
         return CKR_HOST_MEMORY;
     }
@@ -7625,11 +7748,13 @@ CK_RV crypt_pkcs11_ck_wtls_key_mat_params_get_RandomInfo(Crypt__PKCS11__CK_WTLS_
     }
 
     if (object->private.RandomInfo.pClientRandom
+        /* uncoverable branch 1 */
         && !(pClientRandom = calloc(object->private.RandomInfo.ulClientRandomLen, sizeof(CK_BYTE))))
     {
         return CKR_HOST_MEMORY;
     }
     if (object->private.RandomInfo.pServerRandom
+        /* uncoverable branch 1 */
         && !(pServerRandom = calloc(object->private.RandomInfo.ulServerRandomLen, sizeof(CK_BYTE))))
     {
         free(pClientRandom);
@@ -7670,11 +7795,13 @@ CK_RV crypt_pkcs11_ck_wtls_key_mat_params_set_RandomInfo(Crypt__PKCS11__CK_WTLS_
     }
 
     if (sv->private.pClientRandom
+        /* uncoverable branch 1 */
         && !(pClientRandom = calloc(sv->private.ulClientRandomLen, sizeof(CK_BYTE))))
     {
         return CKR_HOST_MEMORY;
     }
     if (sv->private.pServerRandom
+        /* uncoverable branch 1 */
         && !(pServerRandom = calloc(sv->private.ulServerRandomLen, sizeof(CK_BYTE))))
     {
         free(pClientRandom);
@@ -7718,6 +7845,7 @@ CK_RV crypt_pkcs11_ck_wtls_key_mat_params_get_pReturnedKeyMaterial(Crypt__PKCS11
     }
 
     if (object->private.ulIVSizeInBits
+        /* uncoverable branch 1 */
         && !(pIV = calloc(object->private.ulIVSizeInBits / 8, sizeof(CK_BYTE))))
     {
         return CKR_HOST_MEMORY;
@@ -7807,6 +7935,7 @@ CK_RV crypt_pkcs11_ck_cms_sig_params_fromBytes(Crypt__PKCS11__CK_CMS_SIG_PARAMS*
         memcpy(&(object->pSigningMechanism), object->private.pSigningMechanism, sizeof(CK_MECHANISM));
         if (object->pSigningMechanism.pParameter) {
             CK_VOID_PTR pParameter = calloc(object->pSigningMechanism.ulParameterLen, 1);
+            /* uncoverable branch 0 */
             if (!pParameter) {
                 __croak("memory allocation error");
             }
@@ -7820,6 +7949,7 @@ CK_RV crypt_pkcs11_ck_cms_sig_params_fromBytes(Crypt__PKCS11__CK_CMS_SIG_PARAMS*
         memcpy(&(object->pDigestMechanism), object->private.pDigestMechanism, sizeof(CK_MECHANISM));
         if (object->pDigestMechanism.pParameter) {
             CK_VOID_PTR pParameter = calloc(object->pDigestMechanism.ulParameterLen, 1);
+            /* uncoverable branch 0 */
             if (!pParameter) {
                 __croak("memory allocation error");
             }
@@ -7831,6 +7961,7 @@ CK_RV crypt_pkcs11_ck_cms_sig_params_fromBytes(Crypt__PKCS11__CK_CMS_SIG_PARAMS*
 
     if (object->private.pContentType) {
         CK_CHAR_PTR pContentType = strdup(object->private.pContentType);
+        /* uncoverable branch 0 */
         if (!pContentType) {
             __croak("memory allocation error");
         }
@@ -7838,6 +7969,7 @@ CK_RV crypt_pkcs11_ck_cms_sig_params_fromBytes(Crypt__PKCS11__CK_CMS_SIG_PARAMS*
     }
     if (object->private.pRequestedAttributes) {
         CK_BYTE_PTR pRequestedAttributes = calloc(object->private.ulRequestedAttributesLen, sizeof(CK_BYTE));
+        /* uncoverable branch 0 */
         if (!pRequestedAttributes) {
             __croak("memory allocation error");
         }
@@ -7846,6 +7978,7 @@ CK_RV crypt_pkcs11_ck_cms_sig_params_fromBytes(Crypt__PKCS11__CK_CMS_SIG_PARAMS*
     }
     if (object->private.pRequiredAttributes) {
         CK_BYTE_PTR pRequiredAttributes = calloc(object->private.ulRequiredAttributesLen, sizeof(CK_BYTE));
+        /* uncoverable branch 0 */
         if (!pRequiredAttributes) {
             __croak("memory allocation error");
         }
@@ -7920,6 +8053,7 @@ CK_RV crypt_pkcs11_ck_cms_sig_params_get_pSigningMechanism(Crypt__PKCS11__CK_CMS
     }
 
     if (object->pSigningMechanism.ulParameterLen
+        /* uncoverable branch 1 */
         && !(pParameter = calloc(1, object->pSigningMechanism.ulParameterLen)))
     {
         return CKR_HOST_MEMORY;
@@ -7950,6 +8084,7 @@ CK_RV crypt_pkcs11_ck_cms_sig_params_set_pSigningMechanism(Crypt__PKCS11__CK_CMS
     }
 
     if (sv->private.ulParameterLen
+        /* uncoverable branch 1 */
         && !(pParameter = calloc(1, sv->private.ulParameterLen)))
     {
         return CKR_HOST_MEMORY;
@@ -7980,6 +8115,7 @@ CK_RV crypt_pkcs11_ck_cms_sig_params_get_pDigestMechanism(Crypt__PKCS11__CK_CMS_
     }
 
     if (object->pDigestMechanism.ulParameterLen
+        /* uncoverable branch 1 */
         && !(pParameter = calloc(1, object->pDigestMechanism.ulParameterLen)))
     {
         return CKR_HOST_MEMORY;
@@ -8010,6 +8146,7 @@ CK_RV crypt_pkcs11_ck_cms_sig_params_set_pDigestMechanism(Crypt__PKCS11__CK_CMS_
     }
 
     if (sv->private.ulParameterLen
+        /* uncoverable branch 1 */
         && !(pParameter = calloc(1, sv->private.ulParameterLen)))
     {
         return CKR_HOST_MEMORY;
@@ -8039,7 +8176,7 @@ CK_RV crypt_pkcs11_ck_cms_sig_params_get_pContentType(Crypt__PKCS11__CK_CMS_SIG_
 
     SvGETMAGIC(sv);
     sv_setpv(sv, object->private.pContentType);
-    sv_utf8_upgrade(sv);
+    sv_utf8_upgrade_nomg(sv);
     SvSETMAGIC(sv);
 
     return CKR_OK;
@@ -8076,13 +8213,13 @@ CK_RV crypt_pkcs11_ck_cms_sig_params_set_pContentType(Crypt__PKCS11__CK_CMS_SIG_
         return CKR_GENERAL_ERROR;
     }
 
-    if (!sv_utf8_downgrade(_sv, 0)
-        || !(p = SvPV(_sv, l)))
-    {
+    sv_utf8_downgrade(_sv, 0);
+    if (!(p = SvPV(_sv, l))) {
         SvREFCNT_dec(_sv);
         return CKR_GENERAL_ERROR;
     }
 
+    /* uncoverable branch 1 */
     if (!(n = calloc(1, l + 1))) {
         SvREFCNT_dec(_sv);
         return CKR_HOST_MEMORY;
@@ -8143,6 +8280,7 @@ CK_RV crypt_pkcs11_ck_cms_sig_params_set_pRequestedAttributes(Crypt__PKCS11__CK_
         return CKR_ARGUMENTS_BAD;
     }
 
+    /* uncoverable branch 1 */
     if (!(n = calloc(1, l + 1))) {
         return CKR_HOST_MEMORY;
     }
@@ -8202,6 +8340,7 @@ CK_RV crypt_pkcs11_ck_cms_sig_params_set_pRequiredAttributes(Crypt__PKCS11__CK_C
         return CKR_ARGUMENTS_BAD;
     }
 
+    /* uncoverable branch 1 */
     if (!(n = calloc(1, l + 1))) {
         return CKR_HOST_MEMORY;
     }
@@ -8259,6 +8398,7 @@ CK_RV crypt_pkcs11_ck_key_derivation_string_data_fromBytes(Crypt__PKCS11__CK_KEY
 
     if (object->private.pData) {
         CK_BYTE_PTR pData = calloc(object->private.ulLen, sizeof(CK_BYTE));
+        /* uncoverable branch 0 */
         if (!pData) {
             __croak("memory allocation error");
         }
@@ -8322,6 +8462,7 @@ CK_RV crypt_pkcs11_ck_key_derivation_string_data_set_pData(Crypt__PKCS11__CK_KEY
         return CKR_ARGUMENTS_BAD;
     }
 
+    /* uncoverable branch 1 */
     if (!(n = calloc(1, l + 1))) {
         return CKR_HOST_MEMORY;
     }
@@ -8385,6 +8526,7 @@ CK_RV crypt_pkcs11_ck_pkcs5_pbkd2_params_fromBytes(Crypt__PKCS11__CK_PKCS5_PBKD2
 
     if (object->private.pSaltSourceData) {
         CK_BYTE_PTR pSaltSourceData = calloc(object->private.ulSaltSourceDataLen, sizeof(CK_BYTE));
+        /* uncoverable branch 0 */
         if (!pSaltSourceData) {
             __croak("memory allocation error");
         }
@@ -8393,6 +8535,7 @@ CK_RV crypt_pkcs11_ck_pkcs5_pbkd2_params_fromBytes(Crypt__PKCS11__CK_PKCS5_PBKD2
     }
     if (object->private.pPrfData) {
         CK_BYTE_PTR pPrfData = calloc(object->private.ulPrfDataLen, sizeof(CK_BYTE));
+        /* uncoverable branch 0 */
         if (!pPrfData) {
             __croak("memory allocation error");
         }
@@ -8405,6 +8548,7 @@ CK_RV crypt_pkcs11_ck_pkcs5_pbkd2_params_fromBytes(Crypt__PKCS11__CK_PKCS5_PBKD2
     object->private.ulPasswordLen = &(object->ulPasswordLen);
     if (object->private.pPassword) {
         CK_CHAR_PTR pPassword = calloc(object->ulPasswordLen, sizeof(CK_CHAR));
+        /* uncoverable branch 0 */
         if (!pPassword) {
             __croak("memory allocation error");
         }
@@ -8507,6 +8651,7 @@ CK_RV crypt_pkcs11_ck_pkcs5_pbkd2_params_set_pSaltSourceData(Crypt__PKCS11__CK_P
         return CKR_ARGUMENTS_BAD;
     }
 
+    /* uncoverable branch 1 */
     if (!(n = calloc(1, l + 1))) {
         return CKR_HOST_MEMORY;
     }
@@ -8632,6 +8777,7 @@ CK_RV crypt_pkcs11_ck_pkcs5_pbkd2_params_set_pPrfData(Crypt__PKCS11__CK_PKCS5_PB
         return CKR_ARGUMENTS_BAD;
     }
 
+    /* uncoverable branch 1 */
     if (!(n = calloc(1, l + 1))) {
         return CKR_HOST_MEMORY;
     }
@@ -8664,6 +8810,7 @@ CK_RV crypt_pkcs11_ck_pkcs5_pbkd2_params_get_pPassword(Crypt__PKCS11__CK_PKCS5_P
             free(object->private.pPassword);
         }
 
+        /* uncoverable branch 1 */
         if (!(object->private.pPassword = calloc(1, object->ulPasswordLen))) {
             return CKR_HOST_MEMORY;
         }
@@ -8714,6 +8861,7 @@ CK_RV crypt_pkcs11_ck_pkcs5_pbkd2_params_set_pPassword(Crypt__PKCS11__CK_PKCS5_P
         free(object->private.pPassword);
     }
 
+    /* uncoverable branch 1 */
     if (!(object->private.pPassword = calloc(1, l))) {
         return CKR_HOST_MEMORY;
     }
@@ -8766,6 +8914,7 @@ CK_RV crypt_pkcs11_ck_otp_param_fromBytes(Crypt__PKCS11__CK_OTP_PARAM* object, S
 
     if (object->private.pValue) {
         CK_BYTE_PTR pValue = calloc(object->private.ulValueLen, sizeof(CK_BYTE));
+        /* uncoverable branch 0 */
         if (!pValue) {
             __croak("memory allocation error");
         }
@@ -8862,6 +9011,7 @@ CK_RV crypt_pkcs11_ck_otp_param_set_pValue(Crypt__PKCS11__CK_OTP_PARAM* object, 
         return CKR_ARGUMENTS_BAD;
     }
 
+    /* uncoverable branch 1 */
     if (!(n = calloc(1, l + 1))) {
         return CKR_HOST_MEMORY;
     }
@@ -8958,12 +9108,14 @@ CK_RV crypt_pkcs11_ck_otp_params_get_pParams(Crypt__PKCS11__CK_OTP_PARAMS* objec
     }
 
     for (ulCount = 0; ulCount < object->private.ulCount; ulCount++) {
+        /* uncoverable branch 1 */
         if (!(param = calloc(1, sizeof(Crypt__PKCS11__CK_OTP_PARAM)))) {
             return CKR_HOST_MEMORY;
         }
 
         param->private.type = object->private.pParams[ulCount].type;
         if (object->private.pParams[ulCount].pValue) {
+            /* uncoverable branch 1 */
             if (!(param->private.pValue = calloc(1, object->private.pParams[ulCount].ulValueLen))) {
                 free(param);
                 return CKR_HOST_MEMORY;
@@ -9010,6 +9162,7 @@ CK_RV crypt_pkcs11_ck_otp_params_set_pParams(Crypt__PKCS11__CK_OTP_PARAMS* objec
         paramCount++;
     }
 
+    /* uncoverable branch 1 */
     if (!(params = calloc(paramCount, sizeof(CK_OTP_PARAM)))) {
         return CKR_HOST_MEMORY;
     }
@@ -9043,6 +9196,7 @@ CK_RV crypt_pkcs11_ck_otp_params_set_pParams(Crypt__PKCS11__CK_OTP_PARAMS* objec
         }
 
         if (param->private.pValue) {
+            /* uncoverable branch 1 */
             if (!(params[key].pValue = calloc(1, param->private.ulValueLen))) {
                 for (ulCount = 0; ulCount < paramCount; ulCount++) {
                     if (params[ulCount].pValue) {
@@ -9173,12 +9327,14 @@ CK_RV crypt_pkcs11_ck_otp_signature_info_get_pParams(Crypt__PKCS11__CK_OTP_SIGNA
     }
 
     for (ulCount = 0; ulCount < object->private.ulCount; ulCount++) {
+        /* uncoverable branch 1 */
         if (!(param = calloc(1, sizeof(Crypt__PKCS11__CK_OTP_PARAM)))) {
             return CKR_HOST_MEMORY;
         }
 
         param->private.type = object->private.pParams[ulCount].type;
         if (object->private.pParams[ulCount].pValue) {
+            /* uncoverable branch 1 */
             if (!(param->private.pValue = calloc(1, object->private.pParams[ulCount].ulValueLen))) {
                 free(param);
                 return CKR_HOST_MEMORY;
@@ -9225,6 +9381,7 @@ CK_RV crypt_pkcs11_ck_otp_signature_info_set_pParams(Crypt__PKCS11__CK_OTP_SIGNA
         paramCount++;
     }
 
+    /* uncoverable branch 1 */
     if (!(params = calloc(paramCount, sizeof(CK_OTP_PARAM)))) {
         return CKR_HOST_MEMORY;
     }
@@ -9258,6 +9415,7 @@ CK_RV crypt_pkcs11_ck_otp_signature_info_set_pParams(Crypt__PKCS11__CK_OTP_SIGNA
         }
 
         if (param->private.pValue) {
+            /* uncoverable branch 1 */
             if (!(params[key].pValue = calloc(1, param->private.ulValueLen))) {
                 for (ulCount = 0; ulCount < paramCount; ulCount++) {
                     if (params[ulCount].pValue) {
@@ -9358,6 +9516,7 @@ CK_RV crypt_pkcs11_ck_kip_params_fromBytes(Crypt__PKCS11__CK_KIP_PARAMS* object,
         memcpy(&(object->pMechanism), object->private.pMechanism, sizeof(CK_MECHANISM));
         if (object->pMechanism.pParameter) {
             CK_VOID_PTR pParameter = calloc(object->pMechanism.ulParameterLen, 1);
+            /* uncoverable branch 0 */
             if (!pParameter) {
                 __croak("memory allocation error");
             }
@@ -9369,6 +9528,7 @@ CK_RV crypt_pkcs11_ck_kip_params_fromBytes(Crypt__PKCS11__CK_KIP_PARAMS* object,
 
     if (object->private.pSeed) {
         CK_BYTE_PTR pSeed = calloc(object->private.ulSeedLen, sizeof(CK_BYTE));
+        /* uncoverable branch 0 */
         if (!pSeed) {
             __croak("memory allocation error");
         }
@@ -9401,6 +9561,7 @@ CK_RV crypt_pkcs11_ck_kip_params_get_pMechanism(Crypt__PKCS11__CK_KIP_PARAMS* ob
     }
 
     if (object->pMechanism.ulParameterLen
+        /* uncoverable branch 1 */
         && !(pParameter = calloc(1, object->pMechanism.ulParameterLen)))
     {
         return CKR_HOST_MEMORY;
@@ -9431,6 +9592,7 @@ CK_RV crypt_pkcs11_ck_kip_params_set_pMechanism(Crypt__PKCS11__CK_KIP_PARAMS* ob
     }
 
     if (sv->private.ulParameterLen
+        /* uncoverable branch 1 */
         && !(pParameter = calloc(1, sv->private.ulParameterLen)))
     {
         return CKR_HOST_MEMORY;
@@ -9528,6 +9690,7 @@ CK_RV crypt_pkcs11_ck_kip_params_set_pSeed(Crypt__PKCS11__CK_KIP_PARAMS* object,
         return CKR_ARGUMENTS_BAD;
     }
 
+    /* uncoverable branch 1 */
     if (!(n = calloc(1, l + 1))) {
         return CKR_HOST_MEMORY;
     }
@@ -9717,6 +9880,7 @@ CK_RV crypt_pkcs11_ck_aes_gcm_params_fromBytes(Crypt__PKCS11__CK_AES_GCM_PARAMS*
 
     if (object->private.pIv) {
         CK_BYTE_PTR pIv = calloc(object->private.ulIvLen, sizeof(CK_BYTE));
+        /* uncoverable branch 0 */
         if (!pIv) {
             __croak("memory allocation error");
         }
@@ -9725,6 +9889,7 @@ CK_RV crypt_pkcs11_ck_aes_gcm_params_fromBytes(Crypt__PKCS11__CK_AES_GCM_PARAMS*
     }
     if (object->private.pAAD) {
         CK_BYTE_PTR pAAD = calloc(object->private.ulAADLen, sizeof(CK_BYTE));
+        /* uncoverable branch 0 */
         if (!pAAD) {
             __croak("memory allocation error");
         }
@@ -9791,6 +9956,7 @@ CK_RV crypt_pkcs11_ck_aes_gcm_params_set_pIv(Crypt__PKCS11__CK_AES_GCM_PARAMS* o
         return CKR_ARGUMENTS_BAD;
     }
 
+    /* uncoverable branch 1 */
     if (!(n = calloc(1, l + 1))) {
         return CKR_HOST_MEMORY;
     }
@@ -9883,6 +10049,7 @@ CK_RV crypt_pkcs11_ck_aes_gcm_params_set_pAAD(Crypt__PKCS11__CK_AES_GCM_PARAMS* 
         return CKR_ARGUMENTS_BAD;
     }
 
+    /* uncoverable branch 1 */
     if (!(n = calloc(1, l + 1))) {
         return CKR_HOST_MEMORY;
     }
@@ -9976,6 +10143,7 @@ CK_RV crypt_pkcs11_ck_aes_ccm_params_fromBytes(Crypt__PKCS11__CK_AES_CCM_PARAMS*
 
     if (object->private.pNonce) {
         CK_BYTE_PTR pNonce = calloc(object->private.ulNonceLen, sizeof(CK_BYTE));
+        /* uncoverable branch 0 */
         if (!pNonce) {
             __croak("memory allocation error");
         }
@@ -9984,6 +10152,7 @@ CK_RV crypt_pkcs11_ck_aes_ccm_params_fromBytes(Crypt__PKCS11__CK_AES_CCM_PARAMS*
     }
     if (object->private.pAAD) {
         CK_BYTE_PTR pAAD = calloc(object->private.ulAADLen, sizeof(CK_BYTE));
+        /* uncoverable branch 0 */
         if (!pAAD) {
             __croak("memory allocation error");
         }
@@ -10050,6 +10219,7 @@ CK_RV crypt_pkcs11_ck_aes_ccm_params_set_pNonce(Crypt__PKCS11__CK_AES_CCM_PARAMS
         return CKR_ARGUMENTS_BAD;
     }
 
+    /* uncoverable branch 1 */
     if (!(n = calloc(1, l + 1))) {
         return CKR_HOST_MEMORY;
     }
@@ -10109,6 +10279,7 @@ CK_RV crypt_pkcs11_ck_aes_ccm_params_set_pAAD(Crypt__PKCS11__CK_AES_CCM_PARAMS* 
         return CKR_ARGUMENTS_BAD;
     }
 
+    /* uncoverable branch 1 */
     if (!(n = calloc(1, l + 1))) {
         return CKR_HOST_MEMORY;
     }
@@ -10295,6 +10466,7 @@ CK_RV crypt_pkcs11_ck_camellia_cbc_encrypt_data_params_fromBytes(Crypt__PKCS11__
 
     if (object->private.pData) {
         CK_BYTE_PTR pData = calloc(object->private.length, sizeof(CK_BYTE));
+        /* uncoverable branch 0 */
         if (!pData) {
             __croak("memory allocation error");
         }
@@ -10407,6 +10579,7 @@ CK_RV crypt_pkcs11_ck_camellia_cbc_encrypt_data_params_set_pData(Crypt__PKCS11__
         return CKR_ARGUMENTS_BAD;
     }
 
+    /* uncoverable branch 1 */
     if (!(n = calloc(1, l + 1))) {
         return CKR_HOST_MEMORY;
     }
@@ -10464,6 +10637,7 @@ CK_RV crypt_pkcs11_ck_aria_cbc_encrypt_data_params_fromBytes(Crypt__PKCS11__CK_A
 
     if (object->private.pData) {
         CK_BYTE_PTR pData = calloc(object->private.length, sizeof(CK_BYTE));
+        /* uncoverable branch 0 */
         if (!pData) {
             __croak("memory allocation error");
         }
@@ -10576,6 +10750,7 @@ CK_RV crypt_pkcs11_ck_aria_cbc_encrypt_data_params_set_pData(Crypt__PKCS11__CK_A
         return CKR_ARGUMENTS_BAD;
     }
 
+    /* uncoverable branch 1 */
     if (!(n = calloc(1, l + 1))) {
         return CKR_HOST_MEMORY;
     }
