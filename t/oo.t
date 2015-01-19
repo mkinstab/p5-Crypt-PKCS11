@@ -233,6 +233,9 @@ sub mytests {
         myok( $obj->InitToken($slotWithToken, "12345678", "ѪѫѬѪѫѬ"), 'InitToken '.$obj->errstr );
         myok( $obj->Finalize, $so.' Finalize' );
         myok( $obj->unload, $so.' unload' );
+
+        myok( $obj->load($so), $so.' load' );
+        $obj = undef;
     }
 }
 

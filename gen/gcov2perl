@@ -37,7 +37,7 @@ foreach my $file (@ARGV) {
     open(GCOV, $file) or die;
     open(OUT, '>', $file.'.out') or die;
 
-    my ($block, $fix, $test, $uncov) = (-1, -1, 0, -1);
+    my ($block, $fix, $test, $uncov, $force) = (-1, -1, 0, -1, -1);
     my ($uncov_what, $uncov_num);
     while (<GCOV>) {
         if (/CRYPT PKCS11 TEST DEVEL COVER/o) {
@@ -58,12 +58,21 @@ foreach my $file (@ARGV) {
             ($uncov_what, $uncov_num) = ($1, $2);
             $uncov = $block + 1;
         }
-        if (/(?:Sv[GS]ETMAGIC|PUSHMARK|SvREFCNT_dec|XPUSHs|POPi|FREETMPS|POPl|SvPVbyte|newSVsv|sv_utf8_downgrade|SvUV)/) {
+        if (/(?:Sv[GS]ETMAGIC|PUSHMARK|XPUSHs|POPi|FREETMPS|POPl|SvPV|newSVsv|sv_utf8_downgrade|SvUV)/o) {
             $fix = $block;
+        }
+        elsif (/SvREFCNT_dec/o) {
+            $force = $block;
         }
         elsif ($block == $fix) {
             if (/^branch\s+\d+\s+taken\s+0/o) {
                 s/taken(\s+)0/taken${1}1/o;
+            }
+        }
+        elsif ($block == $force) {
+            if (/^branch\s+\d+\s+(?:taken\s+0|never\s+executed)/o) {
+                s/taken(\s+)0/taken${1}1/o;
+                s/never\s+executed/taken 1/o;
             }
         }
         if ($block == $uncov) {

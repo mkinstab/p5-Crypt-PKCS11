@@ -284,6 +284,7 @@ CK_RV crypt_pkcs11_ck_mechanism_set_pParameter(Crypt__PKCS11__CK_MECHANISM* obje
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (object->private.pParameter) {
             free(object->private.pParameter);
@@ -505,6 +506,7 @@ CK_RV crypt_pkcs11_ck_rsa_pkcs_oaep_params_set_pSourceData(Crypt__PKCS11__CK_RSA
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (object->private.pSourceData) {
             free(object->private.pSourceData);
@@ -821,6 +823,7 @@ CK_RV crypt_pkcs11_ck_ecdh1_derive_params_set_pSharedData(Crypt__PKCS11__CK_ECDH
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (object->private.pSharedData) {
             free(object->private.pSharedData);
@@ -881,6 +884,7 @@ CK_RV crypt_pkcs11_ck_ecdh1_derive_params_set_pPublicData(Crypt__PKCS11__CK_ECDH
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (object->private.pPublicData) {
             free(object->private.pPublicData);
@@ -1066,6 +1070,7 @@ CK_RV crypt_pkcs11_ck_ecdh2_derive_params_set_pSharedData(Crypt__PKCS11__CK_ECDH
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (object->private.pSharedData) {
             free(object->private.pSharedData);
@@ -1126,6 +1131,7 @@ CK_RV crypt_pkcs11_ck_ecdh2_derive_params_set_pPublicData(Crypt__PKCS11__CK_ECDH
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (object->private.pPublicData) {
             free(object->private.pPublicData);
@@ -1219,6 +1225,7 @@ CK_RV crypt_pkcs11_ck_ecdh2_derive_params_set_pPublicData2(Crypt__PKCS11__CK_ECD
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (object->private.pPublicData2) {
             free(object->private.pPublicData2);
@@ -1404,6 +1411,7 @@ CK_RV crypt_pkcs11_ck_ecmqv_derive_params_set_pSharedData(Crypt__PKCS11__CK_ECMQ
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (object->private.pSharedData) {
             free(object->private.pSharedData);
@@ -1464,6 +1472,7 @@ CK_RV crypt_pkcs11_ck_ecmqv_derive_params_set_pPublicData(Crypt__PKCS11__CK_ECMQ
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (object->private.pPublicData) {
             free(object->private.pPublicData);
@@ -1557,6 +1566,7 @@ CK_RV crypt_pkcs11_ck_ecmqv_derive_params_set_pPublicData2(Crypt__PKCS11__CK_ECM
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (object->private.pPublicData2) {
             free(object->private.pPublicData2);
@@ -1760,6 +1770,7 @@ CK_RV crypt_pkcs11_ck_x9_42_dh1_derive_params_set_pOtherInfo(Crypt__PKCS11__CK_X
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (object->private.pOtherInfo) {
             free(object->private.pOtherInfo);
@@ -1820,6 +1831,7 @@ CK_RV crypt_pkcs11_ck_x9_42_dh1_derive_params_set_pPublicData(Crypt__PKCS11__CK_
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (object->private.pPublicData) {
             free(object->private.pPublicData);
@@ -2005,6 +2017,7 @@ CK_RV crypt_pkcs11_ck_x9_42_dh2_derive_params_set_pOtherInfo(Crypt__PKCS11__CK_X
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (object->private.pOtherInfo) {
             free(object->private.pOtherInfo);
@@ -2065,6 +2078,7 @@ CK_RV crypt_pkcs11_ck_x9_42_dh2_derive_params_set_pPublicData(Crypt__PKCS11__CK_
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (object->private.pPublicData) {
             free(object->private.pPublicData);
@@ -2158,6 +2172,7 @@ CK_RV crypt_pkcs11_ck_x9_42_dh2_derive_params_set_pPublicData2(Crypt__PKCS11__CK
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (object->private.pPublicData2) {
             free(object->private.pPublicData2);
@@ -2343,6 +2358,7 @@ CK_RV crypt_pkcs11_ck_x9_42_mqv_derive_params_set_pOtherInfo(Crypt__PKCS11__CK_X
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (object->private.pOtherInfo) {
             free(object->private.pOtherInfo);
@@ -2403,6 +2419,7 @@ CK_RV crypt_pkcs11_ck_x9_42_mqv_derive_params_set_pPublicData(Crypt__PKCS11__CK_
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (object->private.pPublicData) {
             free(object->private.pPublicData);
@@ -2496,6 +2513,7 @@ CK_RV crypt_pkcs11_ck_x9_42_mqv_derive_params_set_pPublicData2(Crypt__PKCS11__CK
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (object->private.pPublicData2) {
             free(object->private.pPublicData2);
@@ -2719,6 +2737,7 @@ CK_RV crypt_pkcs11_ck_kea_derive_params_set_pRandomA(Crypt__PKCS11__CK_KEA_DERIV
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (object->private.pRandomA) {
             free(object->private.pRandomA);
@@ -2779,6 +2798,7 @@ CK_RV crypt_pkcs11_ck_kea_derive_params_set_pRandomB(Crypt__PKCS11__CK_KEA_DERIV
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (object->private.pRandomB) {
             free(object->private.pRandomB);
@@ -2839,6 +2859,7 @@ CK_RV crypt_pkcs11_ck_kea_derive_params_set_pPublicData(Crypt__PKCS11__CK_KEA_DE
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (object->private.pPublicData) {
             free(object->private.pPublicData);
@@ -2978,6 +2999,7 @@ CK_RV crypt_pkcs11_ck_rc2_cbc_params_set_iv(Crypt__PKCS11__CK_RC2_CBC_PARAMS* ob
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         memset(object->private.iv, 0, 8 * sizeof(CK_BYTE));
         return CKR_OK;
@@ -3349,6 +3371,7 @@ CK_RV crypt_pkcs11_ck_rc5_cbc_params_set_pIv(Crypt__PKCS11__CK_RC5_CBC_PARAMS* o
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (object->private.pIv) {
             free(object->private.pIv);
@@ -3583,6 +3606,7 @@ CK_RV crypt_pkcs11_ck_des_cbc_encrypt_data_params_set_iv(Crypt__PKCS11__CK_DES_C
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         memset(object->private.iv, 0, 8 * sizeof(CK_BYTE));
         return CKR_OK;
@@ -3633,6 +3657,7 @@ CK_RV crypt_pkcs11_ck_des_cbc_encrypt_data_params_set_pData(Crypt__PKCS11__CK_DE
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (object->private.pData) {
             free(object->private.pData);
@@ -3754,6 +3779,7 @@ CK_RV crypt_pkcs11_ck_aes_cbc_encrypt_data_params_set_iv(Crypt__PKCS11__CK_AES_C
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         memset(object->private.iv, 0, 16 * sizeof(CK_BYTE));
         return CKR_OK;
@@ -3804,6 +3830,7 @@ CK_RV crypt_pkcs11_ck_aes_cbc_encrypt_data_params_set_pData(Crypt__PKCS11__CK_AE
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (object->private.pData) {
             free(object->private.pData);
@@ -4001,6 +4028,7 @@ CK_RV crypt_pkcs11_ck_skipjack_private_wrap_params_set_pPassword(Crypt__PKCS11__
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (object->private.pPassword) {
             free(object->private.pPassword);
@@ -4061,6 +4089,7 @@ CK_RV crypt_pkcs11_ck_skipjack_private_wrap_params_set_pPublicData(Crypt__PKCS11
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (object->private.pPublicData) {
             free(object->private.pPublicData);
@@ -4121,6 +4150,7 @@ CK_RV crypt_pkcs11_ck_skipjack_private_wrap_params_set_pRandomA(Crypt__PKCS11__C
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (object->private.pRandomA) {
             free(object->private.pRandomA);
@@ -4181,6 +4211,7 @@ CK_RV crypt_pkcs11_ck_skipjack_private_wrap_params_set_pPrimeP(Crypt__PKCS11__CK
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (object->private.pPrimeP) {
             free(object->private.pPrimeP);
@@ -4241,6 +4272,7 @@ CK_RV crypt_pkcs11_ck_skipjack_private_wrap_params_set_pBaseG(Crypt__PKCS11__CK_
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (object->private.pBaseG) {
             free(object->private.pBaseG);
@@ -4301,6 +4333,7 @@ CK_RV crypt_pkcs11_ck_skipjack_private_wrap_params_set_pSubprimeQ(Crypt__PKCS11_
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (object->private.pSubprimeQ) {
             free(object->private.pSubprimeQ);
@@ -4513,6 +4546,7 @@ CK_RV crypt_pkcs11_ck_skipjack_relayx_params_set_pOldWrappedX(Crypt__PKCS11__CK_
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (object->private.pOldWrappedX) {
             free(object->private.pOldWrappedX);
@@ -4573,6 +4607,7 @@ CK_RV crypt_pkcs11_ck_skipjack_relayx_params_set_pOldPassword(Crypt__PKCS11__CK_
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (object->private.pOldPassword) {
             free(object->private.pOldPassword);
@@ -4633,6 +4668,7 @@ CK_RV crypt_pkcs11_ck_skipjack_relayx_params_set_pOldPublicData(Crypt__PKCS11__C
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (object->private.pOldPublicData) {
             free(object->private.pOldPublicData);
@@ -4693,6 +4729,7 @@ CK_RV crypt_pkcs11_ck_skipjack_relayx_params_set_pOldRandomA(Crypt__PKCS11__CK_S
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (object->private.pOldRandomA) {
             free(object->private.pOldRandomA);
@@ -4753,6 +4790,7 @@ CK_RV crypt_pkcs11_ck_skipjack_relayx_params_set_pNewPassword(Crypt__PKCS11__CK_
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (object->private.pNewPassword) {
             free(object->private.pNewPassword);
@@ -4813,6 +4851,7 @@ CK_RV crypt_pkcs11_ck_skipjack_relayx_params_set_pNewPublicData(Crypt__PKCS11__C
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (object->private.pNewPublicData) {
             free(object->private.pNewPublicData);
@@ -4873,6 +4912,7 @@ CK_RV crypt_pkcs11_ck_skipjack_relayx_params_set_pNewRandomA(Crypt__PKCS11__CK_S
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (object->private.pNewRandomA) {
             free(object->private.pNewRandomA);
@@ -4946,6 +4986,7 @@ CK_RV crypt_pkcs11_ck_pbe_params_fromBytes(Crypt__PKCS11__CK_PBE_PARAMS* object,
         return CKR_ARGUMENTS_BAD;
     }
 
+    /* uncoverable branch 1 */
     if (object->private.pInitVector) {
         free(object->private.pInitVector);
     }
@@ -4965,6 +5006,12 @@ CK_RV crypt_pkcs11_ck_pbe_params_fromBytes(Crypt__PKCS11__CK_PBE_PARAMS* object,
         }
         memcpy(pInitVector, object->private.pInitVector, 8 * sizeof(CK_BYTE));
         object->private.pInitVector = pInitVector;
+    }
+    else {
+        /* uncoverable branch 1 */
+        if (!(object->private.pInitVector = calloc(8, sizeof(CK_BYTE)))) {
+            __croak("memory allocation error");
+        }
     }
     if (object->private.pPassword) {
         CK_CHAR_PTR pPassword = calloc(object->private.ulPasswordLen, sizeof(CK_CHAR));
@@ -4989,6 +5036,7 @@ CK_RV crypt_pkcs11_ck_pbe_params_fromBytes(Crypt__PKCS11__CK_PBE_PARAMS* object,
 
 void crypt_pkcs11_ck_pbe_params_DESTROY(Crypt__PKCS11__CK_PBE_PARAMS* object) {
     if (object) {
+        /* uncoverable branch 1 */
         if (object->private.pInitVector) {
             free(object->private.pInitVector);
         }
@@ -5030,6 +5078,7 @@ CK_RV crypt_pkcs11_ck_pbe_params_set_pInitVector(Crypt__PKCS11__CK_PBE_PARAMS* o
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         memset(object->private.pInitVector, 0, 8 * sizeof(CK_BYTE));
         return CKR_OK;
@@ -5082,6 +5131,7 @@ CK_RV crypt_pkcs11_ck_pbe_params_set_pPassword(Crypt__PKCS11__CK_PBE_PARAMS* obj
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (object->private.pPassword) {
             free(object->private.pPassword);
@@ -5151,6 +5201,7 @@ CK_RV crypt_pkcs11_ck_pbe_params_set_pSalt(Crypt__PKCS11__CK_PBE_PARAMS* object,
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (object->private.pSalt) {
             free(object->private.pSalt);
@@ -5339,6 +5390,7 @@ CK_RV crypt_pkcs11_ck_key_wrap_set_oaep_params_set_pX(Crypt__PKCS11__CK_KEY_WRAP
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (object->private.pX) {
             free(object->private.pX);
@@ -5476,6 +5528,7 @@ CK_RV crypt_pkcs11_ck_ssl3_random_data_set_pClientRandom(Crypt__PKCS11__CK_SSL3_
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (object->private.pClientRandom) {
             free(object->private.pClientRandom);
@@ -5536,6 +5589,7 @@ CK_RV crypt_pkcs11_ck_ssl3_random_data_set_pServerRandom(Crypt__PKCS11__CK_SSL3_
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (object->private.pServerRandom) {
             free(object->private.pServerRandom);
@@ -6442,6 +6496,7 @@ CK_RV crypt_pkcs11_ck_tls_prf_params_set_pSeed(Crypt__PKCS11__CK_TLS_PRF_PARAMS*
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (object->private.pSeed) {
             free(object->private.pSeed);
@@ -6502,6 +6557,7 @@ CK_RV crypt_pkcs11_ck_tls_prf_params_set_pLabel(Crypt__PKCS11__CK_TLS_PRF_PARAMS
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (object->private.pLabel) {
             free(object->private.pLabel);
@@ -6581,6 +6637,7 @@ CK_RV crypt_pkcs11_ck_tls_prf_params_set_pOutput(Crypt__PKCS11__CK_TLS_PRF_PARAM
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (object->private.pOutput) {
             free(object->private.pOutput);
@@ -6717,6 +6774,7 @@ CK_RV crypt_pkcs11_ck_wtls_random_data_set_pClientRandom(Crypt__PKCS11__CK_WTLS_
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (object->private.pClientRandom) {
             free(object->private.pClientRandom);
@@ -6777,6 +6835,7 @@ CK_RV crypt_pkcs11_ck_wtls_random_data_set_pServerRandom(Crypt__PKCS11__CK_WTLS_
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (object->private.pServerRandom) {
             free(object->private.pServerRandom);
@@ -7210,6 +7269,7 @@ CK_RV crypt_pkcs11_ck_wtls_prf_params_set_pSeed(Crypt__PKCS11__CK_WTLS_PRF_PARAM
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (object->private.pSeed) {
             free(object->private.pSeed);
@@ -7270,6 +7330,7 @@ CK_RV crypt_pkcs11_ck_wtls_prf_params_set_pLabel(Crypt__PKCS11__CK_WTLS_PRF_PARA
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (object->private.pLabel) {
             free(object->private.pLabel);
@@ -7349,6 +7410,7 @@ CK_RV crypt_pkcs11_ck_wtls_prf_params_set_pOutput(Crypt__PKCS11__CK_WTLS_PRF_PAR
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (object->private.pOutput) {
             free(object->private.pOutput);
@@ -8197,6 +8259,7 @@ CK_RV crypt_pkcs11_ck_cms_sig_params_set_pContentType(Crypt__PKCS11__CK_CMS_SIG_
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (object->private.pContentType) {
             free(object->private.pContentType);
@@ -8264,6 +8327,7 @@ CK_RV crypt_pkcs11_ck_cms_sig_params_set_pRequestedAttributes(Crypt__PKCS11__CK_
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (object->private.pRequestedAttributes) {
             free(object->private.pRequestedAttributes);
@@ -8324,6 +8388,7 @@ CK_RV crypt_pkcs11_ck_cms_sig_params_set_pRequiredAttributes(Crypt__PKCS11__CK_C
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (object->private.pRequiredAttributes) {
             free(object->private.pRequiredAttributes);
@@ -8446,6 +8511,7 @@ CK_RV crypt_pkcs11_ck_key_derivation_string_data_set_pData(Crypt__PKCS11__CK_KEY
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (object->private.pData) {
             free(object->private.pData);
@@ -8635,6 +8701,7 @@ CK_RV crypt_pkcs11_ck_pkcs5_pbkd2_params_set_pSaltSourceData(Crypt__PKCS11__CK_P
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (object->private.pSaltSourceData) {
             free(object->private.pSaltSourceData);
@@ -8761,6 +8828,7 @@ CK_RV crypt_pkcs11_ck_pkcs5_pbkd2_params_set_pPrfData(Crypt__PKCS11__CK_PKCS5_PB
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (object->private.pPrfData) {
             free(object->private.pPrfData);
@@ -8841,6 +8909,7 @@ CK_RV crypt_pkcs11_ck_pkcs5_pbkd2_params_set_pPassword(Crypt__PKCS11__CK_PKCS5_P
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (object->private.pPassword) {
             free(object->private.pPassword);
@@ -8995,6 +9064,7 @@ CK_RV crypt_pkcs11_ck_otp_param_set_pValue(Crypt__PKCS11__CK_OTP_PARAM* object, 
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (object->private.pValue) {
             free(object->private.pValue);
@@ -9674,6 +9744,7 @@ CK_RV crypt_pkcs11_ck_kip_params_set_pSeed(Crypt__PKCS11__CK_KIP_PARAMS* object,
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (object->private.pSeed) {
             free(object->private.pSeed);
@@ -9813,6 +9884,7 @@ CK_RV crypt_pkcs11_ck_aes_ctr_params_set_cb(Crypt__PKCS11__CK_AES_CTR_PARAMS* ob
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         memset(object->private.cb, 0, 16 * sizeof(CK_BYTE));
         return CKR_OK;
@@ -9940,6 +10012,7 @@ CK_RV crypt_pkcs11_ck_aes_gcm_params_set_pIv(Crypt__PKCS11__CK_AES_GCM_PARAMS* o
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (object->private.pIv) {
             free(object->private.pIv);
@@ -10033,6 +10106,7 @@ CK_RV crypt_pkcs11_ck_aes_gcm_params_set_pAAD(Crypt__PKCS11__CK_AES_GCM_PARAMS* 
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (object->private.pAAD) {
             free(object->private.pAAD);
@@ -10203,6 +10277,7 @@ CK_RV crypt_pkcs11_ck_aes_ccm_params_set_pNonce(Crypt__PKCS11__CK_AES_CCM_PARAMS
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (object->private.pNonce) {
             free(object->private.pNonce);
@@ -10263,6 +10338,7 @@ CK_RV crypt_pkcs11_ck_aes_ccm_params_set_pAAD(Crypt__PKCS11__CK_AES_CCM_PARAMS* 
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (object->private.pAAD) {
             free(object->private.pAAD);
@@ -10402,6 +10478,7 @@ CK_RV crypt_pkcs11_ck_camellia_ctr_params_set_cb(Crypt__PKCS11__CK_CAMELLIA_CTR_
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         memset(object->private.cb, 0, 16 * sizeof(CK_BYTE));
         return CKR_OK;
@@ -10513,6 +10590,7 @@ CK_RV crypt_pkcs11_ck_camellia_cbc_encrypt_data_params_set_iv(Crypt__PKCS11__CK_
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         memset(object->private.iv, 0, 16 * sizeof(CK_BYTE));
         return CKR_OK;
@@ -10563,6 +10641,7 @@ CK_RV crypt_pkcs11_ck_camellia_cbc_encrypt_data_params_set_pData(Crypt__PKCS11__
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (object->private.pData) {
             free(object->private.pData);
@@ -10684,6 +10763,7 @@ CK_RV crypt_pkcs11_ck_aria_cbc_encrypt_data_params_set_iv(Crypt__PKCS11__CK_ARIA
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         memset(object->private.iv, 0, 16 * sizeof(CK_BYTE));
         return CKR_OK;
@@ -10734,6 +10814,7 @@ CK_RV crypt_pkcs11_ck_aria_cbc_encrypt_data_params_set_pData(Crypt__PKCS11__CK_A
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (object->private.pData) {
             free(object->private.pData);

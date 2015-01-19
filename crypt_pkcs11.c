@@ -586,7 +586,7 @@ CK_RV crypt_pkcs11_xs_load(Crypt__PKCS11__XS* object, const char* path) {
     }
 
 #ifdef TEST_DEVEL_COVER
-    if (path && !strcmp(path, "TEST_DEVEL_COVER")) {
+    if (!strcmp(path, "TEST_DEVEL_COVER")) {
         pGetFunctionList = &__test_C_GetFunctionList;
     }
     else {
@@ -603,6 +603,7 @@ CK_RV crypt_pkcs11_xs_load(Crypt__PKCS11__XS* object, const char* path) {
 #endif
 
     if (pGetFunctionList) {
+        /* uncoverable branch 2 */
         if ((rv = pGetFunctionList(&(object->function_list))) == CKR_OK) {
             return CKR_OK;
         }
@@ -624,6 +625,7 @@ CK_RV crypt_pkcs11_xs_unload(Crypt__PKCS11__XS* object) {
     crypt_pkcs11_xs_C_Finalize(object);
 
 #ifdef HAVE_DLFCN_H
+    /* uncoverable branch 1 */
     if (dlclose(object->handle)) {
         return CKR_FUNCTION_FAILED;
     }
@@ -3569,6 +3571,17 @@ int crypt_pkcs11_xs_test_devel_cover(Crypt__PKCS11__XS* object) {
             { 2, 30 }
         }
     };
+    struct crypt_pkcs11_xs_object object_fake_handle = {
+        (Crypt__PKCS11__XS*)1,
+        0,
+        {
+            { 2, 30 },
+            "                                ",
+            0,
+            "                                ",
+            { 2, 30 }
+        }
+    };
     SV* sv;
     /* CRYPT PKCS11 TEST DEVEL COVER */
     if (crypt_pkcs11_xs_SvUOK(0) != 0) { return __LINE__; }
@@ -3593,8 +3606,10 @@ int crypt_pkcs11_xs_test_devel_cover(Crypt__PKCS11__XS* object) {
     if (crypt_pkcs11_xs_load(object, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_load(&object_empty_function_list, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_load(&object_no_function_list, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_xs_load(&object_fake_handle, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_unload(0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_unload(&object_no_function_list) != CKR_GENERAL_ERROR) { return __LINE__; }
+    crypt_pkcs11_xs_DESTROY(0);
     if (crypt_pkcs11_xs_C_Initialize(0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_Initialize(&object_no_function_list, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_Initialize(&object_empty_function_list, 0) != CKR_GENERAL_ERROR) { return __LINE__; }

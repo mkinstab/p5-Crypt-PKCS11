@@ -145,6 +145,11 @@ my %D = (
     CK_WTLS_KEY_MAT_OUT_PTR => \&ck_wtls_key_mat_out_ptr_DESTROY,
     CK_OTP_PARAM_PTR => \&ck_otp_param_ptr_DESTROY,
 );
+my %DD = (
+    CK_PBE_PARAMS => {
+        pInitVector => \&CK_PBE_PARAMS_pInitVector_DESTROY,
+    },
+);
 my %H = (
     CK_BYTE => undef,
     CK_BYTE_PTR => \&ck_out_ptr_len,
@@ -655,6 +660,10 @@ print C 'void crypt_pkcs11_'.$lc_struct.'_DESTROY('.$c_struct.'* object) {
     if (object) {
 ';
     foreach (@$types) {
+        if (exists $DD{$struct} and exists $DD{$struct}->{$_->{name}}) {
+            $DD{$struct}->{$_->{name}}->($struct, $c_struct, $lc_struct, $_);
+            next;
+        }
         my $type = $_->{type};
         while (1) {
             if (exists $D{$type}) {
@@ -809,6 +818,7 @@ CK_RV crypt_pkcs11_'.$lc_struct.'_set_'.$type->{name}.'('.$c_struct.'* object, S
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         memset(object->private.'.$type->{name}.', 0, '.$type->{size}.' * sizeof('.$type->{type}.'));
         return CKR_OK;
@@ -982,6 +992,7 @@ CK_RV crypt_pkcs11_'.$lc_struct.'_set_'.$type->{name}.'('.$c_struct.'* object, S
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (object->private.'.$type->{name}.') {
             free(object->private.'.$type->{name}.');
@@ -1049,6 +1060,7 @@ CK_RV crypt_pkcs11_'.$lc_struct.'_set_'.$type->{name}.'('.$c_struct.'* object, S
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (object->private.'.$type->{name}.') {
             free(object->private.'.$type->{name}.');
@@ -1188,6 +1200,7 @@ CK_RV crypt_pkcs11_'.$lc_struct.'_set_'.$type->{name}.'('.$c_struct.'* object, S
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (object->private.'.$type->{name}.') {
             free(object->private.'.$type->{name}.');
@@ -1257,6 +1270,7 @@ CK_RV crypt_pkcs11_'.$lc_struct.'_set_'.$type->{name}.'('.$c_struct.'* object, S
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (object->private.'.$type->{name}.') {
             free(object->private.'.$type->{name}.');
@@ -1661,6 +1675,7 @@ CK_RV crypt_pkcs11_'.$lc_struct.'_set_'.$type->{name}.'('.$c_struct.'* object, S
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         memset(object->private.'.$type->{name}.', 0, 8 * sizeof(CK_BYTE));
         return CKR_OK;
@@ -1685,11 +1700,22 @@ CK_RV crypt_pkcs11_'.$lc_struct.'_set_'.$type->{name}.'('.$c_struct.'* object, S
 ';
 }
 
+sub CK_PBE_PARAMS_pInitVector_DESTROY {
+    my ($struct, $c_struct, $lc_struct, $type) = @_;
+
+    print C '        /* uncoverable branch 1 */
+        if (object->private.'.$type->{name}.') {
+            free(object->private.'.$type->{name}.');
+        }
+';
+}
+
 sub CK_PBE_PARAMS_pInitVector_fromBytes {
     my ($what, $struct, $c_struct, $lc_struct, $type) = @_;
 
     unless ($what) {
-    print C '    if (object->private.'.$type->{name}.') {
+    print C '    /* uncoverable branch 1 */
+    if (object->private.'.$type->{name}.') {
         free(object->private.'.$type->{name}.');
     }
 ';
@@ -1703,6 +1729,12 @@ sub CK_PBE_PARAMS_pInitVector_fromBytes {
         }
         memcpy('.$type->{name}.', object->private.'.$type->{name}.', 8 * sizeof(CK_BYTE));
         object->private.'.$type->{name}.' = '.$type->{name}.';
+    }
+    else {
+        /* uncoverable branch 1 */
+        if (!(object->private.'.$type->{name}.' = calloc(8, sizeof(CK_BYTE)))) {
+            __croak("memory allocation error");
+        }
     }
 ';
     }
@@ -2486,6 +2518,7 @@ CK_RV crypt_pkcs11_'.$lc_struct.'_set_'.$type->{name}.'('.$c_struct.'* object, S
 
     SvGETMAGIC(sv);
 
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (object->private.'.$type->{name}.') {
             free(object->private.'.$type->{name}.');
