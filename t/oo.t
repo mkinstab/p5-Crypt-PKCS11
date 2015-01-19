@@ -93,15 +93,15 @@ sub signVerifyCheck {
     myis( $session->errno, CKR_OK, 'signVerifyCheck: GenerateKeyPair '.$session->errstr );
     myisa_ok( $publicKey, 'Crypt::PKCS11::Object', 'signVerifyCheck: publicKey' );
     myisa_ok( $privateKey, 'Crypt::PKCS11::Object', 'signVerifyCheck: privateKey' );
-#    foreach (values %MECHANISM_SIGNVERIFY) {
-#        myis( $obj->C_SignInit($sessions[0], $_, $privateKey), CKR_OK, 'signVerifyCheck: C_SignInit mech '.($MECHANISM_INFO{$_->{mechanism}} ? $MECHANISM_INFO{$_->{mechanism}}->[1] : $_->{mechanism}) );
-#        $signature = undef;
-#        myis( $obj->C_Sign($sessions[0], $data, $signature), CKR_OK, 'signVerifyCheck: C_Sign mech '.($MECHANISM_INFO{$_->{mechanism}} ? $MECHANISM_INFO{$_->{mechanism}}->[1] : $_->{mechanism}) );
-#        myis( $obj->C_VerifyInit($sessions[0], $_, $publicKey), CKR_OK, 'signVerifyCheck: C_VerifyInit mech '.($MECHANISM_INFO{$_->{mechanism}} ? $MECHANISM_INFO{$_->{mechanism}}->[1] : $_->{mechanism}) );
-#        myis( $obj->C_Verify($sessions[0], $data, $signature), CKR_OK, 'signVerifyCheck: C_Verify mech '.($MECHANISM_INFO{$_->{mechanism}} ? $MECHANISM_INFO{$_->{mechanism}}->[1] : $_->{mechanism}) );
-#    }
-#    myis( $obj->C_DestroyObject($sessions[0], $privateKey), CKR_OK, 'signVerifyCheck: C_DestroyObject' );
-#    myis( $obj->C_DestroyObject($sessions[0], $publicKey), CKR_OK, 'signVerifyCheck: C_DestroyObject #2' );
+    foreach (values %MECHANISM_SIGNVERIFY) {
+        myok( $session->SignInit($_, $privateKey), 'signVerifyCheck: SignInit mech '.$CKM_NAME{$_->mechanism} );
+        $signature = undef;
+        myok( $signature = $session->Sign($data), 'signVerifyCheck: Sign mech '.$CKM_NAME{$_->mechanism} );
+        myok( $session->VerifyInit($_, $publicKey), 'signVerifyCheck: VerifyInit mech '.$CKM_NAME{$_->mechanism} );
+        myok( $session->Verify($data, $signature), 'signVerifyCheck: Verify mech '.$CKM_NAME{$_->mechanism} );
+    }
+    myok( $session->DestroyObject($privateKey), 'signVerifyCheck: DestroyObject' );
+    myok( $session->DestroyObject($publicKey), 'signVerifyCheck: DestroyObject #2' );
     myok( $obj->Finalize, 'signVerifyCheck: Finalize' );
 }
 
@@ -137,20 +137,20 @@ sub mytests {
 
         $slotWithToken = 1;
         %MECHANISM_INFO = (
-            CKM_RSA_PKCS_KEY_PAIR_GEN => [ CKM_RSA_PKCS_KEY_PAIR_GEN, 'CKM_RSA_PKCS_KEY_PAIR_GEN' ],
-            CKM_RSA_PKCS => [ CKM_RSA_PKCS, 'CKM_RSA_PKCS' ],
-            CKM_MD5 => [ CKM_MD5, 'CKM_MD5' ],
-            CKM_RIPEMD160 => [ CKM_RIPEMD160, 'CKM_RIPEMD160' ],
-            CKM_SHA_1 => [ CKM_SHA_1, 'CKM_SHA_1' ],
-            CKM_SHA256 => [ CKM_SHA256, 'CKM_SHA256' ],
-            CKM_SHA384 => [ CKM_SHA384, 'CKM_SHA384' ],
-            CKM_SHA512 => [ CKM_SHA512, 'CKM_SHA512' ],
-            CKM_MD5_RSA_PKCS => [ CKM_MD5_RSA_PKCS, 'CKM_MD5_RSA_PKCS' ],
-            CKM_RIPEMD160_RSA_PKCS => [ CKM_RIPEMD160_RSA_PKCS, 'CKM_RIPEMD160_RSA_PKCS' ],
-            CKM_SHA1_RSA_PKCS => [ CKM_SHA1_RSA_PKCS, 'CKM_SHA1_RSA_PKCS' ],
-            CKM_SHA256_RSA_PKCS => [ CKM_SHA256_RSA_PKCS, 'CKM_SHA256_RSA_PKCS' ],
-            CKM_SHA384_RSA_PKCS => [ CKM_SHA384_RSA_PKCS, 'CKM_SHA384_RSA_PKCS' ],
-            CKM_SHA512_RSA_PKCS => [ CKM_SHA512_RSA_PKCS, 'CKM_SHA512_RSA_PKCS' ]
+            CKM_RSA_PKCS_KEY_PAIR_GEN() => [ CKM_RSA_PKCS_KEY_PAIR_GEN, 'CKM_RSA_PKCS_KEY_PAIR_GEN' ],
+            CKM_RSA_PKCS() => [ CKM_RSA_PKCS, 'CKM_RSA_PKCS' ],
+            CKM_MD5() => [ CKM_MD5, 'CKM_MD5' ],
+            CKM_RIPEMD160() => [ CKM_RIPEMD160, 'CKM_RIPEMD160' ],
+            CKM_SHA_1() => [ CKM_SHA_1, 'CKM_SHA_1' ],
+            CKM_SHA256() => [ CKM_SHA256, 'CKM_SHA256' ],
+            CKM_SHA384() => [ CKM_SHA384, 'CKM_SHA384' ],
+            CKM_SHA512() => [ CKM_SHA512, 'CKM_SHA512' ],
+            CKM_MD5_RSA_PKCS() => [ CKM_MD5_RSA_PKCS, 'CKM_MD5_RSA_PKCS' ],
+            CKM_RIPEMD160_RSA_PKCS() => [ CKM_RIPEMD160_RSA_PKCS, 'CKM_RIPEMD160_RSA_PKCS' ],
+            CKM_SHA1_RSA_PKCS() => [ CKM_SHA1_RSA_PKCS, 'CKM_SHA1_RSA_PKCS' ],
+            CKM_SHA256_RSA_PKCS() => [ CKM_SHA256_RSA_PKCS, 'CKM_SHA256_RSA_PKCS' ],
+            CKM_SHA384_RSA_PKCS() => [ CKM_SHA384_RSA_PKCS, 'CKM_SHA384_RSA_PKCS' ],
+            CKM_SHA512_RSA_PKCS() => [ CKM_SHA512_RSA_PKCS, 'CKM_SHA512_RSA_PKCS' ]
         );
         %MECHANISM_SIGNVERIFY = ();
         foreach (( CKM_RSA_PKCS, CKM_RSA_X_509, CKM_MD5_RSA_PKCS,
@@ -196,9 +196,9 @@ sub mytests {
             system('mkdir -p tokens') == 0 || die;
             system('softhsm2-util --slot 0 --init-token --label slot1 --so-pin 12345678 --pin 1234') == 0 || die;
             $slotWithToken = 0;
-            delete $MECHANISM_INFO{CKM_RIPEMD160};
-            delete $MECHANISM_INFO{CKM_RIPEMD160_RSA_PKCS};
-            delete $MECHANISM_SIGNVERIFY{CKM_RIPEMD160_RSA_PKCS};
+            delete $MECHANISM_INFO{CKM_RIPEMD160()};
+            delete $MECHANISM_INFO{CKM_RIPEMD160_RSA_PKCS()};
+            delete $MECHANISM_SIGNVERIFY{CKM_RIPEMD160_RSA_PKCS()};
         }
 
         my (%hash, @array, $a);

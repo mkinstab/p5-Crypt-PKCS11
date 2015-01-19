@@ -78,6 +78,7 @@ Crypt__PKCS11__XS* crypt_pkcs11_xs_new(const char* class) {
 
     /* uncoverable branch 0 */
     if (!object) {
+        /* uncoverable block 0 */
         croak("Memory allocation error");
     }
 
@@ -399,7 +400,8 @@ static CK_RV __CreateMutex(CK_VOID_PTR_PTR ppMutex) {
 
     /* uncoverable branch 0 */
     if (args != 1) {
-        croak("No return from CreateMutex");
+        /* uncoverable block 0 */
+        croak("Not correct return from CreateMutex");
     }
 
     *ppMutex = (CK_VOID_PTR)POPl;
@@ -414,7 +416,10 @@ void crypt_pkcs11_xs_setCreateMutex(SV* pCreateMutex) {
         SvREFCNT_dec(__CreateMutexSV);
     }
     SvGETMAGIC(pCreateMutex);
-    __CreateMutexSV = newSVsv(pCreateMutex);
+    if (!(__CreateMutexSV = newSVsv(pCreateMutex))) {
+        /* uncoverable block 0 */
+        croak("memory allocation error");
+    }
 }
 
 void crypt_pkcs11_xs_clearCreateMutex(void) {
@@ -444,7 +449,8 @@ static CK_RV __DestroyMutex(CK_VOID_PTR pMutex) {
 
     /* uncoverable branch 0 */
     if (args != 1) {
-        croak("No return from DestroyMutex");
+        /* uncoverable block 0 */
+        croak("Not correct return from DestroyMutex");
     }
 
     rv = POPi;
@@ -461,7 +467,10 @@ void crypt_pkcs11_xs_setDestroyMutex(SV* pDestroyMutex) {
         SvREFCNT_dec(__DestroyMutexSV);
     }
     SvGETMAGIC(pDestroyMutex);
-    __DestroyMutexSV = newSVsv(pDestroyMutex);
+    if (!(__DestroyMutexSV = newSVsv(pDestroyMutex))) {
+        /* uncoverable block 0 */
+        croak("memory allocation error");
+    }
 }
 
 void crypt_pkcs11_xs_clearDestroyMutex(void) {
@@ -491,7 +500,8 @@ static CK_RV __LockMutex(CK_VOID_PTR pMutex) {
 
     /* uncoverable branch 0 */
     if (args != 1) {
-        croak("No return from LockMutex");
+        /* uncoverable block 0 */
+        croak("Not correct return from LockMutex");
     }
 
     rv = POPi;
@@ -508,7 +518,10 @@ void crypt_pkcs11_xs_setLockMutex(SV* pLockMutex) {
         SvREFCNT_dec(__LockMutexSV);
     }
     SvGETMAGIC(pLockMutex);
-    __LockMutexSV = newSVsv(pLockMutex);
+    if (!(__LockMutexSV = newSVsv(pLockMutex))) {
+        /* uncoverable block 0 */
+        croak("memory allocation error");
+    }
 }
 
 void crypt_pkcs11_xs_clearLockMutex(void) {
@@ -537,7 +550,8 @@ static CK_RV __UnlockMutex(CK_VOID_PTR pMutex) {
 
     /* uncoverable branch 0 */
     if (args != 1) {
-        croak("No return from UnlockMutex");
+        /* uncoverable block 0 */
+        croak("Not correct return from UnlockMutex");
     }
 
     rv = POPi;
@@ -554,7 +568,10 @@ void crypt_pkcs11_xs_setUnlockMutex(SV* pUnlockMutex) {
         SvREFCNT_dec(__UnlockMutexSV);
     }
     SvGETMAGIC(pUnlockMutex);
-    __UnlockMutexSV = newSVsv(pUnlockMutex);
+    if (!(__UnlockMutexSV = newSVsv(pUnlockMutex))) {
+        /* uncoverable block 0 */
+        croak("memory allocation error");
+    }
 }
 
 void crypt_pkcs11_xs_clearUnlockMutex(void) {
@@ -627,6 +644,7 @@ CK_RV crypt_pkcs11_xs_unload(Crypt__PKCS11__XS* object) {
 #ifdef HAVE_DLFCN_H
     /* uncoverable branch 1 */
     if (dlclose(object->handle)) {
+        /* uncoverable block 0 */
         return CKR_FUNCTION_FAILED;
     }
 #else
@@ -808,8 +826,9 @@ CK_RV crypt_pkcs11_xs_C_GetSlotList(Crypt__PKCS11__XS* object, CK_BBOOL tokenPre
         return rv;
     }
 
-    /* uncoverable branch 1 */
+    /* uncoverable branch 0 */
     if (!(_pSlotList = calloc(ulCount, sizeof(CK_SLOT_ID)))) {
+        /* uncoverable block 0 */
         return CKR_HOST_MEMORY;
     }
     if ((rv = object->function_list->C_GetSlotList(tokenPresent, _pSlotList, &ulCount)) != CKR_OK) {
@@ -974,8 +993,9 @@ CK_RV crypt_pkcs11_xs_C_GetMechanismList(Crypt__PKCS11__XS* object, CK_SLOT_ID s
         return rv;
     }
 
-    /* uncoverable branch 1 */
+    /* uncoverable branch 0 */
     if (!(_pMechanismList = calloc(ulCount, sizeof(CK_MECHANISM_TYPE)))) {
+        /* uncoverable block 0 */
         return CKR_HOST_MEMORY;
     }
     if ((rv = object->function_list->C_GetMechanismList(slotID, _pMechanismList, &ulCount)) != CKR_OK) {
@@ -1078,7 +1098,7 @@ CK_RV crypt_pkcs11_xs_C_InitToken(Crypt__PKCS11__XS* object, CK_SLOT_ID slotID, 
     }
 
     if (len2 < 32) {
-        /* uncoverable branch 1 */
+        /* uncoverable branch 0 */
         if (!(_pLabel3 = calloc(1, 32))) {
             SvREFCNT_dec(_pLabel);
             if (_pPin) {
@@ -1380,8 +1400,9 @@ CK_RV crypt_pkcs11_xs_C_GetOperationState(Crypt__PKCS11__XS* object, CK_SESSION_
         return rv;
     }
 
-    /* uncoverable branch 1 */
+    /* uncoverable branch 0 */
     if (!(_pOperationState = calloc(ulOperationStateLen, sizeof(CK_BYTE)))) {
+        /* uncoverable block 0 */
         return CKR_HOST_MEMORY;
     }
     if ((rv = object->function_list->C_GetOperationState(hSession, _pOperationState, &ulOperationStateLen)) != CKR_OK) {
@@ -1580,8 +1601,9 @@ static CK_RV __create_CK_ATTRIBUTE(CK_ATTRIBUTE_PTR* ppTemplate, AV* pTemplate, 
      * Create CK_ATTRIBUTE objects and extract the information from the hash.
      */
 
-    /* uncoverable branch 1 */
+    /* uncoverable branch 0 */
     if (!(*ppTemplate = calloc(ulCount, sizeof(CK_ATTRIBUTE)))) {
+        /* uncoverable block 0 */
         return CKR_HOST_MEMORY;
     }
 
@@ -2058,12 +2080,14 @@ CK_RV crypt_pkcs11_xs_C_FindObjects(Crypt__PKCS11__XS* object, CK_SESSION_HANDLE
         return CKR_ARGUMENTS_BAD;
     }
 
+    /* TODO: What? */
     if (!ulMaxObjectCount) {
         return CKR_OK;
     }
 
-    /* uncoverable branch 1 */
+    /* uncoverable branch 0 */
     if (!(_phObject = calloc(ulMaxObjectCount, sizeof(CK_OBJECT_HANDLE)))) {
+        /* uncoverable block 0 */
         return CKR_HOST_MEMORY;
     }
 
@@ -2183,8 +2207,9 @@ static CK_RV __action(__action_call_t call, CK_SESSION_HANDLE hSession, SV* pFro
         if (!pulToLen) {
             return CKR_GENERAL_ERROR;
         }
-        /* uncoverable branch 1 */
+        /* uncoverable branch 0 */
         if (!(_pTo = calloc(pulToLen, sizeof(CK_BYTE)))) {
+            /* uncoverable block 0 */
             return CKR_HOST_MEMORY;
         }
     }
@@ -2211,6 +2236,7 @@ static CK_RV __action(__action_call_t call, CK_SESSION_HANDLE hSession, SV* pFro
         SV* pNewTo = newSVpvn(_pTo, pulToLen);
 
         if (!pNewTo) {
+            /* uncoverable block 0 */
             return CKR_HOST_MEMORY;
         }
 
@@ -2286,8 +2312,9 @@ static CK_RV __action_final(__action_final_call_t call, CK_SESSION_HANDLE hSessi
         if (!pulLastPartLen) {
             return CKR_GENERAL_ERROR;
         }
-        /* uncoverable branch 1 */
+        /* uncoverable branch 0 */
         if (!(_pLastPart = calloc(pulLastPartLen, sizeof(CK_BYTE)))) {
+            /* uncoverable block 0 */
             return CKR_HOST_MEMORY;
         }
     }
@@ -2314,6 +2341,7 @@ static CK_RV __action_final(__action_final_call_t call, CK_SESSION_HANDLE hSessi
         SV* pNewLastPart = newSVpvn(_pLastPart, pulLastPartLen);
 
         if (!pNewLastPart) {
+            /* uncoverable block 0 */
             return CKR_HOST_MEMORY;
         }
 
@@ -3224,8 +3252,9 @@ CK_RV crypt_pkcs11_xs_C_WrapKey(Crypt__PKCS11__XS* object, CK_SESSION_HANDLE hSe
         if (!pulWrappedKey) {
             return CKR_GENERAL_ERROR;
         }
-        /* uncoverable branch 1 */
+        /* uncoverable branch 0 */
         if (!(_pWrappedKey = calloc(pulWrappedKey, sizeof(CK_BYTE)))) {
+            /* uncoverable block 0 */
             return CKR_HOST_MEMORY;
         }
     }
@@ -3248,6 +3277,7 @@ CK_RV crypt_pkcs11_xs_C_WrapKey(Crypt__PKCS11__XS* object, CK_SESSION_HANDLE hSe
         SV* pNewWrappedKey = newSVpvn(_pWrappedKey, pulWrappedKey);
 
         if (!pNewWrappedKey) {
+            /* uncoverable block 0 */
             return CKR_HOST_MEMORY;
         }
 
@@ -3444,8 +3474,9 @@ CK_RV crypt_pkcs11_xs_C_GenerateRandom(Crypt__PKCS11__XS* object, CK_SESSION_HAN
         return CKR_ARGUMENTS_BAD;
     }
 
-    /* uncoverable branch 1 */
+    /* uncoverable branch 0 */
     if (!(_RandomData = calloc(ulRandomLen, sizeof(CK_BYTE)))) {
+        /* uncoverable block 0 */
         return CKR_HOST_MEMORY;
     }
 
@@ -3583,6 +3614,7 @@ int crypt_pkcs11_xs_test_devel_cover(Crypt__PKCS11__XS* object) {
         }
     };
     SV* sv;
+    HV* hv;
     /* CRYPT PKCS11 TEST DEVEL COVER */
     if (crypt_pkcs11_xs_SvUOK(0) != 0) { return __LINE__; }
     if (crypt_pkcs11_xs_SvIOK(0) != 0) { return __LINE__; }
@@ -3622,6 +3654,9 @@ int crypt_pkcs11_xs_test_devel_cover(Crypt__PKCS11__XS* object) {
     if (crypt_pkcs11_xs_C_GetInfo(&object_no_function_list, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_GetInfo(&object_empty_function_list, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_GetInfo(object, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    hv = newHV();
+    if (crypt_pkcs11_xs_C_GetInfo(object, hv) != CKR_OK) { return __LINE__; }
+    hv_undef(hv);
     if (crypt_pkcs11_xs_C_GetSlotList(0, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_GetSlotList(&object_no_function_list, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_GetSlotList(&object_empty_function_list, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
@@ -3670,14 +3705,17 @@ int crypt_pkcs11_xs_test_devel_cover(Crypt__PKCS11__XS* object) {
     if (crypt_pkcs11_xs_C_GetSessionInfo(&object_no_function_list, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_GetSessionInfo(&object_empty_function_list, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_GetSessionInfo(object, 0, 0) != CKR_SESSION_HANDLE_INVALID) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_GetSessionInfo(object, 1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_GetOperationState(0, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_GetOperationState(&object_no_function_list, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_GetOperationState(&object_empty_function_list, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_GetOperationState(object, 0, 0) != CKR_SESSION_HANDLE_INVALID) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_GetOperationState(object, 1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_SetOperationState(0, 0, 0, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_SetOperationState(&object_no_function_list, 0, 0, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_SetOperationState(&object_empty_function_list, 0, 0, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_SetOperationState(object, 0, 0, 0, 0) != CKR_SESSION_HANDLE_INVALID) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_SetOperationState(object, 1, 0, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_Login(0, 0, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_Login(&object_no_function_list, 0, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_Login(&object_empty_function_list, 0, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
@@ -3686,14 +3724,24 @@ int crypt_pkcs11_xs_test_devel_cover(Crypt__PKCS11__XS* object) {
     if (crypt_pkcs11_xs_C_Logout(&object_no_function_list, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_Logout(&object_empty_function_list, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_Logout(object, 0) != CKR_SESSION_HANDLE_INVALID) { return __LINE__; }
+    if (__check_pTemplate((AV*)0, (CK_ULONG_PTR)0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (__check_pTemplate((AV*)1, (CK_ULONG_PTR)0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (__create_CK_ATTRIBUTE((CK_ATTRIBUTE_PTR*)0, (AV*)0, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (__create_CK_ATTRIBUTE((CK_ATTRIBUTE_PTR*)1, (AV*)0, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (__create_CK_ATTRIBUTE((CK_ATTRIBUTE_PTR*)1, (AV*)1, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_CreateObject(0, 0, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_CreateObject(&object_no_function_list, 0, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_CreateObject(&object_empty_function_list, 0, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_CreateObject(object, 0, 0, 0) != CKR_SESSION_HANDLE_INVALID) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_CreateObject(object, 1, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_CreateObject(object, 1, (AV*)1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_CopyObject(0, 0, 0, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_CopyObject(&object_no_function_list, 0, 0, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_CopyObject(&object_empty_function_list, 0, 0, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_CopyObject(object, 0, 0, 0, 0) != CKR_SESSION_HANDLE_INVALID) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_CopyObject(object, 1, 0, 0, 0) != CKR_OBJECT_HANDLE_INVALID) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_CopyObject(object, 1, 1, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_CopyObject(object, 1, 1, (AV*)1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_DestroyObject(0, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_DestroyObject(&object_no_function_list, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_DestroyObject(&object_empty_function_list, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
@@ -3702,170 +3750,262 @@ int crypt_pkcs11_xs_test_devel_cover(Crypt__PKCS11__XS* object) {
     if (crypt_pkcs11_xs_C_GetObjectSize(&object_no_function_list, 0, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_GetObjectSize(&object_empty_function_list, 0, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_GetObjectSize(object, 0, 0, 0) != CKR_SESSION_HANDLE_INVALID) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_GetObjectSize(object, 1, 0, 0) != CKR_OBJECT_HANDLE_INVALID) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_GetObjectSize(object, 1, 1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_GetAttributeValue(0, 0, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_GetAttributeValue(&object_no_function_list, 0, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_GetAttributeValue(&object_empty_function_list, 0, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_GetAttributeValue(object, 0, 0, 0) != CKR_SESSION_HANDLE_INVALID) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_GetAttributeValue(object, 1, 0, 0) != CKR_OBJECT_HANDLE_INVALID) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_GetAttributeValue(object, 1, 1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_SetAttributeValue(0, 0, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_SetAttributeValue(&object_no_function_list, 0, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_SetAttributeValue(&object_empty_function_list, 0, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_SetAttributeValue(object, 0, 0, 0) != CKR_SESSION_HANDLE_INVALID) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_SetAttributeValue(object, 1, 0, 0) != CKR_OBJECT_HANDLE_INVALID) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_SetAttributeValue(object, 1, 1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_FindObjectsInit(0, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_FindObjectsInit(&object_no_function_list, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_FindObjectsInit(&object_empty_function_list, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_FindObjectsInit(object, 0, 0) != CKR_SESSION_HANDLE_INVALID) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_FindObjectsInit(object, 1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_FindObjects(0, 0, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_FindObjects(&object_no_function_list, 0, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_FindObjects(&object_empty_function_list, 0, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_FindObjects(object, 0, 0, 0) != CKR_SESSION_HANDLE_INVALID) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_FindObjects(object, 1, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_FindObjectsFinal(0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_FindObjectsFinal(&object_no_function_list, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_FindObjectsFinal(&object_empty_function_list, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_FindObjectsFinal(object, 0) != CKR_SESSION_HANDLE_INVALID) { return __LINE__; }
+    if (__action_init((HV*)0, (CK_MECHANISM_PTR)0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (__action_init((HV*)1, (CK_MECHANISM_PTR)0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (__action((__action_call_t)0, 0, (SV*)0, (SV*)0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (__action((__action_call_t)1, 0, (SV*)0, (SV*)0) != CKR_SESSION_HANDLE_INVALID) { return __LINE__; }
+    if (__action((__action_call_t)1, 1, (SV*)0, (SV*)0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (__action((__action_call_t)1, 1, (SV*)1, (SV*)0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (__action_update((__action_update_call_t)0, 0, (SV*)0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (__action_update((__action_update_call_t)1, 0, (SV*)0) != CKR_SESSION_HANDLE_INVALID) { return __LINE__; }
+    if (__action_update((__action_update_call_t)1, 1, (SV*)0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (__action_final((__action_final_call_t)0, 0, (SV*)0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (__action_final((__action_final_call_t)1, 0, (SV*)0) != CKR_SESSION_HANDLE_INVALID) { return __LINE__; }
+    if (__action_final((__action_final_call_t)1, 1, (SV*)0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_EncryptInit(0, 0, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_EncryptInit(&object_no_function_list, 0, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_EncryptInit(&object_empty_function_list, 0, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_EncryptInit(object, 0, 0, 0) != CKR_SESSION_HANDLE_INVALID) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_EncryptInit(object, 1, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_EncryptInit(object, 1, (HV*)1, 0) != CKR_KEY_HANDLE_INVALID) { return __LINE__; }
     if (crypt_pkcs11_xs_C_Encrypt(0, 0, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_Encrypt(&object_no_function_list, 0, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_Encrypt(&object_empty_function_list, 0, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_Encrypt(object, 0, 0, 0) != CKR_SESSION_HANDLE_INVALID) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_Encrypt(object, 1, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_Encrypt(object, 1, (SV*)1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_EncryptUpdate(0, 0, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_EncryptUpdate(&object_no_function_list, 0, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_EncryptUpdate(&object_empty_function_list, 0, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_EncryptUpdate(object, 0, 0, 0) != CKR_SESSION_HANDLE_INVALID) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_EncryptUpdate(object, 1, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_EncryptUpdate(object, 1, (SV*)1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_EncryptFinal(0, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_EncryptFinal(&object_no_function_list, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_EncryptFinal(&object_empty_function_list, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_EncryptFinal(object, 0, 0) != CKR_SESSION_HANDLE_INVALID) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_EncryptFinal(object, 1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_DecryptInit(0, 0, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_DecryptInit(&object_no_function_list, 0, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_DecryptInit(&object_empty_function_list, 0, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_DecryptInit(object, 0, 0, 0) != CKR_SESSION_HANDLE_INVALID) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_DecryptInit(object, 1, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_DecryptInit(object, 1, (HV*)1, 0) != CKR_KEY_HANDLE_INVALID) { return __LINE__; }
     if (crypt_pkcs11_xs_C_Decrypt(0, 0, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_Decrypt(&object_no_function_list, 0, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_Decrypt(&object_empty_function_list, 0, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_Decrypt(object, 0, 0, 0) != CKR_SESSION_HANDLE_INVALID) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_Decrypt(object, 1, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_Decrypt(object, 1, (SV*)1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_DecryptUpdate(0, 0, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_DecryptUpdate(&object_no_function_list, 0, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_DecryptUpdate(&object_empty_function_list, 0, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_DecryptUpdate(object, 0, 0, 0) != CKR_SESSION_HANDLE_INVALID) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_DecryptUpdate(object, 1, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_DecryptUpdate(object, 1, (SV*)1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_DecryptFinal(0, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_DecryptFinal(&object_no_function_list, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_DecryptFinal(&object_empty_function_list, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_DecryptFinal(object, 0, 0) != CKR_SESSION_HANDLE_INVALID) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_DecryptFinal(object, 1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_DigestInit(0, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_DigestInit(&object_no_function_list, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_DigestInit(&object_empty_function_list, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_DigestInit(object, 0, 0) != CKR_SESSION_HANDLE_INVALID) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_DigestInit(object, 1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_Digest(0, 0, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_Digest(&object_no_function_list, 0, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_Digest(&object_empty_function_list, 0, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_Digest(object, 0, 0, 0) != CKR_SESSION_HANDLE_INVALID) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_Digest(object, 1, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_Digest(object, 1, (SV*)1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_DigestUpdate(0, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_DigestUpdate(&object_no_function_list, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_DigestUpdate(&object_empty_function_list, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_DigestUpdate(object, 0, 0) != CKR_SESSION_HANDLE_INVALID) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_DigestUpdate(object, 1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_DigestKey(0, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_DigestKey(&object_no_function_list, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_DigestKey(&object_empty_function_list, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_DigestKey(object, 0, 0) != CKR_SESSION_HANDLE_INVALID) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_DigestKey(object, 1, 0) != CKR_KEY_HANDLE_INVALID) { return __LINE__; }
     if (crypt_pkcs11_xs_C_DigestFinal(0, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_DigestFinal(&object_no_function_list, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_DigestFinal(&object_empty_function_list, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_DigestFinal(object, 0, 0) != CKR_SESSION_HANDLE_INVALID) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_DigestFinal(object, 1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_SignInit(0, 0, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_SignInit(&object_no_function_list, 0, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_SignInit(&object_empty_function_list, 0, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_SignInit(object, 0, 0, 0) != CKR_SESSION_HANDLE_INVALID) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_SignInit(object, 1, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_SignInit(object, 1, (HV*)1, 0) != CKR_KEY_HANDLE_INVALID) { return __LINE__; }
     if (crypt_pkcs11_xs_C_Sign(0, 0, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_Sign(&object_no_function_list, 0, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_Sign(&object_empty_function_list, 0, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_Sign(object, 0, 0, 0) != CKR_SESSION_HANDLE_INVALID) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_Sign(object, 1, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_Sign(object, 1, (SV*)1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_SignUpdate(0, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_SignUpdate(&object_no_function_list, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_SignUpdate(&object_empty_function_list, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_SignUpdate(object, 0, 0) != CKR_SESSION_HANDLE_INVALID) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_SignUpdate(object, 1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_SignFinal(0, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_SignFinal(&object_no_function_list, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_SignFinal(&object_empty_function_list, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_SignFinal(object, 0, 0) != CKR_SESSION_HANDLE_INVALID) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_SignFinal(object, 1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_SignRecoverInit(0, 0, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_SignRecoverInit(&object_no_function_list, 0, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_SignRecoverInit(&object_empty_function_list, 0, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_SignRecoverInit(object, 0, 0, 0) != CKR_SESSION_HANDLE_INVALID) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_SignRecoverInit(object, 1, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_SignRecoverInit(object, 1, (HV*)1, 0) != CKR_KEY_HANDLE_INVALID) { return __LINE__; }
     if (crypt_pkcs11_xs_C_SignRecover(0, 0, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_SignRecover(&object_no_function_list, 0, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_SignRecover(&object_empty_function_list, 0, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_SignRecover(object, 0, 0, 0) != CKR_SESSION_HANDLE_INVALID) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_SignRecover(object, 1, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_SignRecover(object, 1, (SV*)1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_VerifyInit(0, 0, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_VerifyInit(&object_no_function_list, 0, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_VerifyInit(&object_empty_function_list, 0, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_VerifyInit(object, 0, 0, 0) != CKR_SESSION_HANDLE_INVALID) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_VerifyInit(object, 1, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_VerifyInit(object, 1, (HV*)1, 0) != CKR_KEY_HANDLE_INVALID) { return __LINE__; }
     if (crypt_pkcs11_xs_C_Verify(0, 0, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_Verify(&object_no_function_list, 0, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_Verify(&object_empty_function_list, 0, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_Verify(object, 0, 0, 0) != CKR_SESSION_HANDLE_INVALID) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_Verify(object, 1, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_Verify(object, 1, (SV*)1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_VerifyUpdate(0, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_VerifyUpdate(&object_no_function_list, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_VerifyUpdate(&object_empty_function_list, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_VerifyUpdate(object, 0, 0) != CKR_SESSION_HANDLE_INVALID) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_VerifyUpdate(object, 1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_VerifyFinal(0, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_VerifyFinal(&object_no_function_list, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_VerifyFinal(&object_empty_function_list, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_VerifyFinal(object, 0, 0) != CKR_SESSION_HANDLE_INVALID) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_VerifyFinal(object, 1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_VerifyRecoverInit(0, 0, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_VerifyRecoverInit(&object_no_function_list, 0, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_VerifyRecoverInit(&object_empty_function_list, 0, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_VerifyRecoverInit(object, 0, 0, 0) != CKR_SESSION_HANDLE_INVALID) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_VerifyRecoverInit(object, 1, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_VerifyRecoverInit(object, 1, (HV*)1, 0) != CKR_KEY_HANDLE_INVALID) { return __LINE__; }
     if (crypt_pkcs11_xs_C_VerifyRecover(0, 0, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_VerifyRecover(&object_no_function_list, 0, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_VerifyRecover(&object_empty_function_list, 0, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_VerifyRecover(object, 0, 0, 0) != CKR_SESSION_HANDLE_INVALID) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_VerifyRecover(object, 1, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_VerifyRecover(object, 1, (SV*)1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_DigestEncryptUpdate(0, 0, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_DigestEncryptUpdate(&object_no_function_list, 0, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_DigestEncryptUpdate(&object_empty_function_list, 0, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_DigestEncryptUpdate(object, 0, 0, 0) != CKR_SESSION_HANDLE_INVALID) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_DigestEncryptUpdate(object, 1, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_DigestEncryptUpdate(object, 1, (SV*)1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_DecryptDigestUpdate(0, 0, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_DecryptDigestUpdate(&object_no_function_list, 0, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_DecryptDigestUpdate(&object_empty_function_list, 0, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_DecryptDigestUpdate(object, 0, 0, 0) != CKR_SESSION_HANDLE_INVALID) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_DecryptDigestUpdate(object, 1, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_DecryptDigestUpdate(object, 1, (SV*)1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_SignEncryptUpdate(0, 0, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_SignEncryptUpdate(&object_no_function_list, 0, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_SignEncryptUpdate(&object_empty_function_list, 0, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_SignEncryptUpdate(object, 0, 0, 0) != CKR_SESSION_HANDLE_INVALID) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_SignEncryptUpdate(object, 1, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_SignEncryptUpdate(object, 1, (SV*)1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_DecryptVerifyUpdate(0, 0, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_DecryptVerifyUpdate(&object_no_function_list, 0, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_DecryptVerifyUpdate(&object_empty_function_list, 0, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_DecryptVerifyUpdate(object, 0, 0, 0) != CKR_SESSION_HANDLE_INVALID) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_DecryptVerifyUpdate(object, 1, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_DecryptVerifyUpdate(object, 1, (SV*)1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_GenerateKey(0, 0, 0, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_GenerateKey(&object_no_function_list, 0, 0, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_GenerateKey(&object_empty_function_list, 0, 0, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_GenerateKey(object, 0, 0, 0, 0) != CKR_SESSION_HANDLE_INVALID) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_GenerateKey(object, 1, 0, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_GenerateKey(object, 1, (HV*)1, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_GenerateKey(object, 1, (HV*)1, (AV*)1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_GenerateKeyPair(0, 0, 0, 0, 0, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_GenerateKeyPair(&object_no_function_list, 0, 0, 0, 0, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_GenerateKeyPair(&object_empty_function_list, 0, 0, 0, 0, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_GenerateKeyPair(object, 0, 0, 0, 0, 0, 0) != CKR_SESSION_HANDLE_INVALID) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_GenerateKeyPair(object, 1, 0, 0, 0, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_GenerateKeyPair(object, 1, (HV*)1, 0, 0, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_GenerateKeyPair(object, 1, (HV*)1, (AV*)1, 0, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_GenerateKeyPair(object, 1, (HV*)1, (AV*)1, (AV*)1, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_GenerateKeyPair(object, 1, (HV*)1, (AV*)1, (AV*)1, (SV*)1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_WrapKey(0, 0, 0, 0, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_WrapKey(&object_no_function_list, 0, 0, 0, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_WrapKey(&object_empty_function_list, 0, 0, 0, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_WrapKey(object, 0, 0, 0, 0, 0) != CKR_SESSION_HANDLE_INVALID) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_WrapKey(object, 1, 0, 0, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_WrapKey(object, 1, (HV*)1, 0, 0, 0) != CKR_WRAPPING_KEY_HANDLE_INVALID) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_WrapKey(object, 1, (HV*)1, 1, 0, 0) != CKR_KEY_HANDLE_INVALID) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_WrapKey(object, 1, (HV*)1, 1, 1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_UnwrapKey(0, 0, 0, 0, 0, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_UnwrapKey(&object_no_function_list, 0, 0, 0, 0, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_UnwrapKey(&object_empty_function_list, 0, 0, 0, 0, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_UnwrapKey(object, 0, 0, 0, 0, 0, 0) != CKR_SESSION_HANDLE_INVALID) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_UnwrapKey(object, 1, 0, 0, 0, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_UnwrapKey(object, 1, (HV*)1, 0, 0, 0, 0) != CKR_UNWRAPPING_KEY_HANDLE_INVALID) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_UnwrapKey(object, 1, (HV*)1, 1, 0, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_UnwrapKey(object, 1, (HV*)1, 1, (SV*)1, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_UnwrapKey(object, 1, (HV*)1, 1, (SV*)1, (AV*)1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_DeriveKey(0, 0, 0, 0, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_DeriveKey(&object_no_function_list, 0, 0, 0, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_DeriveKey(&object_empty_function_list, 0, 0, 0, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_DeriveKey(object, 0, 0, 0, 0, 0) != CKR_SESSION_HANDLE_INVALID) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_DeriveKey(object, 1, 0, 0, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_DeriveKey(object, 1, (HV*)1, 0, 0, 0) != CKR_KEY_HANDLE_INVALID) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_DeriveKey(object, 1, (HV*)1, 1, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_DeriveKey(object, 1, (HV*)1, 1, (AV*)1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_SeedRandom(0, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_SeedRandom(&object_no_function_list, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_SeedRandom(&object_empty_function_list, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_SeedRandom(object, 0, 0) != CKR_SESSION_HANDLE_INVALID) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_SeedRandom(object, 1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_GenerateRandom(0, 0, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_GenerateRandom(&object_no_function_list, 0, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_GenerateRandom(&object_empty_function_list, 0, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_GenerateRandom(object, 0, 0, 0) != CKR_SESSION_HANDLE_INVALID) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_GenerateRandom(object, 1, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_GenerateRandom(object, 1, (SV*)1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_GetFunctionStatus(0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_GetFunctionStatus(&object_no_function_list, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_GetFunctionStatus(&object_empty_function_list, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
@@ -3877,7 +4017,11 @@ int crypt_pkcs11_xs_test_devel_cover(Crypt__PKCS11__XS* object) {
     if (crypt_pkcs11_xs_C_WaitForSlotEvent(0, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_WaitForSlotEvent(&object_no_function_list, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_WaitForSlotEvent(&object_empty_function_list, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
-    if (crypt_pkcs11_xs_C_WaitForSlotEvent(object, 0, 0) != CKR_FUNCTION_NOT_SUPPORTED) { return __LINE__; }
+    if (crypt_pkcs11_xs_C_WaitForSlotEvent(object, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    object->info.cryptokiVersion.minor = 0;
+    if (crypt_pkcs11_xs_C_WaitForSlotEvent(object, 0, (SV*)1) != CKR_FUNCTION_NOT_SUPPORTED) { return __LINE__; }
+    object->info.cryptokiVersion.major = 1;
+    if (crypt_pkcs11_xs_C_WaitForSlotEvent(object, 0, (SV*)1) != CKR_FUNCTION_NOT_SUPPORTED) { return __LINE__; }
     __test_devel_cover_calloc_always_fail = 1;
     if (crypt_pkcs11_ck_version_new("")) { return __LINE__; }
     if (crypt_pkcs11_ck_mechanism_new("")) { return __LINE__; }
@@ -4985,6 +5129,10 @@ static CK_RV __test_C_CancelFunction(CK_SESSION_HANDLE hSession) {
     return CKR_OK;
 }
 
+static CK_RV __test_C_WaitForSlotEvent(CK_FLAGS flags, CK_SLOT_ID_PTR pSlot, CK_VOID_PTR pRserved) {
+    return CKR_OK;
+}
+
 static CK_RV __test_C_GetFunctionList(CK_FUNCTION_LIST_PTR_PTR ppFunctionList) {
     static CK_FUNCTION_LIST function_list = {
         {
@@ -5057,7 +5205,8 @@ static CK_RV __test_C_GetFunctionList(CK_FUNCTION_LIST_PTR_PTR ppFunctionList) {
         &__test_C_SeedRandom,
         &__test_C_GenerateRandom,
         &__test_C_GetFunctionStatus,
-        &__test_C_CancelFunction
+        &__test_C_CancelFunction,
+        &__test_C_WaitForSlotEvent
     };
     *ppFunctionList = &function_list;
     return CKR_OK;

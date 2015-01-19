@@ -48,6 +48,8 @@ foreach my $file (@ARGV) {
                 s/taken(\s+)0/taken${1}1/o;
                 s/never\s+executed/taken 1/o;
             }
+            s/#####/    -/o;
+            s/\$\$\$\$\$/    -/o;
             print OUT;
             next;
         }
@@ -76,7 +78,11 @@ foreach my $file (@ARGV) {
             }
         }
         if ($block == $uncov) {
-            if (/^(\w+)\s+(\d+)/o) {
+            if ($uncov_what eq 'block') {
+                s/#####/    -/o;
+                s/\$\$\$\$\$/    -/o;
+            }
+            elsif (/^(\w+)\s+(\d+)/o) {
                 if ($1 eq $uncov_what and $2 == $uncov_num) {
                     s/taken(\s+)0/taken${1}1/o;
                 }

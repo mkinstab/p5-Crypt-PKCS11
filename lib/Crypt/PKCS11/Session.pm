@@ -44,9 +44,12 @@ sub new {
     bless $self, $class;
 
     unless (blessed($self->{pkcs11xs} = shift) and $self->{pkcs11xs}->isa('Crypt::PKCS11::XSPtr')) {
+        delete $self->{pkcs11xs};
         confess 'first argument is not a Crypt::PKCS11::XSPtr';
     }
     unless (defined ($self->{session} = shift)) {
+        delete $self->{pkcs11xs};
+        delete $self->{session};
         confess 'second argument is not a session';
     }
 

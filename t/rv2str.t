@@ -1,6 +1,6 @@
 #!perl
 
-use Test::More tests => 88;
+use Test::More tests => 89;
 
 use Crypt::PKCS11;
 
@@ -93,4 +93,5 @@ BEGIN {
     is( Crypt::PKCS11::XS::rv2str(Crypt::PKCS11::CKR_NEXT_OTP), 'CKR_NEXT_OTP', 'CKR_NEXT_OTP' );
     is( Crypt::PKCS11::XS::rv2str(Crypt::PKCS11::CKR_FUNCTION_REJECTED), 'CKR_FUNCTION_REJECTED', 'CKR_FUNCTION_REJECTED' );
     is( Crypt::PKCS11::XS::rv2str(Crypt::PKCS11::CKR_VENDOR_DEFINED), 'CKR_VENDOR_DEFINED', 'CKR_VENDOR_DEFINED' );
+    is( Crypt::PKCS11::XS::rv2str(0xFFFFFFFF), 'UNKNOWN_ERROR', 'UNKNOWN_ERROR' );
 }
