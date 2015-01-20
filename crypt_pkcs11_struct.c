@@ -5246,20 +5246,24 @@ CK_RV crypt_pkcs11_ck_pbe_params_set_pPassword(Crypt__PKCS11__CK_PBE_PARAMS* obj
     }
 
     if (!(_sv = newSVsv(sv))) {
+        /* uncoverable block 0 */
         return CKR_GENERAL_ERROR;
     }
 
     sv_utf8_downgrade(_sv, 0);
     if (!(p = SvPV(_sv, l))) {
+        /* uncoverable begin */
         SvREFCNT_dec(_sv);
         return CKR_GENERAL_ERROR;
+        /* uncoverable end */
     }
 
     /* uncoverable branch 1 */
     if (!(n = calloc(1, l + 1))) {
+        /* uncoverable begin */
         SvREFCNT_dec(_sv);
-        /* uncoverable block 0 */
         return CKR_HOST_MEMORY;
+        /* uncoverable end */
     }
 
     memcpy(n, p, l);
@@ -8445,20 +8449,24 @@ CK_RV crypt_pkcs11_ck_cms_sig_params_set_pContentType(Crypt__PKCS11__CK_CMS_SIG_
     }
 
     if (!(_sv = newSVsv(sv))) {
+        /* uncoverable block 0 */
         return CKR_GENERAL_ERROR;
     }
 
     sv_utf8_downgrade(_sv, 0);
     if (!(p = SvPV(_sv, l))) {
+        /* uncoverable begin */
         SvREFCNT_dec(_sv);
         return CKR_GENERAL_ERROR;
+        /* uncoverable end */
     }
 
     /* uncoverable branch 1 */
     if (!(n = calloc(1, l + 1))) {
+        /* uncoverable begin */
         SvREFCNT_dec(_sv);
-        /* uncoverable block 0 */
         return CKR_HOST_MEMORY;
+        /* uncoverable end */
     }
 
     memcpy(n, p, l);

@@ -63,6 +63,8 @@ ok( $@, '$obj->InitToken(undef, undef)' );
 $@ = undef; eval { $obj->InitToken(1, undef); };
 ok( $@, '$obj->InitToken(1, undef)' );
 is( $obj->InitToken(1, 1), undef, '$obj->InitToken' );
+is( $obj->InitToken(1, 1, 1), undef, '$obj->InitToken' );
+is( $obj->InitToken(1, undef, 1), undef, '$obj->InitToken' );
 $@ = undef; eval { $obj->OpenSession(undef); };
 ok( $@, '$obj->OpenSession(undef)' );
 $@ = undef; eval { $obj->OpenSession(1, undef, 1); };
@@ -84,22 +86,84 @@ isa_ok( $mechanism->toHash, 'HASH', '$mechanism->toHash' );
 
 $rv = 0;
 if ($ENV{TEST_DEVEL_COVER}) {
-    $xs = Crypt::PKCS11::XS->new;
-    $xs->load('TEST_DEVEL_COVER');
+    isa_ok( $xs = Crypt::PKCS11::XS->new, 'Crypt::PKCS11::XSPtr' );
+    is( $xs->load('TEST_DEVEL_COVER_NO_FLIST'), CKR_GENERAL_ERROR );
+    is( $xs->load('TEST_DEVEL_COVER'), CKR_OK );
     $rv = $xs->test_devel_cover;
 }
 is( $rv, 0, 'Failed on line '.$rv );
 
+is( $xs->C_InitToken(1, 1, undef), CKR_ARGUMENTS_BAD, '$xs->C_InitToken(1, 1, undef)' );
+is( $xs->C_InitToken(1, undef, 1), CKR_OK, '$xs->C_InitToken(1, undef, 1)' );
+is( $xs->C_InitToken(1, undef, '01234567890123456789012345678901'), CKR_OK, '$xs->C_InitToken(1, undef, 1)' );
+
+is( $xs->C_InitPIN(1, undef), CKR_OK, '$xs->C_InitPIN(1, undef)' );
+is( $xs->C_InitPIN(1, 1), CKR_OK, '$xs->C_InitPIN(1, 1)' );
+
+is( $xs->C_SetPIN(1, undef, undef), CKR_OK, '$xs->C_SetPIN(1, undef, undef)' );
+is( $xs->C_SetPIN(1, 1, undef), CKR_OK, '$xs->C_SetPIN(1, 1, undef)' );
+is( $xs->C_SetPIN(1, 1, 1), CKR_OK, '$xs->C_SetPIN(1, 1, 1)' );
+
 {
     local $SIG{__WARN__} = sub {};
+    my ($a, $called);
+    is( $xs->C_OpenSession(0, 0, sub { $called = 1; }, $a), CKR_OK, '$xs->C_OpenSession' );
+    ok( $called, 'C_OpenSession not called' );
+    is( $xs->C_OpenSession(9999, 0, sub {}, $a), CKR_GENERAL_ERROR, '$xs->C_OpenSession' );
+}
+
+is( $xs->C_GetOperationState(1, $a), CKR_OK, '$xs->C_GetOperationState(1, $a)' );
+is( $xs->C_GetOperationState(9999, $a), CKR_OK, '$xs->C_GetOperationState(1, $a)' );
+
+{
+    local $SIG{__WARN__} = sub {};
+    is( $xs->C_SetOperationState(1, $a, undef, undef), CKR_OK, '$xs->C_SetOperationState(1, $a, undef, undef)' );
+}
+
+is( $xs->C_Login(1, 1, undef), CKR_OK, '$xs->C_Loing(1, 1, undef)' );
+
+is( $xs->C_GetObjectSize(1, 1, $a), CKR_OK, '$xs->C_GetObjectSize(1, 1, $a)' );
+
+is( $xs->C_FindObjects(1, $a = [], 2), CKR_OK, '$xs->C_FindObjects(1, $a = [], 2)' );
+
+is( $xs->C_EncryptUpdate(1, $a = '', $b = ' '), CKR_OK );
+is( $xs->C_EncryptUpdate(1, $a = '', $b = ''), CKR_OK );
+is( $xs->C_EncryptFinal(1, $a = ' '), CKR_OK );
+is( $xs->C_EncryptFinal(1, $a = ''), CKR_OK );
+is( $xs->C_DecryptUpdate(1, $a = '', $b = ' '), CKR_OK );
+is( $xs->C_DecryptUpdate(1, $a = '', $b = ''), CKR_OK );
+is( $xs->C_DecryptFinal(1, $a = ' '), CKR_OK );
+is( $xs->C_DecryptFinal(1, $a = ''), CKR_OK );
+
+is( $xs->C_SignRecover(1, $a = '', $b = ' '), CKR_OK );
+is( $xs->C_SignRecover(1, $a = '', $b = ''), CKR_OK );
+
+is( $xs->C_VerifyRecover(1, $a = '', $b = ' '), CKR_OK );
+is( $xs->C_VerifyRecover(1, $a = '', $b = ''), CKR_OK );
+
+is( $xs->C_DigestEncryptUpdate(1, $a = '', $b = ' '), CKR_OK );
+is( $xs->C_DigestEncryptUpdate(1, $a = '', $b = ''), CKR_OK );
+is( $xs->C_DecryptDigestUpdate(1, $a = '', $b = ' '), CKR_OK );
+is( $xs->C_DecryptDigestUpdate(1, $a = '', $b = ''), CKR_OK );
+is( $xs->C_SignEncryptUpdate(1, $a = '', $b = ' '), CKR_OK );
+is( $xs->C_SignEncryptUpdate(1, $a = '', $b = ''), CKR_OK );
+is( $xs->C_DecryptVerifyUpdate(1, $a = '', $b = ' '), CKR_OK );
+is( $xs->C_DecryptVerifyUpdate(1, $a = '', $b = ''), CKR_OK );
+
+{
+    local $SIG{__WARN__} = sub {};
+    my $sub1 = *Crypt::PKCS11::CK_MECHANISMPtr::get_pParameter{CODE};
     *Crypt::PKCS11::CK_MECHANISMPtr::get_pParameter = sub ($) { return CKR_GENERAL_ERROR; };
     $mechanism = Crypt::PKCS11::CK_MECHANISM->new;
     $@ = undef; eval { $mechanism->toHash; };
     ok( $@, '$mechanism->toHash' );
+    my $sub2 = *Crypt::PKCS11::CK_MECHANISMPtr::get_mechanism{CODE};
     *Crypt::PKCS11::CK_MECHANISMPtr::get_mechanism = sub ($) { return CKR_GENERAL_ERROR; };
     $mechanism = Crypt::PKCS11::CK_MECHANISM->new;
     $@ = undef; eval { $mechanism->toHash; };
     ok( $@, '$mechanism->toHash' );
+    *Crypt::PKCS11::CK_MECHANISMPtr::get_pParameter = $sub1;
+    *Crypt::PKCS11::CK_MECHANISMPtr::get_mechanism = $sub2;
 }
 
 # Crypt/PKCS11/Attribute.pm
@@ -197,7 +261,7 @@ isa_ok( $obj = $obj->new(Crypt::PKCS11::XS->new, 1), 'Crypt::PKCS11::Session', '
     is( $obj->InitPIN, undef, '$obj->InitPIN' );
     is( $obj->InitPIN(1), undef, '$obj->InitPIN(1)' );
     is( $obj->InitPIN('abc'), undef, '$obj->InitPIN("abc")' );
-    $sub = *Crypt::PKCS11::XSPtr::C_InitPIN;
+    $sub = *Crypt::PKCS11::XSPtr::C_InitPIN{CODE};
     *Crypt::PKCS11::XSPtr::C_InitPIN = sub ($$) { return CKR_OK; };
     ok( $obj->InitPIN, '$obj->InitPIN' );
     *Crypt::PKCS11::XSPtr::C_InitPIN = $sub;
@@ -207,18 +271,18 @@ isa_ok( $obj = $obj->new(Crypt::PKCS11::XS->new, 1), 'Crypt::PKCS11::Session', '
     is( $obj->SetPIN('abc'), undef, '$obj->SetPIN("abc")' );
     is( $obj->SetPIN(1, 1), undef, '$obj->SetPIN(1, 1)' );
     is( $obj->SetPIN(1, 'abc'), undef, '$obj->SetPIN(1, "abc")' );
-    $sub = *Crypt::PKCS11::XSPtr::C_SetPIN;
+    $sub = *Crypt::PKCS11::XSPtr::C_SetPIN{CODE};
     *Crypt::PKCS11::XSPtr::C_SetPIN = sub ($$) { return CKR_OK; };
     ok( $obj->SetPIN, '$obj->SetPIN' );
     *Crypt::PKCS11::XSPtr::C_SetPIN = $sub;
 
-    $sub = *Crypt::PKCS11::XSPtr::C_CloseSession;
+    $sub = *Crypt::PKCS11::XSPtr::C_CloseSession{CODE};
     *Crypt::PKCS11::XSPtr::C_CloseSession = sub ($) { return CKR_GENERAL_ERROR; };
     is( $obj->CloseSession, undef, '$obj->CloseSession' );
     *Crypt::PKCS11::XSPtr::C_CloseSession = $sub;
 
     is( $obj->GetSessionInfo, undef, '$obj->GetSessionInfo' );
-    $sub = *Crypt::PKCS11::XSPtr::C_GetSessionInfo;
+    $sub = *Crypt::PKCS11::XSPtr::C_GetSessionInfo{CODE};
     *Crypt::PKCS11::XSPtr::C_GetSessionInfo = sub ($$$) { $_[2]->{test} = 1; return CKR_OK; };
     ok( scalar (@a = $obj->GetSessionInfo), '$obj->GetSessionInfo' );
     ok( scalar $obj->GetSessionInfo, '$obj->GetSessionInfo' );
@@ -228,7 +292,7 @@ isa_ok( $obj = $obj->new(Crypt::PKCS11::XS->new, 1), 'Crypt::PKCS11::Session', '
     *Crypt::PKCS11::XSPtr::C_GetSessionInfo = $sub;
 
     is( $obj->GetOperationState, undef, '$obj->GetOperationState' );
-    $sub = *Crypt::PKCS11::XSPtr::C_GetOperationState;
+    $sub = *Crypt::PKCS11::XSPtr::C_GetOperationState{CODE};
     *Crypt::PKCS11::XSPtr::C_GetOperationState = sub ($$$) { return CKR_GENERAL_ERROR; };
     is( $obj->GetOperationState, undef, '$obj->GetOperationState' );
     *Crypt::PKCS11::XSPtr::C_GetOperationState = sub ($$$) { $_[2]=[]; return CKR_OK; };
@@ -239,7 +303,7 @@ isa_ok( $obj = $obj->new(Crypt::PKCS11::XS->new, 1), 'Crypt::PKCS11::Session', '
     is( $obj->SetOperationState('', Crypt::PKCS11::Object->new(1)), undef, '$obj->SetOperationState("", Crypt::PKCS11::Object->new(1))' );
     is( $obj->SetOperationState('', Crypt::PKCS11::Object->new(1), Crypt::PKCS11::Object->new(1)), undef, '$obj->SetOperationState("", Crypt::PKCS11::Object->new(1), Crypt::PKCS11::Object->new(1))' );
     is( $obj->SetOperationState('', undef, Crypt::PKCS11::Object->new(1)), undef, '$obj->SetOperationState("", undef, Crypt::PKCS11::Object->new(1))' );
-    $sub = *Crypt::PKCS11::XSPtr::C_SetOperationState;
+    $sub = *Crypt::PKCS11::XSPtr::C_SetOperationState{CODE};
     *Crypt::PKCS11::XSPtr::C_SetOperationState = sub ($$$$) { return CKR_OK; };
     ok( $obj->SetOperationState(''), '$obj->SetOperationState("")' );
     *Crypt::PKCS11::XSPtr::C_SetOperationState = $sub;
@@ -247,19 +311,19 @@ isa_ok( $obj = $obj->new(Crypt::PKCS11::XS->new, 1), 'Crypt::PKCS11::Session', '
     is( $obj->Login(1), undef, '$obj->Login(1)' );
 
     is( $obj->Logout, undef, '$obj->Logout' );
-    $sub = *Crypt::PKCS11::XSPtr::C_Logout;
+    $sub = *Crypt::PKCS11::XSPtr::C_Logout{CODE};
     *Crypt::PKCS11::XSPtr::C_Logout = sub ($$) { return CKR_OK; };
     ok( $obj->Logout, '$obj->Logout' );
     *Crypt::PKCS11::XSPtr::C_Logout = $sub;
 
     is( $obj->CreateObject(Crypt::PKCS11::Attributes->new), undef, '$obj->CreateObject(Crypt::PKCS11::Attributes->new)' );
-    $sub = *Crypt::PKCS11::XSPtr::C_CreateObject;
+    $sub = *Crypt::PKCS11::XSPtr::C_CreateObject{CODE};
     *Crypt::PKCS11::XSPtr::C_CreateObject = sub ($$$$) { $_[3] = 1; return CKR_OK; };
     ok( $obj->CreateObject(Crypt::PKCS11::Attributes->new), '$obj->CreateObject(Crypt::PKCS11::Attributes->new)' );
     *Crypt::PKCS11::XSPtr::C_CreateObject = $sub;
 
     is( $obj->CopyObject(Crypt::PKCS11::Object->new(1), Crypt::PKCS11::Attributes->new), undef, '$obj->CopyObject(Crypt::PKCS11::Object->new(1), Crypt::PKCS11::Attributes->new)' );
-    $sub = *Crypt::PKCS11::XSPtr::C_CopyObject;
+    $sub = *Crypt::PKCS11::XSPtr::C_CopyObject{CODE};
     *Crypt::PKCS11::XSPtr::C_CopyObject = sub ($$$$$) { $_[4] = 1; return CKR_OK; };
     ok( $obj->CopyObject(Crypt::PKCS11::Object->new(1), Crypt::PKCS11::Attributes->new), '$obj->CopyObject(Crypt::PKCS11::Object->new(1), Crypt::PKCS11::Attributes->new)' );
     *Crypt::PKCS11::XSPtr::C_CopyObject = $sub;
@@ -267,13 +331,13 @@ isa_ok( $obj = $obj->new(Crypt::PKCS11::XS->new, 1), 'Crypt::PKCS11::Session', '
     is( $obj->DestroyObject(Crypt::PKCS11::Object->new(1)), undef, '$obj->DestroyObject(Crypt::PKCS11::Object->new(1))' );
 
     is( $obj->GetObjectSize(Crypt::PKCS11::Object->new(1)), undef, '$obj->GetObjectSize(Crypt::PKCS11::Object->new(1))' );
-    $sub = *Crypt::PKCS11::XSPtr::C_GetObjectSize;
+    $sub = *Crypt::PKCS11::XSPtr::C_GetObjectSize{CODE};
     *Crypt::PKCS11::XSPtr::C_GetObjectSize = sub ($$$$) { $_[3] = 1; return CKR_OK; };
     ok( $obj->GetObjectSize(Crypt::PKCS11::Object->new(1)), '$obj->GetObjectSize(Crypt::PKCS11::Object->new(1))' );
     *Crypt::PKCS11::XSPtr::C_GetObjectSize = $sub;
 
     is( $obj->GetAttributeValue(Crypt::PKCS11::Object->new(1), Crypt::PKCS11::Attributes->new), undef, '$obj->GetAttributeValue(Crypt::PKCS11::Object->new(1), Crypt::PKCS11::Attributes->new)' );
-    $sub = *Crypt::PKCS11::XSPtr::C_GetAttributeValue;
+    $sub = *Crypt::PKCS11::XSPtr::C_GetAttributeValue{CODE};
     *Crypt::PKCS11::XSPtr::C_GetAttributeValue = sub ($$$$) { $_[3] = 1; return CKR_OK; };
     $@ = undef; eval { $obj->GetAttributeValue(Crypt::PKCS11::Object->new(1), Crypt::PKCS11::Attributes->new); };
     ok( $@, '$obj->GetAttributeValue(Crypt::PKCS11::Object->new(1), Crypt::PKCS11::Attributes->new)' );
@@ -281,6 +345,262 @@ isa_ok( $obj = $obj->new(Crypt::PKCS11::XS->new, 1), 'Crypt::PKCS11::Session', '
     ok( scalar (@a = $obj->GetAttributeValue(Crypt::PKCS11::Object->new(1), Crypt::PKCS11::Attributes->new)), '$obj->GetAttributeValue(Crypt::PKCS11::Object->new(1), Crypt::PKCS11::Attributes->new)' );
     ok( scalar $obj->GetAttributeValue(Crypt::PKCS11::Object->new(1), Crypt::PKCS11::Attributes->new), '$obj->GetAttributeValue(Crypt::PKCS11::Object->new(1), Crypt::PKCS11::Attributes->new)' );
     *Crypt::PKCS11::XSPtr::C_GetAttributeValue = $sub;
+
+    is( $obj->SetAttributeValue(Crypt::PKCS11::Object->new(1), Crypt::PKCS11::Attributes->new), undef, '$obj->SetAttributeValue(Crypt::PKCS11::Object->new(1), Crypt::PKCS11::Attributes->new)' );
+    $sub = *Crypt::PKCS11::XSPtr::C_SetAttributeValue{CODE};
+    *Crypt::PKCS11::XSPtr::C_SetAttributeValue = sub ($$$$) { return CKR_OK; };
+    ok( scalar (@a = $obj->SetAttributeValue(Crypt::PKCS11::Object->new(1), Crypt::PKCS11::Attributes->new)), '$obj->SetAttributeValue(Crypt::PKCS11::Object->new(1), Crypt::PKCS11::Attributes->new)' );
+    ok( scalar $obj->SetAttributeValue(Crypt::PKCS11::Object->new(1), Crypt::PKCS11::Attributes->new), '$obj->SetAttributeValue(Crypt::PKCS11::Object->new(1), Crypt::PKCS11::Attributes->new)' );
+    *Crypt::PKCS11::XSPtr::C_SetAttributeValue = $sub;
+
+    is( $obj->FindObjectsInit(Crypt::PKCS11::Attributes->new), undef, '$obj->FindObjectsInit(Crypt::PKCS11::Attributes->new)' );
+    $sub = *Crypt::PKCS11::XSPtr::C_FindObjectsInit{CODE};
+    *Crypt::PKCS11::XSPtr::C_FindObjectsInit = sub ($$$) { return CKR_OK; };
+    ok( scalar (@a = $obj->FindObjectsInit(Crypt::PKCS11::Attributes->new)), '$obj->FindObjectsInit(Crypt::PKCS11::Attributes->new)' );
+    ok( scalar $obj->FindObjectsInit(Crypt::PKCS11::Attributes->new), '$obj->FindObjectsInit(Crypt::PKCS11::Attributes->new)' );
+    *Crypt::PKCS11::XSPtr::C_FindObjectsInit = $sub;
+
+    is( $obj->FindObjects(1), undef, '$obj->FindObjects(1)' );
+    $sub = *Crypt::PKCS11::XSPtr::C_FindObjects{CODE};
+    *Crypt::PKCS11::XSPtr::C_FindObjects = sub ($$$$) { return CKR_OK; };
+    ok( $obj->FindObjects(1), '$obj->FindObjects(1)' );
+    *Crypt::PKCS11::XSPtr::C_FindObjects = sub ($$$$) { push(@{$_[2]}, 1, 1); return CKR_OK; };
+    ok( scalar (@a = $obj->FindObjects(1)), '$obj->FindObjects(1)' );
+    ok( scalar $obj->FindObjects(1), '$obj->FindObjects(1)' );
+    *Crypt::PKCS11::XSPtr::C_FindObjects = sub ($$$$) { $_[2] = {}; return CKR_OK; };
+    $@ = undef; eval { $obj->FindObjects(1); };
+    ok( $@, '$obj->FindObjects(1)' );
+    *Crypt::PKCS11::XSPtr::C_FindObjects = $sub;
+
+    is( $obj->FindObjectsFinal, undef, '$obj->FindObjectsFinal' );
+    $sub = *Crypt::PKCS11::XSPtr::C_FindObjectsFinal{CODE};
+    *Crypt::PKCS11::XSPtr::C_FindObjectsFinal = sub ($$) { return CKR_OK; };
+    ok( $obj->FindObjectsFinal, '$obj->FindObjectsFinal' );
+    *Crypt::PKCS11::XSPtr::C_FindObjectsFinal = $sub;
+
+    my $mech = Crypt::PKCS11::CK_MECHANISM->new;
+    is( $mech->set_mechanism(CKM_SHA_1), CKR_OK, '$mech->set_mechanism(CKM_SHA_1)' );
+    is( $mech->get_mechanism($a=1), CKR_OK, '$mech->get_mechanism($a=1)' );
+
+    is( $obj->EncryptInit($mech, Crypt::PKCS11::Object->new(1)), undef, '$obj->EncryptInit($mech, Crypt::PKCS11::Object->new(1))' );
+    $sub = *Crypt::PKCS11::XSPtr::C_EncryptInit{CODE};
+    *Crypt::PKCS11::XSPtr::C_EncryptInit = sub ($$) { return CKR_OK; };
+    ok( $obj->EncryptInit($mech, Crypt::PKCS11::Object->new(1)), '$obj->EncryptInit($mech, Crypt::PKCS11::Object->new(1))' );
+    *Crypt::PKCS11::XSPtr::C_EncryptInit = $sub;
+
+    is( $obj->Encrypt(''), undef, '$obj->Encrypt("")' );
+    $sub = *Crypt::PKCS11::XSPtr::C_Encrypt{CODE};
+    *Crypt::PKCS11::XSPtr::C_Encrypt = sub ($$$$) { $_[3] = 1; return CKR_OK; };
+    ok( $obj->Encrypt(''), '$obj->Encrypt("")' );
+    *Crypt::PKCS11::XSPtr::C_Encrypt = $sub;
+
+    is( $obj->EncryptUpdate(''), undef, '$obj->EncryptUpdate("")' );
+    $sub = *Crypt::PKCS11::XSPtr::C_EncryptUpdate{CODE};
+    *Crypt::PKCS11::XSPtr::C_EncryptUpdate = sub ($$$$) { $_[3] = 1; return CKR_OK; };
+    ok( $obj->EncryptUpdate(''), '$obj->EncryptUpdate("")' );
+    *Crypt::PKCS11::XSPtr::C_EncryptUpdate = $sub;
+
+    is( $obj->EncryptFinal, undef, '$obj->EncryptFinal' );
+    $sub = *Crypt::PKCS11::XSPtr::C_EncryptFinal{CODE};
+    *Crypt::PKCS11::XSPtr::C_EncryptFinal = sub ($$$) { $_[2] = 1; return CKR_OK; };
+    ok( $obj->EncryptFinal, '$obj->EncryptFinal' );
+    *Crypt::PKCS11::XSPtr::C_EncryptFinal = $sub;
+
+    is( $obj->DecryptInit($mech, Crypt::PKCS11::Object->new(1)), undef, '$obj->DecryptInit($mech, Crypt::PKCS11::Object->new(1))' );
+    $sub = *Crypt::PKCS11::XSPtr::C_DecryptInit{CODE};
+    *Crypt::PKCS11::XSPtr::C_DecryptInit = sub ($$) { return CKR_OK; };
+    ok( $obj->DecryptInit($mech, Crypt::PKCS11::Object->new(1)), '$obj->DecryptInit($mech, Crypt::PKCS11::Object->new(1))' );
+    *Crypt::PKCS11::XSPtr::C_DecryptInit = $sub;
+
+    is( $obj->Decrypt(''), undef, '$obj->Decrypt("")' );
+    $sub = *Crypt::PKCS11::XSPtr::C_Decrypt{CODE};
+    *Crypt::PKCS11::XSPtr::C_Decrypt = sub ($$$$) { $_[3] = 1; return CKR_OK; };
+    ok( $obj->Decrypt(''), '$obj->Decrypt("")' );
+    *Crypt::PKCS11::XSPtr::C_Decrypt = $sub;
+
+    is( $obj->DecryptUpdate(''), undef, '$obj->DecryptUpdate("")' );
+    $sub = *Crypt::PKCS11::XSPtr::C_DecryptUpdate{CODE};
+    *Crypt::PKCS11::XSPtr::C_DecryptUpdate = sub ($$$$) { $_[3] = 1; return CKR_OK; };
+    ok( $obj->DecryptUpdate(''), '$obj->DecryptUpdate("")' );
+    *Crypt::PKCS11::XSPtr::C_DecryptUpdate = $sub;
+
+    is( $obj->DecryptFinal, undef, '$obj->DecryptFinal' );
+    $sub = *Crypt::PKCS11::XSPtr::C_DecryptFinal{CODE};
+    *Crypt::PKCS11::XSPtr::C_DecryptFinal = sub ($$$) { $_[2] = 1; return CKR_OK; };
+    ok( $obj->DecryptFinal, '$obj->DecryptFinal' );
+    *Crypt::PKCS11::XSPtr::C_DecryptFinal = $sub;
+
+    is( $obj->DigestInit($mech, Crypt::PKCS11::Object->new(1)), undef, '$obj->DigestInit($mech, Crypt::PKCS11::Object->new(1))' );
+    $sub = *Crypt::PKCS11::XSPtr::C_DigestInit{CODE};
+    *Crypt::PKCS11::XSPtr::C_DigestInit = sub ($$) { return CKR_OK; };
+    ok( $obj->DigestInit($mech, Crypt::PKCS11::Object->new(1)), '$obj->DigestInit($mech, Crypt::PKCS11::Object->new(1))' );
+    *Crypt::PKCS11::XSPtr::C_DigestInit = $sub;
+
+    is( $obj->Digest(''), undef, '$obj->Digest("")' );
+    $sub = *Crypt::PKCS11::XSPtr::C_Digest{CODE};
+    *Crypt::PKCS11::XSPtr::C_Digest = sub ($$$$) { $_[3] = 1; return CKR_OK; };
+    ok( $obj->Digest(''), '$obj->Digest("")' );
+    *Crypt::PKCS11::XSPtr::C_Digest = $sub;
+
+    is( $obj->DigestUpdate(''), undef, '$obj->DigestUpdate("")' );
+    $sub = *Crypt::PKCS11::XSPtr::C_DigestUpdate{CODE};
+    *Crypt::PKCS11::XSPtr::C_DigestUpdate = sub ($$$$) { return CKR_OK; };
+    ok( $obj->DigestUpdate(''), '$obj->DigestUpdate("")' );
+    *Crypt::PKCS11::XSPtr::C_DigestUpdate = $sub;
+
+    is( $obj->DigestKey(Crypt::PKCS11::Object->new(1)), undef, '$obj->DigestKey(Crypt::PKCS11::Object->new(1))' );
+    $sub = *Crypt::PKCS11::XSPtr::C_DigestKey{CODE};
+    *Crypt::PKCS11::XSPtr::C_DigestKey = sub ($$$$) { return CKR_OK; };
+    ok( $obj->DigestKey(Crypt::PKCS11::Object->new(1)), '$obj->DigestKey(Crypt::PKCS11::Object->new(1))' );
+    *Crypt::PKCS11::XSPtr::C_DigestKey = $sub;
+
+    is( $obj->DigestFinal, undef, '$obj->DigestFinal' );
+    $sub = *Crypt::PKCS11::XSPtr::C_DigestFinal{CODE};
+    *Crypt::PKCS11::XSPtr::C_DigestFinal = sub ($$$) { $_[2] = 1; return CKR_OK; };
+    ok( $obj->DigestFinal, '$obj->DigestFinal' );
+    *Crypt::PKCS11::XSPtr::C_DigestFinal = $sub;
+
+    is( $obj->SignInit($mech, Crypt::PKCS11::Object->new(1)), undef, '$obj->SignInit($mech, Crypt::PKCS11::Object->new(1))' );
+    $sub = *Crypt::PKCS11::XSPtr::C_SignInit{CODE};
+    *Crypt::PKCS11::XSPtr::C_SignInit = sub ($$) { return CKR_OK; };
+    ok( $obj->SignInit($mech, Crypt::PKCS11::Object->new(1)), '$obj->SignInit($mech, Crypt::PKCS11::Object->new(1))' );
+    *Crypt::PKCS11::XSPtr::C_SignInit = $sub;
+
+    is( $obj->Sign(''), undef, '$obj->Sign("")' );
+    $sub = *Crypt::PKCS11::XSPtr::C_Sign{CODE};
+    *Crypt::PKCS11::XSPtr::C_Sign = sub ($$$$) { $_[3] = 1; return CKR_OK; };
+    ok( $obj->Sign(''), '$obj->Sign("")' );
+    *Crypt::PKCS11::XSPtr::C_Sign = $sub;
+
+    is( $obj->SignUpdate(''), undef, '$obj->SignUpdate("")' );
+    $sub = *Crypt::PKCS11::XSPtr::C_SignUpdate{CODE};
+    *Crypt::PKCS11::XSPtr::C_SignUpdate = sub ($$$$) { $_[3] = 1; return CKR_OK; };
+    ok( $obj->SignUpdate(''), '$obj->SignUpdate("")' );
+    *Crypt::PKCS11::XSPtr::C_SignUpdate = $sub;
+
+    is( $obj->SignFinal, undef, '$obj->SignFinal' );
+    $sub = *Crypt::PKCS11::XSPtr::C_SignFinal{CODE};
+    *Crypt::PKCS11::XSPtr::C_SignFinal = sub ($$$) { $_[2] = 1; return CKR_OK; };
+    ok( $obj->SignFinal, '$obj->SignFinal' );
+    *Crypt::PKCS11::XSPtr::C_SignFinal = $sub;
+
+    is( $obj->SignRecoverInit($mech, Crypt::PKCS11::Object->new(1)), undef, '$obj->SignRecoverInit($mech, Crypt::PKCS11::Object->new(1))' );
+    $sub = *Crypt::PKCS11::XSPtr::C_SignRecoverInit{CODE};
+    *Crypt::PKCS11::XSPtr::C_SignRecoverInit = sub ($$) { return CKR_OK; };
+    ok( $obj->SignRecoverInit($mech, Crypt::PKCS11::Object->new(1)), '$obj->SignRecoverInit($mech, Crypt::PKCS11::Object->new(1))' );
+    *Crypt::PKCS11::XSPtr::C_SignRecoverInit = $sub;
+
+    is( $obj->SignRecover(''), undef, '$obj->SignRecover("")' );
+    $sub = *Crypt::PKCS11::XSPtr::C_SignRecover{CODE};
+    *Crypt::PKCS11::XSPtr::C_SignRecover = sub ($$$$) { $_[3] = 1; return CKR_OK; };
+    ok( $obj->SignRecover(''), '$obj->SignRecover("")' );
+    *Crypt::PKCS11::XSPtr::C_SignRecover = $sub;
+
+    is( $obj->VerifyInit($mech, Crypt::PKCS11::Object->new(1)), undef, '$obj->VerifyInit($mech, Crypt::PKCS11::Object->new(1))' );
+    $sub = *Crypt::PKCS11::XSPtr::C_VerifyInit{CODE};
+    *Crypt::PKCS11::XSPtr::C_VerifyInit = sub ($$) { return CKR_OK; };
+    ok( $obj->VerifyInit($mech, Crypt::PKCS11::Object->new(1)), '$obj->VerifyInit($mech, Crypt::PKCS11::Object->new(1))' );
+    *Crypt::PKCS11::XSPtr::C_VerifyInit = $sub;
+
+    is( $obj->Verify('', ''), undef, '$obj->Verify("", "")' );
+    $sub = *Crypt::PKCS11::XSPtr::C_Verify{CODE};
+    *Crypt::PKCS11::XSPtr::C_Verify = sub ($$$$) { $_[3] = 1; return CKR_OK; };
+    ok( $obj->Verify('', ''), '$obj->Verify("", "")' );
+    *Crypt::PKCS11::XSPtr::C_Verify = $sub;
+
+    is( $obj->VerifyUpdate(''), undef, '$obj->VerifyUpdate("")' );
+    $sub = *Crypt::PKCS11::XSPtr::C_VerifyUpdate{CODE};
+    *Crypt::PKCS11::XSPtr::C_VerifyUpdate = sub ($$$$) { return CKR_OK; };
+    ok( $obj->VerifyUpdate(''), '$obj->VerifyUpdate("")' );
+    *Crypt::PKCS11::XSPtr::C_VerifyUpdate = $sub;
+
+    is( $obj->VerifyFinal(''), undef, '$obj->VerifyFinal("")' );
+    $sub = *Crypt::PKCS11::XSPtr::C_VerifyFinal{CODE};
+    *Crypt::PKCS11::XSPtr::C_VerifyFinal = sub ($$$) { $_[2] = 1; return CKR_OK; };
+    ok( $obj->VerifyFinal(''), '$obj->VerifyFinal("")' );
+    *Crypt::PKCS11::XSPtr::C_VerifyFinal = $sub;
+
+    is( $obj->VerifyRecoverInit($mech, Crypt::PKCS11::Object->new(1)), undef, '$obj->VerifyRecoverInit($mech, Crypt::PKCS11::Object->new(1))' );
+    $sub = *Crypt::PKCS11::XSPtr::C_VerifyRecoverInit{CODE};
+    *Crypt::PKCS11::XSPtr::C_VerifyRecoverInit = sub ($$) { return CKR_OK; };
+    ok( $obj->VerifyRecoverInit($mech, Crypt::PKCS11::Object->new(1)), '$obj->VerifyRecoverInit($mech, Crypt::PKCS11::Object->new(1))' );
+    *Crypt::PKCS11::XSPtr::C_VerifyRecoverInit = $sub;
+
+    is( $obj->VerifyRecover(''), undef, '$obj->VerifyRecover("")' );
+    $sub = *Crypt::PKCS11::XSPtr::C_VerifyRecover{CODE};
+    *Crypt::PKCS11::XSPtr::C_VerifyRecover = sub ($$$$) { $_[3] = 1; return CKR_OK; };
+    ok( $obj->VerifyRecover(''), '$obj->VerifyRecover("")' );
+    *Crypt::PKCS11::XSPtr::C_VerifyRecover = $sub;
+
+    is( $obj->DigestEncryptUpdate(''), undef, '$obj->DigestEncryptUpdate("")' );
+    $sub = *Crypt::PKCS11::XSPtr::C_DigestEncryptUpdate{CODE};
+    *Crypt::PKCS11::XSPtr::C_DigestEncryptUpdate = sub ($$$$) { $_[3] = 1; return CKR_OK; };
+    ok( $obj->DigestEncryptUpdate(''), '$obj->DigestEncryptUpdate("")' );
+    *Crypt::PKCS11::XSPtr::C_DigestEncryptUpdate = $sub;
+
+    is( $obj->DecryptDigestUpdate(''), undef, '$obj->DecryptDigestUpdate("")' );
+    $sub = *Crypt::PKCS11::XSPtr::C_DecryptDigestUpdate{CODE};
+    *Crypt::PKCS11::XSPtr::C_DecryptDigestUpdate = sub ($$$$) { $_[3] = 1; return CKR_OK; };
+    ok( $obj->DecryptDigestUpdate(''), '$obj->DecryptDigestUpdate("")' );
+    *Crypt::PKCS11::XSPtr::C_DecryptDigestUpdate = $sub;
+
+    is( $obj->SignEncryptUpdate(''), undef, '$obj->SignEncryptUpdate("")' );
+    $sub = *Crypt::PKCS11::XSPtr::C_SignEncryptUpdate{CODE};
+    *Crypt::PKCS11::XSPtr::C_SignEncryptUpdate = sub ($$$$) { $_[3] = 1; return CKR_OK; };
+    ok( $obj->SignEncryptUpdate(''), '$obj->SignEncryptUpdate("")' );
+    *Crypt::PKCS11::XSPtr::C_SignEncryptUpdate = $sub;
+
+    is( $obj->DecryptVerifyUpdate(''), undef, '$obj->DecryptVerifyUpdate("")' );
+    $sub = *Crypt::PKCS11::XSPtr::C_DecryptVerifyUpdate{CODE};
+    *Crypt::PKCS11::XSPtr::C_DecryptVerifyUpdate = sub ($$$$) { $_[3] = 1; return CKR_OK; };
+    ok( $obj->DecryptVerifyUpdate(''), '$obj->DecryptVerifyUpdate("")' );
+    *Crypt::PKCS11::XSPtr::C_DecryptVerifyUpdate = $sub;
+
+    is( $obj->GenerateKey($mech, Crypt::PKCS11::Attributes->new), undef, '$obj->GenerateKey($mech, Crypt::PKCS11::Attributes->new)' );
+    $sub = *Crypt::PKCS11::XSPtr::C_GenerateKey{CODE};
+    *Crypt::PKCS11::XSPtr::C_GenerateKey = sub ($$$$$) { $_[4] = 1; return CKR_OK; };
+    ok( $obj->GenerateKey($mech, Crypt::PKCS11::Attributes->new), '$obj->GenerateKey($mech, Crypt::PKCS11::Attributes->new)' );
+    *Crypt::PKCS11::XSPtr::C_GenerateKey = $sub;
+
+    is( $obj->GenerateKeyPair($mech, Crypt::PKCS11::Attributes->new, Crypt::PKCS11::Attributes->new), CKR_GENERAL_ERROR, '$obj->GenerateKeyPair($mech, Crypt::PKCS11::Attributes->new, Crypt::PKCS11::Attributes->new)' );
+    $sub = *Crypt::PKCS11::XSPtr::C_GenerateKeyPair{CODE};
+    *Crypt::PKCS11::XSPtr::C_GenerateKeyPair = sub ($$$$$$$) { $_[5] = 1; $_[6] = 1; return CKR_OK; };
+    ok( scalar (@a = $obj->GenerateKeyPair($mech, Crypt::PKCS11::Attributes->new, Crypt::PKCS11::Attributes->new)), '$obj->GenerateKeyPair($mech, Crypt::PKCS11::Attributes->new, Crypt::PKCS11::Attributes->new)' );
+    ok( scalar $obj->GenerateKeyPair($mech, Crypt::PKCS11::Attributes->new, Crypt::PKCS11::Attributes->new), '$obj->GenerateKeyPair($mech, Crypt::PKCS11::Attributes->new, Crypt::PKCS11::Attributes->new)' );
+    *Crypt::PKCS11::XSPtr::C_GenerateKeyPair = $sub;
+
+    is( $obj->WrapKey($mech, Crypt::PKCS11::Object->new(1), Crypt::PKCS11::Object->new(1)), undef, '$obj->WrapKey($mech, Crypt::PKCS11::Object->new(1), Crypt::PKCS11::Object->new(1))' );
+    $sub = *Crypt::PKCS11::XSPtr::C_WrapKey{CODE};
+    *Crypt::PKCS11::XSPtr::C_WrapKey = sub ($$$$$$) { $_[5] = 1; return CKR_OK; };
+    ok( $obj->WrapKey($mech, Crypt::PKCS11::Object->new(1), Crypt::PKCS11::Object->new(1)), '$obj->WrapKey($mech, Crypt::PKCS11::Object->new(1), Crypt::PKCS11::Object->new(1))' );
+    *Crypt::PKCS11::XSPtr::C_WrapKey = $sub;
+
+    is( $obj->UnwrapKey($mech, Crypt::PKCS11::Object->new(1), '', Crypt::PKCS11::Attributes->new), undef, '$obj->UnwrapKey($mech, Crypt::PKCS11::Object->new(1), "", Crypt::PKCS11::Attributes->new)' );
+    $sub = *Crypt::PKCS11::XSPtr::C_UnwrapKey{CODE};
+    *Crypt::PKCS11::XSPtr::C_UnwrapKey = sub ($$$$$$$) { $_[6] = 1; return CKR_OK; };
+    ok( $obj->UnwrapKey($mech, Crypt::PKCS11::Object->new(1), '', Crypt::PKCS11::Attributes->new), '$obj->UnwrapKey($mech, Crypt::PKCS11::Object->new(1), "", Crypt::PKCS11::Attributes->new)' );
+    *Crypt::PKCS11::XSPtr::C_UnwrapKey = $sub;
+
+    is( $obj->DeriveKey($mech, Crypt::PKCS11::Object->new(1), Crypt::PKCS11::Attributes->new), undef, '$obj->DeriveKey($mech, Crypt::PKCS11::Object->new(1), Crypt::PKCS11::Attributes->new)' );
+    $sub = *Crypt::PKCS11::XSPtr::C_DeriveKey{CODE};
+    *Crypt::PKCS11::XSPtr::C_DeriveKey = sub ($$$$$$) { $_[5] = 1; return CKR_OK; };
+    ok( $obj->DeriveKey($mech, Crypt::PKCS11::Object->new(1), Crypt::PKCS11::Attributes->new), '$obj->DeriveKey($mech, Crypt::PKCS11::Object->new(1), Crypt::PKCS11::Attributes->new)' );
+    *Crypt::PKCS11::XSPtr::C_DeriveKey = $sub;
+
+    is( $obj->SeedRandom(''), undef, '$obj->SeedRandom("")' );
+    $sub = *Crypt::PKCS11::XSPtr::C_SeedRandom{CODE};
+    *Crypt::PKCS11::XSPtr::C_SeedRandom = sub ($$$) { return CKR_OK; };
+    ok( $obj->SeedRandom(''), '$obj->SeedRandom("")' );
+    *Crypt::PKCS11::XSPtr::C_SeedRandom = $sub;
+
+    is( $obj->GenerateRandom(''), undef, '$obj->GenerateRandom("")' );
+    $sub = *Crypt::PKCS11::XSPtr::C_GenerateRandom{CODE};
+    *Crypt::PKCS11::XSPtr::C_GenerateRandom = sub ($$$$) { $_[2] = 1; return CKR_OK; };
+    ok( $obj->GenerateRandom(''), '$obj->GenerateRandom("")' );
+    *Crypt::PKCS11::XSPtr::C_GenerateRandom = $sub;
+
+    is( $obj->GetFunctionStatus, CKR_GENERAL_ERROR, '$obj->GetFunctionStatus' );
+    is( $obj->CancelFunction, CKR_GENERAL_ERROR, '$obj->CancelFunction' );
 }
 
 $@ = undef; eval { $obj->InitPIN(''); };
@@ -465,6 +785,8 @@ $@ = undef; eval { $obj->Verify(1); };
 ok( $@, '$obj->Verify(1)' );
 $@ = undef; eval { $obj->VerifyUpdate; };
 ok( $@, '$obj->VerifyUpdate' );
+$@ = undef; eval { $obj->VerifyFinal; };
+ok( $@, '$obj->VerifyFinal' );
 $@ = undef; eval { $obj->VerifyRecoverInit; };
 ok( $@, '$obj->VerifyRecoverInit' );
 $@ = undef; eval { $obj->VerifyRecoverInit(1); };
@@ -577,7 +899,6 @@ $@ = undef; eval { $obj->SeedRandom; };
 ok( $@, '$obj->SeedRandom' );
 $@ = undef; eval { $obj->GenerateRandom; };
 ok( $@, '$obj->GenerateRandom' );
-$@ = undef; eval { $obj->GetFunctionStatus; };
 
 delete $obj->{session};
 $@ = undef; eval { $obj->InitPIN; };

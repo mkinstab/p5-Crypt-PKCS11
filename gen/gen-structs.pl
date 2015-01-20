@@ -1293,20 +1293,24 @@ CK_RV crypt_pkcs11_'.$lc_struct.'_set_'.$type->{name}.'('.$c_struct.'* object, S
     }
 
     if (!(_sv = newSVsv(sv))) {
+        /* uncoverable block 0 */
         return CKR_GENERAL_ERROR;
     }
 
     sv_utf8_downgrade(_sv, 0);
     if (!(p = SvPV(_sv, l))) {
+        /* uncoverable begin */
         SvREFCNT_dec(_sv);
         return CKR_GENERAL_ERROR;
+        /* uncoverable end */
     }
 
     /* uncoverable branch 1 */
     if (!(n = calloc(1, l + 1))) {
+        /* uncoverable begin */
         SvREFCNT_dec(_sv);
-        /* uncoverable block 0 */
         return CKR_HOST_MEMORY;
+        /* uncoverable end */
     }
 
     memcpy(n, p, l);
@@ -2566,20 +2570,24 @@ CK_RV crypt_pkcs11_'.$lc_struct.'_set_'.$type->{name}.'('.$c_struct.'* object, S
     }
 
     if (!(_sv = newSVsv(sv))) {
+        /* uncoverable block 0 */
         return CKR_GENERAL_ERROR;
     }
 
     sv_utf8_downgrade(_sv, 0);
     if (!(p = SvPV(_sv, l))) {
+        /* uncoverable begin */
         SvREFCNT_dec(_sv);
         return CKR_GENERAL_ERROR;
+        /* uncoverable end */
     }
 
     /* uncoverable branch 1 */
     if (!(n = calloc(1, l + 1))) {
+        /* uncoverable begin */
         SvREFCNT_dec(_sv);
-        /* uncoverable block 0 */
         return CKR_HOST_MEMORY;
+        /* uncoverable end */
     }
 
     memcpy(n, p, l);
