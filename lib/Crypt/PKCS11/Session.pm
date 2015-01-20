@@ -815,11 +815,15 @@ sub GenerateKeyPair {
     }
 
     $self->{rv} = $self->{pkcs11xs}->C_GenerateKeyPair($self->{session}, $mechanism->toHash, $publicKeyTemplate->toArray, $privateKeyTemplate->toArray, $publicKey, $privateKey);
-    @keys = (
-        Crypt::PKCS11::Object->new($publicKey),
-        Crypt::PKCS11::Object->new($privateKey)
-    );
-    return $self->{rv} == CKR_OK ? wantarray ? @keys : \@keys : undef;
+
+    if ($self->{rv} == CKR_OK) {
+        @keys = (
+            Crypt::PKCS11::Object->new($publicKey),
+            Crypt::PKCS11::Object->new($privateKey)
+        );
+        return wantarray ? @keys : \@keys;
+    }
+    return $self->{rv};
 }
 
 sub WrapKey {
