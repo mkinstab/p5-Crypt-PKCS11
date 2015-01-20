@@ -313,7 +313,7 @@ sub FindObjectsInit {
 
 sub FindObjects {
     my ($self, $maxObjectCount) = @_;
-    my $objects = ();
+    my $objects = [];
     my @objects;
 
     unless (exists $self->{session}) {
