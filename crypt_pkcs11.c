@@ -385,6 +385,12 @@ int crypt_pkcs11_xs_SvIOK(SV* sv) {
     return SvIOK(sv) ? 1 : 0;
 }
 
+/* TODO:
+ * Change Mutex design to incapsulate an object that refers to the CODE
+ * references and mutex data to allow for per PKCS11 object mutex callbacks.
+ * Also store them in the PKCS11 object for cleanup.
+ */
+
 static SV* __CreateMutexSV = NULL_PTR;
 
 static CK_RV __CreateMutex(CK_VOID_PTR_PTR ppMutex) {
