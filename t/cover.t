@@ -216,6 +216,71 @@ isa_ok( $obj = $obj->new(Crypt::PKCS11::XS->new, 1), 'Crypt::PKCS11::Session', '
     *Crypt::PKCS11::XSPtr::C_CloseSession = sub ($) { return CKR_GENERAL_ERROR; };
     is( $obj->CloseSession, undef, '$obj->CloseSession' );
     *Crypt::PKCS11::XSPtr::C_CloseSession = $sub;
+
+    is( $obj->GetSessionInfo, undef, '$obj->GetSessionInfo' );
+    $sub = *Crypt::PKCS11::XSPtr::C_GetSessionInfo;
+    *Crypt::PKCS11::XSPtr::C_GetSessionInfo = sub ($$$) { $_[2]->{test} = 1; return CKR_OK; };
+    ok( scalar (@a = $obj->GetSessionInfo), '$obj->GetSessionInfo' );
+    ok( scalar $obj->GetSessionInfo, '$obj->GetSessionInfo' );
+    *Crypt::PKCS11::XSPtr::C_GetSessionInfo = sub ($$$) { $_[2]=[]; return CKR_OK; };
+    $@ = undef; eval { $obj->GetSessionInfo; };
+    ok( $@, '$obj->GetSessionInfo' );
+    *Crypt::PKCS11::XSPtr::C_GetSessionInfo = $sub;
+
+    is( $obj->GetOperationState, undef, '$obj->GetOperationState' );
+    $sub = *Crypt::PKCS11::XSPtr::C_GetOperationState;
+    *Crypt::PKCS11::XSPtr::C_GetOperationState = sub ($$$) { return CKR_GENERAL_ERROR; };
+    is( $obj->GetOperationState, undef, '$obj->GetOperationState' );
+    *Crypt::PKCS11::XSPtr::C_GetOperationState = sub ($$$) { $_[2]=[]; return CKR_OK; };
+    ok( $obj->GetOperationState, '$obj->GetOperationState' );
+    *Crypt::PKCS11::XSPtr::C_GetOperationState = $sub;
+
+    is( $obj->SetOperationState(''), undef, '$obj->SetOperationState("")' );
+    is( $obj->SetOperationState('', Crypt::PKCS11::Object->new(1)), undef, '$obj->SetOperationState("", Crypt::PKCS11::Object->new(1))' );
+    is( $obj->SetOperationState('', Crypt::PKCS11::Object->new(1), Crypt::PKCS11::Object->new(1)), undef, '$obj->SetOperationState("", Crypt::PKCS11::Object->new(1), Crypt::PKCS11::Object->new(1))' );
+    is( $obj->SetOperationState('', undef, Crypt::PKCS11::Object->new(1)), undef, '$obj->SetOperationState("", undef, Crypt::PKCS11::Object->new(1))' );
+    $sub = *Crypt::PKCS11::XSPtr::C_SetOperationState;
+    *Crypt::PKCS11::XSPtr::C_SetOperationState = sub ($$$$) { return CKR_OK; };
+    ok( $obj->SetOperationState(''), '$obj->SetOperationState("")' );
+    *Crypt::PKCS11::XSPtr::C_SetOperationState = $sub;
+
+    is( $obj->Login(1), undef, '$obj->Login(1)' );
+
+    is( $obj->Logout, undef, '$obj->Logout' );
+    $sub = *Crypt::PKCS11::XSPtr::C_Logout;
+    *Crypt::PKCS11::XSPtr::C_Logout = sub ($$) { return CKR_OK; };
+    ok( $obj->Logout, '$obj->Logout' );
+    *Crypt::PKCS11::XSPtr::C_Logout = $sub;
+
+    is( $obj->CreateObject(Crypt::PKCS11::Attributes->new), undef, '$obj->CreateObject(Crypt::PKCS11::Attributes->new)' );
+    $sub = *Crypt::PKCS11::XSPtr::C_CreateObject;
+    *Crypt::PKCS11::XSPtr::C_CreateObject = sub ($$$$) { $_[3] = 1; return CKR_OK; };
+    ok( $obj->CreateObject(Crypt::PKCS11::Attributes->new), '$obj->CreateObject(Crypt::PKCS11::Attributes->new)' );
+    *Crypt::PKCS11::XSPtr::C_CreateObject = $sub;
+
+    is( $obj->CopyObject(Crypt::PKCS11::Object->new(1), Crypt::PKCS11::Attributes->new), undef, '$obj->CopyObject(Crypt::PKCS11::Object->new(1), Crypt::PKCS11::Attributes->new)' );
+    $sub = *Crypt::PKCS11::XSPtr::C_CopyObject;
+    *Crypt::PKCS11::XSPtr::C_CopyObject = sub ($$$$$) { $_[4] = 1; return CKR_OK; };
+    ok( $obj->CopyObject(Crypt::PKCS11::Object->new(1), Crypt::PKCS11::Attributes->new), '$obj->CopyObject(Crypt::PKCS11::Object->new(1), Crypt::PKCS11::Attributes->new)' );
+    *Crypt::PKCS11::XSPtr::C_CopyObject = $sub;
+
+    is( $obj->DestroyObject(Crypt::PKCS11::Object->new(1)), undef, '$obj->DestroyObject(Crypt::PKCS11::Object->new(1))' );
+
+    is( $obj->GetObjectSize(Crypt::PKCS11::Object->new(1)), undef, '$obj->GetObjectSize(Crypt::PKCS11::Object->new(1))' );
+    $sub = *Crypt::PKCS11::XSPtr::C_GetObjectSize;
+    *Crypt::PKCS11::XSPtr::C_GetObjectSize = sub ($$$$) { $_[3] = 1; return CKR_OK; };
+    ok( $obj->GetObjectSize(Crypt::PKCS11::Object->new(1)), '$obj->GetObjectSize(Crypt::PKCS11::Object->new(1))' );
+    *Crypt::PKCS11::XSPtr::C_GetObjectSize = $sub;
+
+    is( $obj->GetAttributeValue(Crypt::PKCS11::Object->new(1), Crypt::PKCS11::Attributes->new), undef, '$obj->GetAttributeValue(Crypt::PKCS11::Object->new(1), Crypt::PKCS11::Attributes->new)' );
+    $sub = *Crypt::PKCS11::XSPtr::C_GetAttributeValue;
+    *Crypt::PKCS11::XSPtr::C_GetAttributeValue = sub ($$$$) { $_[3] = 1; return CKR_OK; };
+    $@ = undef; eval { $obj->GetAttributeValue(Crypt::PKCS11::Object->new(1), Crypt::PKCS11::Attributes->new); };
+    ok( $@, '$obj->GetAttributeValue(Crypt::PKCS11::Object->new(1), Crypt::PKCS11::Attributes->new)' );
+    *Crypt::PKCS11::XSPtr::C_GetAttributeValue = sub ($$$$) { $_[3] = [{type => CKA_LABEL, pValue => 'abc'}]; return CKR_OK; };
+    ok( scalar (@a = $obj->GetAttributeValue(Crypt::PKCS11::Object->new(1), Crypt::PKCS11::Attributes->new)), '$obj->GetAttributeValue(Crypt::PKCS11::Object->new(1), Crypt::PKCS11::Attributes->new)' );
+    ok( scalar $obj->GetAttributeValue(Crypt::PKCS11::Object->new(1), Crypt::PKCS11::Attributes->new), '$obj->GetAttributeValue(Crypt::PKCS11::Object->new(1), Crypt::PKCS11::Attributes->new)' );
+    *Crypt::PKCS11::XSPtr::C_GetAttributeValue = $sub;
 }
 
 $@ = undef; eval { $obj->InitPIN(''); };
@@ -248,6 +313,18 @@ $@ = undef; eval { $obj->CreateObject(Crypt::PKCS11::Object->new(1), 1); };
 ok( $@, '$obj->CreateObject(Crypt::PKCS11::Object->new(1), 1)' );
 $@ = undef; eval { $obj->CreateObject(Crypt::PKCS11::Object->new(1), Crypt::PKCS11::Attribute->new); };
 ok( $@, '$obj->CreateObject(Crypt::PKCS11::Object->new(1), Crypt::PKCS11::Attribute->new)' );
+$@ = undef; eval { $obj->CopyObject; };
+ok( $@, '$obj->CopyObject' );
+$@ = undef; eval { $obj->CopyObject(1); };
+ok( $@, '$obj->CopyObject(1)' );
+$@ = undef; eval { $obj->CopyObject(Crypt::PKCS11::Attribute->new); };
+ok( $@, '$obj->CopyObject(Crypt::PKCS11::Attribute->new)' );
+$@ = undef; eval { $obj->CopyObject(Crypt::PKCS11::Object->new(1)); };
+ok( $@, '$obj->CopyObject(Crypt::PKCS11::Object->new(1))' );
+$@ = undef; eval { $obj->CopyObject(Crypt::PKCS11::Object->new(1), 1); };
+ok( $@, '$obj->CopyObject(Crypt::PKCS11::Object->new(1), 1)' );
+$@ = undef; eval { $obj->CopyObject(Crypt::PKCS11::Object->new(1), Crypt::PKCS11::Attribute->new); };
+ok( $@, '$obj->CopyObject(Crypt::PKCS11::Object->new(1), Crypt::PKCS11::Attribute->new)' );
 $@ = undef; eval { $obj->DestroyObject; };
 ok( $@, '$obj->DestroyObject' );
 $@ = undef; eval { $obj->DestroyObject(1); };
