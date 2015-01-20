@@ -496,7 +496,6 @@ sub Digest {
 
 sub DigestUpdate {
     my ($self, $part) = @_;
-    my $digest;
 
     unless (exists $self->{session}) {
         confess 'session is closed';
@@ -505,8 +504,8 @@ sub DigestUpdate {
         confess '$part must be defined';
     }
 
-    $self->{rv} = $self->{pkcs11xs}->C_DigestUpdate($self->{session}, $part, $digest);
-    return $self->{rv} == CKR_OK ? $digest : undef;
+    $self->{rv} = $self->{pkcs11xs}->C_DigestUpdate($self->{session}, $part);
+    return $self->{rv} == CKR_OK ? 1 : undef;
 }
 
 sub DigestKey {
