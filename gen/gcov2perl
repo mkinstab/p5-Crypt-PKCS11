@@ -56,7 +56,7 @@ foreach my $file (@ARGV) {
             print OUT;
             next;
         }
-        if (/^\s+\S+:\s+(\d+):/o) {
+        if (/^\s+\S+:\s*(\d+):/o) {
             $block = $1;
         }
         if (/\/\*\s+uncoverable\s+(\w+)\s+(\d+)\s+\*\//o) {
