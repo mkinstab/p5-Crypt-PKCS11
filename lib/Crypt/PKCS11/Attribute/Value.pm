@@ -63,7 +63,7 @@ sub get {
     my ($self) = @_;
 
     unless (defined $self->{pValue}) {
-        return undef;
+        return wantarray ? () : undef;
     }
 
     unless (wantarray) {
