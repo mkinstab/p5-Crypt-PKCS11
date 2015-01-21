@@ -1443,6 +1443,7 @@ CK_RV crypt_pkcs11_xs_C_SetOperationState(Crypt__PKCS11__XS* object, CK_SESSION_
 
     SvGETMAGIC(pOperationState);
     if (!(_pOperationState = (CK_BYTE_PTR)SvPVbyte(pOperationState, ulOperationStateLen))) {
+        /* uncoverable block 0 */
         return CKR_GENERAL_ERROR;
     }
     if (ulOperationStateLen < 0) {
@@ -2829,6 +2830,7 @@ CK_RV crypt_pkcs11_xs_C_Verify(Crypt__PKCS11__XS* object, CK_SESSION_HANDLE hSes
         || !(_pSignature = SvPVbyte(pSignature, ulSignatureLen))
         || ulSignatureLen < 0)
     {
+        /* uncoverable block 0 */
         return CKR_ARGUMENTS_BAD;
     }
 
@@ -2879,6 +2881,7 @@ CK_RV crypt_pkcs11_xs_C_VerifyFinal(Crypt__PKCS11__XS* object, CK_SESSION_HANDLE
     if (!(_pSignature = SvPVbyte(pSignature, ulSignatureLen))
         || ulSignatureLen < 0)
     {
+        /* uncoverable block 0 */
         return CKR_ARGUMENTS_BAD;
     }
 
@@ -3204,6 +3207,7 @@ CK_RV crypt_pkcs11_xs_C_WrapKey(Crypt__PKCS11__XS* object, CK_SESSION_HANDLE hSe
 
     SvGETMAGIC(pWrappedKey);
     if (!(_pWrappedKey = (CK_BYTE_PTR)SvPVbyte(pWrappedKey, ulWrappedKey))) {
+        /* uncoverable block 0 */
         return CKR_GENERAL_ERROR;
     }
     if (ulWrappedKey < 0) {
@@ -3283,6 +3287,7 @@ CK_RV crypt_pkcs11_xs_C_UnwrapKey(Crypt__PKCS11__XS* object, CK_SESSION_HANDLE h
 
     SvGETMAGIC(pWrappedKey);
     if (!(_pWrappedKey = (CK_BYTE_PTR)SvPVbyte(pWrappedKey, ulWrappedKey))) {
+        /* uncoverable block 0 */
         return CKR_GENERAL_ERROR;
     }
     if (ulWrappedKey < 0) {
@@ -3393,6 +3398,7 @@ CK_RV crypt_pkcs11_xs_C_SeedRandom(Crypt__PKCS11__XS* object, CK_SESSION_HANDLE 
 
     SvGETMAGIC(pSeed);
     if (!(_pSeed = (CK_BYTE_PTR)SvPVbyte(pSeed, ulSeedLen))) {
+        /* uncoverable block 0 */
         return CKR_GENERAL_ERROR;
     }
     if (ulSeedLen < 0) {
@@ -3431,7 +3437,7 @@ CK_RV crypt_pkcs11_xs_C_GenerateRandom(Crypt__PKCS11__XS* object, CK_SESSION_HAN
         return CKR_HOST_MEMORY;
     }
 
-    if ((rv = object->function_list->C_GenerateRandom(hSession, _RandomData, ulRandomLen))) {
+    if ((rv = object->function_list->C_GenerateRandom(hSession, _RandomData, ulRandomLen)) != CKR_OK) {
         free(_RandomData);
         return rv;
     }
@@ -3482,7 +3488,7 @@ CK_RV crypt_pkcs11_xs_C_CancelFunction(Crypt__PKCS11__XS* object, CK_SESSION_HAN
 }
 
 CK_RV crypt_pkcs11_xs_C_WaitForSlotEvent(Crypt__PKCS11__XS* object, CK_FLAGS flags, SV* pSlot) {
-    CK_SLOT_ID _pSlot;
+    CK_SLOT_ID _pSlot = 0;
     CK_RV rv;
 
     if (!object) {
@@ -4958,6 +4964,9 @@ static CK_RV __test_C_DestroyObject(CK_SESSION_HANDLE hSession, CK_OBJECT_HANDLE
 }
 
 static CK_RV __test_C_GetObjectSize(CK_SESSION_HANDLE hSession, CK_OBJECT_HANDLE hObject, CK_ULONG_PTR pulSize) {
+    if (hSession == 9999) {
+        return CKR_GENERAL_ERROR;
+    }
     return CKR_OK;
 }
 
@@ -5158,6 +5167,9 @@ static CK_RV __test_C_SeedRandom(CK_SESSION_HANDLE hSession, CK_BYTE_PTR pSeed, 
 }
 
 static CK_RV __test_C_GenerateRandom(CK_SESSION_HANDLE hSession, CK_BYTE_PTR RandomData, CK_ULONG ulRandomLen) {
+    if (hSession == 9999) {
+        return CKR_GENERAL_ERROR;
+    }
     return CKR_OK;
 }
 

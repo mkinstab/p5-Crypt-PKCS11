@@ -147,9 +147,14 @@ if ($ENV{TEST_DEVEL_COVER}) {
     myis( $xs->load('TEST_DEVEL_COVER_NO_FLIST'), CKR_GENERAL_ERROR );
     myis( $xs->load('TEST_DEVEL_COVER'), CKR_OK );
     $rv = $xs->test_devel_cover;
+    myis( $rv, 0, 'Failed on line '.$rv );
+    $rv = Crypt::PKCS11::STRUCT_XS::test_devel_cover;
+    myis( $rv, 0, 'Failed on line '.$rv );
 }
-myis( $rv, 0, 'Failed on line '.$rv );
 
+myisa_ok( $xs = Crypt::PKCS11::XS->new, 'Crypt::PKCS11::XSPtr' );
+myis( $xs->load('TEST_DEVEL_COVER'), CKR_OK );
+$xs->C_GetInfo($a = {});
 myis( $xs->C_InitToken(1, 1, undef), CKR_ARGUMENTS_BAD, '$xs->C_InitToken(1, 1, undef)' );
 myis( $xs->C_InitToken(1, undef, 1), CKR_OK, '$xs->C_InitToken(1, undef, 1)' );
 myis( $xs->C_InitToken(1, undef, '01234567890123456789012345678901'), CKR_OK, '$xs->C_InitToken(1, undef, 1)' );
@@ -183,6 +188,23 @@ myis( $xs->C_GetObjectSize(1, 1, $a), CKR_OK, '$xs->C_GetObjectSize(1, 1, $a)' )
 
 myis( $xs->C_FindObjects(1, $a = [], 2), CKR_OK, '$xs->C_FindObjects(1, $a = [], 2)' );
 
+myis( $xs->C_CreateObject(1, $a = [], $b = 0), CKR_OK );
+myis( $xs->C_CreateObject(1, $a = [[]], $b = 0), CKR_ARGUMENTS_BAD );
+
+myis( $xs->C_CopyObject(1, 1, $a = [], $b = 0), CKR_OK );
+myis( $xs->C_CopyObject(1, 1, $a = [[]], $b = 0), CKR_ARGUMENTS_BAD );
+
+myis( $xs->C_GetObjectSize(9999, 1, $b), CKR_GENERAL_ERROR );
+
+myis( $xs->C_GetAttributeValue(1, 1, $a = []), CKR_OK );
+myis( $xs->C_GetAttributeValue(1, 1, $a = [[]]), CKR_ARGUMENTS_BAD );
+
+myis( $xs->C_SetAttributeValue(1, 1, $a = []), CKR_OK );
+myis( $xs->C_SetAttributeValue(1, 1, $a = [[]]), CKR_ARGUMENTS_BAD );
+
+myis( $xs->C_FindObjectsInit(1, $a = []), CKR_OK );
+myis( $xs->C_FindObjectsInit(1, $a = [[]]), CKR_ARGUMENTS_BAD );
+
 myis( $xs->C_EncryptUpdate(1, $a = '', $b = ' '), CKR_OK );
 myis( $xs->C_EncryptUpdate(1, $a = '', $b = ''), CKR_OK );
 myis( $xs->C_EncryptFinal(1, $a = ' '), CKR_OK );
@@ -195,6 +217,38 @@ myis( $xs->C_DecryptFinal(1, $a = ''), CKR_OK );
 myis( $xs->C_SignRecover(1, $a = '', $b = ' '), CKR_OK );
 myis( $xs->C_SignRecover(1, $a = '', $b = ''), CKR_OK );
 
+$mech = {};
+myis( $xs->C_EncryptInit(1, $mech, 1), CKR_ARGUMENTS_BAD );
+myis( $xs->C_DecryptInit(1, $mech, 1), CKR_ARGUMENTS_BAD );
+myis( $xs->C_DigestInit(1, $mech), CKR_ARGUMENTS_BAD );
+myis( $xs->C_SignInit(1, $mech, 1), CKR_ARGUMENTS_BAD );
+myis( $xs->C_SignRecoverInit(1, $mech, 1), CKR_ARGUMENTS_BAD );
+myis( $xs->C_VerifyInit(1, $mech, 1), CKR_ARGUMENTS_BAD );
+myis( $xs->C_VerifyRecoverInit(1, $mech, 1), CKR_ARGUMENTS_BAD );
+
+myis( $xs->C_GenerateKey(1, $mech, [], $b), CKR_ARGUMENTS_BAD );
+myis( $xs->C_GenerateKeyPair(1, $mech, [], [], $b, $c), CKR_ARGUMENTS_BAD );
+myis( $xs->C_WrapKey(1, $mech, 1, 1, $b), CKR_ARGUMENTS_BAD );
+myis( $xs->C_UnwrapKey(1, $mech, 1, 1, [], $b), CKR_ARGUMENTS_BAD );
+myis( $xs->C_DeriveKey(1, $mech, 1, [], $b), CKR_ARGUMENTS_BAD );
+
+my $mech = Crypt::PKCS11::CK_MECHANISM->new;
+myis( $mech->set_mechanism(CKM_SHA_1), CKR_OK, '$mech->set_mechanism(CKM_SHA_1)' );
+
+myis( $xs->C_SignRecoverInit(1, $mech->toHash, 1), CKR_OK );
+myis( $xs->C_VerifyRecoverInit(1, $mech->toHash, 1), CKR_OK );
+
+myis( $xs->C_GenerateKey(1, $mech->toHash, [], $b), CKR_OK );
+myis( $xs->C_GenerateKey(1, $mech->toHash, [[]], $b), CKR_ARGUMENTS_BAD );
+myis( $xs->C_GenerateKeyPair(1, $mech->toHash, [], [], $b, $c), CKR_OK );
+myis( $xs->C_GenerateKeyPair(1, $mech->toHash, [[]], [], $b, $c), CKR_ARGUMENTS_BAD );
+myis( $xs->C_GenerateKeyPair(1, $mech->toHash, [], [[]], $b, $c), CKR_ARGUMENTS_BAD );
+myis( $xs->C_WrapKey(1, $mech->toHash, 1, 1, $b), CKR_OK );
+myis( $xs->C_UnwrapKey(1, $mech->toHash, 1, 1, [], $b), CKR_OK );
+myis( $xs->C_UnwrapKey(1, $mech->toHash, 1, 1, [[]], $b), CKR_ARGUMENTS_BAD );
+myis( $xs->C_DeriveKey(1, $mech->toHash, 1, [], $b), CKR_OK );
+myis( $xs->C_DeriveKey(1, $mech->toHash, 1, [[]], $b), CKR_ARGUMENTS_BAD );
+
 myis( $xs->C_VerifyRecover(1, $a = '', $b = ' '), CKR_OK );
 myis( $xs->C_VerifyRecover(1, $a = '', $b = ''), CKR_OK );
 
@@ -206,6 +260,11 @@ myis( $xs->C_SignEncryptUpdate(1, $a = '', $b = ' '), CKR_OK );
 myis( $xs->C_SignEncryptUpdate(1, $a = '', $b = ''), CKR_OK );
 myis( $xs->C_DecryptVerifyUpdate(1, $a = '', $b = ' '), CKR_OK );
 myis( $xs->C_DecryptVerifyUpdate(1, $a = '', $b = ''), CKR_OK );
+
+myis( $xs->C_GenerateRandom(9999, $a, 1), CKR_GENERAL_ERROR );
+myis( $xs->C_GetFunctionStatus(1), CKR_OK );
+myis( $xs->C_CancelFunction(1), CKR_OK );
+myis( $xs->C_WaitForSlotEvent(1, $a), CKR_OK );
 
 {
     local $SIG{__WARN__} = sub {};
@@ -1971,6 +2030,15 @@ myok( scalar @a, '@a = $obj->get' );
     myisa_ok( $obj2 = Crypt::PKCS11::CK_SSL3_MASTER_KEY_DERIVE_PARAMS->new, 'Crypt::PKCS11::CK_SSL3_MASTER_KEY_DERIVE_PARAMSPtr', 'Crypt::PKCS11::CK_SSL3_MASTER_KEY_DERIVE_PARAMS->new' );
     myis( $obj2->fromBytes($bytes), CKR_OK, '$obj2->fromBytes($bytes)' );
     myis( $obj2->fromBytes($bytes), CKR_OK, '$obj2->fromBytes($bytes)' );
+
+    myisa_ok( $obj = Crypt::PKCS11::CK_SSL3_MASTER_KEY_DERIVE_PARAMS->new, 'Crypt::PKCS11::CK_SSL3_MASTER_KEY_DERIVE_PARAMSPtr', 'Crypt::PKCS11::CK_SSL3_MASTER_KEY_DERIVE_PARAMS->new' );
+    myis( $obj->set_RandomInfo($randomInfo), CKR_OK, '$obj->set_RandomInfo($randomInfo)' );
+    myis( $obj->get_RandomInfo($a = Crypt::PKCS11::CK_SSL3_RANDOM_DATA->new), CKR_OK, '$obj->get_RandomInfo' );
+    myis( $obj->get_RandomInfo($a), CKR_OK, '$obj->get_RandomInfo' );
+    myis( $obj->set_RandomInfo($randomInfo), CKR_OK, '$obj->set_RandomInfo($randomInfo)' );
+    myisa_ok( $randomInfo2 = Crypt::PKCS11::CK_SSL3_RANDOM_DATA->new, 'Crypt::PKCS11::CK_SSL3_RANDOM_DATAPtr', 'Crypt::PKCS11::CK_SSL3_RANDOM_DATA->new' );
+    myis( $obj->set_RandomInfo($randomInfo2), CKR_OK, '$obj->set_RandomInfo($randomInfo)' );
+
     myisa_ok( $obj = Crypt::PKCS11::CK_SSL3_KEY_MAT_OUT->new, 'Crypt::PKCS11::CK_SSL3_KEY_MAT_OUTPtr', 'Crypt::PKCS11::CK_SSL3_KEY_MAT_OUT->new' );
     myis( $obj->set_hClientMacSecret(1), CKR_OK, '$obj->set_hClientMacSecret(1)' );
     myis( $obj->set_hClientMacSecret(1), CKR_OK, '$obj->set_hClientMacSecret(1)' );
@@ -1999,6 +2067,10 @@ myok( scalar @a, '@a = $obj->get' );
     myis( $obj->set_ulKeySizeInBits(1), CKR_OK, '$obj->set_ulKeySizeInBits(1)' );
     myis( $obj->set_ulIVSizeInBits(1), CKR_OK, '$obj->set_ulIVSizeInBits(1)' );
     myis( $obj->set_ulIVSizeInBits(1), CKR_OK, '$obj->set_ulIVSizeInBits(1)' );
+    myis( $obj->get_pReturnedKeyMaterial($a = Crypt::PKCS11::CK_SSL3_KEY_MAT_OUT->new), CKR_GENERAL_ERROR, '$obj->get_pReturnedKeyMaterial' );
+    myis( $obj->set_ulIVSizeInBits(16), CKR_OK, '$obj->set_ulIVSizeInBits(16)' );
+    myis( $obj->get_pReturnedKeyMaterial($a = Crypt::PKCS11::CK_SSL3_KEY_MAT_OUT->new), CKR_OK, '$obj->get_pReturnedKeyMaterial' );
+    myis( $obj->get_pReturnedKeyMaterial($a), CKR_OK, '$obj->get_pReturnedKeyMaterial' );
     myis( $obj->set_bIsExport(1), CKR_OK, '$obj->set_bIsExport(1)' );
     myis( $obj->set_bIsExport(1), CKR_OK, '$obj->set_bIsExport(1)' );
     myis( $obj->set_bIsExport(0), CKR_OK, '$obj->set_bIsExport(0)' );
@@ -2009,6 +2081,22 @@ myok( scalar @a, '@a = $obj->get' );
     myisa_ok( $obj2 = Crypt::PKCS11::CK_SSL3_KEY_MAT_PARAMS->new, 'Crypt::PKCS11::CK_SSL3_KEY_MAT_PARAMSPtr', 'Crypt::PKCS11::CK_SSL3_KEY_MAT_PARAMS->new' );
     myis( $obj2->fromBytes($bytes), CKR_FUNCTION_NOT_SUPPORTED, '$obj2->fromBytes($bytes)' );
     myis( $obj2->fromBytes($bytes), CKR_FUNCTION_NOT_SUPPORTED, '$obj2->fromBytes($bytes)' );
+
+    myisa_ok( $obj = Crypt::PKCS11::CK_SSL3_KEY_MAT_PARAMS->new, 'Crypt::PKCS11::CK_SSL3_KEY_MAT_PARAMSPtr', 'Crypt::PKCS11::CK_SSL3_KEY_MAT_PARAMS->new' );
+    myis( $obj->set_RandomInfo($randomInfo), CKR_OK, '$obj->set_RandomInfo($randomInfo)' );
+    myis( $obj->get_RandomInfo($a = Crypt::PKCS11::CK_SSL3_RANDOM_DATA->new), CKR_OK, '$obj->get_RandomInfo' );
+    myis( $obj->get_RandomInfo($a), CKR_OK, '$obj->get_RandomInfo' );
+    myis( $obj->set_RandomInfo($randomInfo), CKR_OK, '$obj->set_RandomInfo($randomInfo)' );
+    myisa_ok( $randomInfo2 = Crypt::PKCS11::CK_SSL3_RANDOM_DATA->new, 'Crypt::PKCS11::CK_SSL3_RANDOM_DATAPtr', 'Crypt::PKCS11::CK_SSL3_RANDOM_DATA->new' );
+    myis( $obj->set_RandomInfo($randomInfo2), CKR_OK, '$obj->set_RandomInfo($randomInfo)' );
+
+    myisa_ok( $obj = Crypt::PKCS11::CK_TLS_PRF_PARAMS->new, 'Crypt::PKCS11::CK_TLS_PRF_PARAMSPtr', 'Crypt::PKCS11::CK_TLS_PRF_PARAMS->new' );
+    myis( $obj->get_pOutput($a = ''), CKR_OK );
+    myis( $obj->get_pOutput($a = undef), CKR_FUNCTION_FAILED );
+    myis( $obj->set_pOutput(1), CKR_OK, '$obj->set_pOutput(1)' );
+    myis( $obj->get_pOutput($a = undef), CKR_OK );
+    myis( $obj->get_pOutput($a = ''), CKR_OK );
+
     myisa_ok( $obj = Crypt::PKCS11::CK_TLS_PRF_PARAMS->new, 'Crypt::PKCS11::CK_TLS_PRF_PARAMSPtr', 'Crypt::PKCS11::CK_TLS_PRF_PARAMS->new' );
     myis( $obj->set_pSeed('1'), CKR_OK, '$obj->set_pSeed("1")' );
     myis( $obj->set_pSeed('1'), CKR_OK, '$obj->set_pSeed("1")' );
@@ -2022,6 +2110,7 @@ myok( scalar @a, '@a = $obj->get' );
     myis( $obj->set_pOutput(1), CKR_OK, '$obj->set_pOutput(1)' );
     myis( $obj->set_pOutput(undef), CKR_OK, '$obj->set_pOutput(undef)' );
     myis( $obj->set_pOutput(1), CKR_OK, '$obj->set_pOutput(1)' );
+
     myok( $bytes = $obj->toBytes, '$obj->toBytes' );
     myisa_ok( $obj2 = Crypt::PKCS11::CK_TLS_PRF_PARAMS->new, 'Crypt::PKCS11::CK_TLS_PRF_PARAMSPtr', 'Crypt::PKCS11::CK_TLS_PRF_PARAMS->new' );
     myis( $obj2->fromBytes($bytes), CKR_OK, '$obj2->fromBytes($bytes)' );
@@ -2053,6 +2142,22 @@ myok( scalar @a, '@a = $obj->get' );
     myisa_ok( $obj2 = Crypt::PKCS11::CK_WTLS_MASTER_KEY_DERIVE_PARAMS->new, 'Crypt::PKCS11::CK_WTLS_MASTER_KEY_DERIVE_PARAMSPtr', 'Crypt::PKCS11::CK_WTLS_MASTER_KEY_DERIVE_PARAMS->new' );
     myis( $obj2->fromBytes($bytes), CKR_OK, '$obj2->fromBytes($bytes)' );
     myis( $obj2->fromBytes($bytes), CKR_OK, '$obj2->fromBytes($bytes)' );
+
+    myisa_ok( $obj = Crypt::PKCS11::CK_WTLS_MASTER_KEY_DERIVE_PARAMS->new, 'Crypt::PKCS11::CK_WTLS_MASTER_KEY_DERIVE_PARAMSPtr', 'Crypt::PKCS11::CK_WTLS_MASTER_KEY_DERIVE_PARAMS->new' );
+    myis( $obj->set_RandomInfo($randomInfo), CKR_OK, '$obj->set_RandomInfo($randomInfo)' );
+    myis( $obj->get_RandomInfo($a = Crypt::PKCS11::CK_WTLS_RANDOM_DATA->new), CKR_OK, '$obj->get_RandomInfo' );
+    myis( $obj->get_RandomInfo($a), CKR_OK, '$obj->get_RandomInfo' );
+    myis( $obj->set_RandomInfo($randomInfo), CKR_OK, '$obj->set_RandomInfo($randomInfo)' );
+    myisa_ok( $randomInfo2 = Crypt::PKCS11::CK_WTLS_RANDOM_DATA->new, 'Crypt::PKCS11::CK_WTLS_RANDOM_DATAPtr', 'Crypt::PKCS11::CK_WTLS_RANDOM_DATA->new' );
+    myis( $obj->set_RandomInfo($randomInfo2), CKR_OK, '$obj->set_RandomInfo($randomInfo)' );
+
+    myisa_ok( $obj = Crypt::PKCS11::CK_WTLS_PRF_PARAMS->new, 'Crypt::PKCS11::CK_WTLS_PRF_PARAMSPtr', 'Crypt::PKCS11::CK_WTLS_PRF_PARAMS->new' );
+    myis( $obj->get_pOutput($a = ''), CKR_OK );
+    myis( $obj->get_pOutput($a = undef), CKR_FUNCTION_FAILED );
+    myis( $obj->set_pOutput(1), CKR_OK, '$obj->set_pOutput(1)' );
+    myis( $obj->get_pOutput($a = undef), CKR_OK );
+    myis( $obj->get_pOutput($a = ''), CKR_OK );
+
     myisa_ok( $obj = Crypt::PKCS11::CK_WTLS_PRF_PARAMS->new, 'Crypt::PKCS11::CK_WTLS_PRF_PARAMSPtr', 'Crypt::PKCS11::CK_WTLS_PRF_PARAMS->new' );
     myis( $obj->set_DigestMechanism(1), CKR_OK, '$obj->set_DigestMechanism(1)' );
     myis( $obj->set_DigestMechanism(1), CKR_OK, '$obj->set_DigestMechanism(1)' );
@@ -2094,6 +2199,10 @@ myok( scalar @a, '@a = $obj->get' );
     myis( $obj->set_ulKeySizeInBits(1), CKR_OK, '$obj->set_ulKeySizeInBits(1)' );
     myis( $obj->set_ulIVSizeInBits(1), CKR_OK, '$obj->set_ulIVSizeInBits(1)' );
     myis( $obj->set_ulIVSizeInBits(1), CKR_OK, '$obj->set_ulIVSizeInBits(1)' );
+    myis( $obj->get_pReturnedKeyMaterial($a = Crypt::PKCS11::CK_WTLS_KEY_MAT_OUT->new), CKR_GENERAL_ERROR, '$obj->get_pReturnedKeyMaterial' );
+    myis( $obj->set_ulIVSizeInBits(16), CKR_OK, '$obj->set_ulIVSizeInBits(16)' );
+    myis( $obj->get_pReturnedKeyMaterial($a = Crypt::PKCS11::CK_WTLS_KEY_MAT_OUT->new), CKR_OK, '$obj->get_pReturnedKeyMaterial' );
+    myis( $obj->get_pReturnedKeyMaterial($a), CKR_OK, '$obj->get_pReturnedKeyMaterial' );
     myis( $obj->set_ulSequenceNumber(1), CKR_OK, '$obj->set_ulSequenceNumber(1)' );
     myis( $obj->set_ulSequenceNumber(1), CKR_OK, '$obj->set_ulSequenceNumber(1)' );
     myis( $obj->set_bIsExport(1), CKR_OK, '$obj->set_bIsExport(1)' );
@@ -2106,17 +2215,32 @@ myok( scalar @a, '@a = $obj->get' );
     myisa_ok( $obj2 = Crypt::PKCS11::CK_WTLS_KEY_MAT_PARAMS->new, 'Crypt::PKCS11::CK_WTLS_KEY_MAT_PARAMSPtr', 'Crypt::PKCS11::CK_WTLS_KEY_MAT_PARAMS->new' );
     myis( $obj2->fromBytes($bytes), CKR_FUNCTION_NOT_SUPPORTED, '$obj2->fromBytes($bytes)' );
     myis( $obj2->fromBytes($bytes), CKR_FUNCTION_NOT_SUPPORTED, '$obj2->fromBytes($bytes)' );
+
+    myisa_ok( $obj = Crypt::PKCS11::CK_WTLS_KEY_MAT_PARAMS->new, 'Crypt::PKCS11::CK_WTLS_KEY_MAT_PARAMSPtr', 'Crypt::PKCS11::CK_WTLS_KEY_MAT_PARAMS->new' );
+    myis( $obj->set_RandomInfo($randomInfo), CKR_OK, '$obj->set_RandomInfo($randomInfo)' );
+    myis( $obj->get_RandomInfo($a = Crypt::PKCS11::CK_WTLS_RANDOM_DATA->new), CKR_OK, '$obj->get_RandomInfo' );
+    myis( $obj->get_RandomInfo($a), CKR_OK, '$obj->get_RandomInfo' );
+    myis( $obj->set_RandomInfo($randomInfo), CKR_OK, '$obj->set_RandomInfo($randomInfo)' );
+    myisa_ok( $randomInfo2 = Crypt::PKCS11::CK_WTLS_RANDOM_DATA->new, 'Crypt::PKCS11::CK_WTLS_RANDOM_DATAPtr', 'Crypt::PKCS11::CK_WTLS_RANDOM_DATA->new' );
+    myis( $obj->set_RandomInfo($randomInfo2), CKR_OK, '$obj->set_RandomInfo($randomInfo)' );
+
     myisa_ok( $obj = Crypt::PKCS11::CK_CMS_SIG_PARAMS->new, 'Crypt::PKCS11::CK_CMS_SIG_PARAMSPtr', 'Crypt::PKCS11::CK_CMS_SIG_PARAMS->new' );
     myis( $obj->set_certificateHandle(1), CKR_OK, '$obj->set_certificateHandle(1)' );
     myis( $obj->set_certificateHandle(1), CKR_OK, '$obj->set_certificateHandle(1)' );
+    $mech = Crypt::PKCS11::CK_MECHANISM->new;
+    myis( $mech->set_pParameter(' '), CKR_OK );
     myis( $obj->set_pSigningMechanism(Crypt::PKCS11::CK_MECHANISM->new), CKR_OK, '$obj->set_pSigningMechanism(Crypt::PKCS11::CK_MECHANISM->new)' );
     myis( $obj->set_pSigningMechanism(Crypt::PKCS11::CK_MECHANISM->new), CKR_OK, '$obj->set_pSigningMechanism(Crypt::PKCS11::CK_MECHANISM->new)' );
-    myis( $obj->set_pSigningMechanism(Crypt::PKCS11::CK_MECHANISM->new), CKR_OK, '$obj->set_pSigningMechanism(Crypt::PKCS11::CK_MECHANISM->new)' );
-    myis( $obj->set_pSigningMechanism(Crypt::PKCS11::CK_MECHANISM->new), CKR_OK, '$obj->set_pSigningMechanism(Crypt::PKCS11::CK_MECHANISM->new)' );
+    myis( $obj->set_pSigningMechanism($mech), CKR_OK, '$obj->set_pSigningMechanism($mech)' );
+    myis( $obj->set_pSigningMechanism($mech), CKR_OK, '$obj->set_pSigningMechanism($mech)' );
+    myis( $obj->get_pSigningMechanism($a = Crypt::PKCS11::CK_MECHANISM->new), CKR_OK, '$obj->get_pSigningMechanism' );
+    myis( $obj->get_pSigningMechanism($a), CKR_OK, '$obj->get_pSigningMechanism' );
     myis( $obj->set_pDigestMechanism(Crypt::PKCS11::CK_MECHANISM->new), CKR_OK, '$obj->set_pDigestMechanism(Crypt::PKCS11::CK_MECHANISM->new)' );
     myis( $obj->set_pDigestMechanism(Crypt::PKCS11::CK_MECHANISM->new), CKR_OK, '$obj->set_pDigestMechanism(Crypt::PKCS11::CK_MECHANISM->new)' );
-    myis( $obj->set_pDigestMechanism(Crypt::PKCS11::CK_MECHANISM->new), CKR_OK, '$obj->set_pDigestMechanism(Crypt::PKCS11::CK_MECHANISM->new)' );
-    myis( $obj->set_pDigestMechanism(Crypt::PKCS11::CK_MECHANISM->new), CKR_OK, '$obj->set_pDigestMechanism(Crypt::PKCS11::CK_MECHANISM->new)' );
+    myis( $obj->set_pDigestMechanism($mech), CKR_OK, '$obj->set_pDigestMechanism($mech)' );
+    myis( $obj->set_pDigestMechanism($mech), CKR_OK, '$obj->set_pDigestMechanism($mech)' );
+    myis( $obj->get_pDigestMechanism($a = Crypt::PKCS11::CK_MECHANISM->new), CKR_OK, '$obj->get_pDigestMechanism' );
+    myis( $obj->get_pDigestMechanism($a), CKR_OK, '$obj->get_pDigestMechanism' );
     myis( $obj->set_pContentType('1'), CKR_OK, '$obj->set_pContentType("1")' );
     myis( $obj->set_pContentType('1'), CKR_OK, '$obj->set_pContentType("1")' );
     myis( $obj->set_pContentType(undef), CKR_OK, '$obj->set_pContentType(undef)' );
@@ -2142,6 +2266,14 @@ myok( scalar @a, '@a = $obj->get' );
     myisa_ok( $obj2 = Crypt::PKCS11::CK_KEY_DERIVATION_STRING_DATA->new, 'Crypt::PKCS11::CK_KEY_DERIVATION_STRING_DATAPtr', 'Crypt::PKCS11::CK_KEY_DERIVATION_STRING_DATA->new' );
     myis( $obj2->fromBytes($bytes), CKR_OK, '$obj2->fromBytes($bytes)' );
     myis( $obj2->fromBytes($bytes), CKR_OK, '$obj2->fromBytes($bytes)' );
+
+    myisa_ok( $obj = Crypt::PKCS11::CK_PKCS5_PBKD2_PARAMS->new, 'Crypt::PKCS11::CK_PKCS5_PBKD2_PARAMSPtr', 'Crypt::PKCS11::CK_PKCS5_PBKD2_PARAMS->new' );
+    myis( $obj->get_pPassword($a = ''), CKR_OK );
+    myis( $obj->get_pPassword($a = undef), CKR_FUNCTION_FAILED );
+    myis( $obj->set_pPassword(1), CKR_OK, '$obj->set_pPassword(1)' );
+    myis( $obj->get_pPassword($a = undef), CKR_OK );
+    myis( $obj->get_pPassword($a = ''), CKR_OK );
+
     myisa_ok( $obj = Crypt::PKCS11::CK_PKCS5_PBKD2_PARAMS->new, 'Crypt::PKCS11::CK_PKCS5_PBKD2_PARAMSPtr', 'Crypt::PKCS11::CK_PKCS5_PBKD2_PARAMS->new' );
     myis( $obj->set_saltSource(1), CKR_OK, '$obj->set_saltSource(1)' );
     myis( $obj->set_saltSource(1), CKR_OK, '$obj->set_saltSource(1)' );
@@ -2180,6 +2312,7 @@ myok( scalar @a, '@a = $obj->get' );
     myisa_ok( $obj = Crypt::PKCS11::CK_OTP_PARAMS->new, 'Crypt::PKCS11::CK_OTP_PARAMSPtr', 'Crypt::PKCS11::CK_OTP_PARAMS->new' );
     myis( $obj->set_pParams(\@a), CKR_OK, '$obj->set_pParams(\@a)' );
     myis( $obj->set_pParams(\@a), CKR_OK, '$obj->set_pParams(\@a)' );
+    myis( $obj->set_pParams([Crypt::PKCS11::CK_OTP_PARAMS->new]), CKR_ARGUMENTS_BAD, '$obj->set_pParams' );
     myis( $obj->get_pParams($b = []), CKR_OK, '$obj->get_pParams($b = [])' );
     $b = undef;
     myis( $obj->set_ulCount(1), CKR_FUNCTION_NOT_SUPPORTED, '$obj->set_ulCount(1)' );
@@ -2191,6 +2324,7 @@ myok( scalar @a, '@a = $obj->get' );
     myisa_ok( $obj = Crypt::PKCS11::CK_OTP_SIGNATURE_INFO->new, 'Crypt::PKCS11::CK_OTP_SIGNATURE_INFOPtr', 'Crypt::PKCS11::CK_OTP_SIGNATURE_INFO->new' );
     myis( $obj->set_pParams(\@a), CKR_OK, '$obj->set_pParams(\@a)' );
     myis( $obj->set_pParams(\@a), CKR_OK, '$obj->set_pParams(\@a)' );
+    myis( $obj->set_pParams([Crypt::PKCS11::CK_OTP_PARAMS->new]), CKR_ARGUMENTS_BAD, '$obj->set_pParams' );
     myis( $obj->get_pParams($b = []), CKR_OK, '$obj->get_pParams($b = [])' );
     $b = undef;
     myis( $obj->set_ulCount(1), CKR_FUNCTION_NOT_SUPPORTED, '$obj->set_ulCount(1)' );
@@ -2200,10 +2334,14 @@ myok( scalar @a, '@a = $obj->get' );
     myis( $obj2->fromBytes($bytes), CKR_OK, '$obj2->fromBytes($bytes)' );
     myis( $obj2->fromBytes($bytes), CKR_OK, '$obj2->fromBytes($bytes)' );
     myisa_ok( $obj = Crypt::PKCS11::CK_KIP_PARAMS->new, 'Crypt::PKCS11::CK_KIP_PARAMSPtr', 'Crypt::PKCS11::CK_KIP_PARAMS->new' );
+    $mech = Crypt::PKCS11::CK_MECHANISM->new;
+    myis( $mech->set_pParameter(' '), CKR_OK );
     myis( $obj->set_pMechanism(Crypt::PKCS11::CK_MECHANISM->new), CKR_OK, '$obj->set_pMechanism(Crypt::PKCS11::CK_MECHANISM->new)' );
     myis( $obj->set_pMechanism(Crypt::PKCS11::CK_MECHANISM->new), CKR_OK, '$obj->set_pMechanism(Crypt::PKCS11::CK_MECHANISM->new)' );
-    myis( $obj->set_pMechanism(Crypt::PKCS11::CK_MECHANISM->new), CKR_OK, '$obj->set_pMechanism(Crypt::PKCS11::CK_MECHANISM->new)' );
-    myis( $obj->set_pMechanism(Crypt::PKCS11::CK_MECHANISM->new), CKR_OK, '$obj->set_pMechanism(Crypt::PKCS11::CK_MECHANISM->new)' );
+    myis( $obj->set_pMechanism($mech), CKR_OK, '$obj->set_pMechanism($mech)' );
+    myis( $obj->set_pMechanism($mech), CKR_OK, '$obj->set_pMechanism($mech)' );
+    myis( $obj->get_pMechanism($a = Crypt::PKCS11::CK_MECHANISM->new), CKR_OK, '$obj->set_pMechanism' );
+    myis( $obj->get_pMechanism($a), CKR_OK, '$obj->set_pMechanism' );
     myis( $obj->set_hKey(1), CKR_OK, '$obj->set_hKey(1)' );
     myis( $obj->set_hKey(1), CKR_OK, '$obj->set_hKey(1)' );
     myis( $obj->set_pSeed('1'), CKR_OK, '$obj->set_pSeed("1")' );

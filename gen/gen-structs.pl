@@ -149,6 +149,9 @@ my %DD = (
     CK_PBE_PARAMS => {
         pInitVector => \&CK_PBE_PARAMS_pInitVector_DESTROY,
     },
+    CK_WTLS_MASTER_KEY_DERIVE_PARAMS => {
+        pVersion => \&CK_WTLS_MASTER_KEY_DERIVE_PARAMS_pVersion_DESTROY,
+    },
 );
 my %H = (
     CK_BYTE => undef,
@@ -247,6 +250,16 @@ print XS '/*
 
 #include "crypt_pkcs11_struct.h"
 
+MODULE = Crypt::PKCS11::STRUCT_XS  PACKAGE = Crypt::PKCS11::STRUCT_XS  PREFIX = crypt_pkcs11_struct_xs_
+
+#ifdef TEST_DEVEL_COVER
+
+int
+crypt_pkcs11_struct_xs_test_devel_cover()
+PROTOTYPE: DISABLE
+
+#endif
+
 ';
 open(C, '>crypt_pkcs11_struct.c') || die;
 print C '/*
@@ -292,6 +305,37 @@ static void* __calloc(size_t nmemb, size_t size) {
 }
 #define calloc(a,b) __calloc(a,b)
 #define __croak(x) return 0
+/* uncoverable begin */
+int crypt_pkcs11_struct_xs_test_devel_cover(void) {
+    {
+        Crypt__PKCS11__CK_SSL3_KEY_MAT_OUT* object = calloc(1, sizeof(Crypt__PKCS11__CK_SSL3_KEY_MAT_OUT));
+        if (!object) { return __LINE__; };
+        if (!(object->private.pIVClient = calloc(1, 1))) { return __LINE__; }
+        if (!(object->private.pIVServer = calloc(1, 1))) { return __LINE__; }
+        crypt_pkcs11_ck_ssl3_key_mat_out_DESTROY(object);
+    }
+    {
+        Crypt__PKCS11__CK_SSL3_KEY_MAT_PARAMS* object = calloc(1, sizeof(Crypt__PKCS11__CK_SSL3_KEY_MAT_PARAMS));
+        if (!object) { return __LINE__; };
+        if (!(object->pReturnedKeyMaterial.pIVClient = calloc(1, 1))) { return __LINE__; }
+        if (!(object->pReturnedKeyMaterial.pIVServer = calloc(1, 1))) { return __LINE__; }
+        crypt_pkcs11_ck_ssl3_key_mat_params_DESTROY(object);
+    }
+    {
+        Crypt__PKCS11__CK_WTLS_KEY_MAT_OUT* object = calloc(1, sizeof(Crypt__PKCS11__CK_WTLS_KEY_MAT_OUT));
+        if (!object) { return __LINE__; };
+        if (!(object->private.pIV = calloc(1, 1))) { return __LINE__; }
+        crypt_pkcs11_ck_wtls_key_mat_out_DESTROY(object);
+    }
+    {
+        Crypt__PKCS11__CK_WTLS_KEY_MAT_PARAMS* object = calloc(1, sizeof(Crypt__PKCS11__CK_WTLS_KEY_MAT_PARAMS));
+        if (!object) { return __LINE__; };
+        if (!(object->pReturnedKeyMaterial.pIV = calloc(1, 1))) { return __LINE__; }
+        crypt_pkcs11_ck_wtls_key_mat_params_DESTROY(object);
+    }
+    return 0;
+}
+/* uncoverable end */
 #else
 #define __croak(x) croak(x)
 #endif
@@ -335,6 +379,10 @@ print H '/*
 #include "ppport.h"
 
 #include "cryptoki.h"
+
+#ifdef TEST_DEVEL_COVER
+int crypt_pkcs11_struct_xs_test_devel_cover(void);
+#endif
 
 ';
 open(TYPEMAP, '>typemap.struct') || die;
@@ -955,11 +1003,13 @@ sub ck_byte_ptr {
     }
 
     SvGETMAGIC(sv);
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (!object->'.$type->{outLen}.') {
             return CKR_FUNCTION_FAILED;
         }
 
+        /* uncoverable branch 1 */
         if (object->private.'.$type->{name}.') {
             free(object->private.'.$type->{name}.');
         }
@@ -972,6 +1022,7 @@ sub ck_byte_ptr {
         return CKR_OK;
     }
 
+    /* uncoverable branch 3 */
     if (object->private.'.$type->{name}.' && object->'.$type->{outLen}.') {
         sv_setpvn(sv, object->private.'.$type->{name}.', object->'.$type->{outLen}.');
     }
@@ -1173,6 +1224,7 @@ sub ck_char_ptr {
             return CKR_FUNCTION_FAILED;
         }
 
+        /* uncoverable branch 1 */
         if (object->private.'.$type->{name}.') {
             free(object->private.'.$type->{name}.');
         }
@@ -1185,6 +1237,7 @@ sub ck_char_ptr {
         return CKR_OK;
     }
 
+    /* uncoverable branch 3 */
     if (object->private.'.$type->{name}.' && object->'.$type->{outLen}.') {
         sv_setpvn(sv, object->private.'.$type->{name}.', object->'.$type->{outLen}.');
         sv_utf8_upgrade(sv);
@@ -1438,7 +1491,8 @@ sub ck_version_ptr_fromBytes {
 ';
     }
     else {
-        print C '    if (object->private.'.$type->{name}.') {
+        print C '    /* uncoverable branch 1 */
+    if (object->private.'.$type->{name}.') {
         memcpy(&(object->'.$type->{name}.'), object->private.'.$type->{name}.', sizeof(CK_VERSION));
     }
     object->private.'.$type->{name}.' = &(object->'.$type->{name}.');
@@ -1575,7 +1629,8 @@ sub ck_mechanism_ptr_fromBytes {
 ';
     }
     else {
-        print C '    if (object->private.'.$type->{name}.') {
+        print C '    /* uncoverable branch 1 */
+    if (object->private.'.$type->{name}.') {
         memcpy(&(object->'.$type->{name}.'), object->private.'.$type->{name}.', sizeof(CK_MECHANISM));
         if (object->'.$type->{name}.'.pParameter) {
             CK_VOID_PTR pParameter = calloc(object->'.$type->{name}.'.ulParameterLen, 1);
@@ -1785,9 +1840,10 @@ sub ck_ssl3_random_data {
         /* uncoverable branch 1 */
         && !(pServerRandom = calloc(object->private.'.$type->{name}.'.ulServerRandomLen, sizeof(CK_BYTE))))
     {
+        /* uncoverable begin */
         free(pClientRandom);
-        /* uncoverable block 0 */
         return CKR_HOST_MEMORY;
+        /* uncoverable end */
     }
 
     if (pClientRandom) {
@@ -1834,9 +1890,10 @@ CK_RV crypt_pkcs11_'.$lc_struct.'_set_'.$type->{name}.'('.$c_struct.'* object, C
         /* uncoverable branch 1 */
         && !(pServerRandom = calloc(sv->private.ulServerRandomLen, sizeof(CK_BYTE))))
     {
+        /* uncoverable begin */
         free(pClientRandom);
-        /* uncoverable block 0 */
         return CKR_HOST_MEMORY;
+        /* uncoverable end */
     }
 
     if (pClientRandom) {
@@ -2044,15 +2101,20 @@ sub ck_ssl3_key_mat_out_ptr {
         /* uncoverable branch 1 */
         && !(pIVServer = calloc(object->private.ulIVSizeInBits / 8, sizeof(CK_BYTE))))
     {
+        /* uncoverable begin */
         free(pIVClient);
-        /* uncoverable block 0 */
         return CKR_HOST_MEMORY;
+        /* uncoverable end */
     }
 
-    if (pIVClient) {
+    /* uncoverable branch 2 */
+    if (pIVClient && object->'.$type->{name}.'.pIVClient) {
+        /* uncoverable block 0 */
         memcpy(pIVClient, object->'.$type->{name}.'.pIVClient, (object->private.ulIVSizeInBits / 8) * sizeof(CK_BYTE));
     }
-    if (pIVServer) {
+    /* uncoverable branch 2 */
+    if (pIVServer && object->'.$type->{name}.'.pIVServer) {
+        /* uncoverable block 0 */
         memcpy(pIVServer, object->'.$type->{name}.'.pIVServer, (object->private.ulIVSizeInBits / 8) * sizeof(CK_BYTE));
     }
 
@@ -2068,6 +2130,7 @@ sub ck_ssl3_key_mat_out_ptr {
     sv->private.hClientKey = object->'.$type->{name}.'.hClientKey;
     sv->private.hServerKey = object->'.$type->{name}.'.hServerKey;
     sv->private.pIVClient = pIVClient;
+
     if (pIVClient) {
         sv->ulIVClient = (object->private.ulIVSizeInBits / 8) * sizeof(CK_BYTE);
     }
@@ -2174,17 +2237,29 @@ CK_RV crypt_pkcs11_'.$lc_struct.'_set_'.$type->{name}.'('.$c_struct.'* object, S
 ';
 }
 
+sub CK_WTLS_MASTER_KEY_DERIVE_PARAMS_pVersion_DESTROY {
+    my ($struct, $c_struct, $lc_struct, $type) = @_;
+
+    print C '        /* uncoverable branch 1 */
+        if (object->private.'.$type->{name}.') {
+            free(object->private.'.$type->{name}.');
+        }
+';
+}
+
 sub CK_WTLS_MASTER_KEY_DERIVE_PARAMS_pVersion_fromBytes {
     my ($what, $struct, $c_struct, $lc_struct, $type) = @_;
 
     unless ($what) {
-    print C '    if (object->private.'.$type->{name}.') {
+    print C '    /* uncoverable branch 1 */
+    if (object->private.'.$type->{name}.') {
         free(object->private.'.$type->{name}.');
     }
 ';
     }
     else {
-    print C '    if (object->private.'.$type->{name}.') {
+    print C '    /* uncoverable branch 1 */
+    if (object->private.'.$type->{name}.') {
         CK_BYTE_PTR '.$type->{name}.' = calloc(1, sizeof(CK_BYTE));
         /* uncoverable branch 0 */
         if (!'.$type->{name}.') {
@@ -2223,9 +2298,10 @@ sub ck_wtls_random_data {
         /* uncoverable branch 1 */
         && !(pServerRandom = calloc(object->private.'.$type->{name}.'.ulServerRandomLen, sizeof(CK_BYTE))))
     {
+        /* uncoverable begin */
         free(pClientRandom);
-        /* uncoverable block 0 */
         return CKR_HOST_MEMORY;
+        /* uncoverable end */
     }
 
     if (pClientRandom) {
@@ -2272,9 +2348,10 @@ CK_RV crypt_pkcs11_'.$lc_struct.'_set_'.$type->{name}.'('.$c_struct.'* object, C
         /* uncoverable branch 1 */
         && !(pServerRandom = calloc(sv->private.ulServerRandomLen, sizeof(CK_BYTE))))
     {
+        /* uncoverable begin */
         free(pClientRandom);
-        /* uncoverable block 0 */
         return CKR_HOST_MEMORY;
+        /* uncoverable end */
     }
 
     if (pClientRandom) {
@@ -2450,7 +2527,9 @@ sub ck_wtls_key_mat_out_ptr {
         return CKR_HOST_MEMORY;
     }
 
-    if (pIV) {
+    /* uncoverable branch 2 */
+    if (pIV && object->'.$type->{name}.'.pIV) {
+        /* uncoverable block 0 */
         memcpy(pIV, object->'.$type->{name}.'.pIV, (object->private.ulIVSizeInBits / 8) * sizeof(CK_BYTE));
     }
 
@@ -2648,12 +2727,14 @@ sub ck_otp_param_ptr {
         }
 
         param->private.type = object->private.'.$type->{name}.'[ulCount].type;
+        /* uncoverable branch 1 */
         if (object->private.'.$type->{name}.'[ulCount].pValue) {
             /* uncoverable branch 1 */
             if (!(param->private.pValue = calloc(1, object->private.'.$type->{name}.'[ulCount].ulValueLen))) {
+                /* uncoverable begin */
                 free(param);
-                /* uncoverable block 0 */
                 return CKR_HOST_MEMORY;
+                /* uncoverable end */
             }
             memcpy(param->private.pValue, object->private.'.$type->{name}.'[ulCount].pValue, object->private.'.$type->{name}.'[ulCount].ulValueLen);
             param->private.ulValueLen = object->private.'.$type->{name}.'[ulCount].ulValueLen;
@@ -2687,7 +2768,9 @@ CK_RV crypt_pkcs11_'.$lc_struct.'_set_'.$type->{name}.'('.$c_struct.'* object, A
     for (key = 0; key < av_len(sv) + 1; key++) {
         item = av_fetch(sv, key, 0);
 
+        /* uncoverable begin */
         if (!item || !*item || !SvROK(*item)
+        /* uncoverable end */
             || !sv_derived_from(*item, "Crypt::PKCS11::CK_OTP_PARAMPtr"))
         {
             return CKR_ARGUMENTS_BAD;
@@ -2705,6 +2788,7 @@ CK_RV crypt_pkcs11_'.$lc_struct.'_set_'.$type->{name}.'('.$c_struct.'* object, A
     for (key = 0; key < av_len(sv) + 1; key++) {
         item = av_fetch(sv, key, 0);
 
+        /* uncoverable begin */
         if (!item || !*item || !SvROK(*item)
             || !sv_derived_from(*item, "Crypt::PKCS11::CK_OTP_PARAMPtr"))
         {
@@ -2717,8 +2801,10 @@ CK_RV crypt_pkcs11_'.$lc_struct.'_set_'.$type->{name}.'('.$c_struct.'* object, A
             rv = CKR_GENERAL_ERROR;
             break;
         }
+        /* uncoverable end */
 
         params[key].type = param->private.type;
+        /* uncoverable branch 1 */
         if (param->private.pValue) {
             /* uncoverable branch 1 */
             if (!(params[key].pValue = calloc(1, param->private.ulValueLen))) {
@@ -2733,6 +2819,7 @@ CK_RV crypt_pkcs11_'.$lc_struct.'_set_'.$type->{name}.'('.$c_struct.'* object, A
         }
     }
 
+    /* uncoverable begin */
     if (rv != CKR_OK) {
         for (ulCount = 0; ulCount < paramCount; ulCount++) {
             if (params[ulCount].pValue) {
@@ -2742,9 +2829,11 @@ CK_RV crypt_pkcs11_'.$lc_struct.'_set_'.$type->{name}.'('.$c_struct.'* object, A
         free(params);
         return rv;
     }
+    /* uncoverable end */
 
     if (object->private.'.$type->{name}.') {
         for (ulCount = 0; ulCount < object->private.ulCount; ulCount++) {
+            /* uncoverable branch 1 */
             if (object->private.'.$type->{name}.'[ulCount].pValue) {
                 free(object->private.'.$type->{name}.'[ulCount].pValue);
             }
@@ -2767,6 +2856,7 @@ sub ck_otp_param_ptr_fromBytes {
     print C '    if (object->private.'.$type->{name}.') {
         CK_ULONG ulCount;
         for (ulCount = 0; ulCount < object->private.ulCount; ulCount++) {
+            /* uncoverable branch 1 */
             if (object->private.'.$type->{name}.'[ulCount].pValue) {
                 free(object->private.'.$type->{name}.'[ulCount].pValue);
             }
@@ -2788,6 +2878,7 @@ sub ck_otp_param_ptr_fromBytes {
 
         for (ulCount = 0; ulCount < object->private.ulCount; ulCount++) {
             params[ulCount].type = object->private.'.$type->{name}.'[ulCount].type;
+            /* uncoverable branch 1 */
             if (object->private.'.$type->{name}.'[ulCount].pValue) {
                 /* uncoverable branch 1 */
                 if (!(params[ulCount].pValue = calloc(1, object->private.'.$type->{name}.'[ulCount].ulValueLen))) {
@@ -2809,6 +2900,7 @@ sub ck_otp_param_ptr_DESTROY {
     print C '        if (object->private.'.$type->{name}.') {
             CK_ULONG ulCount;
             for (ulCount = 0; ulCount < object->private.ulCount; ulCount++) {
+                /* uncoverable branch 1 */
                 if (object->private.'.$type->{name}.'[ulCount].pValue) {
                     free(object->private.'.$type->{name}.'[ulCount].pValue);
                 }

@@ -28,6 +28,16 @@
 
 #include "crypt_pkcs11_struct.h"
 
+MODULE = Crypt::PKCS11::STRUCT_XS  PACKAGE = Crypt::PKCS11::STRUCT_XS  PREFIX = crypt_pkcs11_struct_xs_
+
+#ifdef TEST_DEVEL_COVER
+
+int
+crypt_pkcs11_struct_xs_test_devel_cover()
+PROTOTYPE: DISABLE
+
+#endif
+
 MODULE = Crypt::PKCS11::CK_VERSION  PACKAGE = Crypt::PKCS11::CK_VERSION  PREFIX = crypt_pkcs11_ck_version_
 
 PROTOTYPES: ENABLE

@@ -34,6 +34,10 @@
 
 #include "cryptoki.h"
 
+#ifdef TEST_DEVEL_COVER
+int crypt_pkcs11_struct_xs_test_devel_cover(void);
+#endif
+
 typedef struct Crypt__PKCS11__CK_VERSION {
     CK_VERSION private;
 } Crypt__PKCS11__CK_VERSION;
