@@ -3064,6 +3064,7 @@ CK_RV crypt_pkcs11_ck_rc2_cbc_params_set_iv(Crypt__PKCS11__CK_RC2_CBC_PARAMS* ob
     }
 
     if (!(p = SvPVbyte(sv, l))) {
+        /* uncoverable block 0 */
         return CKR_GENERAL_ERROR;
     }
     if (l != (8 * sizeof(CK_BYTE))) {
@@ -3679,6 +3680,7 @@ CK_RV crypt_pkcs11_ck_des_cbc_encrypt_data_params_set_iv(Crypt__PKCS11__CK_DES_C
     }
 
     if (!(p = SvPVbyte(sv, l))) {
+        /* uncoverable block 0 */
         return CKR_GENERAL_ERROR;
     }
     if (l != (8 * sizeof(CK_BYTE))) {
@@ -3855,6 +3857,7 @@ CK_RV crypt_pkcs11_ck_aes_cbc_encrypt_data_params_set_iv(Crypt__PKCS11__CK_AES_C
     }
 
     if (!(p = SvPVbyte(sv, l))) {
+        /* uncoverable block 0 */
         return CKR_GENERAL_ERROR;
     }
     if (l != (16 * sizeof(CK_BYTE))) {
@@ -5189,6 +5192,7 @@ CK_RV crypt_pkcs11_ck_pbe_params_set_pInitVector(Crypt__PKCS11__CK_PBE_PARAMS* o
     }
 
     if (!(p = SvPVbyte(sv, l))) {
+        /* uncoverable block 0 */
         return CKR_GENERAL_ERROR;
     }
     if (l != 8) {
@@ -9061,6 +9065,7 @@ CK_RV crypt_pkcs11_ck_pkcs5_pbkd2_params_get_pPassword(Crypt__PKCS11__CK_PKCS5_P
     }
 
     SvGETMAGIC(sv);
+    /* uncoverable branch 0 */
     if (!SvOK(sv)) {
         if (!object->ulPasswordLen) {
             return CKR_FUNCTION_FAILED;
@@ -9341,6 +9346,29 @@ CK_RV crypt_pkcs11_ck_otp_params_fromBytes(Crypt__PKCS11__CK_OTP_PARAMS* object,
     }
     memcpy(&(object->private), p, l);
 
+    if (object->private.pParams) {
+        CK_OTP_PARAM_PTR params;
+        CK_ULONG ulCount;
+
+        /* uncoverable branch 1 */
+        if (!(params = calloc(object->private.ulCount, sizeof(CK_OTP_PARAM)))) {
+            /* uncoverable block 0 */
+            __croak("memory allocation error");
+        }
+
+        for (ulCount = 0; ulCount < object->private.ulCount; ulCount++) {
+            params[ulCount].type = object->private.pParams[ulCount].type;
+            if (object->private.pParams[ulCount].pValue) {
+                /* uncoverable branch 1 */
+                if (!(params[ulCount].pValue = calloc(1, object->private.pParams[ulCount].ulValueLen))) {
+                    /* uncoverable block 0 */
+                    __croak("memory allocation error");
+                }
+                memcpy(params[ulCount].pValue, object->private.pParams[ulCount].pValue, object->private.pParams[ulCount].ulValueLen);
+            }
+        }
+        object->private.pParams = params;
+    }
     return CKR_OK;
 }
 
@@ -9411,6 +9439,7 @@ CK_RV crypt_pkcs11_ck_otp_params_set_pParams(Crypt__PKCS11__CK_OTP_PARAMS* objec
     Crypt__PKCS11__CK_OTP_PARAM* param;
     CK_OTP_PARAM_PTR params;
     CK_ULONG paramCount = 0;
+    CK_RV rv = CKR_OK;
 
     if (!object) {
         return CKR_ARGUMENTS_BAD;
@@ -9420,15 +9449,14 @@ CK_RV crypt_pkcs11_ck_otp_params_set_pParams(Crypt__PKCS11__CK_OTP_PARAMS* objec
     }
 
     for (key = 0; key < av_len(sv) + 1; key++) {
-        if (!(item = av_fetch(sv, key, 0))
-            || !*item
-            || !SvROK(*item)
-            || !(entry = SvRV(*item))
-            || !sv_isobject(entry)
-            || !sv_derived_from(entry, "Crypt::PKCS11::CK_OTP_PARAMPtr"))
+        item = av_fetch(sv, key, 0);
+
+        if (!item || !*item || !SvROK(*item)
+            || !sv_derived_from(*item, "Crypt::PKCS11::CK_OTP_PARAMPtr"))
         {
             return CKR_ARGUMENTS_BAD;
         }
+
         paramCount++;
     }
 
@@ -9439,49 +9467,44 @@ CK_RV crypt_pkcs11_ck_otp_params_set_pParams(Crypt__PKCS11__CK_OTP_PARAMS* objec
     }
 
     for (key = 0; key < av_len(sv) + 1; key++) {
-        if (!(item = av_fetch(sv, key, 0))
-            || !*item
-            || !SvROK(*item)
-            || !(entry = SvRV(*item))
-            || !sv_isobject(entry)
-            || !sv_derived_from(entry, "Crypt::PKCS11::CK_OTP_PARAMPtr"))
+        item = av_fetch(sv, key, 0);
+
+        if (!item || !*item || !SvROK(*item)
+            || !sv_derived_from(*item, "Crypt::PKCS11::CK_OTP_PARAMPtr"))
         {
-            for (ulCount = 0; ulCount < paramCount; ulCount++) {
-                if (params[ulCount].pValue) {
-                    free(params[ulCount].pValue);
-                }
-            }
-            free(params);
-            return CKR_ARGUMENTS_BAD;
+            rv = CKR_ARGUMENTS_BAD;
+            break;
         }
 
-        tmp = SvIV((SV*)SvRV(entry));
+        tmp = SvIV((SV*)SvRV(*item));
         if (!(param = INT2PTR(Crypt__PKCS11__CK_OTP_PARAM*, tmp))) {
-            for (ulCount = 0; ulCount < paramCount; ulCount++) {
-                if (params[ulCount].pValue) {
-                    free(params[ulCount].pValue);
-                }
-            }
-            free(params);
-            return CKR_GENERAL_ERROR;
+            rv = CKR_GENERAL_ERROR;
+            break;
         }
 
+        params[key].type = param->private.type;
         if (param->private.pValue) {
             /* uncoverable branch 1 */
             if (!(params[key].pValue = calloc(1, param->private.ulValueLen))) {
-                for (ulCount = 0; ulCount < paramCount; ulCount++) {
-                    if (params[ulCount].pValue) {
-                        free(params[ulCount].pValue);
-                    }
-                }
-                free(params);
-                /* uncoverable block 0 */
-                return CKR_HOST_MEMORY;
+                /* uncoverable begin */
+                rv = CKR_HOST_MEMORY;
+                break;
+                /* uncoverable end */
             }
 
             memcpy(params[key].pValue, param->private.pValue, param->private.ulValueLen);
             params[key].ulValueLen = param->private.ulValueLen;
         }
+    }
+
+    if (rv != CKR_OK) {
+        for (ulCount = 0; ulCount < paramCount; ulCount++) {
+            if (params[ulCount].pValue) {
+                free(params[ulCount].pValue);
+            }
+        }
+        free(params);
+        return rv;
     }
 
     if (object->private.pParams) {
@@ -9565,6 +9588,29 @@ CK_RV crypt_pkcs11_ck_otp_signature_info_fromBytes(Crypt__PKCS11__CK_OTP_SIGNATU
     }
     memcpy(&(object->private), p, l);
 
+    if (object->private.pParams) {
+        CK_OTP_PARAM_PTR params;
+        CK_ULONG ulCount;
+
+        /* uncoverable branch 1 */
+        if (!(params = calloc(object->private.ulCount, sizeof(CK_OTP_PARAM)))) {
+            /* uncoverable block 0 */
+            __croak("memory allocation error");
+        }
+
+        for (ulCount = 0; ulCount < object->private.ulCount; ulCount++) {
+            params[ulCount].type = object->private.pParams[ulCount].type;
+            if (object->private.pParams[ulCount].pValue) {
+                /* uncoverable branch 1 */
+                if (!(params[ulCount].pValue = calloc(1, object->private.pParams[ulCount].ulValueLen))) {
+                    /* uncoverable block 0 */
+                    __croak("memory allocation error");
+                }
+                memcpy(params[ulCount].pValue, object->private.pParams[ulCount].pValue, object->private.pParams[ulCount].ulValueLen);
+            }
+        }
+        object->private.pParams = params;
+    }
     return CKR_OK;
 }
 
@@ -9635,6 +9681,7 @@ CK_RV crypt_pkcs11_ck_otp_signature_info_set_pParams(Crypt__PKCS11__CK_OTP_SIGNA
     Crypt__PKCS11__CK_OTP_PARAM* param;
     CK_OTP_PARAM_PTR params;
     CK_ULONG paramCount = 0;
+    CK_RV rv = CKR_OK;
 
     if (!object) {
         return CKR_ARGUMENTS_BAD;
@@ -9644,15 +9691,14 @@ CK_RV crypt_pkcs11_ck_otp_signature_info_set_pParams(Crypt__PKCS11__CK_OTP_SIGNA
     }
 
     for (key = 0; key < av_len(sv) + 1; key++) {
-        if (!(item = av_fetch(sv, key, 0))
-            || !*item
-            || !SvROK(*item)
-            || !(entry = SvRV(*item))
-            || !sv_isobject(entry)
-            || !sv_derived_from(entry, "Crypt::PKCS11::CK_OTP_PARAMPtr"))
+        item = av_fetch(sv, key, 0);
+
+        if (!item || !*item || !SvROK(*item)
+            || !sv_derived_from(*item, "Crypt::PKCS11::CK_OTP_PARAMPtr"))
         {
             return CKR_ARGUMENTS_BAD;
         }
+
         paramCount++;
     }
 
@@ -9663,49 +9709,44 @@ CK_RV crypt_pkcs11_ck_otp_signature_info_set_pParams(Crypt__PKCS11__CK_OTP_SIGNA
     }
 
     for (key = 0; key < av_len(sv) + 1; key++) {
-        if (!(item = av_fetch(sv, key, 0))
-            || !*item
-            || !SvROK(*item)
-            || !(entry = SvRV(*item))
-            || !sv_isobject(entry)
-            || !sv_derived_from(entry, "Crypt::PKCS11::CK_OTP_PARAMPtr"))
+        item = av_fetch(sv, key, 0);
+
+        if (!item || !*item || !SvROK(*item)
+            || !sv_derived_from(*item, "Crypt::PKCS11::CK_OTP_PARAMPtr"))
         {
-            for (ulCount = 0; ulCount < paramCount; ulCount++) {
-                if (params[ulCount].pValue) {
-                    free(params[ulCount].pValue);
-                }
-            }
-            free(params);
-            return CKR_ARGUMENTS_BAD;
+            rv = CKR_ARGUMENTS_BAD;
+            break;
         }
 
-        tmp = SvIV((SV*)SvRV(entry));
+        tmp = SvIV((SV*)SvRV(*item));
         if (!(param = INT2PTR(Crypt__PKCS11__CK_OTP_PARAM*, tmp))) {
-            for (ulCount = 0; ulCount < paramCount; ulCount++) {
-                if (params[ulCount].pValue) {
-                    free(params[ulCount].pValue);
-                }
-            }
-            free(params);
-            return CKR_GENERAL_ERROR;
+            rv = CKR_GENERAL_ERROR;
+            break;
         }
 
+        params[key].type = param->private.type;
         if (param->private.pValue) {
             /* uncoverable branch 1 */
             if (!(params[key].pValue = calloc(1, param->private.ulValueLen))) {
-                for (ulCount = 0; ulCount < paramCount; ulCount++) {
-                    if (params[ulCount].pValue) {
-                        free(params[ulCount].pValue);
-                    }
-                }
-                free(params);
-                /* uncoverable block 0 */
-                return CKR_HOST_MEMORY;
+                /* uncoverable begin */
+                rv = CKR_HOST_MEMORY;
+                break;
+                /* uncoverable end */
             }
 
             memcpy(params[key].pValue, param->private.pValue, param->private.ulValueLen);
             params[key].ulValueLen = param->private.ulValueLen;
         }
+    }
+
+    if (rv != CKR_OK) {
+        for (ulCount = 0; ulCount < paramCount; ulCount++) {
+            if (params[ulCount].pValue) {
+                free(params[ulCount].pValue);
+            }
+        }
+        free(params);
+        return rv;
     }
 
     if (object->private.pParams) {
@@ -10109,6 +10150,7 @@ CK_RV crypt_pkcs11_ck_aes_ctr_params_set_cb(Crypt__PKCS11__CK_AES_CTR_PARAMS* ob
     }
 
     if (!(p = SvPVbyte(sv, l))) {
+        /* uncoverable block 0 */
         return CKR_GENERAL_ERROR;
     }
     if (l != (16 * sizeof(CK_BYTE))) {
@@ -10714,6 +10756,7 @@ CK_RV crypt_pkcs11_ck_camellia_ctr_params_set_cb(Crypt__PKCS11__CK_CAMELLIA_CTR_
     }
 
     if (!(p = SvPVbyte(sv, l))) {
+        /* uncoverable block 0 */
         return CKR_GENERAL_ERROR;
     }
     if (l != (16 * sizeof(CK_BYTE))) {
@@ -10828,6 +10871,7 @@ CK_RV crypt_pkcs11_ck_camellia_cbc_encrypt_data_params_set_iv(Crypt__PKCS11__CK_
     }
 
     if (!(p = SvPVbyte(sv, l))) {
+        /* uncoverable block 0 */
         return CKR_GENERAL_ERROR;
     }
     if (l != (16 * sizeof(CK_BYTE))) {
@@ -11004,6 +11048,7 @@ CK_RV crypt_pkcs11_ck_aria_cbc_encrypt_data_params_set_iv(Crypt__PKCS11__CK_ARIA
     }
 
     if (!(p = SvPVbyte(sv, l))) {
+        /* uncoverable block 0 */
         return CKR_GENERAL_ERROR;
     }
     if (l != (16 * sizeof(CK_BYTE))) {
