@@ -1298,21 +1298,18 @@ CK_RV crypt_pkcs11_'.$lc_struct.'_set_'.$type->{name}.'('.$c_struct.'* object, S
         /* uncoverable block 0 */
         return CKR_GENERAL_ERROR;
     }
+    sv_2mortal(_sv);
 
     sv_utf8_downgrade(_sv, 0);
     if (!(p = SvPV(_sv, l))) {
-        /* uncoverable begin */
-        SvREFCNT_dec(_sv);
+        /* uncoverable block 0 */
         return CKR_GENERAL_ERROR;
-        /* uncoverable end */
     }
 
     /* uncoverable branch 1 */
     if (!(n = calloc(1, l + 1))) {
-        /* uncoverable begin */
-        SvREFCNT_dec(_sv);
+        /* uncoverable block 0 */
         return CKR_HOST_MEMORY;
-        /* uncoverable end */
     }
 
     memcpy(n, p, l);
@@ -1322,7 +1319,6 @@ CK_RV crypt_pkcs11_'.$lc_struct.'_set_'.$type->{name}.'('.$c_struct.'* object, S
     object->private.'.$type->{name}.' = n;
     object->private.'.$type->{len}.' = l;
 
-    SvREFCNT_dec(_sv);
     return CKR_OK;
 }
 
@@ -2576,21 +2572,18 @@ CK_RV crypt_pkcs11_'.$lc_struct.'_set_'.$type->{name}.'('.$c_struct.'* object, S
         /* uncoverable block 0 */
         return CKR_GENERAL_ERROR;
     }
+    sv_2mortal(_sv);
 
     sv_utf8_downgrade(_sv, 0);
     if (!(p = SvPV(_sv, l))) {
-        /* uncoverable begin */
-        SvREFCNT_dec(_sv);
+        /* uncoverable block 0 */
         return CKR_GENERAL_ERROR;
-        /* uncoverable end */
     }
 
     /* uncoverable branch 1 */
     if (!(n = calloc(1, l + 1))) {
-        /* uncoverable begin */
-        SvREFCNT_dec(_sv);
+        /* uncoverable block 0 */
         return CKR_HOST_MEMORY;
-        /* uncoverable end */
     }
 
     memcpy(n, p, l);
@@ -2599,7 +2592,6 @@ CK_RV crypt_pkcs11_'.$lc_struct.'_set_'.$type->{name}.'('.$c_struct.'* object, S
     }
     object->private.'.$type->{name}.' = n;
 
-    SvREFCNT_dec(_sv);
     return CKR_OK;
 }
 
@@ -2667,8 +2659,7 @@ sub ck_otp_param_ptr {
             param->private.ulValueLen = object->private.'.$type->{name}.'[ulCount].ulValueLen;
         }
 
-        paramSV = sv_newmortal();
-        sv_setref_pv(paramSV, "Crypt::PKCS11::CK_OTP_PARAMPtr", param);
+        paramSV = sv_setref_pv(newSV(0), "Crypt::PKCS11::CK_OTP_PARAMPtr", param);
         av_push(sv, paramSV);
     }
 
@@ -2852,6 +2843,7 @@ crypt_pkcs11_'.$lc_struct.'_'.$type->{name}.'(object)
 PROTOTYPE: $
 CODE:
     RETVAL = newAV();
+    sv_2mortal((SV*)RETVAL);
     crypt_pkcs11_'.$lc_struct.'_get_'.$type->{name}.'(object, RETVAL);
 OUTPUT:
     RETVAL

@@ -239,6 +239,13 @@ sub mytests {
     }
 }
 
+BEGIN {
+    eval '
+        use Test::LeakTrace;
+        $HAVE_LEAKTRACE = 1;
+    ';
+}
+
 chdir('t');
 mytests;
 if ($HAVE_LEAKTRACE and $ENV{TEST_LEAKTRACE}) {

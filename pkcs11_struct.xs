@@ -4701,6 +4701,7 @@ crypt_pkcs11_ck_otp_params_pParams(object)
 PROTOTYPE: $
 CODE:
     RETVAL = newAV();
+    sv_2mortal((SV*)RETVAL);
     crypt_pkcs11_ck_otp_params_get_pParams(object, RETVAL);
 OUTPUT:
     RETVAL
@@ -4788,6 +4789,7 @@ crypt_pkcs11_ck_otp_signature_info_pParams(object)
 PROTOTYPE: $
 CODE:
     RETVAL = newAV();
+    sv_2mortal((SV*)RETVAL);
     crypt_pkcs11_ck_otp_signature_info_get_pParams(object, RETVAL);
 OUTPUT:
     RETVAL

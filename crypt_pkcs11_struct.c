@@ -5253,21 +5253,18 @@ CK_RV crypt_pkcs11_ck_pbe_params_set_pPassword(Crypt__PKCS11__CK_PBE_PARAMS* obj
         /* uncoverable block 0 */
         return CKR_GENERAL_ERROR;
     }
+    sv_2mortal(_sv);
 
     sv_utf8_downgrade(_sv, 0);
     if (!(p = SvPV(_sv, l))) {
-        /* uncoverable begin */
-        SvREFCNT_dec(_sv);
+        /* uncoverable block 0 */
         return CKR_GENERAL_ERROR;
-        /* uncoverable end */
     }
 
     /* uncoverable branch 1 */
     if (!(n = calloc(1, l + 1))) {
-        /* uncoverable begin */
-        SvREFCNT_dec(_sv);
+        /* uncoverable block 0 */
         return CKR_HOST_MEMORY;
-        /* uncoverable end */
     }
 
     memcpy(n, p, l);
@@ -5277,7 +5274,6 @@ CK_RV crypt_pkcs11_ck_pbe_params_set_pPassword(Crypt__PKCS11__CK_PBE_PARAMS* obj
     object->private.pPassword = n;
     object->private.ulPasswordLen = l;
 
-    SvREFCNT_dec(_sv);
     return CKR_OK;
 }
 
@@ -8456,21 +8452,18 @@ CK_RV crypt_pkcs11_ck_cms_sig_params_set_pContentType(Crypt__PKCS11__CK_CMS_SIG_
         /* uncoverable block 0 */
         return CKR_GENERAL_ERROR;
     }
+    sv_2mortal(_sv);
 
     sv_utf8_downgrade(_sv, 0);
     if (!(p = SvPV(_sv, l))) {
-        /* uncoverable begin */
-        SvREFCNT_dec(_sv);
+        /* uncoverable block 0 */
         return CKR_GENERAL_ERROR;
-        /* uncoverable end */
     }
 
     /* uncoverable branch 1 */
     if (!(n = calloc(1, l + 1))) {
-        /* uncoverable begin */
-        SvREFCNT_dec(_sv);
+        /* uncoverable block 0 */
         return CKR_HOST_MEMORY;
-        /* uncoverable end */
     }
 
     memcpy(n, p, l);
@@ -8479,7 +8472,6 @@ CK_RV crypt_pkcs11_ck_cms_sig_params_set_pContentType(Crypt__PKCS11__CK_CMS_SIG_
     }
     object->private.pContentType = n;
 
-    SvREFCNT_dec(_sv);
     return CKR_OK;
 }
 
@@ -9422,8 +9414,7 @@ CK_RV crypt_pkcs11_ck_otp_params_get_pParams(Crypt__PKCS11__CK_OTP_PARAMS* objec
             param->private.ulValueLen = object->private.pParams[ulCount].ulValueLen;
         }
 
-        paramSV = sv_newmortal();
-        sv_setref_pv(paramSV, "Crypt::PKCS11::CK_OTP_PARAMPtr", param);
+        paramSV = sv_setref_pv(newSV(0), "Crypt::PKCS11::CK_OTP_PARAMPtr", param);
         av_push(sv, paramSV);
     }
 
@@ -9664,8 +9655,7 @@ CK_RV crypt_pkcs11_ck_otp_signature_info_get_pParams(Crypt__PKCS11__CK_OTP_SIGNA
             param->private.ulValueLen = object->private.pParams[ulCount].ulValueLen;
         }
 
-        paramSV = sv_newmortal();
-        sv_setref_pv(paramSV, "Crypt::PKCS11::CK_OTP_PARAMPtr", param);
+        paramSV = sv_setref_pv(newSV(0), "Crypt::PKCS11::CK_OTP_PARAMPtr", param);
         av_push(sv, paramSV);
     }
 
