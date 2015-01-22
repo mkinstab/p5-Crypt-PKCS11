@@ -1,6 +1,9 @@
 # Testing
 
-Most testing is done on Ubuntu 12.04.
+To fully test this module you need the source code from the repository [1], all
+necessary tools are not included in the CPAN source package.
+
+[1] https://github.com/dotse/p5-Crypt-PKCS11
 
 ## Dependencies
 
