@@ -91,7 +91,7 @@ private key.
 
 A module that represent a PKCS #11 attribute that are used in templates when for
 example creating keys. This is only a base class, see
-`Crypt::PKCS11::Attributes` for a list of all available attributes.
+L<Crypt::PKCS11::Attributes> for a list of all available attributes.
 
 =item Crypt::PKCS11::Attributes
 
@@ -192,8 +192,8 @@ This is the general return value and error handling for all methods unless
 otherwise stated.
 
 On XS layer errors, when called from within these methods, all methods returns
-false (0/undef) and the XS layer error can be retrieved with `$pkcs11->errno`
-for the number and `$pkcs11->errstr` for the message.
+false (0/undef) and the XS layer error can be retrieved with C<$pkcs11-E<gt>errno>
+for the number and C<$pkcs11-E<gt>errstr> for the message.
 
 For errors from the methods themself, the method will confess (croak) with the
 error message.
@@ -201,13 +201,14 @@ error message.
 =head1 CONSTANTS
 
 All PKCS #11 constants (C #define's) can be imported by specifying the tag
-:constant when using the module, see TODO for a list of all constants.
+:constant when using the module, see PKCS #11 documentation for a list of all
+constants.
 
   use Crypt::PKCS11 qw(:constant);
 
 There are also hashes for reverse lookup available, to get the name of the
 constant in text, per constant section using the tag :constant_names, for
-example if you wish to reverse lookup a mechanism you can use the `%CKM_NAME`
+example if you wish to reverse lookup a mechanism you can use the C<%CKM_NAME>
 hash.
 
   use Crypt::PKCS11 qw(:constant_names);
@@ -238,7 +239,7 @@ Returns a new Crypt::PKCS11 object.
 
 =item $pkcs11->load ($so)
 
-Loads the PKCS #11 provider .so library specified by `$so`.
+Loads the PKCS #11 provider .so library specified by C<$so>.
 
 =item $pkcs11->unload
 
@@ -257,7 +258,7 @@ support for individual callbacks per Crypt::PKCS11 object.
 All of the Mutex arguments needs to be set if any should be used.
 
 For more information about mutex callbacks and how to use them please see
-`Crypt::PKCS11::MutexCallbacks`.
+L<Crypt::PKCS11::MutexCallbacks>.
 
 The following initialization arguments can be used:
 
@@ -389,7 +390,8 @@ ID of the slot manufacturer, padded with the blank character (' ').
 
 =item flags
 
-Bits flags that provide capabilities of the slot, see TODO.
+Bits flags that provide capabilities of the slot, see PKCS #11 documentation for
+the list of flags available.
 
 =item hardwareVersion
 
@@ -460,7 +462,7 @@ Character-string serial number of the device, padded with the blank character ('
 
 =item flags
 
-Bit flags indicating capabilities and status of the device, see TODO.
+Bit flags indicating capabilities and status of the device, see PKCS #11 documentation for the list of flags available.
 
 =item ulMaxSessionCount
 
@@ -610,7 +612,7 @@ The label of the token.
 
 =item $session = $pkcs11->OpenSession ($slotID, [$flags = 0, $notifycb = undef])
 
-Open a new PKCS #11 session and return a `Crypt::PKCS11::Session` object.
+Open a new PKCS #11 session and return a L<Crypt::PKCS11::Session> object.
 
 =over 4
 
@@ -644,7 +646,7 @@ The slot ID to close sessions for.
 =item $pkcs11->WaitForSlotEvent ([$flags = 0])
 
 Waits for a slot event, such as token insertion or token removal, to occur. Will
-block unless the flag `CKF_DONT_BLOCK` is used.
+block unless the flag C<CKF_DONT_BLOCK> is used.
 
 =over 4
 

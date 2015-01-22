@@ -24,7 +24,7 @@ creation.
 
 =item $id = $object->id
 
-Return the ID of the object which is a `CK_OBJECT_HANDLE`.
+Return the ID of the object which is a C<CK_OBJECT_HANDLE>.
 
 =back
 

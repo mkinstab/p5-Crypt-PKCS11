@@ -44,7 +44,7 @@ structure of the input and output arguments which uses Perl arrays and hashes
 
 =item $pkcs11xs = Crypt::PKCS11::XS->new
 
-Create a new `Crypt::PKCS11::XS` object.
+Create a new L<Crypt::PKCS11::XS> object.
 
 =item $str = Crypt::PKCS11::XS::rv2str ($rv)
 
@@ -61,7 +61,7 @@ A CKR value.
 =item $rv = Crypt::PKCS11::XS::setCreateMutex ($pCreateMutex)
 
 Set the global create mutex callback, for more information about mutex callbacks
-and how to use them please see `Crypt::PKCS11::MutexCallbacks`.
+and how to use them please see L<Crypt::PKCS11::MutexCallbacks>.
 
 =over 4
 
@@ -78,7 +78,7 @@ Clear the stored create mutex callback reference.
 =item $rv = Crypt::PKCS11::XS::setDestroyMutex ($pDestroyMutex)
 
 Set the global destroy mutex callback, for more information about mutex
-callbacks and how to use them please see `Crypt::PKCS11::MutexCallbacks`.
+callbacks and how to use them please see L<Crypt::PKCS11::MutexCallbacks>.
 
 =over 4
 
@@ -95,7 +95,7 @@ Clear the stored destroy mutex callback reference.
 =item $rv = Crypt::PKCS11::XS::setLockMutex ($pLockMutex)
 
 Set the global lock mutex callback, for more information about mutex callbacks
-and how to use them please see `Crypt::PKCS11::MutexCallbacks`.
+and how to use them please see L<Crypt::PKCS11::MutexCallbacks>.
 
 =over 4
 
@@ -112,7 +112,7 @@ Clear the stored lock mutex callback reference.
 =item $rv = Crypt::PKCS11::XS::setUnlockMutex ($pUnlockMutex)
 
 Set the global unlock mutex callback, for more information about mutex callbacks
-and how to use them please see `Crypt::PKCS11::MutexCallbacks`.
+and how to use them please see L<Crypt::PKCS11::MutexCallbacks>.
 
 =over 4
 
@@ -156,7 +156,7 @@ support for individual callbacks per Crypt::PKCS11::XS object.
 All of the Mutex arguments needs to be set if any should be used.
 
 For more information about mutex callbacks and how to use them please see
-`Crypt::PKCS11::MutexCallbacks`.
+L<Crypt::PKCS11::MutexCallbacks>.
 
 =over 4
 
@@ -686,7 +686,7 @@ A SCALAR.
 
 =item $pTemplate
 
-An ARRAY reference, see `TEMPLATE ARGUMENT`.
+An ARRAY reference, see TEMPLATE ARGUMENT.
 
 =item $phObject
 
@@ -708,7 +708,7 @@ A SCALAR.
 
 =item $pTemplate
 
-An ARRAY reference, see `TEMPLATE ARGUMENT`.
+An ARRAY reference, see TEMPLATE ARGUMENT.
 
 =item $phNewObject
 
@@ -762,7 +762,7 @@ A SCALAR.
 
 =item $pTemplate
 
-An ARRAY reference output argument, see `TEMPLATE ARGUMENT`. The attributes you
+An ARRAY reference output argument, see TEMPLATE ARGUMENT. The attributes you
 wish to get must be set in the template before the call.
 
 =back
@@ -781,7 +781,7 @@ A SCALAR.
 
 =item $pTemplate
 
-An ARRAY reference, see `TEMPLATE ARGUMENT`.
+An ARRAY reference, see TEMPLATE ARGUMENT.
 
 =back
 
@@ -795,7 +795,7 @@ A SCALAR.
 
 =item $pTemplate
 
-An ARRAY reference, see `TEMPLATE ARGUMENT`.
+An ARRAY reference, see TEMPLATE ARGUMENT.
 
 =back
 
@@ -837,7 +837,7 @@ A SCALAR.
 
 =item $pMechanism
 
-A HASH reference, see `MECHANISM ARGUMENT`.
+A HASH reference, see MECHANISM ARGUMENT.
 
 =item $hKey
 
@@ -905,7 +905,7 @@ A SCALAR.
 
 =item $pMechanism
 
-A HASH reference, see `MECHANISM ARGUMENT`.
+A HASH reference, see MECHANISM ARGUMENT.
 
 =item $hKey
 
@@ -973,7 +973,7 @@ A SCALAR.
 
 =item $pMechanism
 
-A HASH reference, see `MECHANISM ARGUMENT`.
+A HASH reference, see MECHANISM ARGUMENT.
 
 =back
 
@@ -1047,7 +1047,7 @@ A SCALAR.
 
 =item $pMechanism
 
-A HASH reference, see `MECHANISM ARGUMENT`.
+A HASH reference, see MECHANISM ARGUMENT.
 
 =item $hKey
 
@@ -1111,7 +1111,7 @@ A SCALAR.
 
 =item $pMechanism
 
-A HASH reference, see `MECHANISM ARGUMENT`.
+A HASH reference, see MECHANISM ARGUMENT.
 
 =item $hKey
 
@@ -1147,7 +1147,7 @@ A SCALAR.
 
 =item $pMechanism
 
-A HASH reference, see `MECHANISM ARGUMENT`.
+A HASH reference, see MECHANISM ARGUMENT.
 
 =item $hKey
 
@@ -1211,7 +1211,7 @@ A SCALAR.
 
 =item $pMechanism
 
-A HASH reference, see `MECHANISM ARGUMENT`.
+A HASH reference, see MECHANISM ARGUMENT.
 
 =item $hKey
 
@@ -1319,11 +1319,11 @@ A SCALAR.
 
 =item $pMechanism
 
-A HASH reference, see `MECHANISM ARGUMENT`.
+A HASH reference, see MECHANISM ARGUMENT.
 
 =item $pTemplate
 
-An ARRAY reference, see `TEMPLATE ARGUMENT`.
+An ARRAY reference, see TEMPLATE ARGUMENT.
 
 =item $phKey
 
@@ -1341,15 +1341,15 @@ A SCALAR.
 
 =item $pMechanism
 
-A HASH reference, see `MECHANISM ARGUMENT`.
+A HASH reference, see MECHANISM ARGUMENT.
 
 =item $pPublicKeyTemplate
 
-An ARRAY reference, see `TEMPLATE ARGUMENT`.
+An ARRAY reference, see TEMPLATE ARGUMENT.
 
 =item $pPrivateKeyTemplate
 
-An ARRAY reference, see `TEMPLATE ARGUMENT`.
+An ARRAY reference, see TEMPLATE ARGUMENT.
 
 =item $phPublicKey
 
@@ -1371,7 +1371,7 @@ A SCALAR.
 
 =item $pMechanism
 
-A HASH reference, see `MECHANISM ARGUMENT`.
+A HASH reference, see MECHANISM ARGUMENT.
 
 =item $hWrappingKey
 
@@ -1397,7 +1397,7 @@ A SCALAR.
 
 =item $pMechanism
 
-A HASH reference, see `MECHANISM ARGUMENT`.
+A HASH reference, see MECHANISM ARGUMENT.
 
 =item $hUnwrappingKey
 
@@ -1409,7 +1409,7 @@ A SCALAR.
 
 =item $pTemplate
 
-An ARRAY reference, see `TEMPLATE ARGUMENT`.
+An ARRAY reference, see TEMPLATE ARGUMENT.
 
 =item $phKey
 
@@ -1427,7 +1427,7 @@ A SCALAR.
 
 =item $pMechanism
 
-A HASH reference, see `MECHANISM ARGUMENT`.
+A HASH reference, see MECHANISM ARGUMENT.
 
 =item $hBaseKey
 
@@ -1435,7 +1435,7 @@ A SCALAR.
 
 =item $pTemplate
 
-An ARRAY reference, see `TEMPLATE ARGUMENT`.
+An ARRAY reference, see TEMPLATE ARGUMENT.
 
 =item $phKey
 

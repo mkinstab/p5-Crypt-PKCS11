@@ -14,7 +14,7 @@ Crypt::PKCS11::Attribute - Base for PKCS #11 attributes (CKA)
 =head1 DESCRIPTION
 
 This is the base module for all attribute in Crypt::PKCS11. Should not be used
-directly, see `Crypt::PKCS11::Attributes` for all available attributes.
+directly, see L<Crypt::PKCS11::Attributes> for all available attributes.
 
 =head1 BASE ATTRIBUTE VALUES
 

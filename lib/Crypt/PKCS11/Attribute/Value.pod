@@ -18,7 +18,7 @@ string. This attribute has the type CKA_VALUE.
 
 =head1 METHODS
 
-See also `Crypt::PKCS11::Attribute` for the base module methods.
+See also L<Crypt::PKCS11::Attribute> for the base module methods.
 
 =over 4
 

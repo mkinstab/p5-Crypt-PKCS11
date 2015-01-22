@@ -22,19 +22,19 @@ Crypt::PKCS11::Attribute::AttributeArray - An array of Crypt::PKCS11::Attribute 
 
 A PKCS #11 attribute containing an array of Crypt::PKCS11::Attribute objects.
 
-This module is similar to `Crypt::PKCS11::Attributes` but is specially used to
+This module is similar to L<Crypt::PKCS11::Attributes> but is specially used to
 contain attributes within attributes.
 
 =head1 METHODS
 
-See also `Crypt::PKCS11::Attribute` for the base module methods.
+See also L<Crypt::PKCS11::Attribute> for the base module methods.
 
 =over 4
 
 =item $attributeArray = $attributeArray->push (...)
 
 Appends all arguments to the container, will croak unless each argument is a
-`Crypt::PKCS11::Attribute`. Returns itself on success.
+L<Crypt::PKCS11::Attribute>. Returns itself on success.
 
 =item $attribute = $attributeArray->pop
 
@@ -49,7 +49,7 @@ none.
 =item $attributeArray = $attributeArray->unshift (...)
 
 Prepends all arguments to the container, will croak unless each argument is a
-`Crypt::PKCS11::Attribute`. Returns itself on success.
+L<Crypt::PKCS11::Attribute>. Returns itself on success.
 
 =item $attributeArray = $attributeArray->foreach ($cb)
 
@@ -59,7 +59,7 @@ the attribute. Will croak if no callback is given and returns itself on success.
 =item $array_ref = $attributeArray->toArray
 
 Convert the container to an array reference in the format needed for the XS
-calls, see `TEMPLATE ARGUMENT` in `Crypt::PKCS11::XS`. Croaks on error.
+calls, see TEMPLATE ARGUMENT in L<Crypt::PKCS11::XS>. Croaks on error.
 
 =item $attributeArray = $attributeArray->set (@attributes)
 
@@ -77,7 +77,7 @@ A list of Crypt::PKCS11::Attribute objects.
 =item $pValue = $attributeArray->pValue
 
 Overloads the default pValue call and returns an array references as decribed in
-the `toArray` call.
+the C<toArray> call.
 
 =back
 

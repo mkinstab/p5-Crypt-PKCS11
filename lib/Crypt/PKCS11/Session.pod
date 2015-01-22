@@ -22,7 +22,7 @@ Crypt::PKCS11::Session - PKCS #11 session handler.
 
 =head1 DESCRIPTION
 
-This module encapsulates the PKCS #11 session created with `Crypt::PKCS11->OpenSession`
+This module encapsulates the PKCS #11 session created with L<Crypt::PKCS11->OpenSession>
 and is used to manage the keys and encrypt/decrypt data using a HSM.
 
 =head1 RETURN VALUES AND ERROR HANDLING
@@ -31,8 +31,8 @@ This is the general return value and error handling for all methods unless
 otherwise stated.
 
 On XS layer errors, when called from within these methods, all methods returns
-false (0/undef) and the XS layer error can be retrieved with `$pkcs11->errno`
-for the number and `$pkcs11->errstr` for the message.
+false (0/undef) and the XS layer error can be retrieved with C<$pkcs11-E<gt>errno>
+for the number and C<$pkcs11-E<gt>errstr> for the message.
 
 For errors from the methods themself, the method will confess (croak) with the
 error message.
@@ -62,7 +62,7 @@ or a non-empty string.
 
 =item $session->SetPIN ([$oldPin = 1234 || '...', $newPin = 1234 || '...'])
 
-Modifies the PIN of the user that is currently logged in, or the `CKU_USER` PIN
+Modifies the PIN of the user that is currently logged in, or the C<CKU_USER> PIN
 if the session is not logged in.
 
 The arguments are optional due to "protected authentication path", please see
@@ -169,30 +169,30 @@ Logs a user out from a token.
 
 =item $object = $session->CreateObject ($template)
 
-Creates a new object, returns a `Crypt::PKCS11::Object` when successful.
+Creates a new object, returns a L<Crypt::PKCS11::Object> when successful.
 
 =over 4
 
 =item $template
 
-A `Crypt::PKCS11::Attributes` containing the object's template.
+A L<Crypt::PKCS11::Attributes> containing the object's template.
 
 =back
 
 =item $newObject = $session->CopyObject ($object, $template)
 
 Copies an object, creating a new object for the copy. Returns a
-`Crypt::PKCS11::Object` when successful.
+L<Crypt::PKCS11::Object> when successful.
 
 =over 4
 
 =item $object
 
-A `Crypt::PKCS11::Object` with the object to copy.
+A L<Crypt::PKCS11::Object> with the object to copy.
 
 =item $template
 
-A `Crypt::PKCS11::Attributes` containing the new object's template.
+A L<Crypt::PKCS11::Attributes> containing the new object's template.
 
 =back
 
@@ -204,7 +204,7 @@ Destroys an object.
 
 =item $object
 
-A `Crypt::PKCS11::Object` with the object to destroy.
+A L<Crypt::PKCS11::Object> with the object to destroy.
 
 =back
 
@@ -216,14 +216,14 @@ Gets the size of an object in bytes.
 
 =item $object
 
-A `Crypt::PKCS11::Object` with the object.
+A L<Crypt::PKCS11::Object> with the object.
 
 =back
 
 =item < @array || ... > = $session->GetAttributeValue ($object, $template)
 
 Obtains the value of one or more attributes of an object. Returns a list of
-`Crypt::PKCS11::Attribute` objects with the attributes retrieved, if called in
+L<Crypt::PKCS11::Attribute> objects with the attributes retrieved, if called in
 list context, otherwise the normal return statuses are used and the retrieved
 attributes are contained with the template.
 
@@ -231,11 +231,11 @@ attributes are contained with the template.
 
 =item $object
 
-A `Crypt::PKCS11::Object` with the object.
+A L<Crypt::PKCS11::Object> with the object.
 
 =item $template
 
-A `Crypt::PKCS11::Attributes` containing the attributes to retrieve.
+A L<Crypt::PKCS11::Attributes> containing the attributes to retrieve.
 
 =back
 
@@ -247,11 +247,11 @@ Modifies the value of one or more attributes of an object.
 
 =item $object
 
-A `Crypt::PKCS11::Object` with the object.
+A L<Crypt::PKCS11::Object> with the object.
 
 =item $template
 
-A `Crypt::PKCS11::Attributes` containing the attributes to modify.
+A L<Crypt::PKCS11::Attributes> containing the attributes to modify.
 
 =back
 
@@ -263,14 +263,14 @@ Initializes a search for token and session objects that match a template.
 
 =item $template
 
-A `Crypt::PKCS11::Attributes` containing the template.
+A L<Crypt::PKCS11::Attributes> containing the template.
 
 =back
 
 =item < @array || $array_ref > = $session->FindObjects ($maxObjectCount)
 
 Start or continues a search for token and session objects that match a template.
-Returns a list of `Crypt::PKCS11::Object` objects, if called in list context, or
+Returns a list of L<Crypt::PKCS11::Object> objects, if called in list context, or
 as an array reference, if called in scalar context.
 
 =over 4
@@ -293,11 +293,11 @@ Initializes an encryption operation.
 
 =item $mechanism
 
-A `Crypt::PKCS11::CK_MECHANISM` with the encryption mechanism.
+A L<Crypt::PKCS11::CK_MECHANISM> with the encryption mechanism.
 
 =item $key
 
-A `Crypt::PKCS11::Object` to use as the encryption key.
+A L<Crypt::PKCS11::Object> to use as the encryption key.
 
 =back
 
@@ -339,11 +339,11 @@ Initializes a decryption operation.
 
 =item $mechanism
 
-A `Crypt::PKCS11::CK_MECHANISM` with the decryption mechanism.
+A L<Crypt::PKCS11::CK_MECHANISM> with the decryption mechanism.
 
 =item $key
 
-A `Crypt::PKCS11::Object` to use as the decryption key.
+A L<Crypt::PKCS11::Object> to use as the decryption key.
 
 =back
 
@@ -385,7 +385,7 @@ Initializes a message-digesting operation.
 
 =item $mechanism
 
-A `Crypt::PKCS11::CK_MECHANISM` with the digesting mechanism.
+A L<Crypt::PKCS11::CK_MECHANISM> with the digesting mechanism.
 
 =back
 
@@ -423,7 +423,7 @@ a secret key.
 
 =item $key
 
-A `Crypt::PKCS11::Object` with the secret key to be digested.
+A L<Crypt::PKCS11::Object> with the secret key to be digested.
 
 =back
 
@@ -441,11 +441,11 @@ data.
 
 =item $mechanism
 
-A `Crypt::PKCS11::CK_MECHANISM` with the signature mechanism.
+A L<Crypt::PKCS11::CK_MECHANISM> with the signature mechanism.
 
 =item $key
 
-A `Crypt::PKCS11::Object` to use as the signature key.
+A L<Crypt::PKCS11::Object> to use as the signature key.
 
 =back
 
@@ -487,11 +487,11 @@ signature.
 
 =item $mechanism
 
-A `Crypt::PKCS11::CK_MECHANISM` with the signature mechanism.
+A L<Crypt::PKCS11::CK_MECHANISM> with the signature mechanism.
 
 =item $key
 
-A `Crypt::PKCS11::Object` to use as the signature key.
+A L<Crypt::PKCS11::Object> to use as the signature key.
 
 =back
 
@@ -517,11 +517,11 @@ data.
 
 =item $mechanism
 
-A `Crypt::PKCS11::CK_MECHANISM` with the verification mechanism.
+A L<Crypt::PKCS11::CK_MECHANISM> with the verification mechanism.
 
 =item $key
 
-A `Crypt::PKCS11::Object` to use as the verification key.
+A L<Crypt::PKCS11::Object> to use as the verification key.
 
 =back
 
@@ -575,11 +575,11 @@ the signature.
 
 =item $mechanism
 
-A `Crypt::PKCS11::CK_MECHANISM` with the verification mechanism.
+A L<Crypt::PKCS11::CK_MECHANISM> with the verification mechanism.
 
 =item $key
 
-A `Crypt::PKCS11::Object` to use as the verification key.
+A L<Crypt::PKCS11::Object> to use as the verification key.
 
 =back
 
@@ -651,17 +651,17 @@ The encrypted data part.
 =item $key = $session->GenerateKey ($mechanism, $template)
 
 Generates a secret key or set of domain parameters, creating a new object.
-Returns a `Crypt::PKCS11::Object` on success.
+Returns a L<Crypt::PKCS11::Object> on success.
 
 =over 4
 
 =item $mechanism
 
-A `Crypt::PKCS11::CK_MECHANISM` with the generation mechanism.
+A L<Crypt::PKCS11::CK_MECHANISM> with the generation mechanism.
 
 =item $template
 
-A `Crypt::PKCS11::Attributes` containing the template for the new key or set of
+A L<Crypt::PKCS11::Attributes> containing the template for the new key or set of
 domain parameters.
 
 =back
@@ -675,15 +675,15 @@ on success.
 
 =item $mechanism
 
-A `Crypt::PKCS11::CK_MECHANISM` with the generation mechanism.
+A L<Crypt::PKCS11::CK_MECHANISM> with the generation mechanism.
 
 =item $publicKeyTemplate
 
-A `Crypt::PKCS11::Attributes` containing the template for the public key.
+A L<Crypt::PKCS11::Attributes> containing the template for the public key.
 
 =item $privateKeyTemplate
 
-A `Crypt::PKCS11::Attributes` containing the template for the private key.
+A L<Crypt::PKCS11::Attributes> containing the template for the private key.
 
 =back
 
@@ -696,32 +696,32 @@ success.
 
 =item $mechanism
 
-A `Crypt::PKCS11::CK_MECHANISM` with the wrapping mechanism.
+A L<Crypt::PKCS11::CK_MECHANISM> with the wrapping mechanism.
 
 =item $wrappingKey
 
-A `Crypt::PKCS11::Object` with the wrapping key.
+A L<Crypt::PKCS11::Object> with the wrapping key.
 
 =item $key
 
-A `Crypt::PKCS11::Object` with the key to be wrapped.
+A L<Crypt::PKCS11::Object> with the key to be wrapped.
 
 =back
 
 =item $key = $session->UnwrapKey ($mechanism, $unwrappingKey, $wrappedKey, $template)
 
 Unwraps (i.e. decrypts) a wrapped key, creating a new private key or secret key
-object. Returns a `Crypt::PKCS11::Object` on success.
+object. Returns a L<Crypt::PKCS11::Object> on success.
 
 =over 4
 
 =item $mechanism
 
-A `Crypt::PKCS11::CK_MECHANISM` with the unwrapping mechanism.
+A L<Crypt::PKCS11::CK_MECHANISM> with the unwrapping mechanism.
 
 =item $unwrappingKey
 
-A `Crypt::PKCS11::Object` with the unwrapping key.
+A L<Crypt::PKCS11::Object> with the unwrapping key.
 
 =item $wrappedKey
 
@@ -729,28 +729,28 @@ The wrapped key.
 
 =item $template
 
-A `Crypt::PKCS11::Attributes` containing the template for the new key.
+A L<Crypt::PKCS11::Attributes> containing the template for the new key.
 
 =back
 
 =item $key = $session->DeriveKey ($mechanism, $baseKey, $template)
 
 Derives a key from a base key, creating a new key object. Returns a
-`Crypt::PKCS11::Object` on success.
+L<Crypt::PKCS11::Object> on success.
 
 =over 4
 
 =item $mechanism
 
-A `Crypt::PKCS11::CK_MECHANISM` with the derivation mechanism.
+A L<Crypt::PKCS11::CK_MECHANISM> with the derivation mechanism.
 
 =item $unwrappingKey
 
-A `Crypt::PKCS11::Object` with the base key.
+A L<Crypt::PKCS11::Object> with the base key.
 
 =item $template
 
-A `Crypt::PKCS11::Attributes` containing the template for the new key.
+A L<Crypt::PKCS11::Attributes> containing the template for the new key.
 
 =back
 
