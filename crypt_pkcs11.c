@@ -2224,9 +2224,11 @@ static CK_RV __action(__action_call_t call, CK_SESSION_HANDLE hSession, SV* pFro
     SvGETMAGIC(pTo);
     if (!(_pFrom = SvPVbyte(pFrom, ulFromLen))
         || ulFromLen < 0
-        || (SvOK(pTo))
+        /* uncoverable begin */
+        || (SvOK(pTo)
+            /* uncoverable end */
             && (!(_pTo = SvPVbyte(pTo, ulToLen))
-                || ulToLen < 0))
+                || ulToLen < 0)))
     {
         /* uncoverable block 0 */
         return CKR_ARGUMENTS_BAD;
@@ -3573,6 +3575,9 @@ extern int __test_devel_cover_calloc_always_fail;
 int __test_devel_cover_C_GetSlotList = 0;
 int __test_devel_cover_C_GetMechanismList = 0;
 int __test_devel_cover_C_GetOperationState = 0;
+static CK_RV __test_action_call(CK_SESSION_HANDLE a, CK_BYTE_PTR b, CK_ULONG c, CK_BYTE_PTR d, CK_ULONG_PTR e);
+static CK_RV __test_action_final_call(CK_SESSION_HANDLE a, CK_BYTE_PTR b, CK_ULONG_PTR c);
+
 int crypt_pkcs11_xs_test_devel_cover(Crypt__PKCS11__XS* object) {
     struct crypt_pkcs11_xs_object object_no_function_list = {
         0,
@@ -4887,7 +4892,26 @@ int crypt_pkcs11_xs_test_devel_cover(Crypt__PKCS11__XS* object) {
     crypt_pkcs11_ck_camellia_cbc_encrypt_data_params_DESTROY(0);
     crypt_pkcs11_ck_aria_cbc_encrypt_data_params_DESTROY(0);
 
+    {
+        SV* from = sv_2mortal(newSVpvn(" ", 1));
+        SV* to = sv_2mortal(newSVpvn("", 0));
+        if (__action(__test_action_call, 1, from, to) != CKR_GENERAL_ERROR) { return __LINE__; }
+        if (__action_final(__test_action_final_call, 1, to) != CKR_GENERAL_ERROR) { return __LINE__; }
+        if (__action_final(__test_action_final_call, 1, from) != CKR_GENERAL_ERROR) { return __LINE__; }
+    }
+
     return 0;
+}
+
+static CK_RV __test_action_call(CK_SESSION_HANDLE a, CK_BYTE_PTR b, CK_ULONG c, CK_BYTE_PTR d, CK_ULONG_PTR e) {
+    return CKR_OK;
+}
+
+static CK_RV __test_action_final_call(CK_SESSION_HANDLE a, CK_BYTE_PTR b, CK_ULONG_PTR c) {
+    if (b) {
+        return CKR_GENERAL_ERROR;
+    }
+    return CKR_OK;
 }
 
 static CK_RV __test_C_Initialize(CK_VOID_PTR pInitArgs) {
@@ -5190,6 +5214,9 @@ static CK_RV __test_C_DecryptVerifyUpdate(CK_SESSION_HANDLE hSession, CK_BYTE_PT
 }
 
 static CK_RV __test_C_GenerateKey(CK_SESSION_HANDLE hSession, CK_MECHANISM_PTR pMechanism, CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount, CK_OBJECT_HANDLE_PTR phKey) {
+    if (hSession == 9999) {
+        return CKR_GENERAL_ERROR;
+    }
     return CKR_OK;
 }
 
@@ -5198,14 +5225,23 @@ static CK_RV __test_C_GenerateKeyPair(CK_SESSION_HANDLE hSession, CK_MECHANISM_P
 }
 
 static CK_RV __test_C_WrapKey(CK_SESSION_HANDLE hSession, CK_MECHANISM_PTR pMechanism, CK_OBJECT_HANDLE hWrappingKey, CK_OBJECT_HANDLE hKey, CK_BYTE_PTR pWrappedKey, CK_ULONG_PTR pulWrappedKeyLen) {
+    if (hSession == 9999) {
+        return CKR_GENERAL_ERROR;
+    }
     return CKR_OK;
 }
 
 static CK_RV __test_C_UnwrapKey(CK_SESSION_HANDLE hSession, CK_MECHANISM_PTR pMechanism, CK_OBJECT_HANDLE hUnwrappingKey, CK_BYTE_PTR pWrappedKey, CK_ULONG ulWrappedKeyLen, CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulAttributeCount, CK_OBJECT_HANDLE_PTR phKey) {
+    if (hSession == 9999) {
+        return CKR_GENERAL_ERROR;
+    }
     return CKR_OK;
 }
 
 static CK_RV __test_C_DeriveKey(CK_SESSION_HANDLE hSession, CK_MECHANISM_PTR pMechanism, CK_OBJECT_HANDLE hBaseKey, CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulAttributeCount, CK_OBJECT_HANDLE_PTR phKey) {
+    if (hSession == 9999) {
+        return CKR_GENERAL_ERROR;
+    }
     return CKR_OK;
 }
 

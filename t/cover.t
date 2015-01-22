@@ -276,15 +276,21 @@ myis( $xs->C_SignRecoverInit(1, $mech->toHash, 1), CKR_OK );
 myis( $xs->C_VerifyRecoverInit(1, $mech->toHash, 1), CKR_OK );
 
 myis( $xs->C_GenerateKey(1, $mech->toHash, [], $b), CKR_OK );
+myis( $xs->C_GenerateKey(9999, $mech->toHash, [{type => 1, pValue => ''}], $b), CKR_GENERAL_ERROR );
 myis( $xs->C_GenerateKey(1, $mech->toHash, [[]], $b), CKR_ARGUMENTS_BAD );
 myis( $xs->C_GenerateKeyPair(1, $mech->toHash, [], [], $b, $c), CKR_OK );
 myis( $xs->C_GenerateKeyPair(1, $mech->toHash, [[]], [], $b, $c), CKR_ARGUMENTS_BAD );
 myis( $xs->C_GenerateKeyPair(1, $mech->toHash, [], [[]], $b, $c), CKR_ARGUMENTS_BAD );
 myis( $xs->C_WrapKey(1, $mech->toHash, 1, 1, $b), CKR_OK );
+myis( $xs->C_WrapKey(1, $mech->toHash, 1, 1, $b = ''), CKR_GENERAL_ERROR );
+myis( $xs->C_WrapKey(9999, $mech->toHash, 1, 1, $b = ''), CKR_GENERAL_ERROR );
+myis( $xs->C_WrapKey(9999, $mech->toHash, 1, 1, $b = ' '), CKR_GENERAL_ERROR );
 myis( $xs->C_UnwrapKey(1, $mech->toHash, 1, 1, [], $b), CKR_OK );
 myis( $xs->C_UnwrapKey(1, $mech->toHash, 1, 1, [[]], $b), CKR_ARGUMENTS_BAD );
+myis( $xs->C_UnwrapKey(9999, $mech->toHash, 1, 1, [{type => 1, pValue => ''}], $b), CKR_GENERAL_ERROR );
 myis( $xs->C_DeriveKey(1, $mech->toHash, 1, [], $b), CKR_OK );
 myis( $xs->C_DeriveKey(1, $mech->toHash, 1, [[]], $b), CKR_ARGUMENTS_BAD );
+myis( $xs->C_DeriveKey(9999, $mech->toHash, 1, [{type => 1, pValue => ''}], $b), CKR_GENERAL_ERROR );
 
 myis( $xs->C_VerifyRecover(1, $a = '', $b = ' '), CKR_OK );
 myis( $xs->C_VerifyRecover(1, $a = '', $b = ''), CKR_OK );
