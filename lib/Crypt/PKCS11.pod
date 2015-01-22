@@ -141,7 +141,37 @@ string.
 
 =back
 
-=head1 TESTING
+=head1 QUALITY ASSURANCE AND TESTING
+
+This module is currently tested on Ubuntu 12.04 and with SoftHSM version 1.3.7
+and 2.0.0b2 as PKCS #11 providers / HSM backends. It uses Test::LeakTrace to
+detect leaks and Devel::Cover to provide coverage reports. The goal is to always
+be non-leaking and to have 100% coverage. See README.testing for more
+information how to test.
+
+  ---------------------------- ------ ------ ------ ------ ------ ------ ------
+  File                           stmt   bran   cond    sub    pod   time  total
+  ---------------------------- ------ ------ ------ ------ ------ ------ ------
+  blib/lib/Crypt/PKCS11.pm      100.0  100.0  100.0  100.0  100.0   92.6  100.0
+  ...Crypt/PKCS11/Attribute.pm  100.0  100.0  100.0  100.0  100.0    0.1  100.0
+  ...tribute/AttributeArray.pm  100.0  100.0  100.0  100.0  100.0    0.0  100.0
+  ...11/Attribute/ByteArray.pm  100.0  100.0  100.0  100.0  100.0    0.0  100.0
+  ...S11/Attribute/CK_BBOOL.pm  100.0  100.0    n/a  100.0  100.0    0.0  100.0
+  ...CS11/Attribute/CK_BYTE.pm  100.0  100.0  100.0  100.0  100.0    0.0  100.0
+  ...CS11/Attribute/CK_DATE.pm  100.0  100.0  100.0  100.0  100.0    0.0  100.0
+  ...S11/Attribute/CK_ULONG.pm  100.0  100.0  100.0  100.0  100.0    0.0  100.0
+  ...ttribute/RFC2279string.pm  100.0  100.0    n/a  100.0  100.0    0.0  100.0
+  ...1/Attribute/UlongArray.pm  100.0  100.0  100.0  100.0  100.0    0.0  100.0
+  ...PKCS11/Attribute/Value.pm  100.0  100.0  100.0  100.0  100.0    0.0  100.0
+  ...rypt/PKCS11/Attributes.pm  100.0  100.0  100.0  100.0  100.0    4.8  100.0
+  ...ib/Crypt/PKCS11/Object.pm  100.0  100.0  100.0  100.0  100.0    1.9  100.0
+  ...b/Crypt/PKCS11/Session.pm  100.0  100.0  100.0  100.0  100.0    0.5  100.0
+  crypt_pkcs11.c                100.0  100.0    n/a    n/a    n/a    n/a  100.0
+  crypt_pkcs11_struct.c         100.0  100.0    n/a    n/a    n/a    n/a  100.0
+  pkcs11.xs                     100.0    n/a    n/a    n/a    n/a    n/a  100.0
+  pkcs11_struct.xs              100.0    n/a    n/a    n/a    n/a    n/a  100.0
+  Total                         100.0  100.0  100.0  100.0  100.0  100.0  100.0
+ ---------------------------- ------ ------ ------ ------ ------ ------ ------
 
 This module has been tested with the following PKCS #11 providers and operating
 systems:
@@ -150,9 +180,11 @@ systems:
 
 =item *
 
-Ubuntu Server 12.04 using SoftHSM version 1.3.5 and 2.0.0b1
+Ubuntu Server 12.04 using SoftHSM version 1.3.7 and 2.0.0b2
 
 =back
+
+More platforms and PKCS #11 providers will be added in the future.
 
 =head1 RETURN VALUES AND ERROR HANDLING
 
