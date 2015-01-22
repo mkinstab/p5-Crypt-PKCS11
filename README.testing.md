@@ -6,37 +6,43 @@ Most testing is done on Ubuntu 12.04.
 
 ### Packages
 
-  apt-get install -y build-essential libxml2-dev libsqlite3-dev sqlite3 \
-  libbotan1.10-dev libssl-dev autoconf automake libtool libcunit1-dev \
-  libxml2-utils libcppunit-dev wget ccache libtest-checkmanifest-perl \
-  libtest-leaktrace-perl libtest-pod-coverage-perl libdevel-cover-perl
+```
+apt-get install -y build-essential libxml2-dev libsqlite3-dev sqlite3 \
+libbotan1.10-dev libssl-dev autoconf automake libtool libcunit1-dev \
+libxml2-utils libcppunit-dev wget ccache libtest-checkmanifest-perl \
+libtest-leaktrace-perl libtest-pod-coverage-perl libdevel-cover-perl
+```
 
 ### SoftHSM
 
-  wget --no-check-certificate http://www.opendnssec.org/files/source/softhsm-1.3.7.tar.gz && \
-  wget --no-check-certificate http://www.opendnssec.org/files/source/testing/softhsm-2.0.0b2.tar.gz && \
-  tar zxvf softhsm-1.3.7.tar.gz && \
-  cd softhsm-1.3.7 && \
-  mv src/lib/MutexFactory.cpp src/lib/MutexFactory.cpp.orig && \
-  ( sed 's%MutexFactory::i()->createMutex%MutexFactory::i()->CreateMutex%' src/lib/MutexFactory.cpp.orig | \
-  sed 's%MutexFactory::i()->destroyMutex%MutexFactory::i()->DestroyMutex%' | \
-  sed 's%MutexFactory::i()->lockMutex%MutexFactory::i()->LockMutex%' | \
-  sed 's%MutexFactory::i()->unlockMutex%MutexFactory::i()->UnlockMutex%' > src/lib/MutexFactory.cpp ) && \
-  ./configure --with-botan=/usr && \
-  make && make install && \
-  tar zxvf softhsm-2.0.0b2.tar.gz && \
-  cd softhsm-2.0.0b2 && \
-  mv src/lib/common/MutexFactory.cpp src/lib/common/MutexFactory.cpp.orig && \
-  ( sed 's%MutexFactory::i()->createMutex%MutexFactory::i()->CreateMutex%' src/lib/common/MutexFactory.cpp.orig | \
-  sed 's%MutexFactory::i()->destroyMutex%MutexFactory::i()->DestroyMutex%' | \
-  sed 's%MutexFactory::i()->lockMutex%MutexFactory::i()->LockMutex%' | \
-  sed 's%MutexFactory::i()->unlockMutex%MutexFactory::i()->UnlockMutex%' > src/lib/common/MutexFactory.cpp ) && \
-  ./configure --disable-non-paged-memory && \
-  make && make install
+```
+wget --no-check-certificate http://www.opendnssec.org/files/source/softhsm-1.3.7.tar.gz && \
+wget --no-check-certificate http://www.opendnssec.org/files/source/testing/softhsm-2.0.0b2.tar.gz && \
+tar zxvf softhsm-1.3.7.tar.gz && \
+cd softhsm-1.3.7 && \
+mv src/lib/MutexFactory.cpp src/lib/MutexFactory.cpp.orig && \
+( sed 's%MutexFactory::i()->createMutex%MutexFactory::i()->CreateMutex%' src/lib/MutexFactory.cpp.orig | \
+sed 's%MutexFactory::i()->destroyMutex%MutexFactory::i()->DestroyMutex%' | \
+sed 's%MutexFactory::i()->lockMutex%MutexFactory::i()->LockMutex%' | \
+sed 's%MutexFactory::i()->unlockMutex%MutexFactory::i()->UnlockMutex%' > src/lib/MutexFactory.cpp ) && \
+./configure --with-botan=/usr && \
+make && make install && \
+tar zxvf softhsm-2.0.0b2.tar.gz && \
+cd softhsm-2.0.0b2 && \
+mv src/lib/common/MutexFactory.cpp src/lib/common/MutexFactory.cpp.orig && \
+( sed 's%MutexFactory::i()->createMutex%MutexFactory::i()->CreateMutex%' src/lib/common/MutexFactory.cpp.orig | \
+sed 's%MutexFactory::i()->destroyMutex%MutexFactory::i()->DestroyMutex%' | \
+sed 's%MutexFactory::i()->lockMutex%MutexFactory::i()->LockMutex%' | \
+sed 's%MutexFactory::i()->unlockMutex%MutexFactory::i()->UnlockMutex%' > src/lib/common/MutexFactory.cpp ) && \
+./configure --disable-non-paged-memory && \
+make && make install
+```
 
 ## Environment Variables
 
-  export TEST_DEVEL_COVER=1 RELEASE_TESTING=1 PATH="/usr/lib/ccache:$PATH"
+```
+export TEST_DEVEL_COVER=1 RELEASE_TESTING=1 PATH="/usr/lib/ccache:$PATH"
+```
 
 **TEST_DEVEL_COVER** enables coverage code within the XS and C code.
 **RELEASE_TESTING** enables tests such as manifest.t . **PATH** is if you want
@@ -44,13 +50,17 @@ to use ccache.
 
 ## Build and Test
 
-  perl Makefile.PL
-  make all test
+```
+perl Makefile.PL
+make all test
+```
 
 ## Devel::Cover
 
-  perl Makefile.PL
-  PATH="$PWD/gen:$PATH" cover -test && chmod a+rx `find cover_db -type d`
+```
+perl Makefile.PL
+PATH="$PWD/gen:$PATH" cover -test && chmod a+rx `find cover_db -type d`
+```
 
 **PATH** must be set to a gcov2perl wrapper that enables uncoverable tags within
 the XS and C code.
