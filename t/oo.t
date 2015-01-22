@@ -131,6 +131,11 @@ sub mytests {
         }
     }
 
+    unless (scalar @libraries) {
+        ok( 1, 'no libraries to test' );
+        return;
+    }
+
     foreach my $so (@libraries) {
         my $obj;
         my $s;

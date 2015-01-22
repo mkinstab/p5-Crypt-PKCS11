@@ -187,127 +187,127 @@ if ($ENV{TEST_DEVEL_COVER}) {
     myis( Crypt::PKCS11::XSPtr::test_devel_cover_action_init({mechanism=>-1}), CKR_ARGUMENTS_BAD );
     myis( Crypt::PKCS11::XSPtr::test_devel_cover_action_init({mechanism=>''}), CKR_ARGUMENTS_BAD );
     myis( Crypt::PKCS11::XSPtr::test_devel_cover_action_init({mechanism=>1, pParameter=>undef}), CKR_ARGUMENTS_BAD );
+
+    myisa_ok( $xs = Crypt::PKCS11::XS->new, 'Crypt::PKCS11::XSPtr' );
+    myis( $xs->load('TEST_DEVEL_COVER'), CKR_OK );
+    $xs->C_GetInfo($a = {});
+    myis( $xs->C_InitToken(1, 1, undef), CKR_ARGUMENTS_BAD, '$xs->C_InitToken(1, 1, undef)' );
+    myis( $xs->C_InitToken(1, undef, 1), CKR_OK, '$xs->C_InitToken(1, undef, 1)' );
+    myis( $xs->C_InitToken(1, undef, '01234567890123456789012345678901'), CKR_OK, '$xs->C_InitToken(1, undef, 1)' );
+
+    myis( $xs->C_InitPIN(1, undef), CKR_OK, '$xs->C_InitPIN(1, undef)' );
+    myis( $xs->C_InitPIN(1, 1), CKR_OK, '$xs->C_InitPIN(1, 1)' );
+
+    myis( $xs->C_SetPIN(1, undef, undef), CKR_OK, '$xs->C_SetPIN(1, undef, undef)' );
+    myis( $xs->C_SetPIN(1, 1, undef), CKR_OK, '$xs->C_SetPIN(1, 1, undef)' );
+    myis( $xs->C_SetPIN(1, 1, 1), CKR_OK, '$xs->C_SetPIN(1, 1, 1)' );
+
+    {
+        local $SIG{__WARN__} = sub {};
+        my ($a, $called);
+        myis( $xs->C_OpenSession(0, 0, sub { $called = 1; }, $a), CKR_OK, '$xs->C_OpenSession' );
+        myok( $called, 'C_OpenSession not called' );
+        myis( $xs->C_OpenSession(9999, 0, sub {}, $a), CKR_GENERAL_ERROR, '$xs->C_OpenSession' );
+    }
+
+    myis( $xs->C_GetOperationState(1, $a), CKR_OK, '$xs->C_GetOperationState(1, $a)' );
+    myis( $xs->C_GetOperationState(9999, $a), CKR_OK, '$xs->C_GetOperationState(1, $a)' );
+
+    {
+        local $SIG{__WARN__} = sub {};
+        myis( $xs->C_SetOperationState(1, $a, undef, undef), CKR_OK, '$xs->C_SetOperationState(1, $a, undef, undef)' );
+    }
+
+    myis( $xs->C_Login(1, 1, undef), CKR_OK, '$xs->C_Loing(1, 1, undef)' );
+
+    myis( $xs->C_GetObjectSize(1, 1, $a), CKR_OK, '$xs->C_GetObjectSize(1, 1, $a)' );
+
+    myis( $xs->C_FindObjects(1, $a = [], 2), CKR_OK, '$xs->C_FindObjects(1, $a = [], 2)' );
+
+    myis( $xs->C_CreateObject(1, $a = [], $b = 0), CKR_OK );
+    myis( $xs->C_CreateObject(1, $a = [[]], $b = 0), CKR_ARGUMENTS_BAD );
+
+    myis( $xs->C_CopyObject(1, 1, $a = [], $b = 0), CKR_OK );
+    myis( $xs->C_CopyObject(1, 1, $a = [[]], $b = 0), CKR_ARGUMENTS_BAD );
+
+    myis( $xs->C_GetObjectSize(9999, 1, $b), CKR_GENERAL_ERROR );
+
+    myis( $xs->C_GetAttributeValue(1, 1, $a = []), CKR_OK );
+    myis( $xs->C_GetAttributeValue(1, 1, $a = [[]]), CKR_ARGUMENTS_BAD );
+
+    myis( $xs->C_SetAttributeValue(1, 1, $a = []), CKR_OK );
+    myis( $xs->C_SetAttributeValue(1, 1, $a = [[]]), CKR_ARGUMENTS_BAD );
+
+    myis( $xs->C_FindObjectsInit(1, $a = []), CKR_OK );
+    myis( $xs->C_FindObjectsInit(1, $a = [[]]), CKR_ARGUMENTS_BAD );
+
+    myis( $xs->C_EncryptUpdate(1, $a = '', $b = ' '), CKR_OK );
+    myis( $xs->C_EncryptUpdate(1, $a = '', $b = ''), CKR_OK );
+    myis( $xs->C_EncryptFinal(1, $a = ' '), CKR_OK );
+    myis( $xs->C_EncryptFinal(1, $a = ''), CKR_OK );
+    myis( $xs->C_DecryptUpdate(1, $a = '', $b = ' '), CKR_OK );
+    myis( $xs->C_DecryptUpdate(1, $a = '', $b = ''), CKR_OK );
+    myis( $xs->C_DecryptFinal(1, $a = ' '), CKR_OK );
+    myis( $xs->C_DecryptFinal(1, $a = ''), CKR_OK );
+
+    myis( $xs->C_SignRecover(1, $a = '', $b = ' '), CKR_OK );
+    myis( $xs->C_SignRecover(1, $a = '', $b = ''), CKR_OK );
+
+    $mech = {};
+    myis( $xs->C_EncryptInit(1, $mech, 1), CKR_ARGUMENTS_BAD );
+    myis( $xs->C_DecryptInit(1, $mech, 1), CKR_ARGUMENTS_BAD );
+    myis( $xs->C_DigestInit(1, $mech), CKR_ARGUMENTS_BAD );
+    myis( $xs->C_SignInit(1, $mech, 1), CKR_ARGUMENTS_BAD );
+    myis( $xs->C_SignRecoverInit(1, $mech, 1), CKR_ARGUMENTS_BAD );
+    myis( $xs->C_VerifyInit(1, $mech, 1), CKR_ARGUMENTS_BAD );
+    myis( $xs->C_VerifyRecoverInit(1, $mech, 1), CKR_ARGUMENTS_BAD );
+
+    myis( $xs->C_GenerateKey(1, $mech, [], $b), CKR_ARGUMENTS_BAD );
+    myis( $xs->C_GenerateKeyPair(1, $mech, [], [], $b, $c), CKR_ARGUMENTS_BAD );
+    myis( $xs->C_WrapKey(1, $mech, 1, 1, $b), CKR_ARGUMENTS_BAD );
+    myis( $xs->C_UnwrapKey(1, $mech, 1, 1, [], $b), CKR_ARGUMENTS_BAD );
+    myis( $xs->C_DeriveKey(1, $mech, 1, [], $b), CKR_ARGUMENTS_BAD );
+
+    my $mech = Crypt::PKCS11::CK_MECHANISM->new;
+    myis( $mech->set_mechanism(CKM_SHA_1), CKR_OK, '$mech->set_mechanism(CKM_SHA_1)' );
+
+    myis( $xs->C_SignRecoverInit(1, $mech->toHash, 1), CKR_OK );
+    myis( $xs->C_VerifyRecoverInit(1, $mech->toHash, 1), CKR_OK );
+
+    myis( $xs->C_GenerateKey(1, $mech->toHash, [], $b), CKR_OK );
+    myis( $xs->C_GenerateKey(9999, $mech->toHash, [{type => 1, pValue => ''}], $b), CKR_GENERAL_ERROR );
+    myis( $xs->C_GenerateKey(1, $mech->toHash, [[]], $b), CKR_ARGUMENTS_BAD );
+    myis( $xs->C_GenerateKeyPair(1, $mech->toHash, [], [], $b, $c), CKR_OK );
+    myis( $xs->C_GenerateKeyPair(1, $mech->toHash, [[]], [], $b, $c), CKR_ARGUMENTS_BAD );
+    myis( $xs->C_GenerateKeyPair(1, $mech->toHash, [], [[]], $b, $c), CKR_ARGUMENTS_BAD );
+    myis( $xs->C_WrapKey(1, $mech->toHash, 1, 1, $b), CKR_OK );
+    myis( $xs->C_WrapKey(1, $mech->toHash, 1, 1, $b = ''), CKR_GENERAL_ERROR );
+    myis( $xs->C_WrapKey(9999, $mech->toHash, 1, 1, $b = ''), CKR_GENERAL_ERROR );
+    myis( $xs->C_WrapKey(9999, $mech->toHash, 1, 1, $b = ' '), CKR_GENERAL_ERROR );
+    myis( $xs->C_UnwrapKey(1, $mech->toHash, 1, 1, [], $b), CKR_OK );
+    myis( $xs->C_UnwrapKey(1, $mech->toHash, 1, 1, [[]], $b), CKR_ARGUMENTS_BAD );
+    myis( $xs->C_UnwrapKey(9999, $mech->toHash, 1, 1, [{type => 1, pValue => ''}], $b), CKR_GENERAL_ERROR );
+    myis( $xs->C_DeriveKey(1, $mech->toHash, 1, [], $b), CKR_OK );
+    myis( $xs->C_DeriveKey(1, $mech->toHash, 1, [[]], $b), CKR_ARGUMENTS_BAD );
+    myis( $xs->C_DeriveKey(9999, $mech->toHash, 1, [{type => 1, pValue => ''}], $b), CKR_GENERAL_ERROR );
+
+    myis( $xs->C_VerifyRecover(1, $a = '', $b = ' '), CKR_OK );
+    myis( $xs->C_VerifyRecover(1, $a = '', $b = ''), CKR_OK );
+
+    myis( $xs->C_DigestEncryptUpdate(1, $a = '', $b = ' '), CKR_OK );
+    myis( $xs->C_DigestEncryptUpdate(1, $a = '', $b = ''), CKR_OK );
+    myis( $xs->C_DecryptDigestUpdate(1, $a = '', $b = ' '), CKR_OK );
+    myis( $xs->C_DecryptDigestUpdate(1, $a = '', $b = ''), CKR_OK );
+    myis( $xs->C_SignEncryptUpdate(1, $a = '', $b = ' '), CKR_OK );
+    myis( $xs->C_SignEncryptUpdate(1, $a = '', $b = ''), CKR_OK );
+    myis( $xs->C_DecryptVerifyUpdate(1, $a = '', $b = ' '), CKR_OK );
+    myis( $xs->C_DecryptVerifyUpdate(1, $a = '', $b = ''), CKR_OK );
+
+    myis( $xs->C_GenerateRandom(9999, $a, 1), CKR_GENERAL_ERROR );
+    myis( $xs->C_GetFunctionStatus(1), CKR_OK );
+    myis( $xs->C_CancelFunction(1), CKR_OK );
+    myis( $xs->C_WaitForSlotEvent(1, $a), CKR_OK );
 }
-
-myisa_ok( $xs = Crypt::PKCS11::XS->new, 'Crypt::PKCS11::XSPtr' );
-myis( $xs->load('TEST_DEVEL_COVER'), CKR_OK );
-$xs->C_GetInfo($a = {});
-myis( $xs->C_InitToken(1, 1, undef), CKR_ARGUMENTS_BAD, '$xs->C_InitToken(1, 1, undef)' );
-myis( $xs->C_InitToken(1, undef, 1), CKR_OK, '$xs->C_InitToken(1, undef, 1)' );
-myis( $xs->C_InitToken(1, undef, '01234567890123456789012345678901'), CKR_OK, '$xs->C_InitToken(1, undef, 1)' );
-
-myis( $xs->C_InitPIN(1, undef), CKR_OK, '$xs->C_InitPIN(1, undef)' );
-myis( $xs->C_InitPIN(1, 1), CKR_OK, '$xs->C_InitPIN(1, 1)' );
-
-myis( $xs->C_SetPIN(1, undef, undef), CKR_OK, '$xs->C_SetPIN(1, undef, undef)' );
-myis( $xs->C_SetPIN(1, 1, undef), CKR_OK, '$xs->C_SetPIN(1, 1, undef)' );
-myis( $xs->C_SetPIN(1, 1, 1), CKR_OK, '$xs->C_SetPIN(1, 1, 1)' );
-
-{
-    local $SIG{__WARN__} = sub {};
-    my ($a, $called);
-    myis( $xs->C_OpenSession(0, 0, sub { $called = 1; }, $a), CKR_OK, '$xs->C_OpenSession' );
-    myok( $called, 'C_OpenSession not called' );
-    myis( $xs->C_OpenSession(9999, 0, sub {}, $a), CKR_GENERAL_ERROR, '$xs->C_OpenSession' );
-}
-
-myis( $xs->C_GetOperationState(1, $a), CKR_OK, '$xs->C_GetOperationState(1, $a)' );
-myis( $xs->C_GetOperationState(9999, $a), CKR_OK, '$xs->C_GetOperationState(1, $a)' );
-
-{
-    local $SIG{__WARN__} = sub {};
-    myis( $xs->C_SetOperationState(1, $a, undef, undef), CKR_OK, '$xs->C_SetOperationState(1, $a, undef, undef)' );
-}
-
-myis( $xs->C_Login(1, 1, undef), CKR_OK, '$xs->C_Loing(1, 1, undef)' );
-
-myis( $xs->C_GetObjectSize(1, 1, $a), CKR_OK, '$xs->C_GetObjectSize(1, 1, $a)' );
-
-myis( $xs->C_FindObjects(1, $a = [], 2), CKR_OK, '$xs->C_FindObjects(1, $a = [], 2)' );
-
-myis( $xs->C_CreateObject(1, $a = [], $b = 0), CKR_OK );
-myis( $xs->C_CreateObject(1, $a = [[]], $b = 0), CKR_ARGUMENTS_BAD );
-
-myis( $xs->C_CopyObject(1, 1, $a = [], $b = 0), CKR_OK );
-myis( $xs->C_CopyObject(1, 1, $a = [[]], $b = 0), CKR_ARGUMENTS_BAD );
-
-myis( $xs->C_GetObjectSize(9999, 1, $b), CKR_GENERAL_ERROR );
-
-myis( $xs->C_GetAttributeValue(1, 1, $a = []), CKR_OK );
-myis( $xs->C_GetAttributeValue(1, 1, $a = [[]]), CKR_ARGUMENTS_BAD );
-
-myis( $xs->C_SetAttributeValue(1, 1, $a = []), CKR_OK );
-myis( $xs->C_SetAttributeValue(1, 1, $a = [[]]), CKR_ARGUMENTS_BAD );
-
-myis( $xs->C_FindObjectsInit(1, $a = []), CKR_OK );
-myis( $xs->C_FindObjectsInit(1, $a = [[]]), CKR_ARGUMENTS_BAD );
-
-myis( $xs->C_EncryptUpdate(1, $a = '', $b = ' '), CKR_OK );
-myis( $xs->C_EncryptUpdate(1, $a = '', $b = ''), CKR_OK );
-myis( $xs->C_EncryptFinal(1, $a = ' '), CKR_OK );
-myis( $xs->C_EncryptFinal(1, $a = ''), CKR_OK );
-myis( $xs->C_DecryptUpdate(1, $a = '', $b = ' '), CKR_OK );
-myis( $xs->C_DecryptUpdate(1, $a = '', $b = ''), CKR_OK );
-myis( $xs->C_DecryptFinal(1, $a = ' '), CKR_OK );
-myis( $xs->C_DecryptFinal(1, $a = ''), CKR_OK );
-
-myis( $xs->C_SignRecover(1, $a = '', $b = ' '), CKR_OK );
-myis( $xs->C_SignRecover(1, $a = '', $b = ''), CKR_OK );
-
-$mech = {};
-myis( $xs->C_EncryptInit(1, $mech, 1), CKR_ARGUMENTS_BAD );
-myis( $xs->C_DecryptInit(1, $mech, 1), CKR_ARGUMENTS_BAD );
-myis( $xs->C_DigestInit(1, $mech), CKR_ARGUMENTS_BAD );
-myis( $xs->C_SignInit(1, $mech, 1), CKR_ARGUMENTS_BAD );
-myis( $xs->C_SignRecoverInit(1, $mech, 1), CKR_ARGUMENTS_BAD );
-myis( $xs->C_VerifyInit(1, $mech, 1), CKR_ARGUMENTS_BAD );
-myis( $xs->C_VerifyRecoverInit(1, $mech, 1), CKR_ARGUMENTS_BAD );
-
-myis( $xs->C_GenerateKey(1, $mech, [], $b), CKR_ARGUMENTS_BAD );
-myis( $xs->C_GenerateKeyPair(1, $mech, [], [], $b, $c), CKR_ARGUMENTS_BAD );
-myis( $xs->C_WrapKey(1, $mech, 1, 1, $b), CKR_ARGUMENTS_BAD );
-myis( $xs->C_UnwrapKey(1, $mech, 1, 1, [], $b), CKR_ARGUMENTS_BAD );
-myis( $xs->C_DeriveKey(1, $mech, 1, [], $b), CKR_ARGUMENTS_BAD );
-
-my $mech = Crypt::PKCS11::CK_MECHANISM->new;
-myis( $mech->set_mechanism(CKM_SHA_1), CKR_OK, '$mech->set_mechanism(CKM_SHA_1)' );
-
-myis( $xs->C_SignRecoverInit(1, $mech->toHash, 1), CKR_OK );
-myis( $xs->C_VerifyRecoverInit(1, $mech->toHash, 1), CKR_OK );
-
-myis( $xs->C_GenerateKey(1, $mech->toHash, [], $b), CKR_OK );
-myis( $xs->C_GenerateKey(9999, $mech->toHash, [{type => 1, pValue => ''}], $b), CKR_GENERAL_ERROR );
-myis( $xs->C_GenerateKey(1, $mech->toHash, [[]], $b), CKR_ARGUMENTS_BAD );
-myis( $xs->C_GenerateKeyPair(1, $mech->toHash, [], [], $b, $c), CKR_OK );
-myis( $xs->C_GenerateKeyPair(1, $mech->toHash, [[]], [], $b, $c), CKR_ARGUMENTS_BAD );
-myis( $xs->C_GenerateKeyPair(1, $mech->toHash, [], [[]], $b, $c), CKR_ARGUMENTS_BAD );
-myis( $xs->C_WrapKey(1, $mech->toHash, 1, 1, $b), CKR_OK );
-myis( $xs->C_WrapKey(1, $mech->toHash, 1, 1, $b = ''), CKR_GENERAL_ERROR );
-myis( $xs->C_WrapKey(9999, $mech->toHash, 1, 1, $b = ''), CKR_GENERAL_ERROR );
-myis( $xs->C_WrapKey(9999, $mech->toHash, 1, 1, $b = ' '), CKR_GENERAL_ERROR );
-myis( $xs->C_UnwrapKey(1, $mech->toHash, 1, 1, [], $b), CKR_OK );
-myis( $xs->C_UnwrapKey(1, $mech->toHash, 1, 1, [[]], $b), CKR_ARGUMENTS_BAD );
-myis( $xs->C_UnwrapKey(9999, $mech->toHash, 1, 1, [{type => 1, pValue => ''}], $b), CKR_GENERAL_ERROR );
-myis( $xs->C_DeriveKey(1, $mech->toHash, 1, [], $b), CKR_OK );
-myis( $xs->C_DeriveKey(1, $mech->toHash, 1, [[]], $b), CKR_ARGUMENTS_BAD );
-myis( $xs->C_DeriveKey(9999, $mech->toHash, 1, [{type => 1, pValue => ''}], $b), CKR_GENERAL_ERROR );
-
-myis( $xs->C_VerifyRecover(1, $a = '', $b = ' '), CKR_OK );
-myis( $xs->C_VerifyRecover(1, $a = '', $b = ''), CKR_OK );
-
-myis( $xs->C_DigestEncryptUpdate(1, $a = '', $b = ' '), CKR_OK );
-myis( $xs->C_DigestEncryptUpdate(1, $a = '', $b = ''), CKR_OK );
-myis( $xs->C_DecryptDigestUpdate(1, $a = '', $b = ' '), CKR_OK );
-myis( $xs->C_DecryptDigestUpdate(1, $a = '', $b = ''), CKR_OK );
-myis( $xs->C_SignEncryptUpdate(1, $a = '', $b = ' '), CKR_OK );
-myis( $xs->C_SignEncryptUpdate(1, $a = '', $b = ''), CKR_OK );
-myis( $xs->C_DecryptVerifyUpdate(1, $a = '', $b = ' '), CKR_OK );
-myis( $xs->C_DecryptVerifyUpdate(1, $a = '', $b = ''), CKR_OK );
-
-myis( $xs->C_GenerateRandom(9999, $a, 1), CKR_GENERAL_ERROR );
-myis( $xs->C_GetFunctionStatus(1), CKR_OK );
-myis( $xs->C_CancelFunction(1), CKR_OK );
-myis( $xs->C_WaitForSlotEvent(1, $a), CKR_OK );
 
 {
     local $SIG{__WARN__} = sub {};

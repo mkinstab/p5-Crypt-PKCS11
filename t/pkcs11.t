@@ -921,6 +921,11 @@ sub mytests {
         }
     }
 
+    unless (scalar @libraries) {
+        ok( 1, 'no libraries to test' );
+        return;
+    }
+
     foreach my $so (@libraries) {
         my $obj = Crypt::PKCS11::XS->new;
         myisa_ok( $obj, 'Crypt::PKCS11::XSPtr' );
