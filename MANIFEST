@@ -40,7 +40,7 @@ COPYING
 LICENSE
 README
 README.md
-README.testing
+README.testing.md
 pkcs11.xs
 crypt_pkcs11.c
 crypt_pkcs11.h

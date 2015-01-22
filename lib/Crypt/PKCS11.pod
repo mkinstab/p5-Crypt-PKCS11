@@ -146,7 +146,7 @@ string.
 This module is currently tested on Ubuntu 12.04 and with SoftHSM version 1.3.7
 and 2.0.0b2 as PKCS #11 providers / HSM backends. It uses Test::LeakTrace to
 detect leaks and Devel::Cover to provide coverage reports. The goal is to always
-be non-leaking and to have 100% coverage. See README.testing for more
+be non-leaking and to have 100% coverage. See README.testing.md for more
 information how to test.
 
   ---------------------------- ------ ------ ------ ------ ------ ------ ------
