@@ -1,0 +1,168 @@
+=encoding utf8
+
+=head1 NAME
+
+Crypt::PKCS11 - Mutex Callbacks
+
+=head1 WARNING
+
+Untested code and unknown affect to the Perl VM.
+
+=head1 SYNPOSIS
+
+  use threads;
+  use threads::shared;
+  use Crypt::PKCS11;
+
+  my %mutex :shared;
+  my $mutexCounter :shared;
+  $mutexCounter = 0;
+
+  my $pkcs11 = Crypt::PKCS11->new;
+  $pkcs11->load(...);
+  $pkcs11->Initialize({
+      CreateMutex => sub {
+          my $mutexID = $mutexCounter++;
+          my $lock = 0;
+
+          $mutex{$mutexID} = shared_clone($lock);
+
+          return $mutexID;
+      },
+      DestroyMutex => sub {
+          my ($mutexID) = @_;
+          my $mutex = $mutex{$mutexID};
+
+          if (defined $mutex) {
+              lock($mutex);
+              delete $mutex{$mutexID};
+          }
+
+          return defined $mutex ? CKR_OK : CKR_GENERAL_ERROR;
+      },
+      LockMutex => sub {
+          my ($mutexID) = @_;
+          my $mutex = $mutex{$mutexID};
+
+          if (defined $mutex) {
+              lock($mutex);
+              while ($mutex) {
+                  cond_wait($mutex);
+              }
+              $mutex = threads->tid;
+          }
+
+          return defined $mutex ? CKR_OK : CKR_GENERAL_ERROR;
+      },
+      UnlockMutex => sub {
+          my ($mutexID) = @_;
+          my $mutex = $mutex{$mutexID};
+
+          if (defined $mutex) {
+              unless ($mutex == threads->tid) {
+                  return CKR_GENERAL_ERROR;
+              }
+              lock($mutex);
+              $mutex = 0;
+              cond_signal($mutex);
+          }
+
+          return defined $mutex ? CKR_OK : CKR_GENERAL_ERROR;
+      }
+  });
+  ...
+
+=head1 DESCRIPTION
+
+PKCS #11 supports setting callbacks for handling mutex and in the C library they
+can be set per loaded PKCS #11 library but there is no context pointer supplied
+to the C callback functions so there is no portable way to related to the
+relevant Perl callbacks and therefor all these callbacks are global. Setting
+them once will affect all loaded PKCS #11 libraries.
+
+=head1 CALLBACKS
+
+=over 4
+
+=item $mutexID = CreateMutex
+
+A callback to a function to use for creating mutex objects which must return a
+numeric scalar with an unique ID for the mutex. This will be used to refer to
+the mutex in the other callbacks.
+
+=item DestroyMutex ($mutexID)
+
+A callback to a function to use for destroying mutex objects.
+
+=over 4
+
+=item $mutexID
+
+The unique mutex ID of the mutex to destroy.
+
+=back
+
+=item LockMutex ($mutexID)
+
+A callback to a function to use for locking mutex objects.
+
+=over 4
+
+=item $mutexID
+
+The unique mutex ID of the mutex to lock.
+
+=back
+
+=item UnlockMutex ($mutexID)
+
+A callback to a function to use for unlocking mutex objects.
+
+=over 4
+
+=item $mutexID
+
+The unique mutex ID of the mutex to unlock.
+
+=back
+
+=back
+
+=head1 NOTE
+
+Derived from the RSA Security Inc. PKCS #11 Cryptographic Token Interface (Cryptoki)
+
+=head1 AUTHOR
+
+Jerry Lundström <lundstrom.jerry@gmail.com>
+
+=head1 REPORTING BUGS
+
+Report bugs at https://github.com/dotse/p5-Crypt-PKCS11/issues .
+
+=head1 LICENSE
+
+  Copyright (c) 2015 Jerry Lundström <lundstrom.jerry@gmail.com>
+  Copyright (c) 2015 .SE (The Internet Infrastructure Foundation)
+  All rights reserved.
+
+  Redistribution and use in source and binary forms, with or without
+  modification, are permitted provided that the following conditions
+  are met:
+  1. Redistributions of source code must retain the above copyright
+     notice, this list of conditions and the following disclaimer.
+  2. Redistributions in binary form must reproduce the above copyright
+     notice, this list of conditions and the following disclaimer in the
+     documentation and/or other materials provided with the distribution.
+
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+  HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
