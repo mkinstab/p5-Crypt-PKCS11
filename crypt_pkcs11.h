@@ -129,4 +129,7 @@ CK_RV crypt_pkcs11_xs_C_CancelFunction(Crypt__PKCS11__XS* object, CK_SESSION_HAN
 CK_RV crypt_pkcs11_xs_C_WaitForSlotEvent(Crypt__PKCS11__XS* object, CK_FLAGS flags, SV* pSlot);
 #ifdef TEST_DEVEL_COVER
 int crypt_pkcs11_xs_test_devel_cover(Crypt__PKCS11__XS* object);
+CK_RV crypt_pkcs11_xs_test_devel_cover_check_pTemplate(AV* pTemplate, int allow_undef_pValue);
+CK_RV crypt_pkcs11_xs_test_devel_cover_create_CK_ATTRIBUTE(AV* pTemplate, CK_ULONG count, int allow_undef_pValue);
+CK_RV crypt_pkcs11_xs_test_devel_cover_action_init(HV* pMechanism);
 #endif

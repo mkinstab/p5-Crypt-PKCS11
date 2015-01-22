@@ -65,6 +65,8 @@ sub myisnt {
 
 sub mytests {
 
+# TODO: Test GetAttributeValue more
+
 # Crypt/PKCS11.pm
 
 $obj = eval {
@@ -150,6 +152,41 @@ if ($ENV{TEST_DEVEL_COVER}) {
     myis( $rv, 0, 'Failed on line '.$rv );
     $rv = Crypt::PKCS11::STRUCT_XS::test_devel_cover;
     myis( $rv, 0, 'Failed on line '.$rv );
+
+    myis( Crypt::PKCS11::XSPtr::test_devel_cover_check_pTemplate([], 1), CKR_OK );
+    myis( Crypt::PKCS11::XSPtr::test_devel_cover_check_pTemplate([undef], 0), CKR_GENERAL_ERROR );
+    myis( Crypt::PKCS11::XSPtr::test_devel_cover_check_pTemplate([1], 1), CKR_GENERAL_ERROR );
+    myis( Crypt::PKCS11::XSPtr::test_devel_cover_check_pTemplate([[]], 1), CKR_ARGUMENTS_BAD );
+    myis( Crypt::PKCS11::XSPtr::test_devel_cover_check_pTemplate([{}], 1), CKR_ARGUMENTS_BAD );
+    myis( Crypt::PKCS11::XSPtr::test_devel_cover_check_pTemplate([{type=>1}], 0), CKR_ARGUMENTS_BAD );
+    myis( Crypt::PKCS11::XSPtr::test_devel_cover_check_pTemplate([{type=>-1}], 0), CKR_ARGUMENTS_BAD );
+    myis( Crypt::PKCS11::XSPtr::test_devel_cover_check_pTemplate([{type=>''}], 0), CKR_ARGUMENTS_BAD );
+    myis( Crypt::PKCS11::XSPtr::test_devel_cover_check_pTemplate([{type=>1, pValue=>undef}], 0), CKR_ARGUMENTS_BAD );
+    myis( Crypt::PKCS11::XSPtr::test_devel_cover_check_pTemplate([{type=>1, pValue=>undef}], 1), CKR_ARGUMENTS_BAD );
+    myis( Crypt::PKCS11::XSPtr::test_devel_cover_check_pTemplate([{type=>1}], 1), CKR_OK );
+    myis( Crypt::PKCS11::XSPtr::test_devel_cover_check_pTemplate([{type=>1, pValue=>''}], 0), CKR_OK );
+    myis( Crypt::PKCS11::XSPtr::test_devel_cover_check_pTemplate([{type=>1, pValue=>''}], 1), CKR_OK );
+
+    myis( Crypt::PKCS11::XSPtr::test_devel_cover_create_CK_ATTRIBUTE([undef], 1, 0), CKR_GENERAL_ERROR );
+    myis( Crypt::PKCS11::XSPtr::test_devel_cover_create_CK_ATTRIBUTE([1], 1, 1), CKR_GENERAL_ERROR );
+    myis( Crypt::PKCS11::XSPtr::test_devel_cover_create_CK_ATTRIBUTE([[]], 1, 1), CKR_GENERAL_ERROR );
+    myis( Crypt::PKCS11::XSPtr::test_devel_cover_create_CK_ATTRIBUTE([{}], 1, 1), CKR_GENERAL_ERROR );
+    myis( Crypt::PKCS11::XSPtr::test_devel_cover_create_CK_ATTRIBUTE([{type=>1}], 1, 0), CKR_GENERAL_ERROR );
+    myis( Crypt::PKCS11::XSPtr::test_devel_cover_create_CK_ATTRIBUTE([{type=>-1}], 1, 0), CKR_GENERAL_ERROR );
+    myis( Crypt::PKCS11::XSPtr::test_devel_cover_create_CK_ATTRIBUTE([{type=>''}], 1, 0), CKR_GENERAL_ERROR );
+    myis( Crypt::PKCS11::XSPtr::test_devel_cover_create_CK_ATTRIBUTE([{type=>1, pValue=>undef}], 1, 0), CKR_GENERAL_ERROR );
+    myis( Crypt::PKCS11::XSPtr::test_devel_cover_create_CK_ATTRIBUTE([{type=>1, pValue=>undef}], 1, 1), CKR_GENERAL_ERROR );
+    myis( Crypt::PKCS11::XSPtr::test_devel_cover_create_CK_ATTRIBUTE([{type=>1}], 1, 1), CKR_OK );
+    myis( Crypt::PKCS11::XSPtr::test_devel_cover_create_CK_ATTRIBUTE([{type=>1}, {type=>1}], 1, 1), CKR_GENERAL_ERROR );
+    myis( Crypt::PKCS11::XSPtr::test_devel_cover_create_CK_ATTRIBUTE([{type=>1, pValue=>''}], 1, 0), CKR_OK );
+    myis( Crypt::PKCS11::XSPtr::test_devel_cover_create_CK_ATTRIBUTE([{type=>1, pValue=>''}], 1, 1), CKR_OK );
+
+    myis( Crypt::PKCS11::XSPtr::test_devel_cover_action_init({}), CKR_ARGUMENTS_BAD );
+    myis( Crypt::PKCS11::XSPtr::test_devel_cover_action_init({undef=>undef}), CKR_ARGUMENTS_BAD );
+    myis( Crypt::PKCS11::XSPtr::test_devel_cover_action_init({mechanism=>undef}), CKR_ARGUMENTS_BAD );
+    myis( Crypt::PKCS11::XSPtr::test_devel_cover_action_init({mechanism=>-1}), CKR_ARGUMENTS_BAD );
+    myis( Crypt::PKCS11::XSPtr::test_devel_cover_action_init({mechanism=>''}), CKR_ARGUMENTS_BAD );
+    myis( Crypt::PKCS11::XSPtr::test_devel_cover_action_init({mechanism=>1, pParameter=>undef}), CKR_ARGUMENTS_BAD );
 }
 
 myisa_ok( $xs = Crypt::PKCS11::XS->new, 'Crypt::PKCS11::XSPtr' );

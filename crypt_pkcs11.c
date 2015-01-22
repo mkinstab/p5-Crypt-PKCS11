@@ -1543,10 +1543,15 @@ static CK_RV __check_pTemplate(AV* pTemplate, CK_ULONG_PTR pulCount, int allow_u
     for (key = 0; key < av_len(pTemplate) + 1; key++) {
         item = av_fetch(pTemplate, key, 0);
 
-        if (!item || !*item || !SvROK(*item)) {
-            continue;
+        /* uncoverable begin */
+        if (!item || !*item
+            /* uncoverable end */
+            || !SvROK(*item))
+        {
+            return CKR_GENERAL_ERROR;
         }
 
+        /* uncoverable branch 1 */
         if (!(entry = SvRV(*item)) || SvTYPE(entry) != SVt_PVHV) {
             return CKR_ARGUMENTS_BAD;
         }
@@ -1560,14 +1565,17 @@ static CK_RV __check_pTemplate(AV* pTemplate, CK_ULONG_PTR pulCount, int allow_u
          */
 
         if (!type
+            /* uncoverable branch 1 */
             || !*type
             || !crypt_pkcs11_xs_SvUOK(*type)
             || (!allow_undef_pValue
                 && (!pValue
+                    /* uncoverable branch 1 */
                     || !*pValue
                     || !SvPOK(*pValue)))
             || (allow_undef_pValue
                 && pValue
+                /* uncoverable branch 1 */
                 && (!*pValue
                     || !SvPOK(*pValue))))
         {
@@ -1613,10 +1621,17 @@ static CK_RV __create_CK_ATTRIBUTE(CK_ATTRIBUTE_PTR* ppTemplate, AV* pTemplate, 
     for (i = 0, key = 0; key < av_len(pTemplate) + 1; key++) {
         item = av_fetch(pTemplate, key, 0);
 
-        if (!item || !*item || !SvROK(*item)) {
-            continue;
+        /* uncoverable begin */
+        if (!item || !*item
+            /* uncoverable end */
+            || !SvROK(*item))
+        {
+            free(*ppTemplate);
+            *ppTemplate = NULL_PTR;
+            return CKR_GENERAL_ERROR;
         }
 
+        /* uncoverable branch 1 */
         if (!(entry = SvRV(*item)) || SvTYPE(entry) != SVt_PVHV) {
             free(*ppTemplate);
             *ppTemplate = NULL_PTR;
@@ -1640,16 +1655,19 @@ static CK_RV __create_CK_ATTRIBUTE(CK_ATTRIBUTE_PTR* ppTemplate, AV* pTemplate, 
          */
 
         if (!type
+            /* uncoverable branch 1 */
             || !*type
             || !crypt_pkcs11_xs_SvUOK(*type)
             || (!allow_undef_pValue
                 && (!pValue
+                    /* uncoverable branch 1 */
                     || !*pValue
                     || !SvPOK(*pValue)
                     || !(_pValue = SvPVbyte(*pValue, len))
                     || len < 0))
             || (allow_undef_pValue
                 && pValue
+                /* uncoverable branch 1 */
                 && (!*pValue
                     || !SvPOK(*pValue)
                     || !(_pValue = SvPVbyte(*pValue, len))
@@ -1717,7 +1735,9 @@ CK_RV crypt_pkcs11_xs_C_CreateObject(Crypt__PKCS11__XS* object, CK_SESSION_HANDL
          * Create CK_ATTRIBUTE objects and extract the information from the hash.
          */
 
+        /* uncoverable branch 1 */
         if ((rv = __create_CK_ATTRIBUTE(&_pTemplate, pTemplate, ulCount, 0)) != CKR_OK) {
+            /* uncoverable block 0 */
             return rv;
         }
     }
@@ -1781,7 +1801,9 @@ CK_RV crypt_pkcs11_xs_C_CopyObject(Crypt__PKCS11__XS* object, CK_SESSION_HANDLE 
          * Create CK_ATTRIBUTE objects and extract the information from the hash.
          */
 
+        /* uncoverable branch 1 */
         if ((rv = __create_CK_ATTRIBUTE(&_pTemplate, pTemplate, ulCount, 0)) != CKR_OK) {
+            /* uncoverable block 0 */
             return rv;
         }
     }
@@ -1897,7 +1919,9 @@ CK_RV crypt_pkcs11_xs_C_GetAttributeValue(Crypt__PKCS11__XS* object, CK_SESSION_
          * Create CK_ATTRIBUTE objects and extract the information from the hash.
          */
 
+        /* uncoverable branch 1 */
         if ((rv = __create_CK_ATTRIBUTE(&_pTemplate, pTemplate, ulCount, 1)) != CKR_OK) {
+            /* uncoverable block 0 */
             return rv;
         }
     }
@@ -1919,8 +1943,10 @@ CK_RV crypt_pkcs11_xs_C_GetAttributeValue(Crypt__PKCS11__XS* object, CK_SESSION_
     for (i = 0, key = 0; key < av_len(pTemplate) + 1; key++) {
         item = av_fetch(pTemplate, key, 0);
 
+        /* uncoverable begin */
         if (!item || !*item || !SvROK(*item)) {
-            continue;
+            free(_pTemplate);
+            return CKR_GENERAL_ERROR;
         }
 
         if (!(entry = SvRV(*item)) || SvTYPE(entry) != SVt_PVHV) {
@@ -1951,6 +1977,7 @@ CK_RV crypt_pkcs11_xs_C_GetAttributeValue(Crypt__PKCS11__XS* object, CK_SESSION_
         else {
             sv_setuv(*ulValueLen, _pTemplate[i].ulValueLen);
         }
+        /* uncoverable end */
         i++;
     }
     free(_pTemplate);
@@ -1996,7 +2023,9 @@ CK_RV crypt_pkcs11_xs_C_SetAttributeValue(Crypt__PKCS11__XS* object, CK_SESSION_
          * Create CK_ATTRIBUTE objects and extract the information from the hash.
          */
 
+        /* uncoverable branch 1 */
         if ((rv = __create_CK_ATTRIBUTE(&_pTemplate, pTemplate, ulCount, 1)) != CKR_OK) {
+            /* uncoverable block 0 */
             return rv;
         }
     }
@@ -2046,7 +2075,9 @@ CK_RV crypt_pkcs11_xs_C_FindObjectsInit(Crypt__PKCS11__XS* object, CK_SESSION_HA
          * Create CK_ATTRIBUTE objects and extract the information from the hash.
          */
 
+        /* uncoverable branch 1 */
         if ((rv = __create_CK_ATTRIBUTE(&_pTemplate, pTemplate, ulCount, 1)) != CKR_OK) {
+            /* uncoverable block 0 */
             return rv;
         }
     }
@@ -2141,9 +2172,11 @@ static CK_RV __action_init(HV* pMechanism, CK_MECHANISM_PTR _pMechanism) {
     pParameter = hv_fetch(pMechanism, __pParameter_str, sizeof(__pParameter_str)-1, 0);
 
     if (!mechanism
+        /* uncoverable branch 1 */
         || !*mechanism
         || !crypt_pkcs11_xs_SvUOK(*mechanism)
         || (pParameter
+            /* uncoverable branch 1 */
             && (!*pParameter
                 || !SvPOK(*pParameter)
                 || !(_pParameter = SvPVbyte(*pParameter, ulParameterLen))
@@ -2195,6 +2228,7 @@ static CK_RV __action(__action_call_t call, CK_SESSION_HANDLE hSession, SV* pFro
             && (!(_pTo = SvPVbyte(pTo, ulToLen))
                 || ulToLen < 0))
     {
+        /* uncoverable block 0 */
         return CKR_ARGUMENTS_BAD;
     }
 
@@ -2253,6 +2287,7 @@ static CK_RV __action_update(__action_update_call_t call, CK_SESSION_HANDLE hSes
     if (!(_pFrom = SvPVbyte(pFrom, ulFromLen))
         || ulFromLen < 0)
     {
+        /* uncoverable block 0 */
         return CKR_ARGUMENTS_BAD;
     }
 
@@ -2282,6 +2317,7 @@ static CK_RV __action_final(__action_final_call_t call, CK_SESSION_HANDLE hSessi
         && (!(_pLastPart = SvPVbyte(pLastPart, ulLastPartLen))
             || ulLastPartLen < 0))
     {
+        /* uncoverable block 0 */
         return CKR_ARGUMENTS_BAD;
     }
 
@@ -3071,7 +3107,9 @@ CK_RV crypt_pkcs11_xs_C_GenerateKey(Crypt__PKCS11__XS* object, CK_SESSION_HANDLE
     }
 
     if (ulCount) {
+        /* uncoverable branch 1 */
         if ((rv = __create_CK_ATTRIBUTE(&_pTemplate, pTemplate, ulCount, 0)) != CKR_OK) {
+            /* uncoverable block 0 */
             return rv;
         }
     }
@@ -3135,7 +3173,9 @@ CK_RV crypt_pkcs11_xs_C_GenerateKeyPair(Crypt__PKCS11__XS* object, CK_SESSION_HA
         return rv;
     }
     if (ulPublicKeyCount) {
+        /* uncoverable branch 1 */
         if ((rv = __create_CK_ATTRIBUTE(&_pPublicKeyTemplate, pPublicKeyTemplate, ulPublicKeyCount, 0)) != CKR_OK) {
+            /* uncoverable block 0 */
             return rv;
         }
     }
@@ -3145,9 +3185,12 @@ CK_RV crypt_pkcs11_xs_C_GenerateKeyPair(Crypt__PKCS11__XS* object, CK_SESSION_HA
         return rv;
     }
     if (ulPrivateKeyCount) {
+        /* uncoverable branch 1 */
         if ((rv = __create_CK_ATTRIBUTE(&_pPrivateKeyTemplate, pPrivateKeyTemplate, ulPrivateKeyCount, 0)) != CKR_OK) {
+            /* uncoverable begin */
             free(_pPublicKeyTemplate);
             return rv;
+            /* uncoverable end */
         }
     }
 
@@ -3299,7 +3342,9 @@ CK_RV crypt_pkcs11_xs_C_UnwrapKey(Crypt__PKCS11__XS* object, CK_SESSION_HANDLE h
     }
 
     if (ulCount) {
+        /* uncoverable branch 1 */
         if ((rv = __create_CK_ATTRIBUTE(&_pTemplate, pTemplate, ulCount, 1)) != CKR_OK) {
+            /* uncoverable block 0 */
             return rv;
         }
     }
@@ -3358,7 +3403,9 @@ CK_RV crypt_pkcs11_xs_C_DeriveKey(Crypt__PKCS11__XS* object, CK_SESSION_HANDLE h
     }
 
     if (ulCount) {
+        /* uncoverable branch 1 */
         if ((rv = __create_CK_ATTRIBUTE(&_pTemplate, pTemplate, ulCount, 1)) != CKR_OK) {
+            /* uncoverable block 0 */
             return rv;
         }
     }
@@ -5267,4 +5314,23 @@ static CK_RV __test_C_GetFunctionList(CK_FUNCTION_LIST_PTR_PTR ppFunctionList) {
 static CK_RV __test_C_GetFunctionList_NO_FLIST(CK_FUNCTION_LIST_PTR_PTR ppFunctionList) {
     return CKR_GENERAL_ERROR;
 }
+
+CK_RV crypt_pkcs11_xs_test_devel_cover_check_pTemplate(AV* pTemplate, int allow_undef_pValue) {
+    CK_ULONG count;
+    return __check_pTemplate(pTemplate, &count, allow_undef_pValue);
+}
+
+CK_RV crypt_pkcs11_xs_test_devel_cover_create_CK_ATTRIBUTE(AV* pTemplate, CK_ULONG count, int allow_undef_pValue) {
+    CK_ATTRIBUTE_PTR attr = 0;
+    CK_RV rv;
+    rv = __create_CK_ATTRIBUTE(&attr, pTemplate, count, allow_undef_pValue);
+    free(attr);
+    return rv;
+}
+
+CK_RV crypt_pkcs11_xs_test_devel_cover_action_init(HV* pMechanism) {
+    CK_MECHANISM mech = { 0, 0 };
+    return __action_init(pMechanism, &mech);
+}
+
 #endif

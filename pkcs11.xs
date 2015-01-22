@@ -801,6 +801,32 @@ int
 crypt_pkcs11_xs_test_devel_cover(object)
     Crypt::PKCS11::XS* object
 PROTOTYPE: DISABLE
+OUTPUT:
+    RETVAL
+
+CK_RV
+crypt_pkcs11_xs_test_devel_cover_check_pTemplate(pTemplate, allow_undef_pValue)
+    AV* pTemplate
+    int allow_undef_pValue
+PROTOTYPE: DISABLE
+OUTPUT:
+    RETVAL
+
+CK_RV
+crypt_pkcs11_xs_test_devel_cover_create_CK_ATTRIBUTE(pTemplate, count, allow_undef_pValue)
+    AV* pTemplate
+    CK_ULONG count
+    int allow_undef_pValue
+PROTOTYPE: DISABLE
+OUTPUT:
+    RETVAL
+
+CK_RV
+crypt_pkcs11_xs_test_devel_cover_action_init(pMechanism)
+    HV* pMechanism
+PROTOTYPE: DISABLE
+OUTPUT:
+    RETVAL
 
 #endif
 
