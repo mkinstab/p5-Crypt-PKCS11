@@ -25,8 +25,7 @@
 
 package Crypt::PKCS11::Attribute::RFC2279string;
 
-use strict;
-use warnings;
+use common::sense;
 use Carp;
 
 use base qw(Crypt::PKCS11::Attribute);
