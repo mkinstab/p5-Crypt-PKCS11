@@ -3,17 +3,22 @@
 To fully test this module you need the source code from the repository [1], all
 necessary tools are not included in the CPAN source package.
 
+Recommended distribution to test on is Ubuntu 12.04 and you must have both
+SoftHSM versions 1.3.x and 2.x. If SoftHSM is version 1.3.7 or 2.0.0b2 or lower
+then a small fix to MutexFactory.cpp needs to be applied (see SoftHSM below).
+
 [1] https://github.com/dotse/p5-Crypt-PKCS11
 
 ## Dependencies
 
-### Packages
+### Ubuntu Packages
 
 ```
 apt-get install -y build-essential libxml2-dev libsqlite3-dev sqlite3 \
 libbotan1.10-dev libssl-dev autoconf automake libtool libcunit1-dev \
 libxml2-utils libcppunit-dev wget ccache libtest-checkmanifest-perl \
-libtest-leaktrace-perl libtest-pod-coverage-perl libdevel-cover-perl
+libtest-leaktrace-perl libtest-pod-coverage-perl libdevel-cover-perl \
+libcommon-sense-perl
 ```
 
 ### SoftHSM
@@ -67,3 +72,12 @@ PATH="$PWD/gen:$PATH" cover -test && chmod a+rx `find cover_db -type d`
 
 **PATH** must be set to a gcov2perl wrapper that enables uncoverable tags within
 the XS and C code.
+
+## Clean up
+
+```
+make clean
+gen/clean
+```
+
+`gen/clean` cleans up after Devel::Cover.

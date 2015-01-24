@@ -26,8 +26,7 @@
 package Crypt::PKCS11;
 
 use 5.008000;
-use strict;
-use warnings;
+use common::sense;
 use Carp;
 
 use constant CRYPTOKI_VERSION_MAJOR => 2;
