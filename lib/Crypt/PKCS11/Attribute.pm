@@ -25,8 +25,7 @@
 
 package Crypt::PKCS11::Attribute;
 
-use strict;
-use warnings;
+use common::sense;
 use Carp;
 
 sub new {

@@ -25,8 +25,7 @@
 
 package Crypt::PKCS11::Attribute::AttributeArray;
 
-use strict;
-use warnings;
+use common::sense;
 use Carp;
 use Scalar::Util qw(blessed);
 
