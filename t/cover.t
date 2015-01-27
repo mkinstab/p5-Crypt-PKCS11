@@ -135,6 +135,18 @@ myis( $obj->CloseAllSessions(1), undef, '$obj->CloseAllSessions' );
 myis( $obj->WaitForSlotEvent, undef, '$obj->WaitForSlotEvent' );
 myok( $obj->errno, '$obj->errno' );
 
+{
+    local $SIG{__WARN__} = sub {};
+    my $sub;
+
+    $sub = *Crypt::PKCS11::XSPtr::C_WaitForSlotEvent{CODE};
+    *Crypt::PKCS11::XSPtr::C_WaitForSlotEvent = sub ($$) { $_[2] = 1; return CKR_OK; };
+    myok( $obj->WaitForSlotEvent, '$obj->WaitForSlotEvent' );
+    *Crypt::PKCS11::XSPtr::C_WaitForSlotEvent = sub ($$) { return CKR_GENERAL_ERROR; };
+    myis( $obj->WaitForSlotEvent, undef, '$obj->WaitForSlotEvent' );
+    *Crypt::PKCS11::XSPtr::C_WaitForSlotEvent = $sub;
+}
+
 $@ = undef; eval { Crypt::PKCS11::struct::toBytes; };
 myok( $@, 'Crypt::PKCS11::struct::toBytes' );
 
@@ -309,21 +321,21 @@ if ($ENV{TEST_DEVEL_COVER}) {
     myis( $xs->C_WaitForSlotEvent(1, $a), CKR_OK );
 }
 
-{
-    local $SIG{__WARN__} = sub {};
-    my $sub1 = *Crypt::PKCS11::CK_MECHANISMPtr::get_pParameter{CODE};
-    *Crypt::PKCS11::CK_MECHANISMPtr::get_pParameter = sub ($) { return CKR_GENERAL_ERROR; };
-    $mechanism = Crypt::PKCS11::CK_MECHANISM->new;
-    $@ = undef; eval { $mechanism->toHash; };
-    myok( $@, '$mechanism->toHash' );
-    my $sub2 = *Crypt::PKCS11::CK_MECHANISMPtr::get_mechanism{CODE};
-    *Crypt::PKCS11::CK_MECHANISMPtr::get_mechanism = sub ($) { return CKR_GENERAL_ERROR; };
-    $mechanism = Crypt::PKCS11::CK_MECHANISM->new;
-    $@ = undef; eval { $mechanism->toHash; };
-    myok( $@, '$mechanism->toHash' );
-    *Crypt::PKCS11::CK_MECHANISMPtr::get_pParameter = $sub1;
-    *Crypt::PKCS11::CK_MECHANISMPtr::get_mechanism = $sub2;
-}
+#{
+#    local $SIG{__WARN__} = sub {};
+#    my $sub1 = *Crypt::PKCS11::CK_MECHANISMPtr::get_pParameter{CODE};
+#    *Crypt::PKCS11::CK_MECHANISMPtr::get_pParameter = sub ($) { return CKR_GENERAL_ERROR; };
+#    $mechanism = Crypt::PKCS11::CK_MECHANISM->new;
+#    $@ = undef; eval { $mechanism->toHash; };
+#    myok( $@, '$mechanism->toHash' );
+#    my $sub2 = *Crypt::PKCS11::CK_MECHANISMPtr::get_mechanism{CODE};
+#    *Crypt::PKCS11::CK_MECHANISMPtr::get_mechanism = sub ($) { return CKR_GENERAL_ERROR; };
+#    $mechanism = Crypt::PKCS11::CK_MECHANISM->new;
+#    $@ = undef; eval { $mechanism->toHash; };
+#    myok( $@, '$mechanism->toHash' );
+#    *Crypt::PKCS11::CK_MECHANISMPtr::get_pParameter = $sub1;
+#    *Crypt::PKCS11::CK_MECHANISMPtr::get_mechanism = $sub2;
+#}
 
 # Crypt/PKCS11/Attribute.pm
 
@@ -2682,14 +2694,14 @@ myok( scalar @a, '@a = $obj->get' );
     myis( Crypt::PKCS11::CK_ARIA_CBC_ENCRYPT_DATA_PARAMS->new->set_pData(-1), CKR_ARGUMENTS_BAD, 'Crypt::PKCS11::CK_ARIA_CBC_ENCRYPT_DATA_PARAMS->new->set_pData(-1)' );
 }
 
-{
-    local $SIG{__WARN__} = sub {};
-    my $sub = *Crypt::PKCS11::XS::new{CODE};
-    *Crypt::PKCS11::XS::new = sub ($) {};
-    $@ = undef; eval { Crypt::PKCS11->new; };
-    myok( $@, '*Crypt::PKCS11::XS::new undef' );
-    *Crypt::PKCS11::XS::new = $sub;
-}
+#{
+#    local $SIG{__WARN__} = sub {};
+#    my $sub = *Crypt::PKCS11::XS::new{CODE};
+#    *Crypt::PKCS11::XS::new = sub ($) {};
+#    $@ = undef; eval { Crypt::PKCS11->new; };
+#    myok( $@, '*Crypt::PKCS11::XS::new undef' );
+#    *Crypt::PKCS11::XS::new = $sub;
+#}
 
 # sub mytests
 }

@@ -1,0 +1,105 @@
+#!/usr/bin/env perl
+#
+# Copyright (c) 2015 Jerry Lundström <lundstrom.jerry@gmail.com>
+# Copyright (c) 2015 .SE (The Internet Infrastructure Foundation)
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions
+# are met:
+# 1. Redistributions of source code must retain the above copyright
+#    notice, this list of conditions and the following disclaimer.
+# 2. Redistributions in binary form must reproduce the above copyright
+#    notice, this list of conditions and the following disclaimer in the
+#    documentation and/or other materials provided with the distribution.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+# A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+# HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+# SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+# LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+# DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+# THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+use strict;
+use warnings;
+use Carp;
+
+foreach my $file (@ARGV) {
+    open(GCOV, $file) or exit(0);
+    open(OUT, '>', $file.'.out') or die;
+
+    print 'gcov-filer: filtering ', $file, "\n";
+
+    my ($block, $fix, $test, $uncov, $force) = (-1, -1, 0, -1, -1);
+    my ($uncov_what, $uncov_num, $very_uncov);
+    while (<GCOV>) {
+        if (/CRYPT PKCS11 TEST DEVEL COVER/o) {
+            $test = 1;
+        }
+        if ($test or $very_uncov) {
+            if (/\/\*\s+uncoverable\s+end\s+\*\//o) {
+                $very_uncov = 0;
+            }
+            if (/^branch\s+\d+\s+(?:taken\s+0|never\s+executed)/o) {
+                s/taken(\s+)0/taken${1}1/o;
+                s/never\s+executed/taken 1/o;
+            }
+            s/#####/    -/o;
+            s/\$\$\$\$\$/    -/o;
+            print OUT;
+            next;
+        }
+        if (/^\s+\S+:\s*(\d+):/o) {
+            $block = $1;
+        }
+        if (/\/\*\s+uncoverable\s+(\w+)\s+(\d+)\s+\*\//o) {
+            ($uncov_what, $uncov_num) = ($1, $2);
+            $uncov = $block + 1;
+        }
+        elsif (/\/\*\s+uncoverable\s+begin\s+\*\//o) {
+            $very_uncov = 1;
+        }
+        elsif (/\/\*\s+uncoverable\s+end\s+\*\//o) {
+            $very_uncov = 0;
+        }
+        if (/(?:Sv[GS]ETMAGIC|PUSHMARK|XPUSHs|POPi|FREETMPS|POPl|SvPV|newSVsv|sv_utf8_downgrade|SvUV)/o) {
+            $fix = $block;
+        }
+        elsif (/SvREFCNT_dec/o) {
+            $force = $block;
+        }
+        elsif ($block == $fix) {
+            if (/^branch\s+\d+\s+taken\s+0/o) {
+                s/taken(\s+)0/taken${1}1/o;
+            }
+        }
+        elsif ($block == $force) {
+            if (/^branch\s+\d+\s+(?:taken\s+0|never\s+executed)/o) {
+                s/taken(\s+)0/taken${1}1/o;
+                s/never\s+executed/taken 1/o;
+            }
+        }
+        if ($block == $uncov) {
+            if ($uncov_what eq 'block') {
+                s/#####/    -/o;
+                s/\$\$\$\$\$/    -/o;
+            }
+            elsif (/^(\w+)\s+(\d+)/o) {
+                if ($1 eq $uncov_what and $2 == $uncov_num) {
+                    s/taken(\s+)0/taken${1}1/o;
+                }
+            }
+        }
+
+        print OUT;
+    }
+
+    close(GCOV);
+    close(OUT);
+    rename($file.'.out', $file);
+}
