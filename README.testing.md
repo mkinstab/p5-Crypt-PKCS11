@@ -14,7 +14,7 @@ then a small fix to MutexFactory.cpp needs to be applied (see SoftHSM below).
 ### Ubuntu Packages
 
 ```
-apt-get install -y build-essential libxml2-dev libsqlite3-dev sqlite3 \
+sudo apt-get install -y build-essential libxml2-dev libsqlite3-dev sqlite3 \
 libbotan1.10-dev libssl-dev autoconf automake libtool libcunit1-dev \
 libxml2-utils libcppunit-dev wget ccache libtest-checkmanifest-perl \
 libtest-leaktrace-perl libtest-pod-coverage-perl libdevel-cover-perl \
@@ -27,23 +27,23 @@ libcommon-sense-perl
 wget --no-check-certificate http://www.opendnssec.org/files/source/softhsm-1.3.7.tar.gz && \
 wget --no-check-certificate http://www.opendnssec.org/files/source/testing/softhsm-2.0.0b2.tar.gz && \
 tar zxvf softhsm-1.3.7.tar.gz && \
-cd softhsm-1.3.7 && \
+( cd softhsm-1.3.7 && \
 mv src/lib/MutexFactory.cpp src/lib/MutexFactory.cpp.orig && \
 ( sed 's%MutexFactory::i()->createMutex%MutexFactory::i()->CreateMutex%' src/lib/MutexFactory.cpp.orig | \
 sed 's%MutexFactory::i()->destroyMutex%MutexFactory::i()->DestroyMutex%' | \
 sed 's%MutexFactory::i()->lockMutex%MutexFactory::i()->LockMutex%' | \
 sed 's%MutexFactory::i()->unlockMutex%MutexFactory::i()->UnlockMutex%' > src/lib/MutexFactory.cpp ) && \
 ./configure --with-botan=/usr && \
-make && make install && \
+make && sudo make install ) && \
 tar zxvf softhsm-2.0.0b2.tar.gz && \
-cd softhsm-2.0.0b2 && \
+( cd softhsm-2.0.0b2 && \
 mv src/lib/common/MutexFactory.cpp src/lib/common/MutexFactory.cpp.orig && \
 ( sed 's%MutexFactory::i()->createMutex%MutexFactory::i()->CreateMutex%' src/lib/common/MutexFactory.cpp.orig | \
 sed 's%MutexFactory::i()->destroyMutex%MutexFactory::i()->DestroyMutex%' | \
 sed 's%MutexFactory::i()->lockMutex%MutexFactory::i()->LockMutex%' | \
 sed 's%MutexFactory::i()->unlockMutex%MutexFactory::i()->UnlockMutex%' > src/lib/common/MutexFactory.cpp ) && \
 ./configure --disable-non-paged-memory && \
-make && make install
+make && sudo make install )
 ```
 
 ## Environment Variables
