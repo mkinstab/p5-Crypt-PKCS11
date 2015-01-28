@@ -1,8 +1,7 @@
 Source: libcrypt-pkcs11-perl
 Section: perl
 Priority: optional
-Build-Depends: debhelper (>= 7), perl
-Build-Depends-Indep: libcommon-sense-perl (>= 3)
+Build-Depends: debhelper (>= 7), perl, libcommon-sense-perl (>= 3)
 Maintainer: Jerry Lundström <lundstrom.jerry@gmail.com>
 Standards-Version: 3.9.1
 Homepage: http://search.cpan.org/dist/Crypt-PKCS11/
