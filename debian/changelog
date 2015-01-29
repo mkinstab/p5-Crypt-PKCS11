@@ -1,0 +1,5 @@
+libcrypt-pkcs11-perl (0.99.02-2~unstable+1) unstable; urgency=low
+
+  * Initial package release.
+
+ -- Jerry Lundström <lundstrom.jerry@gmail.com>  Tue, 27 Jan 2015 07:53:36 +0100

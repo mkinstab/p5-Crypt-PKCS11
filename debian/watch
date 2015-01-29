@@ -1,0 +1,2 @@
+version=3
+http://search.cpan.org/dist/Crypt-PKCS11/   .*/Crypt-PKCS11-v?(\d[\d.-]+)\.(?:tar(?:\.gz|\.bz2)?|tgz|zip)$
