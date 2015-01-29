@@ -66,12 +66,14 @@ make all test
 ## Devel::Cover
 
 ```
+make clean
+gen/clean
 perl Makefile.PL
-PATH="$PWD/gen:$PATH" cover -test && chmod a+rx `find cover_db -type d`
+MYPATH="$PWD/gen" PATH="$PWD/gen:$PATH" cover -test -ignore_re 'Carp\.pm' && chmod a+rx `find cover_db -type d`
 ```
 
-**PATH** must be set to a gcov2perl wrapper that enables uncoverable tags within
-the XS and C code.
+**PATH** must be set to a `gcov` / `gcov2perl` wrapper that enables uncoverable
+tags within the XS and C code using `gen/gcov-filter`.
 
 ## Clean up
 

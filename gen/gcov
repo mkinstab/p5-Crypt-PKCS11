@@ -28,18 +28,23 @@
 use strict;
 use warnings;
 use Carp;
-use Getopt::Long;
-
-my $db;
-GetOptions('db=s' => \$db);
 
 unless (defined $ENV{MYPATH} and -d $ENV{MYPATH}) {
     die 'MYPATH environment variable not set';
 }
 
-!system('gcov-filter', @ARGV) or die "system: $?";
+my $file = pop(@ARGV);
+unless (-f $file and -r $file) {
+    die "$file is not a file or readable";
+}
 
 my @path = split(/:/o, $ENV{PATH});
 $ENV{PATH} = join(':', grep { $_ ne $ENV{MYPATH} } @path);
 
-!system('gcov2perl', ($db?('--db', $db):()), @ARGV) or die "system: $?";
+!system('gcov', @ARGV, $file) or die "system: $?";
+
+$ENV{PATH} = $ENV{MYPATH}.':'.$ENV{PATH};
+
+$file =~ s/\.h$/.c/o;
+
+!system('gcov-filter', $file.'.gcov') or die "system: $?";
