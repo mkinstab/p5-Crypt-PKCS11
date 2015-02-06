@@ -223,7 +223,7 @@ A CKA_BASE with the base of L<Crypt::PKCS11::Attribute::ByteArray>.
 
 A CKA_PRIME_BITS with the base of L<Crypt::PKCS11::Attribute::CK_ULONG>.
 
-=item Crypt::PKCS11::Attribute::SubprimeBits
+=item Crypt::PKCS11::Attribute::Subprime::Bits
 
 A CKA_SUBPRIME_BITS with the base of L<Crypt::PKCS11::Attribute::CK_ULONG>.
 
