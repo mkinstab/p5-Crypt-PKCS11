@@ -1,0 +1,16 @@
+Source: libcrypt-pkcs11-perl
+Section: perl
+Priority: optional
+Build-Depends: debhelper (>= 7), perl, libcommon-sense-perl (>= 3)
+Maintainer: Jerry Lundström <lundstrom.jerry@gmail.com>
+Standards-Version: 3.9.1
+Homepage: http://search.cpan.org/dist/Crypt-PKCS11/
+
+Package: libcrypt-pkcs11-perl
+Architecture: any
+Depends: ${misc:Depends}, ${perl:Depends}, ${shlibs:Depends},
+ libcommon-sense-perl (>= 3)
+Description: Full-fledged PKCS #11 v2.30 interface for Perl
+ Crypt::PKCS11 provides a full-fedged PKCS #11 v2.30 interface for Perl and
+ together with a PKCS #11 proivder .so library you can use all the functionallity
+ a Hardware Security Module (HSM) has to offer from within Perl.

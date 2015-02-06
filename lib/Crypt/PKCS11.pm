@@ -1386,7 +1386,7 @@ our %CKZ_NAME = (
     CKZ_SALT_SPECIFIED() => 'CKZ_SALT_SPECIFIED',
 );
 
-our $VERSION = '0.99_02';
+our $VERSION = '1.00';
 
 our (@ISA, %EXPORT_TAGS, @EXPORT_OK);
 BEGIN {
@@ -1602,6 +1602,7 @@ sub new {
 
     # uncoverable branch true
     unless (defined($self->{pkcs11xs} = Crypt::PKCS11::XS->new())) {
+        # uncoverable statement
         confess __PACKAGE__, 'Unable to create Crypt::PKCS11::XS object';
     }
 
@@ -1792,7 +1793,6 @@ sub WaitForSlotEvent {
     my $slotID;
 
     $self->{rv} = $self->{pkcs11xs}->C_WaitForSlotEvent(defined $flags ? $flags : 0, $slotID);
-    # uncoverable branch true
     return $self->{rv} == CKR_OK ? $slotID : undef;
 }
 
@@ -1942,10 +1942,12 @@ sub toHash {
 
     # uncoverable branch true
     unless ($_[0]->get_mechanism($mechanism) == CKR_OK) {
+        # uncoverable statement
         confess 'Unable to get mechanism';
     }
     # uncoverable branch true
     unless ($_[0]->get_pParameter($pParameter) == CKR_OK) {
+        # uncoverable statement
         confess 'Unable to get pParameter';
     }
 
