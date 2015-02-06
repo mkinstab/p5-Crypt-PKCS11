@@ -1,8 +1,11 @@
 Crypt::PKCS11 history
 
-Release 0.99_02 2015-01--26
+Release 1.00 2015-02-06
+ - First stable release.
+
+Development release 0.99_02 2015-01-26
  - Use common::sense.
  - Removed CR from cryptoki.h to resolve compiling on Solaris 11.
 
-Release 0.99_01 2015-01-22
+Development release 0.99_01 2015-01-22
  - First developer release.

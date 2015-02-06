@@ -1386,7 +1386,7 @@ our %CKZ_NAME = (
     CKZ_SALT_SPECIFIED() => 'CKZ_SALT_SPECIFIED',
 );
 
-our $VERSION = '0.99_02';
+our $VERSION = '1.00';
 
 our (@ISA, %EXPORT_TAGS, @EXPORT_OK);
 BEGIN {
