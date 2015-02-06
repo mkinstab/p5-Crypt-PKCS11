@@ -75,6 +75,12 @@ MYPATH="$PWD/gen" PATH="$PWD/gen:$PATH" cover -test -ignore_re 'Carp\.pm' && chm
 **PATH** must be set to a `gcov` / `gcov2perl` wrapper that enables uncoverable
 tags within the XS and C code using `gen/gcov-filter`.
 
+## Test::LeakTrace
+
+```
+TEST_LEAKTRACE=1 make test
+```
+
 ## Clean up
 
 ```
