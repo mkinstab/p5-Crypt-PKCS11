@@ -1,2 +1,8 @@
 MANIFEST.SKIP
 .travis.yml
+debian/copyright
+debian/changelog
+debian/watch
+debian/control
+debian/compat
+debian/rules
