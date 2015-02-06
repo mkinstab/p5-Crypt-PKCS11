@@ -82,7 +82,7 @@ our %ATTRIBUTE_MAP = (
     CKA_SUBPRIME() => 'Crypt::PKCS11::Attribute::Subprime',
     CKA_BASE() => 'Crypt::PKCS11::Attribute::Base',
     CKA_PRIME_BITS() => 'Crypt::PKCS11::Attribute::PrimeBits',
-    CKA_SUBPRIME_BITS() => 'Crypt::PKCS11::Attribute::SubprimeBits',
+    CKA_SUBPRIME_BITS() => 'Crypt::PKCS11::Attribute::Subprime::Bits',
     CKA_SUB_PRIME_BITS() => 'Crypt::PKCS11::Attribute::SubPrimeBits',
     CKA_VALUE_BITS() => 'Crypt::PKCS11::Attribute::ValueBits',
     CKA_VALUE_LEN() => 'Crypt::PKCS11::Attribute::ValueLen',
@@ -481,7 +481,7 @@ use base qw(Crypt::PKCS11::Attribute::CK_ULONG);
 use Crypt::PKCS11 qw(:constant);
 sub type () { CKA_PRIME_BITS }
 
-package Crypt::PKCS11::Attribute::SubprimeBits;
+package Crypt::PKCS11::Attribute::Subprime::Bits;
 use base qw(Crypt::PKCS11::Attribute::CK_ULONG);
 use Crypt::PKCS11 qw(:constant);
 sub type () { CKA_SUBPRIME_BITS }
