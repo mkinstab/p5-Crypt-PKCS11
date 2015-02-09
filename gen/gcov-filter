@@ -67,7 +67,7 @@ foreach my $file (@ARGV) {
         elsif (/\/\*\s+uncoverable\s+end\s+\*\//o) {
             $very_uncov = 0;
         }
-        if (/(?:Sv[GS]ETMAGIC|PUSHMARK|XPUSHs|POPi|FREETMPS|POPl|SvPV|newSVsv|sv_utf8_downgrade|SvUV)/o) {
+        if (/(?:Sv[GS]ETMAGIC|PUSHMARK|XPUSHs|POPi|FREETMPS|POPl|SvPV|newSVsv|sv_utf8_downgrade|SvUV|Newxz)/o) {
             $fix = $block;
         }
         elsif (/SvREFCNT_dec/o) {
