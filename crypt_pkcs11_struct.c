@@ -345,7 +345,7 @@ CK_RV crypt_pkcs11_ck_mechanism_set_pParameter(Crypt__PKCS11__CK_MECHANISM* obje
         return CKR_ARGUMENTS_BAD;
     }
 
-    myNewxz(n, l + 1, CK_BYTE);
+    myNewxz(n, l, CK_BYTE);
     /* uncoverable branch 0 */
     if (!n) {
         /* uncoverable block 0 */
@@ -574,7 +574,7 @@ CK_RV crypt_pkcs11_ck_rsa_pkcs_oaep_params_set_pSourceData(Crypt__PKCS11__CK_RSA
         return CKR_ARGUMENTS_BAD;
     }
 
-    myNewxz(n, l + 1, CK_BYTE);
+    myNewxz(n, l, CK_BYTE);
     /* uncoverable branch 0 */
     if (!n) {
         /* uncoverable block 0 */
@@ -903,7 +903,7 @@ CK_RV crypt_pkcs11_ck_ecdh1_derive_params_set_pSharedData(Crypt__PKCS11__CK_ECDH
         return CKR_ARGUMENTS_BAD;
     }
 
-    myNewxz(n, l + 1, CK_BYTE);
+    myNewxz(n, l, CK_BYTE);
     /* uncoverable branch 0 */
     if (!n) {
         /* uncoverable block 0 */
@@ -966,7 +966,7 @@ CK_RV crypt_pkcs11_ck_ecdh1_derive_params_set_pPublicData(Crypt__PKCS11__CK_ECDH
         return CKR_ARGUMENTS_BAD;
     }
 
-    myNewxz(n, l + 1, CK_BYTE);
+    myNewxz(n, l, CK_BYTE);
     /* uncoverable branch 0 */
     if (!n) {
         /* uncoverable block 0 */
@@ -1163,7 +1163,7 @@ CK_RV crypt_pkcs11_ck_ecdh2_derive_params_set_pSharedData(Crypt__PKCS11__CK_ECDH
         return CKR_ARGUMENTS_BAD;
     }
 
-    myNewxz(n, l + 1, CK_BYTE);
+    myNewxz(n, l, CK_BYTE);
     /* uncoverable branch 0 */
     if (!n) {
         /* uncoverable block 0 */
@@ -1226,7 +1226,7 @@ CK_RV crypt_pkcs11_ck_ecdh2_derive_params_set_pPublicData(Crypt__PKCS11__CK_ECDH
         return CKR_ARGUMENTS_BAD;
     }
 
-    myNewxz(n, l + 1, CK_BYTE);
+    myNewxz(n, l, CK_BYTE);
     /* uncoverable branch 0 */
     if (!n) {
         /* uncoverable block 0 */
@@ -1322,7 +1322,7 @@ CK_RV crypt_pkcs11_ck_ecdh2_derive_params_set_pPublicData2(Crypt__PKCS11__CK_ECD
         return CKR_ARGUMENTS_BAD;
     }
 
-    myNewxz(n, l + 1, CK_BYTE);
+    myNewxz(n, l, CK_BYTE);
     /* uncoverable branch 0 */
     if (!n) {
         /* uncoverable block 0 */
@@ -1519,7 +1519,7 @@ CK_RV crypt_pkcs11_ck_ecmqv_derive_params_set_pSharedData(Crypt__PKCS11__CK_ECMQ
         return CKR_ARGUMENTS_BAD;
     }
 
-    myNewxz(n, l + 1, CK_BYTE);
+    myNewxz(n, l, CK_BYTE);
     /* uncoverable branch 0 */
     if (!n) {
         /* uncoverable block 0 */
@@ -1582,7 +1582,7 @@ CK_RV crypt_pkcs11_ck_ecmqv_derive_params_set_pPublicData(Crypt__PKCS11__CK_ECMQ
         return CKR_ARGUMENTS_BAD;
     }
 
-    myNewxz(n, l + 1, CK_BYTE);
+    myNewxz(n, l, CK_BYTE);
     /* uncoverable branch 0 */
     if (!n) {
         /* uncoverable block 0 */
@@ -1678,7 +1678,7 @@ CK_RV crypt_pkcs11_ck_ecmqv_derive_params_set_pPublicData2(Crypt__PKCS11__CK_ECM
         return CKR_ARGUMENTS_BAD;
     }
 
-    myNewxz(n, l + 1, CK_BYTE);
+    myNewxz(n, l, CK_BYTE);
     /* uncoverable branch 0 */
     if (!n) {
         /* uncoverable block 0 */
@@ -1891,7 +1891,7 @@ CK_RV crypt_pkcs11_ck_x9_42_dh1_derive_params_set_pOtherInfo(Crypt__PKCS11__CK_X
         return CKR_ARGUMENTS_BAD;
     }
 
-    myNewxz(n, l + 1, CK_BYTE);
+    myNewxz(n, l, CK_BYTE);
     /* uncoverable branch 0 */
     if (!n) {
         /* uncoverable block 0 */
@@ -1954,7 +1954,7 @@ CK_RV crypt_pkcs11_ck_x9_42_dh1_derive_params_set_pPublicData(Crypt__PKCS11__CK_
         return CKR_ARGUMENTS_BAD;
     }
 
-    myNewxz(n, l + 1, CK_BYTE);
+    myNewxz(n, l, CK_BYTE);
     /* uncoverable branch 0 */
     if (!n) {
         /* uncoverable block 0 */
@@ -2151,7 +2151,7 @@ CK_RV crypt_pkcs11_ck_x9_42_dh2_derive_params_set_pOtherInfo(Crypt__PKCS11__CK_X
         return CKR_ARGUMENTS_BAD;
     }
 
-    myNewxz(n, l + 1, CK_BYTE);
+    myNewxz(n, l, CK_BYTE);
     /* uncoverable branch 0 */
     if (!n) {
         /* uncoverable block 0 */
@@ -2214,7 +2214,7 @@ CK_RV crypt_pkcs11_ck_x9_42_dh2_derive_params_set_pPublicData(Crypt__PKCS11__CK_
         return CKR_ARGUMENTS_BAD;
     }
 
-    myNewxz(n, l + 1, CK_BYTE);
+    myNewxz(n, l, CK_BYTE);
     /* uncoverable branch 0 */
     if (!n) {
         /* uncoverable block 0 */
@@ -2310,7 +2310,7 @@ CK_RV crypt_pkcs11_ck_x9_42_dh2_derive_params_set_pPublicData2(Crypt__PKCS11__CK
         return CKR_ARGUMENTS_BAD;
     }
 
-    myNewxz(n, l + 1, CK_BYTE);
+    myNewxz(n, l, CK_BYTE);
     /* uncoverable branch 0 */
     if (!n) {
         /* uncoverable block 0 */
@@ -2507,7 +2507,7 @@ CK_RV crypt_pkcs11_ck_x9_42_mqv_derive_params_set_pOtherInfo(Crypt__PKCS11__CK_X
         return CKR_ARGUMENTS_BAD;
     }
 
-    myNewxz(n, l + 1, CK_BYTE);
+    myNewxz(n, l, CK_BYTE);
     /* uncoverable branch 0 */
     if (!n) {
         /* uncoverable block 0 */
@@ -2570,7 +2570,7 @@ CK_RV crypt_pkcs11_ck_x9_42_mqv_derive_params_set_pPublicData(Crypt__PKCS11__CK_
         return CKR_ARGUMENTS_BAD;
     }
 
-    myNewxz(n, l + 1, CK_BYTE);
+    myNewxz(n, l, CK_BYTE);
     /* uncoverable branch 0 */
     if (!n) {
         /* uncoverable block 0 */
@@ -2666,7 +2666,7 @@ CK_RV crypt_pkcs11_ck_x9_42_mqv_derive_params_set_pPublicData2(Crypt__PKCS11__CK
         return CKR_ARGUMENTS_BAD;
     }
 
-    myNewxz(n, l + 1, CK_BYTE);
+    myNewxz(n, l, CK_BYTE);
     /* uncoverable branch 0 */
     if (!n) {
         /* uncoverable block 0 */
@@ -2901,7 +2901,7 @@ CK_RV crypt_pkcs11_ck_kea_derive_params_set_pRandomA(Crypt__PKCS11__CK_KEA_DERIV
         return CKR_ARGUMENTS_BAD;
     }
 
-    myNewxz(n, l + 1, CK_BYTE);
+    myNewxz(n, l, CK_BYTE);
     /* uncoverable branch 0 */
     if (!n) {
         /* uncoverable block 0 */
@@ -2964,7 +2964,7 @@ CK_RV crypt_pkcs11_ck_kea_derive_params_set_pRandomB(Crypt__PKCS11__CK_KEA_DERIV
         return CKR_ARGUMENTS_BAD;
     }
 
-    myNewxz(n, l + 1, CK_BYTE);
+    myNewxz(n, l, CK_BYTE);
     /* uncoverable branch 0 */
     if (!n) {
         /* uncoverable block 0 */
@@ -3027,7 +3027,7 @@ CK_RV crypt_pkcs11_ck_kea_derive_params_set_pPublicData(Crypt__PKCS11__CK_KEA_DE
         return CKR_ARGUMENTS_BAD;
     }
 
-    myNewxz(n, l + 1, CK_BYTE);
+    myNewxz(n, l, CK_BYTE);
     /* uncoverable branch 0 */
     if (!n) {
         /* uncoverable block 0 */
@@ -3556,7 +3556,7 @@ CK_RV crypt_pkcs11_ck_rc5_cbc_params_set_pIv(Crypt__PKCS11__CK_RC5_CBC_PARAMS* o
         return CKR_ARGUMENTS_BAD;
     }
 
-    myNewxz(n, l + 1, CK_BYTE);
+    myNewxz(n, l, CK_BYTE);
     /* uncoverable branch 0 */
     if (!n) {
         /* uncoverable block 0 */
@@ -3853,7 +3853,7 @@ CK_RV crypt_pkcs11_ck_des_cbc_encrypt_data_params_set_pData(Crypt__PKCS11__CK_DE
         return CKR_ARGUMENTS_BAD;
     }
 
-    myNewxz(n, l + 1, CK_BYTE);
+    myNewxz(n, l, CK_BYTE);
     /* uncoverable branch 0 */
     if (!n) {
         /* uncoverable block 0 */
@@ -4034,7 +4034,7 @@ CK_RV crypt_pkcs11_ck_aes_cbc_encrypt_data_params_set_pData(Crypt__PKCS11__CK_AE
         return CKR_ARGUMENTS_BAD;
     }
 
-    myNewxz(n, l + 1, CK_BYTE);
+    myNewxz(n, l, CK_BYTE);
     /* uncoverable branch 0 */
     if (!n) {
         /* uncoverable block 0 */
@@ -4249,7 +4249,7 @@ CK_RV crypt_pkcs11_ck_skipjack_private_wrap_params_set_pPassword(Crypt__PKCS11__
         return CKR_ARGUMENTS_BAD;
     }
 
-    myNewxz(n, l + 1, CK_BYTE);
+    myNewxz(n, l, CK_BYTE);
     /* uncoverable branch 0 */
     if (!n) {
         /* uncoverable block 0 */
@@ -4312,7 +4312,7 @@ CK_RV crypt_pkcs11_ck_skipjack_private_wrap_params_set_pPublicData(Crypt__PKCS11
         return CKR_ARGUMENTS_BAD;
     }
 
-    myNewxz(n, l + 1, CK_BYTE);
+    myNewxz(n, l, CK_BYTE);
     /* uncoverable branch 0 */
     if (!n) {
         /* uncoverable block 0 */
@@ -4375,7 +4375,7 @@ CK_RV crypt_pkcs11_ck_skipjack_private_wrap_params_set_pRandomA(Crypt__PKCS11__C
         return CKR_ARGUMENTS_BAD;
     }
 
-    myNewxz(n, l + 1, CK_BYTE);
+    myNewxz(n, l, CK_BYTE);
     /* uncoverable branch 0 */
     if (!n) {
         /* uncoverable block 0 */
@@ -4438,7 +4438,7 @@ CK_RV crypt_pkcs11_ck_skipjack_private_wrap_params_set_pPrimeP(Crypt__PKCS11__CK
         return CKR_ARGUMENTS_BAD;
     }
 
-    myNewxz(n, l + 1, CK_BYTE);
+    myNewxz(n, l, CK_BYTE);
     /* uncoverable branch 0 */
     if (!n) {
         /* uncoverable block 0 */
@@ -4501,7 +4501,7 @@ CK_RV crypt_pkcs11_ck_skipjack_private_wrap_params_set_pBaseG(Crypt__PKCS11__CK_
         return CKR_ARGUMENTS_BAD;
     }
 
-    myNewxz(n, l + 1, CK_BYTE);
+    myNewxz(n, l, CK_BYTE);
     /* uncoverable branch 0 */
     if (!n) {
         /* uncoverable block 0 */
@@ -4564,7 +4564,7 @@ CK_RV crypt_pkcs11_ck_skipjack_private_wrap_params_set_pSubprimeQ(Crypt__PKCS11_
         return CKR_ARGUMENTS_BAD;
     }
 
-    myNewxz(n, l + 1, CK_BYTE);
+    myNewxz(n, l, CK_BYTE);
     /* uncoverable branch 0 */
     if (!n) {
         /* uncoverable block 0 */
@@ -4796,7 +4796,7 @@ CK_RV crypt_pkcs11_ck_skipjack_relayx_params_set_pOldWrappedX(Crypt__PKCS11__CK_
         return CKR_ARGUMENTS_BAD;
     }
 
-    myNewxz(n, l + 1, CK_BYTE);
+    myNewxz(n, l, CK_BYTE);
     /* uncoverable branch 0 */
     if (!n) {
         /* uncoverable block 0 */
@@ -4859,7 +4859,7 @@ CK_RV crypt_pkcs11_ck_skipjack_relayx_params_set_pOldPassword(Crypt__PKCS11__CK_
         return CKR_ARGUMENTS_BAD;
     }
 
-    myNewxz(n, l + 1, CK_BYTE);
+    myNewxz(n, l, CK_BYTE);
     /* uncoverable branch 0 */
     if (!n) {
         /* uncoverable block 0 */
@@ -4922,7 +4922,7 @@ CK_RV crypt_pkcs11_ck_skipjack_relayx_params_set_pOldPublicData(Crypt__PKCS11__C
         return CKR_ARGUMENTS_BAD;
     }
 
-    myNewxz(n, l + 1, CK_BYTE);
+    myNewxz(n, l, CK_BYTE);
     /* uncoverable branch 0 */
     if (!n) {
         /* uncoverable block 0 */
@@ -4985,7 +4985,7 @@ CK_RV crypt_pkcs11_ck_skipjack_relayx_params_set_pOldRandomA(Crypt__PKCS11__CK_S
         return CKR_ARGUMENTS_BAD;
     }
 
-    myNewxz(n, l + 1, CK_BYTE);
+    myNewxz(n, l, CK_BYTE);
     /* uncoverable branch 0 */
     if (!n) {
         /* uncoverable block 0 */
@@ -5048,7 +5048,7 @@ CK_RV crypt_pkcs11_ck_skipjack_relayx_params_set_pNewPassword(Crypt__PKCS11__CK_
         return CKR_ARGUMENTS_BAD;
     }
 
-    myNewxz(n, l + 1, CK_BYTE);
+    myNewxz(n, l, CK_BYTE);
     /* uncoverable branch 0 */
     if (!n) {
         /* uncoverable block 0 */
@@ -5111,7 +5111,7 @@ CK_RV crypt_pkcs11_ck_skipjack_relayx_params_set_pNewPublicData(Crypt__PKCS11__C
         return CKR_ARGUMENTS_BAD;
     }
 
-    myNewxz(n, l + 1, CK_BYTE);
+    myNewxz(n, l, CK_BYTE);
     /* uncoverable branch 0 */
     if (!n) {
         /* uncoverable block 0 */
@@ -5174,7 +5174,7 @@ CK_RV crypt_pkcs11_ck_skipjack_relayx_params_set_pNewRandomA(Crypt__PKCS11__CK_S
         return CKR_ARGUMENTS_BAD;
     }
 
-    myNewxz(n, l + 1, CK_BYTE);
+    myNewxz(n, l, CK_BYTE);
     /* uncoverable branch 0 */
     if (!n) {
         /* uncoverable block 0 */
@@ -5419,7 +5419,7 @@ CK_RV crypt_pkcs11_ck_pbe_params_set_pPassword(Crypt__PKCS11__CK_PBE_PARAMS* obj
         return CKR_GENERAL_ERROR;
     }
 
-    myNewxz(n, l + 1, CK_CHAR);
+    myNewxz(n, l, CK_CHAR);
     /* uncoverable branch 0 */
     if (!n) {
         /* uncoverable block 0 */
@@ -5482,7 +5482,7 @@ CK_RV crypt_pkcs11_ck_pbe_params_set_pSalt(Crypt__PKCS11__CK_PBE_PARAMS* object,
         return CKR_ARGUMENTS_BAD;
     }
 
-    myNewxz(n, l + 1, CK_BYTE);
+    myNewxz(n, l, CK_BYTE);
     /* uncoverable branch 0 */
     if (!n) {
         /* uncoverable block 0 */
@@ -5678,7 +5678,7 @@ CK_RV crypt_pkcs11_ck_key_wrap_set_oaep_params_set_pX(Crypt__PKCS11__CK_KEY_WRAP
         return CKR_ARGUMENTS_BAD;
     }
 
-    myNewxz(n, l + 1, CK_BYTE);
+    myNewxz(n, l, CK_BYTE);
     /* uncoverable branch 0 */
     if (!n) {
         /* uncoverable block 0 */
@@ -5825,7 +5825,7 @@ CK_RV crypt_pkcs11_ck_ssl3_random_data_set_pClientRandom(Crypt__PKCS11__CK_SSL3_
         return CKR_ARGUMENTS_BAD;
     }
 
-    myNewxz(n, l + 1, CK_BYTE);
+    myNewxz(n, l, CK_BYTE);
     /* uncoverable branch 0 */
     if (!n) {
         /* uncoverable block 0 */
@@ -5888,7 +5888,7 @@ CK_RV crypt_pkcs11_ck_ssl3_random_data_set_pServerRandom(Crypt__PKCS11__CK_SSL3_
         return CKR_ARGUMENTS_BAD;
     }
 
-    myNewxz(n, l + 1, CK_BYTE);
+    myNewxz(n, l, CK_BYTE);
     /* uncoverable branch 0 */
     if (!n) {
         /* uncoverable block 0 */
@@ -6850,7 +6850,7 @@ CK_RV crypt_pkcs11_ck_tls_prf_params_set_pSeed(Crypt__PKCS11__CK_TLS_PRF_PARAMS*
         return CKR_ARGUMENTS_BAD;
     }
 
-    myNewxz(n, l + 1, CK_BYTE);
+    myNewxz(n, l, CK_BYTE);
     /* uncoverable branch 0 */
     if (!n) {
         /* uncoverable block 0 */
@@ -6913,7 +6913,7 @@ CK_RV crypt_pkcs11_ck_tls_prf_params_set_pLabel(Crypt__PKCS11__CK_TLS_PRF_PARAMS
         return CKR_ARGUMENTS_BAD;
     }
 
-    myNewxz(n, l + 1, CK_BYTE);
+    myNewxz(n, l, CK_BYTE);
     /* uncoverable branch 0 */
     if (!n) {
         /* uncoverable block 0 */
@@ -7148,7 +7148,7 @@ CK_RV crypt_pkcs11_ck_wtls_random_data_set_pClientRandom(Crypt__PKCS11__CK_WTLS_
         return CKR_ARGUMENTS_BAD;
     }
 
-    myNewxz(n, l + 1, CK_BYTE);
+    myNewxz(n, l, CK_BYTE);
     /* uncoverable branch 0 */
     if (!n) {
         /* uncoverable block 0 */
@@ -7211,7 +7211,7 @@ CK_RV crypt_pkcs11_ck_wtls_random_data_set_pServerRandom(Crypt__PKCS11__CK_WTLS_
         return CKR_ARGUMENTS_BAD;
     }
 
-    myNewxz(n, l + 1, CK_BYTE);
+    myNewxz(n, l, CK_BYTE);
     /* uncoverable branch 0 */
     if (!n) {
         /* uncoverable block 0 */
@@ -7681,7 +7681,7 @@ CK_RV crypt_pkcs11_ck_wtls_prf_params_set_pSeed(Crypt__PKCS11__CK_WTLS_PRF_PARAM
         return CKR_ARGUMENTS_BAD;
     }
 
-    myNewxz(n, l + 1, CK_BYTE);
+    myNewxz(n, l, CK_BYTE);
     /* uncoverable branch 0 */
     if (!n) {
         /* uncoverable block 0 */
@@ -7744,7 +7744,7 @@ CK_RV crypt_pkcs11_ck_wtls_prf_params_set_pLabel(Crypt__PKCS11__CK_WTLS_PRF_PARA
         return CKR_ARGUMENTS_BAD;
     }
 
-    myNewxz(n, l + 1, CK_BYTE);
+    myNewxz(n, l, CK_BYTE);
     /* uncoverable branch 0 */
     if (!n) {
         /* uncoverable block 0 */
@@ -8796,7 +8796,7 @@ CK_RV crypt_pkcs11_ck_cms_sig_params_set_pRequestedAttributes(Crypt__PKCS11__CK_
         return CKR_ARGUMENTS_BAD;
     }
 
-    myNewxz(n, l + 1, CK_BYTE);
+    myNewxz(n, l, CK_BYTE);
     /* uncoverable branch 0 */
     if (!n) {
         /* uncoverable block 0 */
@@ -8859,7 +8859,7 @@ CK_RV crypt_pkcs11_ck_cms_sig_params_set_pRequiredAttributes(Crypt__PKCS11__CK_C
         return CKR_ARGUMENTS_BAD;
     }
 
-    myNewxz(n, l + 1, CK_BYTE);
+    myNewxz(n, l, CK_BYTE);
     /* uncoverable branch 0 */
     if (!n) {
         /* uncoverable block 0 */
@@ -8989,7 +8989,7 @@ CK_RV crypt_pkcs11_ck_key_derivation_string_data_set_pData(Crypt__PKCS11__CK_KEY
         return CKR_ARGUMENTS_BAD;
     }
 
-    myNewxz(n, l + 1, CK_BYTE);
+    myNewxz(n, l, CK_BYTE);
     /* uncoverable branch 0 */
     if (!n) {
         /* uncoverable block 0 */
@@ -9190,7 +9190,7 @@ CK_RV crypt_pkcs11_ck_pkcs5_pbkd2_params_set_pSaltSourceData(Crypt__PKCS11__CK_P
         return CKR_ARGUMENTS_BAD;
     }
 
-    myNewxz(n, l + 1, CK_BYTE);
+    myNewxz(n, l, CK_BYTE);
     /* uncoverable branch 0 */
     if (!n) {
         /* uncoverable block 0 */
@@ -9319,7 +9319,7 @@ CK_RV crypt_pkcs11_ck_pkcs5_pbkd2_params_set_pPrfData(Crypt__PKCS11__CK_PKCS5_PB
         return CKR_ARGUMENTS_BAD;
     }
 
-    myNewxz(n, l + 1, CK_BYTE);
+    myNewxz(n, l, CK_BYTE);
     /* uncoverable branch 0 */
     if (!n) {
         /* uncoverable block 0 */
@@ -9571,7 +9571,7 @@ CK_RV crypt_pkcs11_ck_otp_param_set_pValue(Crypt__PKCS11__CK_OTP_PARAM* object, 
         return CKR_ARGUMENTS_BAD;
     }
 
-    myNewxz(n, l + 1, CK_BYTE);
+    myNewxz(n, l, CK_BYTE);
     /* uncoverable branch 0 */
     if (!n) {
         /* uncoverable block 0 */
@@ -10353,7 +10353,7 @@ CK_RV crypt_pkcs11_ck_kip_params_set_pSeed(Crypt__PKCS11__CK_KIP_PARAMS* object,
         return CKR_ARGUMENTS_BAD;
     }
 
-    myNewxz(n, l + 1, CK_BYTE);
+    myNewxz(n, l, CK_BYTE);
     /* uncoverable branch 0 */
     if (!n) {
         /* uncoverable block 0 */
@@ -10634,7 +10634,7 @@ CK_RV crypt_pkcs11_ck_aes_gcm_params_set_pIv(Crypt__PKCS11__CK_AES_GCM_PARAMS* o
         return CKR_ARGUMENTS_BAD;
     }
 
-    myNewxz(n, l + 1, CK_BYTE);
+    myNewxz(n, l, CK_BYTE);
     /* uncoverable branch 0 */
     if (!n) {
         /* uncoverable block 0 */
@@ -10730,7 +10730,7 @@ CK_RV crypt_pkcs11_ck_aes_gcm_params_set_pAAD(Crypt__PKCS11__CK_AES_GCM_PARAMS* 
         return CKR_ARGUMENTS_BAD;
     }
 
-    myNewxz(n, l + 1, CK_BYTE);
+    myNewxz(n, l, CK_BYTE);
     /* uncoverable branch 0 */
     if (!n) {
         /* uncoverable block 0 */
@@ -10910,7 +10910,7 @@ CK_RV crypt_pkcs11_ck_aes_ccm_params_set_pNonce(Crypt__PKCS11__CK_AES_CCM_PARAMS
         return CKR_ARGUMENTS_BAD;
     }
 
-    myNewxz(n, l + 1, CK_BYTE);
+    myNewxz(n, l, CK_BYTE);
     /* uncoverable branch 0 */
     if (!n) {
         /* uncoverable block 0 */
@@ -10973,7 +10973,7 @@ CK_RV crypt_pkcs11_ck_aes_ccm_params_set_pAAD(Crypt__PKCS11__CK_AES_CCM_PARAMS* 
         return CKR_ARGUMENTS_BAD;
     }
 
-    myNewxz(n, l + 1, CK_BYTE);
+    myNewxz(n, l, CK_BYTE);
     /* uncoverable branch 0 */
     if (!n) {
         /* uncoverable block 0 */
@@ -11288,7 +11288,7 @@ CK_RV crypt_pkcs11_ck_camellia_cbc_encrypt_data_params_set_pData(Crypt__PKCS11__
         return CKR_ARGUMENTS_BAD;
     }
 
-    myNewxz(n, l + 1, CK_BYTE);
+    myNewxz(n, l, CK_BYTE);
     /* uncoverable branch 0 */
     if (!n) {
         /* uncoverable block 0 */
@@ -11469,7 +11469,7 @@ CK_RV crypt_pkcs11_ck_aria_cbc_encrypt_data_params_set_pData(Crypt__PKCS11__CK_A
         return CKR_ARGUMENTS_BAD;
     }
 
-    myNewxz(n, l + 1, CK_BYTE);
+    myNewxz(n, l, CK_BYTE);
     /* uncoverable branch 0 */
     if (!n) {
         /* uncoverable block 0 */

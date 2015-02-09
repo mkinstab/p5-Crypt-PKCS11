@@ -1143,7 +1143,7 @@ CK_RV crypt_pkcs11_'.$lc_struct.'_set_'.$type->{name}.'('.$c_struct.'* object, S
         return CKR_ARGUMENTS_BAD;
     }
 
-    myNewxz(n, l + 1, CK_BYTE);
+    myNewxz(n, l, CK_BYTE);
     /* uncoverable branch 0 */
     if (!n) {
         /* uncoverable block 0 */
@@ -1377,7 +1377,7 @@ CK_RV crypt_pkcs11_'.$lc_struct.'_set_'.$type->{name}.'('.$c_struct.'* object, S
         return CKR_GENERAL_ERROR;
     }
 
-    myNewxz(n, l + 1, CK_CHAR);
+    myNewxz(n, l, CK_CHAR);
     /* uncoverable branch 0 */
     if (!n) {
         /* uncoverable block 0 */
