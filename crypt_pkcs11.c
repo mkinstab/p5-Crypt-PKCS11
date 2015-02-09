@@ -74,7 +74,8 @@ static const char __mechanism_str[] = "mechanism";
 static const char __pParameter_str[] = "pParameter";
 
 Crypt__PKCS11__XS* crypt_pkcs11_xs_new(const char* class) {
-    Crypt__PKCS11__XS* object = calloc(1, sizeof(Crypt__PKCS11__XS));
+    Crypt__PKCS11__XS* object = 0;
+    Newxz(object, 1, Crypt__PKCS11__XS);
 
     /* uncoverable branch 0 */
     if (!object) {
@@ -663,18 +664,15 @@ CK_RV crypt_pkcs11_xs_unload(Crypt__PKCS11__XS* object) {
 
     object->handle = NULL_PTR;
     object->function_list = NULL_PTR;
-    memset(&(object->info), 0, sizeof(CK_INFO));
+    Zero(&(object->info), 1, CK_INFO);
 
     return CKR_OK;
 }
 
 void crypt_pkcs11_xs_DESTROY(Crypt__PKCS11__XS* object) {
     if (object) {
-        if (object->handle) {
-            crypt_pkcs11_xs_C_Finalize(object);
-            crypt_pkcs11_xs_unload(object);
-        }
-        free(object);
+        crypt_pkcs11_xs_unload(object);
+        Safefree(object);
     }
 }
 
@@ -796,7 +794,7 @@ CK_RV crypt_pkcs11_xs_C_GetInfo(Crypt__PKCS11__XS* object, HV* pInfo) {
         SV* manufacturerID;
         SV* libraryDescription;
 
-        memcpy(&(object->info), &_pInfo, sizeof(CK_INFO));
+        Copy(&_pInfo, &(object->info), 1, CK_INFO);
 
         hv_store(cryptokiVersion, __major_str, sizeof(__major_str)-1, newSVuv(_pInfo.cryptokiVersion.major), 0);
         hv_store(cryptokiVersion, __minor_str, sizeof(__minor_str)-1, newSVuv(_pInfo.cryptokiVersion.minor), 0);
@@ -816,7 +814,7 @@ CK_RV crypt_pkcs11_xs_C_GetInfo(Crypt__PKCS11__XS* object, HV* pInfo) {
 }
 
 CK_RV crypt_pkcs11_xs_C_GetSlotList(Crypt__PKCS11__XS* object, CK_BBOOL tokenPresent, AV* pSlotList) {
-    CK_SLOT_ID_PTR _pSlotList;
+    CK_SLOT_ID_PTR _pSlotList = 0;
     CK_ULONG ulCount = 0, ulPos = 0;
     CK_RV rv;
 
@@ -840,20 +838,21 @@ CK_RV crypt_pkcs11_xs_C_GetSlotList(Crypt__PKCS11__XS* object, CK_BBOOL tokenPre
         return rv;
     }
 
+    Newxz(_pSlotList, ulCount, CK_SLOT_ID);
     /* uncoverable branch 0 */
-    if (!(_pSlotList = calloc(ulCount, sizeof(CK_SLOT_ID)))) {
+    if (!_pSlotList) {
         /* uncoverable block 0 */
         return CKR_HOST_MEMORY;
     }
     if ((rv = object->function_list->C_GetSlotList(tokenPresent, _pSlotList, &ulCount)) != CKR_OK) {
-        free(_pSlotList);
+        Safefree(_pSlotList);
         return rv;
     }
 
     for (ulPos = 0; ulPos < ulCount; ulPos++) {
         av_push(pSlotList, newSVuv(_pSlotList[ulPos]));
     }
-    free(_pSlotList);
+    Safefree(_pSlotList);
 
     return rv;
 }
@@ -983,7 +982,7 @@ CK_RV crypt_pkcs11_xs_C_GetTokenInfo(Crypt__PKCS11__XS* object, CK_SLOT_ID slotI
 }
 
 CK_RV crypt_pkcs11_xs_C_GetMechanismList(Crypt__PKCS11__XS* object, CK_SLOT_ID slotID, AV* pMechanismList) {
-    CK_MECHANISM_TYPE_PTR _pMechanismList;
+    CK_MECHANISM_TYPE_PTR _pMechanismList = 0;
     CK_ULONG ulCount = 0, ulPos = 0;
     CK_RV rv;
 
@@ -1007,20 +1006,21 @@ CK_RV crypt_pkcs11_xs_C_GetMechanismList(Crypt__PKCS11__XS* object, CK_SLOT_ID s
         return rv;
     }
 
+    Newxz(_pMechanismList, ulCount, CK_MECHANISM_TYPE);
     /* uncoverable branch 0 */
-    if (!(_pMechanismList = calloc(ulCount, sizeof(CK_MECHANISM_TYPE)))) {
+    if (!_pMechanismList) {
         /* uncoverable block 0 */
         return CKR_HOST_MEMORY;
     }
     if ((rv = object->function_list->C_GetMechanismList(slotID, _pMechanismList, &ulCount)) != CKR_OK) {
-        free(_pMechanismList);
+        Safefree(_pMechanismList);
         return rv;
     }
 
     for (ulPos = 0; ulPos < ulCount; ulPos++) {
         av_push(pMechanismList, newSVuv(_pMechanismList[ulPos]));
     }
-    free(_pMechanismList);
+    Safefree(_pMechanismList);
 
     return rv;
 }
@@ -1111,18 +1111,19 @@ CK_RV crypt_pkcs11_xs_C_InitToken(Crypt__PKCS11__XS* object, CK_SLOT_ID slotID, 
     }
 
     if (len2 < 32) {
+        Newxz(_pLabel3, 32, char);
         /* uncoverable branch 0 */
-        if (!(_pLabel3 = calloc(1, 32))) {
+        if (!_pLabel3) {
             /* uncoverable block 0 */
             return CKR_GENERAL_ERROR;
         }
-        memcpy(_pLabel3, _pLabel2, len2);
+        Copy(_pLabel2, _pLabel3, len2, char);
     }
 
     rv = object->function_list->C_InitToken(slotID, _pPin2, len, _pLabel3 ? _pLabel3 : _pLabel2);
 
     if (_pLabel3) {
-        free(_pLabel3);
+        Safefree(_pLabel3);
     }
 
     return rv;
@@ -1369,7 +1370,7 @@ CK_RV crypt_pkcs11_xs_C_GetSessionInfo(Crypt__PKCS11__XS* object, CK_SESSION_HAN
 }
 
 CK_RV crypt_pkcs11_xs_C_GetOperationState(Crypt__PKCS11__XS* object, CK_SESSION_HANDLE hSession, SV* pOperationState) {
-    CK_BYTE_PTR _pOperationState;
+    CK_BYTE_PTR _pOperationState = 0;
     CK_ULONG ulOperationStateLen = 0;
     CK_RV rv;
 
@@ -1397,13 +1398,14 @@ CK_RV crypt_pkcs11_xs_C_GetOperationState(Crypt__PKCS11__XS* object, CK_SESSION_
         return rv;
     }
 
+    Newxz(_pOperationState, ulOperationStateLen, CK_BYTE);
     /* uncoverable branch 0 */
-    if (!(_pOperationState = calloc(ulOperationStateLen, sizeof(CK_BYTE)))) {
+    if (!_pOperationState) {
         /* uncoverable block 0 */
         return CKR_HOST_MEMORY;
     }
     if ((rv = object->function_list->C_GetOperationState(hSession, _pOperationState, &ulOperationStateLen)) != CKR_OK) {
-        free(_pOperationState);
+        Safefree(_pOperationState);
         return rv;
     }
 
@@ -1411,7 +1413,7 @@ CK_RV crypt_pkcs11_xs_C_GetOperationState(Crypt__PKCS11__XS* object, CK_SESSION_
     SvUTF8_off(pOperationState);
     sv_setpvn(pOperationState, _pOperationState, ulOperationStateLen);
     SvSETMAGIC(pOperationState);
-    free(_pOperationState);
+    Safefree(_pOperationState);
 
     return rv;
 }
@@ -1607,13 +1609,17 @@ static CK_RV __create_CK_ATTRIBUTE(CK_ATTRIBUTE_PTR* ppTemplate, AV* pTemplate, 
     if (!ulCount) {
         return CKR_ARGUMENTS_BAD;
     }
+    if (*ppTemplate) {
+        return CKR_ARGUMENTS_BAD;
+    }
 
     /*
      * Create CK_ATTRIBUTE objects and extract the information from the hash.
      */
 
+    Newxz(*ppTemplate, ulCount, CK_ATTRIBUTE);
     /* uncoverable branch 0 */
-    if (!(*ppTemplate = calloc(ulCount, sizeof(CK_ATTRIBUTE)))) {
+    if (!*ppTemplate) {
         /* uncoverable block 0 */
         return CKR_HOST_MEMORY;
     }
@@ -1626,20 +1632,20 @@ static CK_RV __create_CK_ATTRIBUTE(CK_ATTRIBUTE_PTR* ppTemplate, AV* pTemplate, 
             /* uncoverable end */
             || !SvROK(*item))
         {
-            free(*ppTemplate);
+            Safefree(*ppTemplate);
             *ppTemplate = NULL_PTR;
             return CKR_GENERAL_ERROR;
         }
 
         /* uncoverable branch 1 */
         if (!(entry = SvRV(*item)) || SvTYPE(entry) != SVt_PVHV) {
-            free(*ppTemplate);
+            Safefree(*ppTemplate);
             *ppTemplate = NULL_PTR;
             return CKR_GENERAL_ERROR;
         }
 
         if (i >= ulCount) {
-            free(*ppTemplate);
+            Safefree(*ppTemplate);
             *ppTemplate = NULL_PTR;
             return CKR_GENERAL_ERROR;
         }
@@ -1673,7 +1679,7 @@ static CK_RV __create_CK_ATTRIBUTE(CK_ATTRIBUTE_PTR* ppTemplate, AV* pTemplate, 
                     || !(_pValue = SvPVbyte(*pValue, len))
                     || len < 0)))
         {
-            free(*ppTemplate);
+            Safefree(*ppTemplate);
             *ppTemplate = NULL_PTR;
             return CKR_GENERAL_ERROR;
         }
@@ -1747,10 +1753,10 @@ CK_RV crypt_pkcs11_xs_C_CreateObject(Crypt__PKCS11__XS* object, CK_SESSION_HANDL
      */
 
     if ((rv = object->function_list->C_CreateObject(hSession, _pTemplate, ulCount, &hObject)) != CKR_OK) {
-        free(_pTemplate);
+        Safefree(_pTemplate);
         return rv;
     }
-    free(_pTemplate);
+    Safefree(_pTemplate);
 
     SvGETMAGIC(phObject);
     sv_setuv(phObject, hObject);
@@ -1813,10 +1819,10 @@ CK_RV crypt_pkcs11_xs_C_CopyObject(Crypt__PKCS11__XS* object, CK_SESSION_HANDLE 
      */
 
     if ((rv = object->function_list->C_CopyObject(hSession, hObject, _pTemplate, ulCount, &hNewObject)) != CKR_OK) {
-        free(_pTemplate);
+        Safefree(_pTemplate);
         return rv;
     }
-    free(_pTemplate);
+    Safefree(_pTemplate);
 
     SvGETMAGIC(phNewObject);
     sv_setuv(phNewObject, hNewObject);
@@ -1931,7 +1937,7 @@ CK_RV crypt_pkcs11_xs_C_GetAttributeValue(Crypt__PKCS11__XS* object, CK_SESSION_
      */
 
     if ((rv = object->function_list->C_GetAttributeValue(hSession, hObject, _pTemplate, ulCount)) != CKR_OK) {
-        free(_pTemplate);
+        Safefree(_pTemplate);
         return rv;
     }
 
@@ -1945,17 +1951,17 @@ CK_RV crypt_pkcs11_xs_C_GetAttributeValue(Crypt__PKCS11__XS* object, CK_SESSION_
 
         /* uncoverable begin */
         if (!item || !*item || !SvROK(*item)) {
-            free(_pTemplate);
+            Safefree(_pTemplate);
             return CKR_GENERAL_ERROR;
         }
 
         if (!(entry = SvRV(*item)) || SvTYPE(entry) != SVt_PVHV) {
-            free(_pTemplate);
+            Safefree(_pTemplate);
             return CKR_GENERAL_ERROR;
         }
 
         if (i >= ulCount) {
-            free(_pTemplate);
+            Safefree(_pTemplate);
             return CKR_GENERAL_ERROR;
         }
 
@@ -1967,7 +1973,7 @@ CK_RV crypt_pkcs11_xs_C_GetAttributeValue(Crypt__PKCS11__XS* object, CK_SESSION_
             || !crypt_pkcs11_xs_SvUOK(*type)
             || _pTemplate[i].type != SvUV(*type))
         {
-            free(_pTemplate);
+            Safefree(_pTemplate);
             return CKR_GENERAL_ERROR;
         }
 
@@ -1980,7 +1986,7 @@ CK_RV crypt_pkcs11_xs_C_GetAttributeValue(Crypt__PKCS11__XS* object, CK_SESSION_
         /* uncoverable end */
         i++;
     }
-    free(_pTemplate);
+    Safefree(_pTemplate);
 
     return CKR_OK;
 }
@@ -2035,7 +2041,7 @@ CK_RV crypt_pkcs11_xs_C_SetAttributeValue(Crypt__PKCS11__XS* object, CK_SESSION_
      */
 
     rv = object->function_list->C_SetAttributeValue(hSession, hObject, _pTemplate, ulCount);
-    free(_pTemplate);
+    Safefree(_pTemplate);
 
     return rv;
 }
@@ -2087,13 +2093,13 @@ CK_RV crypt_pkcs11_xs_C_FindObjectsInit(Crypt__PKCS11__XS* object, CK_SESSION_HA
      */
 
     rv = object->function_list->C_FindObjectsInit(hSession, _pTemplate, ulCount);
-    free(_pTemplate);
+    Safefree(_pTemplate);
 
     return rv;
 }
 
 CK_RV crypt_pkcs11_xs_C_FindObjects(Crypt__PKCS11__XS* object, CK_SESSION_HANDLE hSession, AV* phObject, CK_ULONG ulMaxObjectCount) {
-    CK_OBJECT_HANDLE_PTR _phObject;
+    CK_OBJECT_HANDLE_PTR _phObject = 0;
     CK_ULONG ulObjectCount = 0;
     CK_ULONG i;
     CK_RV rv;
@@ -2119,21 +2125,22 @@ CK_RV crypt_pkcs11_xs_C_FindObjects(Crypt__PKCS11__XS* object, CK_SESSION_HANDLE
         return CKR_OK;
     }
 
+    Newxz(_phObject, ulMaxObjectCount, CK_OBJECT_HANDLE);
     /* uncoverable branch 0 */
-    if (!(_phObject = calloc(ulMaxObjectCount, sizeof(CK_OBJECT_HANDLE)))) {
+    if (!_phObject) {
         /* uncoverable block 0 */
         return CKR_HOST_MEMORY;
     }
 
     if ((rv = object->function_list->C_FindObjects(hSession, _phObject, ulMaxObjectCount, &ulObjectCount)) != CKR_OK) {
-        free(_phObject);
+        Safefree(_phObject);
         return rv;
     }
 
     for (i = 0; i < ulObjectCount; i++) {
         av_push(phObject, newSVuv(_phObject[i]));
     }
-    free(_phObject);
+    Safefree(_phObject);
 
     return CKR_OK;
 }
@@ -2202,7 +2209,7 @@ typedef CK_RV (*__action_call_t)(CK_SESSION_HANDLE, CK_BYTE_PTR, CK_ULONG, CK_BY
 static CK_RV __action(__action_call_t call, CK_SESSION_HANDLE hSession, SV* pFrom, SV* pTo) {
     char* _pFrom;
     STRLEN ulFromLen;
-    char* _pTo;
+    char* _pTo = 0;
     STRLEN ulToLen = 0;
     CK_ULONG pulToLen = 0;
     CK_RV rv;
@@ -2251,19 +2258,20 @@ static CK_RV __action(__action_call_t call, CK_SESSION_HANDLE hSession, SV* pFro
         return CKR_GENERAL_ERROR;
     }
 
+    Newxz(_pTo, pulToLen, CK_BYTE);
     /* uncoverable branch 0 */
-    if (!(_pTo = calloc(pulToLen, sizeof(CK_BYTE)))) {
+    if (!_pTo) {
         /* uncoverable block 0 */
         return CKR_HOST_MEMORY;
     }
 
     if ((rv = call(hSession, _pFrom, (CK_ULONG)ulFromLen, _pTo, &pulToLen)) != CKR_OK) {
-        free(_pTo);
+        Safefree(_pTo);
         return rv;
     }
 
     sv_setpvn(pTo, _pTo, pulToLen * sizeof(CK_BYTE));
-    free(_pTo);
+    Safefree(_pTo);
     SvSETMAGIC(pTo);
 
     return CKR_OK;
@@ -2299,7 +2307,7 @@ static CK_RV __action_update(__action_update_call_t call, CK_SESSION_HANDLE hSes
 typedef CK_RV (*__action_final_call_t)(CK_SESSION_HANDLE, CK_BYTE_PTR, CK_ULONG_PTR);
 
 static CK_RV __action_final(__action_final_call_t call, CK_SESSION_HANDLE hSession, SV* pLastPart) {
-    char* _pLastPart;
+    CK_BYTE_PTR _pLastPart = 0;
     STRLEN ulLastPartLen = 0;
     CK_ULONG pulLastPartLen = 0;
     CK_RV rv;
@@ -2340,19 +2348,20 @@ static CK_RV __action_final(__action_final_call_t call, CK_SESSION_HANDLE hSessi
         return CKR_GENERAL_ERROR;
     }
 
+    Newxz(_pLastPart, pulLastPartLen, CK_BYTE);
     /* uncoverable branch 0 */
-    if (!(_pLastPart = calloc(pulLastPartLen, sizeof(CK_BYTE)))) {
+    if (!_pLastPart) {
         /* uncoverable block 0 */
         return CKR_HOST_MEMORY;
     }
 
     if ((rv = call(hSession, _pLastPart, &pulLastPartLen)) != CKR_OK) {
-        free(_pLastPart);
+        Safefree(_pLastPart);
         return rv;
     }
 
     sv_setpvn(pLastPart, _pLastPart, pulLastPartLen * sizeof(CK_BYTE));
-    free(_pLastPart);
+    Safefree(_pLastPart);
     SvSETMAGIC(pLastPart);
 
     return CKR_OK;
@@ -3117,10 +3126,10 @@ CK_RV crypt_pkcs11_xs_C_GenerateKey(Crypt__PKCS11__XS* object, CK_SESSION_HANDLE
     }
 
     if ((rv = object->function_list->C_GenerateKey(hSession, &_pMechanism, _pTemplate, ulCount, &hKey)) != CKR_OK) {
-        free(_pTemplate);
+        Safefree(_pTemplate);
         return rv;
     }
-    free(_pTemplate);
+    Safefree(_pTemplate);
 
     SvGETMAGIC(phKey);
     sv_setuv(phKey, hKey);
@@ -3183,26 +3192,26 @@ CK_RV crypt_pkcs11_xs_C_GenerateKeyPair(Crypt__PKCS11__XS* object, CK_SESSION_HA
     }
 
     if ((rv = __check_pTemplate(pPrivateKeyTemplate, &ulPrivateKeyCount, 0)) != CKR_OK) {
-        free(_pPublicKeyTemplate);
+        Safefree(_pPublicKeyTemplate);
         return rv;
     }
     if (ulPrivateKeyCount) {
         /* uncoverable branch 1 */
         if ((rv = __create_CK_ATTRIBUTE(&_pPrivateKeyTemplate, pPrivateKeyTemplate, ulPrivateKeyCount, 0)) != CKR_OK) {
             /* uncoverable begin */
-            free(_pPublicKeyTemplate);
+            Safefree(_pPublicKeyTemplate);
             return rv;
             /* uncoverable end */
         }
     }
 
     if ((rv = object->function_list->C_GenerateKeyPair(hSession, &_pMechanism, _pPublicKeyTemplate, ulPublicKeyCount, _pPrivateKeyTemplate, ulPrivateKeyCount, &hPublicKey, &hPrivateKey)) != CKR_OK) {
-        free(_pPublicKeyTemplate);
-        free(_pPrivateKeyTemplate);
+        Safefree(_pPublicKeyTemplate);
+        Safefree(_pPrivateKeyTemplate);
         return rv;
     }
-    free(_pPublicKeyTemplate);
-    free(_pPrivateKeyTemplate);
+    Safefree(_pPublicKeyTemplate);
+    Safefree(_pPrivateKeyTemplate);
 
     SvGETMAGIC(phPublicKey);
     SvGETMAGIC(phPrivateKey);
@@ -3216,7 +3225,7 @@ CK_RV crypt_pkcs11_xs_C_GenerateKeyPair(Crypt__PKCS11__XS* object, CK_SESSION_HA
 
 CK_RV crypt_pkcs11_xs_C_WrapKey(Crypt__PKCS11__XS* object, CK_SESSION_HANDLE hSession, HV* pMechanism, CK_OBJECT_HANDLE hWrappingKey, CK_OBJECT_HANDLE hKey, SV* pWrappedKey) {
     CK_MECHANISM _pMechanism = { 0, NULL_PTR, 0 };
-    char* _pWrappedKey;
+    CK_BYTE_PTR _pWrappedKey = 0;
     STRLEN ulWrappedKey;
     CK_ULONG pulWrappedKey = 0;
     CK_RV rv;
@@ -3271,19 +3280,20 @@ CK_RV crypt_pkcs11_xs_C_WrapKey(Crypt__PKCS11__XS* object, CK_SESSION_HANDLE hSe
         return CKR_GENERAL_ERROR;
     }
 
+    Newxz(_pWrappedKey, pulWrappedKey, CK_BYTE);
     /* uncoverable branch 0 */
-    if (!(_pWrappedKey = calloc(pulWrappedKey, sizeof(CK_BYTE)))) {
+    if (!_pWrappedKey) {
         /* uncoverable block 0 */
         return CKR_HOST_MEMORY;
     }
 
     if ((rv = object->function_list->C_WrapKey(hSession, &_pMechanism, hWrappingKey, hKey, _pWrappedKey, &pulWrappedKey)) != CKR_OK) {
-        free(_pWrappedKey);
+        Safefree(_pWrappedKey);
         return rv;
     }
 
     sv_setpvn(pWrappedKey, _pWrappedKey, pulWrappedKey * sizeof(CK_BYTE));
-    free(_pWrappedKey);
+    Safefree(_pWrappedKey);
     SvSETMAGIC(pWrappedKey);
 
     return CKR_OK;
@@ -3352,10 +3362,10 @@ CK_RV crypt_pkcs11_xs_C_UnwrapKey(Crypt__PKCS11__XS* object, CK_SESSION_HANDLE h
     }
 
     if ((rv = object->function_list->C_UnwrapKey(hSession, &_pMechanism, hUnwrappingKey, _pWrappedKey, ulWrappedKey, _pTemplate, ulCount, &hKey)) != CKR_OK) {
-        free(_pTemplate);
+        Safefree(_pTemplate);
         return rv;
     }
-    free(_pTemplate);
+    Safefree(_pTemplate);
 
     SvGETMAGIC(phKey);
     sv_setuv(phKey, hKey);
@@ -3413,10 +3423,10 @@ CK_RV crypt_pkcs11_xs_C_DeriveKey(Crypt__PKCS11__XS* object, CK_SESSION_HANDLE h
     }
 
     if ((rv = object->function_list->C_DeriveKey(hSession, &_pMechanism, hBaseKey, _pTemplate, ulCount, &hKey)) != CKR_OK) {
-        free(_pTemplate);
+        Safefree(_pTemplate);
         return rv;
     }
-    free(_pTemplate);
+    Safefree(_pTemplate);
 
     SvGETMAGIC(phKey);
     sv_setuv(phKey, hKey);
@@ -3458,7 +3468,7 @@ CK_RV crypt_pkcs11_xs_C_SeedRandom(Crypt__PKCS11__XS* object, CK_SESSION_HANDLE 
 }
 
 CK_RV crypt_pkcs11_xs_C_GenerateRandom(Crypt__PKCS11__XS* object, CK_SESSION_HANDLE hSession, SV* RandomData, CK_ULONG ulRandomLen) {
-    CK_BYTE_PTR _RandomData;
+    CK_BYTE_PTR _RandomData = 0;
     CK_RV rv;
 
     if (!object) {
@@ -3480,14 +3490,15 @@ CK_RV crypt_pkcs11_xs_C_GenerateRandom(Crypt__PKCS11__XS* object, CK_SESSION_HAN
         return CKR_ARGUMENTS_BAD;
     }
 
+    Newxz(_RandomData, ulRandomLen, CK_BYTE);
     /* uncoverable branch 0 */
-    if (!(_RandomData = calloc(ulRandomLen, sizeof(CK_BYTE)))) {
+    if (!_RandomData) {
         /* uncoverable block 0 */
         return CKR_HOST_MEMORY;
     }
 
     if ((rv = object->function_list->C_GenerateRandom(hSession, _RandomData, ulRandomLen)) != CKR_OK) {
-        free(_RandomData);
+        Safefree(_RandomData);
         return rv;
     }
 
@@ -3496,7 +3507,8 @@ CK_RV crypt_pkcs11_xs_C_GenerateRandom(Crypt__PKCS11__XS* object, CK_SESSION_HAN
      */
 
     SvGETMAGIC(RandomData);
-    sv_setpvn(RandomData, _RandomData, ulRandomLen*sizeof(CK_BYTE));
+    sv_setpvn(RandomData, _RandomData, ulRandomLen * sizeof(CK_BYTE));
+    Safefree(_RandomData);
     SvSETMAGIC(RandomData);
 
     return CKR_OK;
@@ -3761,6 +3773,10 @@ int crypt_pkcs11_xs_test_devel_cover(Crypt__PKCS11__XS* object) {
     if (__create_CK_ATTRIBUTE((CK_ATTRIBUTE_PTR*)0, (AV*)0, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (__create_CK_ATTRIBUTE((CK_ATTRIBUTE_PTR*)1, (AV*)0, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (__create_CK_ATTRIBUTE((CK_ATTRIBUTE_PTR*)1, (AV*)1, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    {
+        CK_ATTRIBUTE_PTR p = (CK_ATTRIBUTE_PTR)1;
+        if (__create_CK_ATTRIBUTE(&p, (AV*)1, 1, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
+    }
     if (crypt_pkcs11_xs_C_CreateObject(0, 0, 0, 0) != CKR_ARGUMENTS_BAD) { return __LINE__; }
     if (crypt_pkcs11_xs_C_CreateObject(&object_no_function_list, 0, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
     if (crypt_pkcs11_xs_C_CreateObject(&object_empty_function_list, 0, 0, 0) != CKR_GENERAL_ERROR) { return __LINE__; }
@@ -5360,7 +5376,7 @@ CK_RV crypt_pkcs11_xs_test_devel_cover_create_CK_ATTRIBUTE(AV* pTemplate, CK_ULO
     CK_ATTRIBUTE_PTR attr = 0;
     CK_RV rv;
     rv = __create_CK_ATTRIBUTE(&attr, pTemplate, count, allow_undef_pValue);
-    free(attr);
+    Safefree(attr);
     return rv;
 }
 
