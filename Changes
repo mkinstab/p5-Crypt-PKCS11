@@ -1,5 +1,9 @@
 Crypt::PKCS11 history
 
+Release 1.02 2015-02-10
+ - Use memory functions as described in perlclib to eliminate WIN32 memory
+   problem when compiled with thread support (free wrong pool).
+
 Release 1.01 2015-02-06
  - Changed attribute SubprimeBits to Subprime::Bits in order to not collide
    with SubPrimeBits.
