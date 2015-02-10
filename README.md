@@ -63,8 +63,8 @@ $pkcs11->unload;
 
 ## DESCRIPTION
 
-Crypt::PKCS11 provides a full-fedged PKCS #11 v2.30 interface for Perl and
-together with a PKCS #11 proivder .so library you can use all the functionallity
+Crypt::PKCS11 provides a full-fledged PKCS #11 v2.30 interface for Perl and
+together with a PKCS #11 provider .so library you can use all the functionality
 a Hardware Security Module (HSM) has to offer from within Perl.
 
 Other modules/pod sections included are:
