@@ -250,6 +250,8 @@ print XS '/*
 
 #include "crypt_pkcs11_struct.h"
 
+/* uncoverable begin */
+
 MODULE = Crypt::PKCS11::STRUCT_XS  PACKAGE = Crypt::PKCS11::STRUCT_XS  PREFIX = crypt_pkcs11_struct_xs_
 
 #ifdef TEST_DEVEL_COVER
@@ -261,6 +263,7 @@ PROTOTYPE: DISABLE
 #endif
 
 ';
+close(XS);
 open(C, '>crypt_pkcs11_struct.c') || die;
 print C '/*
  * Copyright (c) 2015 Jerry Lundström <lundstrom.jerry@gmail.com>
@@ -391,6 +394,7 @@ int crypt_pkcs11_struct_xs_test_devel_cover(void);
 
 ';
 open(TYPEMAP, '>typemap.struct') || die;
+my %FIRST;
 while (<HEADER>) {
     if ($in_comment) {
         unless (/\*\//o) {
@@ -455,11 +459,107 @@ while (<HEADER>) {
                 push(@_types, $type);
             }
 
+{
+    my (undef, $struct_name) = split(/_/o, $struct);
+    $struct_name = lc($struct_name);
+    die unless ($struct_name);
+
+    unless (exists $FIRST{'pkcs11_struct_'.$struct_name.'.xs'}) {
+        $FIRST{'pkcs11_struct_'.$struct_name.'.xs'} = $struct_name;
+open(XS, '>pkcs11_struct_'.$struct_name.'.xs') || die;
+print XS '/*
+ * Copyright (c) 2015 Jerry Lundström <lundstrom.jerry@gmail.com>
+ * Copyright (c) 2015 .SE (The Internet Infrastructure Foundation)
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
+
+#include "crypt_pkcs11_struct.h"
+
+';
+close(XS);
+    }
+    unless (exists $FIRST{'crypt_pkcs11_struct_'.$struct_name.'.c'}) {
+        $FIRST{'crypt_pkcs11_struct_'.$struct_name.'.c'} = $struct_name;
+open(C, '>crypt_pkcs11_struct_'.$struct_name.'.c') || die;
+print C '/*
+ * Copyright (c) 2015 Jerry Lundström <lundstrom.jerry@gmail.com>
+ * Copyright (c) 2015 .SE (The Internet Infrastructure Foundation)
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
+
+#include "crypt_pkcs11_struct.h"
+
+#include <stdlib.h>
+#include <string.h>
+
+#ifdef TEST_DEVEL_COVER
+extern int __test_devel_cover_calloc_always_fail;
+#define myNewxz(a,b,c) if (__test_devel_cover_calloc_always_fail) { a = 0; } else { Newxz(a, b, c); }
+#define __croak(x) return 0
+#else
+#define myNewxz Newxz
+#define __croak(x) croak(x)
+#endif
+
+extern int crypt_pkcs11_xs_SvUOK(SV* sv);
+
+';
+    }
+
+    open(XS, '>>pkcs11_struct_'.$struct_name.'.xs') || die;
+    open(C, '>>crypt_pkcs11_struct_'.$struct_name.'.c') || die;
+}
             gen_xs($struct, \@_types);
             gen_c($struct, \@_types);
             gen_h($struct, \@_types);
             gen_typemap($struct, \@_types);
 
+close(XS);
+close(C);
             $struct = undef;
             @types = ();
             $in_struct = 0;
@@ -487,14 +587,19 @@ while (<HEADER>) {
         $base{$2} = $1;
     }
 }
-print XS 'MODULE = Crypt::PKCS11::structs  PACKAGE = Crypt::PKCS11::structs
-
-';
-close(XS);
-close(C);
 close(H);
 close(TYPEMAP);
 close(HEADER);
+while (my ($file, $struct_name) = each %FIRST) {
+    next unless ($file =~ /\.xs$/);
+
+    open(XS, '>>pkcs11_struct_'.$struct_name.'.xs') || die;
+    print XS '
+MODULE = Crypt::PKCS11::CK_'.uc($struct_name).'  PACKAGE = Crypt::PKCS11::CK_'.uc($struct_name).'
+
+';
+    close(XS);
+}
 exit;
 
 sub gen_xs {

@@ -1588,6 +1588,24 @@ CKA_NAME_HASH_ALGORITHM CKA_COPYABLE)],
 
 require XSLoader;
 XSLoader::load('Crypt::PKCS11', $VERSION);
+require DynaLoader;
+{
+    my $libref = $DynaLoader::dl_librefs[(scalar @DynaLoader::dl_librefs - 1)];
+
+    foreach my $module (qw(CK_AES CK_KIP CK_KEY CK_ECMQV CK_ECDH2 CK_SSL3
+        CK_VERSION CK_WTLS CK_DES CK_RC2 CK_TLS CK_RC5 CK_OTP CK_SKIPJACK CK_X9
+        CK_CMS CK_CAMELLIA CK_PKCS5 CK_KEA CK_ARIA CK_ECDH1 CK_PBE CK_MECHANISM
+        CK_RSA STRUCT_XS))
+    {
+        my ($symref, $xs);
+
+        unless (($symref = DynaLoader::dl_find_symbol($libref, 'boot_Crypt__PKCS11__'.$module))) {
+            confess 'Can not find symbol boot_Crypt__PKCS11__'.$module;
+        }
+        $xs = DynaLoader::dl_install_xsub('Crypt::PKCS11::'.$module.'::bootstrap', $symref);
+        &$xs('Crypt::PKCS11::'.$module);
+    }
+}
 
 use Crypt::PKCS11::Session;
 

@@ -21,12 +21,12 @@ ok_manifest({
         qr/\.o$/,
         qr/\.old$/,
         qr/\/gen\//,
-        qr/\/PKCS11.bs$/,
-        qr/\/pkcs11.c$/,
-        qr/\/pkcs11_struct.c$/,
-        qr/\/t\/token.db$/,
+        qr/\/PKCS11\.bs$/,
+        qr/\/pkcs11\.c$/,
+        qr/\/pkcs11_struct.*\.c$/,
+        qr/\/t\/token\.db$/,
         qr/\/cover_db/,
-        qr/\/t\/no.token$/,
+        qr/\/t\/no\.token$/,
         qr/\/t\/tokens\//,
     ]
 });
