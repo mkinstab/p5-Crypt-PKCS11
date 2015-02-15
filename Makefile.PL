@@ -34,6 +34,17 @@ sub have_inc($) {
 
 my @LIBS;
 my @DEFINES;
+my %DL_FUNCS = (
+    'Crypt__PKCS11' => [ 'boot_Crypt__PKCS11' ]
+);
+
+foreach my $module (qw(CK_AES CK_KIP CK_KEY CK_ECMQV CK_ECDH2 CK_SSL3
+    CK_VERSION CK_WTLS CK_DES CK_RC2 CK_TLS CK_RC5 CK_OTP CK_SKIPJACK CK_X9
+    CK_CMS CK_CAMELLIA CK_PKCS5 CK_KEA CK_ARIA CK_ECDH1 CK_PBE CK_MECHANISM
+    CK_RSA STRUCT_XS))
+{
+    $DL_FUNCS{'Crypt__PKCS11__'.$module} = [ 'boot_Crypt__PKCS11__'.$module ];
+}
 
 if (have_inc('dlfcn.h')) {
     push(@LIBS, '-ldl');
@@ -61,4 +72,5 @@ WriteMakefile(
     INC               => '-I.', # e.g., '-I. -I/usr/include/other'
     OBJECT            => '$(O_FILES)', # link all the C files too
     TYPEMAPS          => [ 'typemap', 'typemap.struct' ],
+    DL_FUNCS          => \%DL_FUNCS,
 );
