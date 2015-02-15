@@ -392,200 +392,32 @@ int crypt_pkcs11_xs_SvIOK(SV* sv) {
  * Also store them in the PKCS11 object for cleanup.
  */
 
-static SV* __CreateMutexSV = NULL_PTR;
-
-static CK_RV __CreateMutex(CK_VOID_PTR_PTR ppMutex) {
-    dSP;
-    int args;
-    CK_RV rv = CKR_OK;
-
-    PUSHMARK(SP);
-
-    args = call_sv(__CreateMutexSV, G_SCALAR);
-
-    SPAGAIN;
-
-    /* uncoverable branch 0 */
-    if (args != 1) {
-        /* uncoverable block 0 */
-        croak("Not correct return from CreateMutex");
-    }
-
-    *ppMutex = (CK_VOID_PTR)POPl;
-
-    PUTBACK;
-
-    return rv;
-}
-
 void crypt_pkcs11_xs_setCreateMutex(SV* pCreateMutex) {
-    if (__CreateMutexSV) {
-        SvREFCNT_dec(__CreateMutexSV);
-    }
-    SvGETMAGIC(pCreateMutex);
-    if (!(__CreateMutexSV = newSVsv(pCreateMutex))) {
-        /* uncoverable block 0 */
-        croak("memory allocation error");
-    }
+    croak("Mutex functions are currently not supported");
 }
 
 void crypt_pkcs11_xs_clearCreateMutex(void) {
-    if (__CreateMutexSV) {
-        SvREFCNT_dec(__CreateMutexSV);
-        __CreateMutexSV = NULL_PTR;
-    }
-}
-
-static SV* __DestroyMutexSV = NULL_PTR;
-
-static CK_RV __DestroyMutex(CK_VOID_PTR pMutex) {
-    dSP;
-    int args;
-    CK_RV rv = CKR_GENERAL_ERROR;
-
-    ENTER;
-    SAVETMPS;
-
-    PUSHMARK(SP);
-    XPUSHs(sv_2mortal(newSViv((long)pMutex)));
-    PUTBACK;
-
-    args = call_sv(__DestroyMutexSV, G_SCALAR);
-
-    SPAGAIN;
-
-    /* uncoverable branch 0 */
-    if (args != 1) {
-        /* uncoverable block 0 */
-        croak("Not correct return from DestroyMutex");
-    }
-
-    rv = POPi;
-
-    PUTBACK;
-    FREETMPS;
-    LEAVE;
-
-    return rv;
 }
 
 void crypt_pkcs11_xs_setDestroyMutex(SV* pDestroyMutex) {
-    if (__DestroyMutexSV) {
-        SvREFCNT_dec(__DestroyMutexSV);
-    }
-    SvGETMAGIC(pDestroyMutex);
-    if (!(__DestroyMutexSV = newSVsv(pDestroyMutex))) {
-        /* uncoverable block 0 */
-        croak("memory allocation error");
-    }
+    croak("Mutex functions are currently not supported");
 }
 
 void crypt_pkcs11_xs_clearDestroyMutex(void) {
-    if (__DestroyMutexSV) {
-        SvREFCNT_dec(__DestroyMutexSV);
-        __DestroyMutexSV = NULL_PTR;
-    }
-}
-
-static SV* __LockMutexSV = NULL_PTR;
-
-static CK_RV __LockMutex(CK_VOID_PTR pMutex) {
-    dSP;
-    int args;
-    CK_RV rv = CKR_GENERAL_ERROR;
-
-    ENTER;
-    SAVETMPS;
-
-    PUSHMARK(SP);
-    XPUSHs(sv_2mortal(newSViv((long)pMutex)));
-    PUTBACK;
-
-    args = call_sv(__LockMutexSV, G_SCALAR);
-
-    SPAGAIN;
-
-    /* uncoverable branch 0 */
-    if (args != 1) {
-        /* uncoverable block 0 */
-        croak("Not correct return from LockMutex");
-    }
-
-    rv = POPi;
-
-    PUTBACK;
-    FREETMPS;
-    LEAVE;
-
-    return rv;
 }
 
 void crypt_pkcs11_xs_setLockMutex(SV* pLockMutex) {
-    if (__LockMutexSV) {
-        SvREFCNT_dec(__LockMutexSV);
-    }
-    SvGETMAGIC(pLockMutex);
-    if (!(__LockMutexSV = newSVsv(pLockMutex))) {
-        /* uncoverable block 0 */
-        croak("memory allocation error");
-    }
+    croak("Mutex functions are currently not supported");
 }
 
 void crypt_pkcs11_xs_clearLockMutex(void) {
-    if (__LockMutexSV) {
-        SvREFCNT_dec(__LockMutexSV);
-        __LockMutexSV = NULL_PTR;
-    }
-}
-
-static SV* __UnlockMutexSV = NULL_PTR;
-
-static CK_RV __UnlockMutex(CK_VOID_PTR pMutex) {
-    dSP;
-    int args;
-    CK_RV rv = CKR_GENERAL_ERROR;
-
-    ENTER;
-    SAVETMPS;
-    PUSHMARK(SP);
-    XPUSHs(sv_2mortal(newSViv((long)pMutex)));
-    PUTBACK;
-
-    args = call_sv(__UnlockMutexSV, G_SCALAR);
-
-    SPAGAIN;
-
-    /* uncoverable branch 0 */
-    if (args != 1) {
-        /* uncoverable block 0 */
-        croak("Not correct return from UnlockMutex");
-    }
-
-    rv = POPi;
-
-    PUTBACK;
-    FREETMPS;
-    LEAVE;
-
-    return rv;
 }
 
 void crypt_pkcs11_xs_setUnlockMutex(SV* pUnlockMutex) {
-    if (__UnlockMutexSV) {
-        SvREFCNT_dec(__UnlockMutexSV);
-    }
-    SvGETMAGIC(pUnlockMutex);
-    if (!(__UnlockMutexSV = newSVsv(pUnlockMutex))) {
-        /* uncoverable block 0 */
-        croak("memory allocation error");
-    }
+    croak("Mutex functions are currently not supported");
 }
 
 void crypt_pkcs11_xs_clearUnlockMutex(void) {
-    if (__UnlockMutexSV) {
-        SvREFCNT_dec(__UnlockMutexSV);
-        __UnlockMutexSV = NULL_PTR;
-    }
 }
 
 #ifdef TEST_DEVEL_COVER
@@ -705,34 +537,8 @@ CK_RV crypt_pkcs11_xs_C_Initialize(Crypt__PKCS11__XS* object, HV* pInitArgs) {
          */
         /* uncoverable begin */
         if (CreateMutex || DestroyMutex || LockMutex || UnlockMutex) {
-            if (!CreateMutex
-                || !DestroyMutex
-                || !LockMutex
-                || !UnlockMutex
-                || !*CreateMutex
-                || !*DestroyMutex
-                || !*LockMutex
-                || !*UnlockMutex
-                || !SvOK(*CreateMutex)
-                || !SvOK(*DestroyMutex)
-                || !SvOK(*LockMutex)
-                || !SvOK(*UnlockMutex))
-            {
-                return CKR_ARGUMENTS_BAD;
-                /* uncoverable end */
-            }
-
-            crypt_pkcs11_xs_setCreateMutex(*CreateMutex);
-            crypt_pkcs11_xs_setDestroyMutex(*DestroyMutex);
-            crypt_pkcs11_xs_setLockMutex(*LockMutex);
-            crypt_pkcs11_xs_setUnlockMutex(*UnlockMutex);
-
-            InitArgs.CreateMutex = &__CreateMutex;
-            InitArgs.DestroyMutex = &__DestroyMutex;
-            InitArgs.LockMutex = &__LockMutex;
-            InitArgs.UnlockMutex = &__UnlockMutex;
-
-            useInitArgs = 1;
+            return CKR_ARGUMENTS_BAD;
+            /* uncoverable end */
         }
 
         if (flags) {
@@ -3645,6 +3451,7 @@ int crypt_pkcs11_xs_test_devel_cover(Crypt__PKCS11__XS* object) {
     sv = newSViv(1);
     if (crypt_pkcs11_xs_SvUOK(sv) != 1) { return __LINE__; }
     if (crypt_pkcs11_xs_SvIOK(sv) != 1) { return __LINE__; }
+    /*
     crypt_pkcs11_xs_setCreateMutex(sv);
     crypt_pkcs11_xs_setDestroyMutex(sv);
     crypt_pkcs11_xs_setLockMutex(sv);
@@ -3653,6 +3460,7 @@ int crypt_pkcs11_xs_test_devel_cover(Crypt__PKCS11__XS* object) {
     crypt_pkcs11_xs_setDestroyMutex(sv);
     crypt_pkcs11_xs_setLockMutex(sv);
     crypt_pkcs11_xs_setUnlockMutex(sv);
+    */
     crypt_pkcs11_xs_clearCreateMutex();
     crypt_pkcs11_xs_clearDestroyMutex();
     crypt_pkcs11_xs_clearLockMutex();

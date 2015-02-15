@@ -1671,13 +1671,7 @@ sub Initialize {
         or exists $args->{LockMutex}
         or exists $args->{UnlockMutex})
     {
-        unless (ref($args->{CreateMutex}) eq 'CODE'
-            and ref($args->{DestroyMutex}) eq 'CODE'
-            and ref($args->{LockMutex}) eq 'CODE'
-            and ref($args->{UnlockMutex}) eq 'CODE')
-        {
-            confess 'Any or all of Mutex options are invalid';
-        }
+        confess 'Mutex functions are currently not supported';
     }
 
     $self->{rv} = $self->{pkcs11xs}->C_Initialize($args);

@@ -252,37 +252,9 @@ Initialize the PKCS #11 library, this must be done before using the PKCS #11
 library. The initialization arguments can be given as one hash reference or as
 a hash.
 
-NOTE: For all Mutex CODE references the global callback will be set, there is no
-support for individual callbacks per Crypt::PKCS11 object.
-
-All of the Mutex arguments needs to be set if any should be used.
-
-For more information about mutex callbacks and how to use them please see
-L<Crypt::PKCS11::MutexCallbacks>.
-
 The following initialization arguments can be used:
 
 =over 4
-
-=item CreateMutex
-
-A CODE reference to a function to use for creating mutex objects. The global
-callback for CreateMutex will also be set.
-
-=item DestroyMutex
-
-A CODE reference to a function to use for destroying mutex objects. The global
-callback for DestroyMutex will also be set.
-
-=item LockMutex
-
-A CODE reference to a function to use for locking mutex objects. The global
-callback for LockMutex will also be set.
-
-=item UnlockMutex
-
-A CODE reference to a function to use for unlocking mutex objects. The global
-callback for UnlockMutex will also be set.
 
 =item flags
 
