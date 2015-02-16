@@ -1386,7 +1386,7 @@ our %CKZ_NAME = (
     CKZ_SALT_SPECIFIED() => 'CKZ_SALT_SPECIFIED',
 );
 
-our $VERSION = '1.02';
+our $VERSION = '1.03';
 
 our (@ISA, %EXPORT_TAGS, @EXPORT_OK);
 BEGIN {
@@ -1586,8 +1586,26 @@ CKA_NAME_HASH_ALGORITHM CKA_COPYABLE)],
     );
 }
 
+use DynaLoader;
 require XSLoader;
 XSLoader::load('Crypt::PKCS11', $VERSION);
+{
+    my $libref = $DynaLoader::dl_librefs[(scalar @DynaLoader::dl_librefs - 1)];
+
+    foreach my $module (qw(CK_AES CK_KIP CK_KEY CK_ECMQV CK_ECDH2 CK_SSL3
+        CK_VERSION CK_WTLS CK_DES CK_RC2 CK_TLS CK_RC5 CK_OTP CK_SKIPJACK CK_X9
+        CK_CMS CK_CAMELLIA CK_PKCS5 CK_KEA CK_ARIA CK_ECDH1 CK_PBE CK_MECHANISM
+        CK_RSA STRUCT_XS))
+    {
+        my ($symref, $xs);
+
+        unless (($symref = DynaLoader::dl_find_symbol($libref, 'boot_Crypt__PKCS11__'.$module))) {
+            confess 'Can not find symbol boot_Crypt__PKCS11__'.$module;
+        }
+        $xs = DynaLoader::dl_install_xsub('Crypt::PKCS11::'.$module.'::bootstrap', $symref);
+        &$xs('Crypt::PKCS11::'.$module);
+    }
+}
 
 use Crypt::PKCS11::Session;
 
@@ -1653,13 +1671,7 @@ sub Initialize {
         or exists $args->{LockMutex}
         or exists $args->{UnlockMutex})
     {
-        unless (ref($args->{CreateMutex}) eq 'CODE'
-            and ref($args->{DestroyMutex}) eq 'CODE'
-            and ref($args->{LockMutex}) eq 'CODE'
-            and ref($args->{UnlockMutex}) eq 'CODE')
-        {
-            confess 'Any or all of Mutex options are invalid';
-        }
+        confess 'Mutex functions are currently not supported';
     }
 
     $self->{rv} = $self->{pkcs11xs}->C_Initialize($args);

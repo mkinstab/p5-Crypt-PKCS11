@@ -250,6 +250,8 @@ print XS '/*
 
 #include "crypt_pkcs11_struct.h"
 
+/* uncoverable begin */
+
 MODULE = Crypt::PKCS11::STRUCT_XS  PACKAGE = Crypt::PKCS11::STRUCT_XS  PREFIX = crypt_pkcs11_struct_xs_
 
 #ifdef TEST_DEVEL_COVER
@@ -261,6 +263,7 @@ PROTOTYPE: DISABLE
 #endif
 
 ';
+close(XS);
 open(C, '>crypt_pkcs11_struct.c') || die;
 print C '/*
  * Copyright (c) 2015 Jerry Lundström <lundstrom.jerry@gmail.com>
@@ -391,6 +394,8 @@ int crypt_pkcs11_struct_xs_test_devel_cover(void);
 
 ';
 open(TYPEMAP, '>typemap.struct') || die;
+my %FIRST;
+my %POD;
 while (<HEADER>) {
     if ($in_comment) {
         unless (/\*\//o) {
@@ -455,11 +460,138 @@ while (<HEADER>) {
                 push(@_types, $type);
             }
 
+{
+    my (undef, $struct_name) = split(/_/o, $struct);
+    $struct_name = lc($struct_name);
+    die unless ($struct_name);
+
+    unless (exists $FIRST{'pkcs11_struct_'.$struct_name.'.xs'}) {
+        $FIRST{'pkcs11_struct_'.$struct_name.'.xs'} = $struct_name;
+open(XS, '>pkcs11_struct_'.$struct_name.'.xs') || die;
+print XS '/*
+ * Copyright (c) 2015 Jerry Lundström <lundstrom.jerry@gmail.com>
+ * Copyright (c) 2015 .SE (The Internet Infrastructure Foundation)
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
+
+#include "crypt_pkcs11_struct.h"
+
+';
+close(XS);
+    }
+    unless (exists $FIRST{'crypt_pkcs11_struct_'.$struct_name.'.c'}) {
+        $FIRST{'crypt_pkcs11_struct_'.$struct_name.'.c'} = $struct_name;
+open(C, '>crypt_pkcs11_struct_'.$struct_name.'.c') || die;
+print C '/*
+ * Copyright (c) 2015 Jerry Lundström <lundstrom.jerry@gmail.com>
+ * Copyright (c) 2015 .SE (The Internet Infrastructure Foundation)
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
+
+#include "crypt_pkcs11_struct.h"
+
+#include <stdlib.h>
+#include <string.h>
+
+#ifdef TEST_DEVEL_COVER
+extern int __test_devel_cover_calloc_always_fail;
+#define myNewxz(a,b,c) if (__test_devel_cover_calloc_always_fail) { a = 0; } else { Newxz(a, b, c); }
+#define __croak(x) return 0
+#else
+#define myNewxz Newxz
+#define __croak(x) croak(x)
+#endif
+
+extern int crypt_pkcs11_xs_SvUOK(SV* sv);
+
+';
+    }
+    unless (exists $POD{'lib/Crypt/PKCS11/'.$struct.'.pod'}) {
+        $POD{'lib/Crypt/PKCS11/'.$struct.'.pod'} = $struct;
+open(POD, '>lib/Crypt/PKCS11/'.$struct.'.pod') || die;
+print POD '
+=encoding utf8
+
+=head1 NAME
+
+Crypt::PKCS11::'.$struct.' - Perl interface to PKCS #11 '.$struct.' structure
+
+=head1 SYNPOSIS
+
+  use Crypt::PKCS11::'.$struct.';
+  my $obj = Crypt::PKCS11::'.$struct.'->new;
+  $obj->set...;
+  $obj->get...;
+
+=head1 DESCRIPTION
+
+This is the Perl interface for the C structure '.$struct.' in PKCS #11.
+See PKCS #11 documentation for more information about the structure and what it
+is used for.
+
+=head1 METHODS
+
+=over 4
+
+';
+    }
+
+    open(XS, '>>pkcs11_struct_'.$struct_name.'.xs') || die;
+    open(C, '>>crypt_pkcs11_struct_'.$struct_name.'.c') || die;
+    open(POD, '>>lib/Crypt/PKCS11/'.$struct.'.pod') || die;
+}
             gen_xs($struct, \@_types);
             gen_c($struct, \@_types);
             gen_h($struct, \@_types);
             gen_typemap($struct, \@_types);
 
+close(XS);
+close(C);
+close(POD);
             $struct = undef;
             @types = ();
             $in_struct = 0;
@@ -487,14 +619,82 @@ while (<HEADER>) {
         $base{$2} = $1;
     }
 }
-print XS 'MODULE = Crypt::PKCS11::structs  PACKAGE = Crypt::PKCS11::structs
-
-';
-close(XS);
-close(C);
 close(H);
 close(TYPEMAP);
 close(HEADER);
+while (my ($file, $struct_name) = each %FIRST) {
+    next unless ($file =~ /\.xs$/);
+
+    open(XS, '>>pkcs11_struct_'.$struct_name.'.xs') || die;
+    print XS '
+MODULE = Crypt::PKCS11::CK_'.uc($struct_name).'  PACKAGE = Crypt::PKCS11::CK_'.uc($struct_name).'
+
+';
+    close(XS);
+}
+while (my ($file, $struct) = each %POD) {
+    open(POD, '>>lib/Crypt/PKCS11/'.$struct.'.pod') || die;
+    print POD '=back
+
+=head1 PRIVATE METHODS
+
+These are the private methods used within the module and should not be used
+elsewhere.
+
+=over 4
+
+=item $bytes = $obj->toBytes
+
+Return the structure represented as bytes or undef on error.
+
+=item $rv = $obj->fromBytes($bytes)
+
+Sets the structure from a representation in bytes.
+Returns C<CKR_OK> on success otherwise a CKR describing the error.
+
+=back
+
+=head1 NOTE
+
+Derived from the RSA Security Inc. PKCS #11 Cryptographic Token Interface (Cryptoki)
+
+=head1 AUTHOR
+
+Jerry Lundström <lundstrom.jerry@gmail.com>
+
+=head1 REPORTING BUGS
+
+Report bugs at https://github.com/dotse/p5-Crypt-PKCS11/issues .
+
+=head1 LICENSE
+
+  Copyright (c) 2015 Jerry Lundström <lundstrom.jerry@gmail.com>
+  Copyright (c) 2015 .SE (The Internet Infrastructure Foundation)
+  All rights reserved.
+
+  Redistribution and use in source and binary forms, with or without
+  modification, are permitted provided that the following conditions
+  are met:
+  1. Redistributions of source code must retain the above copyright
+     notice, this list of conditions and the following disclaimer.
+  2. Redistributions in binary form must reproduce the above copyright
+     notice, this list of conditions and the following disclaimer in the
+     documentation and/or other materials provided with the distribution.
+
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+  HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+';
+    close(POD);
+}
 exit;
 
 sub gen_xs {
@@ -539,6 +739,13 @@ OUTPUT:
     RETVAL
 
 ';
+
+print POD '=item $obj = Crypt::PKCS11::'.$struct.'->new
+
+Returns a new Crypt::PKCS11::'.$struct.' object.
+
+';
+
     foreach (@$types) {
         if (exists $XSXS{$struct} and exists $XSXS{$struct}->{$_->{name}}) {
             $XSXS{$struct}->{$_->{name}}->($struct, $c_struct, $lc_struct, $_);
@@ -578,6 +785,23 @@ OUTPUT:
     RETVAL
 
 ';
+
+print POD '=item $rv = $obj->get_'.$_->{name}.'($'.$_->{name}.')
+
+Retrieve the value B<'.$_->{name}.'> from the structure into C<$'.$_->{name}.'>.
+Returns C<CKR_OK> on success otherwise a CKR describing the error.
+
+=item $'.$_->{name}.' = $obj->'.$_->{name}.'
+
+Returns the value B<'.$_->{name}.'> from the structure or undef on error.
+
+=item $rv = $obj->set_'.$_->{name}.'($'.$_->{name}.')
+
+Set the value B<'.$_->{name}.'> in the structure.
+Returns C<CKR_OK> on success otherwise a CKR describing the error.
+
+';
+
                 last;
             }
             $type = $base{$type};
@@ -1567,6 +1791,22 @@ OUTPUT:
     RETVAL
 
 ';
+
+print POD '=item $rv = $obj->get_'.$_->{name}.'($'.$_->{name}.')
+
+Retrieve the value B<'.$_->{name}.'> from the structure into C<$'.$_->{name}.'> which must be a L<Crypt::PKCS11::CK_VERSION> object.
+Returns C<CKR_OK> on success otherwise a CKR describing the error.
+
+=item $'.$_->{name}.' = $obj->'.$_->{name}.'
+
+Returns the value B<'.$_->{name}.'>, as a L<Crypt::PKCS11::CK_VERSION> object, from the structure or undef on error.
+
+=item $rv = $obj->set_'.$_->{name}.'($'.$_->{name}.')
+
+Set the value B<'.$_->{name}.'> in the structure, C<$'.$_->{name}.'> must be a L<Crypt::PKCS11::CK_VERSION> object.
+Returns C<CKR_OK> on success otherwise a CKR describing the error.
+
+';
 }
 
 sub ck_mechanism_ptr {
@@ -1725,6 +1965,22 @@ crypt_pkcs11_'.$lc_struct.'_set_'.$type->{name}.'(object, sv)
 PROTOTYPE: $$
 OUTPUT:
     RETVAL
+
+';
+
+print POD '=item $rv = $obj->get_'.$_->{name}.'($'.$_->{name}.')
+
+Retrieve the value B<'.$_->{name}.'> from the structure into C<$'.$_->{name}.'> which must be a L<Crypt::PKCS11::CK_MECHANISM> object.
+Returns C<CKR_OK> on success otherwise a CKR describing the error.
+
+=item $'.$_->{name}.' = $obj->'.$_->{name}.'
+
+Returns the value B<'.$_->{name}.'>, as a L<Crypt::PKCS11::CK_MECHANISM> object, from the structure or undef on error.
+
+=item $rv = $obj->set_'.$_->{name}.'($'.$_->{name}.')
+
+Set the value B<'.$_->{name}.'> in the structure, C<$'.$_->{name}.'> must be a L<Crypt::PKCS11::CK_MECHANISM> object.
+Returns C<CKR_OK> on success otherwise a CKR describing the error.
 
 ';
 }
@@ -2042,6 +2298,21 @@ OUTPUT:
     RETVAL
 
 ';
+print POD '=item $rv = $obj->get_'.$_->{name}.'($'.$_->{name}.')
+
+Retrieve the value B<'.$_->{name}.'> from the structure into C<$'.$_->{name}.'> which must be a L<Crypt::PKCS11::CK_SSL3_RANDOM_DATA> object.
+Returns C<CKR_OK> on success otherwise a CKR describing the error.
+
+=item $'.$_->{name}.' = $obj->'.$_->{name}.'
+
+Returns the value B<'.$_->{name}.'>, as a L<Crypt::PKCS11::CK_SSL3_RANDOM_DATA> object, from the structure or undef on error.
+
+=item $rv = $obj->set_'.$_->{name}.'($'.$_->{name}.')
+
+Set the value B<'.$_->{name}.'> in the structure, C<$'.$_->{name}.'> must be a L<Crypt::PKCS11::CK_SSL3_RANDOM_DATA> object.
+Returns C<CKR_OK> on success otherwise a CKR describing the error.
+
+';
 }
 
 sub CK_SSL3_KEY_MAT_OUT {
@@ -2233,6 +2504,16 @@ CODE:
     crypt_pkcs11_'.$lc_struct.'_get_'.$type->{name}.'(object, RETVAL);
 OUTPUT:
     RETVAL
+
+';
+print POD '=item $rv = $obj->get_'.$_->{name}.'($'.$_->{name}.')
+
+Retrieve the value B<'.$_->{name}.'> from the structure into C<$'.$_->{name}.'> which must be a L<Crypt::PKCS11::CK_SSL3_KEY_MAT_OUT> object.
+Returns C<CKR_OK> on success otherwise a CKR describing the error.
+
+=item $'.$_->{name}.' = $obj->'.$_->{name}.'
+
+Returns the value B<'.$_->{name}.'>, as a L<Crypt::PKCS11::CK_SSL3_KEY_MAT_OUT> object, from the structure or undef on error.
 
 ';
 }
@@ -2511,6 +2792,21 @@ OUTPUT:
     RETVAL
 
 ';
+print POD '=item $rv = $obj->get_'.$_->{name}.'($'.$_->{name}.')
+
+Retrieve the value B<'.$_->{name}.'> from the structure into C<$'.$_->{name}.'> which must be a L<Crypt::PKCS11::CK_WTLS_RANDOM_DATA> object.
+Returns C<CKR_OK> on success otherwise a CKR describing the error.
+
+=item $'.$_->{name}.' = $obj->'.$_->{name}.'
+
+Returns the value B<'.$_->{name}.'>, as a L<Crypt::PKCS11::CK_WTLS_RANDOM_DATA> object, from the structure or undef on error.
+
+=item $rv = $obj->set_'.$_->{name}.'($'.$_->{name}.')
+
+Set the value B<'.$_->{name}.'> in the structure, C<$'.$_->{name}.'> must be a L<Crypt::PKCS11::CK_WTLS_RANDOM_DATA> object.
+Returns C<CKR_OK> on success otherwise a CKR describing the error.
+
+';
 }
 
 sub CK_WTLS_KEY_MAT_OUT {
@@ -2642,6 +2938,16 @@ CODE:
     crypt_pkcs11_'.$lc_struct.'_get_'.$type->{name}.'(object, RETVAL);
 OUTPUT:
     RETVAL
+
+';
+print POD '=item $rv = $obj->get_'.$_->{name}.'($'.$_->{name}.')
+
+Retrieve the value B<'.$_->{name}.'> from the structure into C<$'.$_->{name}.'> which must be a L<Crypt::PKCS11::CK_WTLS_KEY_MAT_OUT> object.
+Returns C<CKR_OK> on success otherwise a CKR describing the error.
+
+=item $'.$_->{name}.' = $obj->'.$_->{name}.'
+
+Returns the value B<'.$_->{name}.'>, as a L<Crypt::PKCS11::CK_WTLS_KEY_MAT_OUT> object, from the structure or undef on error.
 
 ';
 }
@@ -3001,6 +3307,21 @@ crypt_pkcs11_'.$lc_struct.'_set_'.$type->{name}.'(object, sv)
 PROTOTYPE: $$
 OUTPUT:
     RETVAL
+
+';
+print POD '=item $rv = $obj->get_'.$_->{name}.'($'.$_->{name}.')
+
+Retrieve the value B<'.$_->{name}.'> from the structure into C<$'.$_->{name}.'> which must be an ARRAY reference that will receive L<Crypt::PKCS11::CK_OTP_PARAM> objects.
+Returns C<CKR_OK> on success otherwise a CKR describing the error.
+
+=item $'.$_->{name}.' = $obj->'.$_->{name}.'
+
+Returns the value B<'.$_->{name}.'>, as an ARRAY references with L<Crypt::PKCS11::CK_OTP_PARAM> objects, from the structure or undef on error.
+
+=item $rv = $obj->set_'.$_->{name}.'($'.$_->{name}.')
+
+Set the value B<'.$_->{name}.'> in the structure, C<$'.$_->{name}.'> must be an ARRAY reference with L<Crypt::PKCS11::CK_OTP_PARAM> objects.
+Returns C<CKR_OK> on success otherwise a CKR describing the error.
 
 ';
 }
