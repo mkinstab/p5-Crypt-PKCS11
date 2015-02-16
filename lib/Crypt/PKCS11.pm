@@ -1586,9 +1586,9 @@ CKA_NAME_HASH_ALGORITHM CKA_COPYABLE)],
     );
 }
 
+use DynaLoader;
 require XSLoader;
 XSLoader::load('Crypt::PKCS11', $VERSION);
-require DynaLoader;
 {
     my $libref = $DynaLoader::dl_librefs[(scalar @DynaLoader::dl_librefs - 1)];
 
