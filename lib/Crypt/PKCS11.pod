@@ -250,7 +250,7 @@ information how to test.
   ---------------------------- ------ ------ ------ ------ ------ ------ ------
   File                           stmt   bran   cond    sub    pod   time  total
   ---------------------------- ------ ------ ------ ------ ------ ------ ------
-  blib/lib/Crypt/PKCS11.pm      100.0  100.0  100.0  100.0  100.0   92.6  100.0
+  blib/lib/Crypt/PKCS11.pm      100.0  100.0  100.0  100.0  100.0   90.6  100.0
   ...Crypt/PKCS11/Attribute.pm  100.0  100.0  100.0  100.0  100.0    0.1  100.0
   ...tribute/AttributeArray.pm  100.0  100.0  100.0  100.0  100.0    0.0  100.0
   ...11/Attribute/ByteArray.pm  100.0  100.0  100.0  100.0  100.0    0.0  100.0
@@ -261,15 +261,63 @@ information how to test.
   ...ttribute/RFC2279string.pm  100.0  100.0    n/a  100.0  100.0    0.0  100.0
   ...1/Attribute/UlongArray.pm  100.0  100.0  100.0  100.0  100.0    0.0  100.0
   ...PKCS11/Attribute/Value.pm  100.0  100.0  100.0  100.0  100.0    0.0  100.0
-  ...rypt/PKCS11/Attributes.pm  100.0  100.0  100.0  100.0  100.0    4.8  100.0
-  ...ib/Crypt/PKCS11/Object.pm  100.0  100.0  100.0  100.0  100.0    1.9  100.0
-  ...b/Crypt/PKCS11/Session.pm  100.0  100.0  100.0  100.0  100.0    0.5  100.0
+  ...rypt/PKCS11/Attributes.pm  100.0  100.0  100.0  100.0  100.0    6.3  100.0
+  ...ib/Crypt/PKCS11/Object.pm  100.0  100.0  100.0  100.0  100.0    1.7  100.0
+  ...b/Crypt/PKCS11/Session.pm  100.0  100.0  100.0  100.0  100.0    1.1  100.0
   crypt_pkcs11.c                100.0  100.0    n/a    n/a    n/a    n/a  100.0
   crypt_pkcs11_struct.c         100.0  100.0    n/a    n/a    n/a    n/a  100.0
+  crypt_pkcs11_struct_aes.c     100.0  100.0    n/a    n/a    n/a    n/a  100.0
+  crypt_pkcs11_struct_aria.c    100.0  100.0    n/a    n/a    n/a    n/a  100.0
+  ..._pkcs11_struct_camellia.c  100.0  100.0    n/a    n/a    n/a    n/a  100.0
+  crypt_pkcs11_struct_cms.c     100.0  100.0    n/a    n/a    n/a    n/a  100.0
+  crypt_pkcs11_struct_des.c     100.0  100.0    n/a    n/a    n/a    n/a  100.0
+  crypt_pkcs11_struct_ecdh1.c   100.0  100.0    n/a    n/a    n/a    n/a  100.0
+  crypt_pkcs11_struct_ecdh2.c   100.0  100.0    n/a    n/a    n/a    n/a  100.0
+  crypt_pkcs11_struct_ecmqv.c   100.0  100.0    n/a    n/a    n/a    n/a  100.0
+  crypt_pkcs11_struct_kea.c     100.0  100.0    n/a    n/a    n/a    n/a  100.0
+  crypt_pkcs11_struct_key.c     100.0  100.0    n/a    n/a    n/a    n/a  100.0
+  crypt_pkcs11_struct_kip.c     100.0  100.0    n/a    n/a    n/a    n/a  100.0
+  ...pkcs11_struct_mechanism.c  100.0  100.0    n/a    n/a    n/a    n/a  100.0
+  crypt_pkcs11_struct_otp.c     100.0  100.0    n/a    n/a    n/a    n/a  100.0
+  crypt_pkcs11_struct_pbe.c     100.0  100.0    n/a    n/a    n/a    n/a  100.0
+  crypt_pkcs11_struct_pkcs5.c   100.0  100.0    n/a    n/a    n/a    n/a  100.0
+  crypt_pkcs11_struct_rc2.c     100.0  100.0    n/a    n/a    n/a    n/a  100.0
+  crypt_pkcs11_struct_rc5.c     100.0  100.0    n/a    n/a    n/a    n/a  100.0
+  crypt_pkcs11_struct_rsa.c     100.0  100.0    n/a    n/a    n/a    n/a  100.0
+  ..._pkcs11_struct_skipjack.c  100.0  100.0    n/a    n/a    n/a    n/a  100.0
+  crypt_pkcs11_struct_ssl3.c    100.0  100.0    n/a    n/a    n/a    n/a  100.0
+  crypt_pkcs11_struct_tls.c     100.0  100.0    n/a    n/a    n/a    n/a  100.0
+  ...t_pkcs11_struct_version.c  100.0  100.0    n/a    n/a    n/a    n/a  100.0
+  crypt_pkcs11_struct_wtls.c    100.0  100.0    n/a    n/a    n/a    n/a  100.0
+  crypt_pkcs11_struct_x9.c      100.0  100.0    n/a    n/a    n/a    n/a  100.0
   pkcs11.xs                     100.0    n/a    n/a    n/a    n/a    n/a  100.0
-  pkcs11_struct.xs              100.0    n/a    n/a    n/a    n/a    n/a  100.0
+  pkcs11_struct.c               100.0  100.0    n/a    n/a    n/a    n/a  100.0
+  pkcs11_struct_aes.xs          100.0    n/a    n/a    n/a    n/a    n/a  100.0
+  pkcs11_struct_aria.xs         100.0    n/a    n/a    n/a    n/a    n/a  100.0
+  pkcs11_struct_camellia.xs     100.0    n/a    n/a    n/a    n/a    n/a  100.0
+  pkcs11_struct_cms.xs          100.0    n/a    n/a    n/a    n/a    n/a  100.0
+  pkcs11_struct_des.xs          100.0    n/a    n/a    n/a    n/a    n/a  100.0
+  pkcs11_struct_ecdh1.xs        100.0    n/a    n/a    n/a    n/a    n/a  100.0
+  pkcs11_struct_ecdh2.xs        100.0    n/a    n/a    n/a    n/a    n/a  100.0
+  pkcs11_struct_ecmqv.xs        100.0    n/a    n/a    n/a    n/a    n/a  100.0
+  pkcs11_struct_kea.xs          100.0    n/a    n/a    n/a    n/a    n/a  100.0
+  pkcs11_struct_key.xs          100.0    n/a    n/a    n/a    n/a    n/a  100.0
+  pkcs11_struct_kip.xs          100.0    n/a    n/a    n/a    n/a    n/a  100.0
+  pkcs11_struct_mechanism.xs    100.0    n/a    n/a    n/a    n/a    n/a  100.0
+  pkcs11_struct_otp.xs          100.0    n/a    n/a    n/a    n/a    n/a  100.0
+  pkcs11_struct_pbe.xs          100.0    n/a    n/a    n/a    n/a    n/a  100.0
+  pkcs11_struct_pkcs5.xs        100.0    n/a    n/a    n/a    n/a    n/a  100.0
+  pkcs11_struct_rc2.xs          100.0    n/a    n/a    n/a    n/a    n/a  100.0
+  pkcs11_struct_rc5.xs          100.0    n/a    n/a    n/a    n/a    n/a  100.0
+  pkcs11_struct_rsa.xs          100.0    n/a    n/a    n/a    n/a    n/a  100.0
+  pkcs11_struct_skipjack.xs     100.0    n/a    n/a    n/a    n/a    n/a  100.0
+  pkcs11_struct_ssl3.xs         100.0    n/a    n/a    n/a    n/a    n/a  100.0
+  pkcs11_struct_tls.xs          100.0    n/a    n/a    n/a    n/a    n/a  100.0
+  pkcs11_struct_version.xs      100.0    n/a    n/a    n/a    n/a    n/a  100.0
+  pkcs11_struct_wtls.xs         100.0    n/a    n/a    n/a    n/a    n/a  100.0
+  pkcs11_struct_x9.xs           100.0    n/a    n/a    n/a    n/a    n/a  100.0
   Total                         100.0  100.0  100.0  100.0  100.0  100.0  100.0
- ---------------------------- ------ ------ ------ ------ ------ ------ ------
+  ---------------------------- ------ ------ ------ ------ ------ ------ ------
 
 This module has been tested with the following PKCS #11 providers and operating
 systems:
