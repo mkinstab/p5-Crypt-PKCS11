@@ -97,6 +97,14 @@ $@ = undef; eval { $obj->Initialize({ CreateMutex => sub{}, DestroyMutex => sub{
 myok( $@, '$obj->Initialize({ CreateMutex => sub{}, DestroyMutex => sub{} })' );
 $@ = undef; eval { $obj->Initialize({ CreateMutex => sub{}, DestroyMutex => sub{}, LockMutex => sub{} }); };
 myok( $@, '$obj->Initialize({ CreateMutex => sub{}, DestroyMutex => sub{}, LockMutex => sub{} })' );
+$@ = undef; eval { Crypt::PKCS11::XS::setCreateMutex($a = undef); };
+myok( $@, 'Crypt::PKCS11::XS::setCreateMutex' );
+$@ = undef; eval { Crypt::PKCS11::XS::setDestroyMutex($a = undef); };
+myok( $@, 'Crypt::PKCS11::XS::setDestroyMutex' );
+$@ = undef; eval { Crypt::PKCS11::XS::setLockMutex($a = undef); };
+myok( $@, 'Crypt::PKCS11::XS::setLockMutex' );
+$@ = undef; eval { Crypt::PKCS11::XS::setUnlockMutex($a = undef); };
+myok( $@, 'Crypt::PKCS11::XS::setUnlockMutex' );
 myis( $obj->Initialize, undef, '$obj->Initialize' );
 myis( $obj->Finalize, undef, '$obj->Finalize' );
 myis( $obj->GetInfo, undef, '$obj->GetInfo' );
