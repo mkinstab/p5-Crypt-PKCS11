@@ -87,10 +87,10 @@ sub initCheck {
         myis( $obj->C_Initialize(\%initArgs), CKR_ARGUMENTS_BAD, 'initCheck: C_Initialize '.$_ );
     }
     %initArgs = (
-        CreateMutex => sub { return 9999; },
-        DestroyMutex => sub { die unless ($_[0] ==  9999); return CKR_OK; },
-        LockMutex => sub { die unless ($_[0] ==  9999); return CKR_OK; },
-        UnlockMutex => sub { die unless ($_[0] ==  9999); return CKR_OK; }
+#        CreateMutex => sub { return 9999; },
+#        DestroyMutex => sub { die unless ($_[0] ==  9999); return CKR_OK; },
+#        LockMutex => sub { die unless ($_[0] ==  9999); return CKR_OK; },
+#        UnlockMutex => sub { die unless ($_[0] ==  9999); return CKR_OK; }
     );
     myis( $obj->C_Initialize(\%initArgs), CKR_OK, 'initCheck: C_Initialize #3' );
     myis( $obj->C_Finalize, CKR_OK, 'initCheck: C_Finalize #3' );

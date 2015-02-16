@@ -97,7 +97,7 @@ $@ = undef; eval { $obj->Initialize({ CreateMutex => sub{}, DestroyMutex => sub{
 myok( $@, '$obj->Initialize({ CreateMutex => sub{}, DestroyMutex => sub{} })' );
 $@ = undef; eval { $obj->Initialize({ CreateMutex => sub{}, DestroyMutex => sub{}, LockMutex => sub{} }); };
 myok( $@, '$obj->Initialize({ CreateMutex => sub{}, DestroyMutex => sub{}, LockMutex => sub{} })' );
-myis( $obj->Initialize({ CreateMutex => sub{}, DestroyMutex => sub{}, LockMutex => sub{}, UnlockMutex => sub{} }), undef, '$obj->Initialize({ CreateMutex => sub{}, DestroyMutex => sub{}, LockMutex => sub{}, UnlockMutex => sub{} })' );
+myis( $obj->Initialize, undef, '$obj->Initialize' );
 myis( $obj->Finalize, undef, '$obj->Finalize' );
 myis( $obj->GetInfo, undef, '$obj->GetInfo' );
 myis( $obj->GetSlotList, undef, '$obj->GetSlotList' );

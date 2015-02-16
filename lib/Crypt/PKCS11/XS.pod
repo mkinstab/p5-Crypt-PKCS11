@@ -58,74 +58,6 @@ A CKR value.
 
 =back
 
-=item $rv = Crypt::PKCS11::XS::setCreateMutex ($pCreateMutex)
-
-Set the global create mutex callback, for more information about mutex callbacks
-and how to use them please see L<Crypt::PKCS11::MutexCallbacks>.
-
-=over 4
-
-=item $pCreateMutex
-
-A CODE reference for the create mutex callback.
-
-=back
-
-=item Crypt::PKCS11::XS::clearCreateMutex
-
-Clear the stored create mutex callback reference.
-
-=item $rv = Crypt::PKCS11::XS::setDestroyMutex ($pDestroyMutex)
-
-Set the global destroy mutex callback, for more information about mutex
-callbacks and how to use them please see L<Crypt::PKCS11::MutexCallbacks>.
-
-=over 4
-
-=item $pDestroyMutex
-
-A CODE reference for the destroy mutex callback.
-
-=back
-
-=item Crypt::PKCS11::XS::clearDestroyMutex
-
-Clear the stored destroy mutex callback reference.
-
-=item $rv = Crypt::PKCS11::XS::setLockMutex ($pLockMutex)
-
-Set the global lock mutex callback, for more information about mutex callbacks
-and how to use them please see L<Crypt::PKCS11::MutexCallbacks>.
-
-=over 4
-
-=item $pLockMutex
-
-A CODE reference for the lock mutex callback.
-
-=back
-
-=item Crypt::PKCS11::XS::clearLockMutex
-
-Clear the stored lock mutex callback reference.
-
-=item $rv = Crypt::PKCS11::XS::setUnlockMutex ($pUnlockMutex)
-
-Set the global unlock mutex callback, for more information about mutex callbacks
-and how to use them please see L<Crypt::PKCS11::MutexCallbacks>.
-
-=over 4
-
-=item $pUnlockMutex
-
-A CODE reference for the unlock mutex callback.
-
-=back
-
-=item Crypt::PKCS11::XS::clearUnlockMutex
-
-Clear the stored unlock mutex callback reference.
-
 =item $rv = $pkcs11xs->load ($path)
 
 Load a PKCS #11 library.
@@ -150,35 +82,7 @@ Unload the PKCS #11 library.
 
 A HASH reference with the fields listed below.
 
-NOTE: For all Mutex CODE references the global callback will be set, there is no
-support for individual callbacks per Crypt::PKCS11::XS object.
-
-All of the Mutex arguments needs to be set if any should be used.
-
-For more information about mutex callbacks and how to use them please see
-L<Crypt::PKCS11::MutexCallbacks>.
-
 =over 4
-
-=item CreateMutex
-
-A CODE reference to a function to use for creating mutex objects. The global
-callback for CreateMutex will also be set.
-
-=item DestroyMutex
-
-A CODE reference to a function to use for destroying mutex objects. The global
-callback for DestroyMutex will also be set.
-
-=item LockMutex
-
-A CODE reference to a function to use for locking mutex objects. The global
-callback for LockMutex will also be set.
-
-=item UnlockMutex
-
-A CODE reference to a function to use for unlocking mutex objects. The global
-callback for UnlockMutex will also be set.
 
 =item flags
 
