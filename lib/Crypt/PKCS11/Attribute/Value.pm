@@ -30,7 +30,7 @@ use Carp;
 
 use base qw(Crypt::PKCS11::Attribute);
 
-use Crypt::PKCS11;
+use Crypt::PKCS11 qw(:constant);
 
 sub type () { CKA_VALUE }
 
