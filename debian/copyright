@@ -4,7 +4,7 @@ Source: http://search.cpan.org/dist/Crypt-PKCS11/
 Name: Crypt-PKCS11
 
 Files: *
-Copyright: 2015, Jerry Lundström <lundstrom.jerry@gmail.com>
+Copyright: 2016, Jerry Lundström <lundstrom.jerry@gmail.com>
 License: BSD 2-Clause License
 
 License: BSD 2-Clause License
@@ -30,7 +30,7 @@ License: BSD 2-Clause License
  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 Files: debian/*
-Copyright: 2015, Jerry Lundström <lundstrom.jerry@gmail.com>
+Copyright: 2016, Jerry Lundström <lundstrom.jerry@gmail.com>
 License: Artistic or GPL-1+
 
 License: Artistic

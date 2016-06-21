@@ -186,12 +186,13 @@ Jerry Lundström <lundstrom.jerry@gmail.com>
 
 ## REPORTING BUGS
 
-Report bugs at https://github.com/dotse/p5-Crypt-PKCS11/issues .
+Report bugs at https://github.com/mkinstab/p5-Crypt-PKCS11/issues .
 
 ## LICENSE
 
 ```
-Copyright (c) 2015 Jerry Lundström <lundstrom.jerry@gmail.com>
+Copyright (c) 2015-2016 Jerry Lundström <lundstrom.jerry@gmail.com>
+Copyright (c) 2016 make install AB
 Copyright (c) 2015 .SE (The Internet Infrastructure Foundation)
 All rights reserved.
 

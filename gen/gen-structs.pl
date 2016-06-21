@@ -1,6 +1,7 @@
 #!/usr/bin/env perl
 #
-# Copyright (c) 2015 Jerry Lundström <lundstrom.jerry@gmail.com>
+# Copyright (c) 2015-2016 Jerry Lundström <lundstrom.jerry@gmail.com>
+# Copyright (c) 2016 make install AB
 # Copyright (c) 2015 .SE (The Internet Infrastructure Foundation)
 # All rights reserved.
 #
@@ -221,7 +222,8 @@ my %FB_TT = (
 open(HEADER, 'pkcs11t.h') || die;
 open(XS, '>pkcs11_struct.xs') || die;
 print XS '/*
- * Copyright (c) 2015 Jerry Lundström <lundstrom.jerry@gmail.com>
+ * Copyright (c) 2015-2016 Jerry Lundström <lundstrom.jerry@gmail.com>
+ * Copyright (c) 2016 make install AB
  * Copyright (c) 2015 .SE (The Internet Infrastructure Foundation)
  * All rights reserved.
  *
@@ -266,7 +268,8 @@ PROTOTYPE: DISABLE
 close(XS);
 open(C, '>crypt_pkcs11_struct.c') || die;
 print C '/*
- * Copyright (c) 2015 Jerry Lundström <lundstrom.jerry@gmail.com>
+ * Copyright (c) 2015-2016 Jerry Lundström <lundstrom.jerry@gmail.com>
+ * Copyright (c) 2016 make install AB
  * Copyright (c) 2015 .SE (The Internet Infrastructure Foundation)
  * All rights reserved.
  *
@@ -353,7 +356,8 @@ extern int crypt_pkcs11_xs_SvUOK(SV* sv);
 ';
 open(H, '>crypt_pkcs11_struct.h') || die;
 print H '/*
- * Copyright (c) 2015 Jerry Lundström <lundstrom.jerry@gmail.com>
+ * Copyright (c) 2015-2016 Jerry Lundström <lundstrom.jerry@gmail.com>
+ * Copyright (c) 2016 make install AB
  * Copyright (c) 2015 .SE (The Internet Infrastructure Foundation)
  * All rights reserved.
  *
@@ -469,7 +473,8 @@ while (<HEADER>) {
         $FIRST{'pkcs11_struct_'.$struct_name.'.xs'} = $struct_name;
 open(XS, '>pkcs11_struct_'.$struct_name.'.xs') || die;
 print XS '/*
- * Copyright (c) 2015 Jerry Lundström <lundstrom.jerry@gmail.com>
+ * Copyright (c) 2015-2016 Jerry Lundström <lundstrom.jerry@gmail.com>
+ * Copyright (c) 2016 make install AB
  * Copyright (c) 2015 .SE (The Internet Infrastructure Foundation)
  * All rights reserved.
  *
@@ -505,7 +510,8 @@ close(XS);
         $FIRST{'crypt_pkcs11_struct_'.$struct_name.'.c'} = $struct_name;
 open(C, '>crypt_pkcs11_struct_'.$struct_name.'.c') || die;
 print C '/*
- * Copyright (c) 2015 Jerry Lundström <lundstrom.jerry@gmail.com>
+ * Copyright (c) 2015-2016 Jerry Lundström <lundstrom.jerry@gmail.com>
+ * Copyright (c) 2016 make install AB
  * Copyright (c) 2015 .SE (The Internet Infrastructure Foundation)
  * All rights reserved.
  *
@@ -664,11 +670,12 @@ Jerry Lundström <lundstrom.jerry@gmail.com>
 
 =head1 REPORTING BUGS
 
-Report bugs at https://github.com/dotse/p5-Crypt-PKCS11/issues .
+Report bugs at https://github.com/mkinstab/p5-Crypt-PKCS11/issues .
 
 =head1 LICENSE
 
-  Copyright (c) 2015 Jerry Lundström <lundstrom.jerry@gmail.com>
+  Copyright (c) 2015-2016 Jerry Lundström <lundstrom.jerry@gmail.com>
+  Copyright (c) 2016 make install AB
   Copyright (c) 2015 .SE (The Internet Infrastructure Foundation)
   All rights reserved.
 
