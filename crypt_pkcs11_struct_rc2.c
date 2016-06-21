@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2015 Jerry Lundström <lundstrom.jerry@gmail.com>
+ * Copyright (c) 2015-2016 Jerry Lundström <lundstrom.jerry@gmail.com>
+ * Copyright (c) 2016 make install AB
  * Copyright (c) 2015 .SE (The Internet Infrastructure Foundation)
  * All rights reserved.
  *

@@ -7,7 +7,7 @@ Recommended distribution to test on is Ubuntu 12.04 and you must have both
 SoftHSM versions 1.3.x and 2.x. If SoftHSM is version 1.3.7 or 2.0.0b2 or lower
 then a small fix to MutexFactory.cpp needs to be applied (see SoftHSM below).
 
-[1] https://github.com/dotse/p5-Crypt-PKCS11
+[1] https://github.com/mkinstab/p5-Crypt-PKCS11
 
 ## Dependencies
 
